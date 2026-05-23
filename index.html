@@ -1197,10 +1197,227 @@
 
     .profile-stats {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 28px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
     }
+    .stat-card.sessions     { --stat-color: var(--c-profile); }
+    .stat-card.longest      { --stat-color: #f59e0b; }
+    .stat-card.techniques   { --stat-color: var(--c-tech); }
+    .stat-card.meditations  { --stat-color: var(--c-medit); }
+    .stat-card.books        { --stat-color: var(--gold); }
+    .stat-card.plans        { --stat-color: var(--c-plan); }
+
+    /* Favourite practice strip */
+    .favourite-strip {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--c-profile) 12%, var(--navy-card)), var(--navy-card));
+      border: 1px solid rgba(253, 164, 175, 0.25);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 22px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .favourite-strip:hover {
+      transform: translateY(-1px);
+      border-color: var(--c-profile);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+    .fav-label {
+      font-size: 0.66rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--c-profile);
+      font-weight: 600;
+    }
+    .fav-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .fav-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Next-achievement hint */
+    .next-achievement {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, rgba(246, 200, 96, 0.10), var(--navy-card));
+      border: 1px solid rgba(246, 200, 96, 0.28);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 22px;
+    }
+    .next-ach-icon {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 6px rgba(246, 200, 96, 0.3));
+    }
+    .next-ach-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .next-ach-kicker {
+      font-size: 0.66rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .next-ach-text {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    /* Tier sub-headings inside achievements section */
+    .achievement-tier { margin-bottom: 20px; }
+    .achievement-tier:last-child { margin-bottom: 12px; }
+    .tier-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      padding: 0 2px;
+    }
+    .tier-name {
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .tier-count {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Pro-locked padlock badge on achievement tiles */
+    .achievement { position: relative; }
+    .achievement .pro-padlock {
+      position: absolute;
+      top: 6px; right: 6px;
+      font-size: 0.7rem;
+      opacity: 0.85;
+    }
+    .achievement.pro-locked {
+      background: var(--navy-card);
+      border-color: var(--border-soft);
+      opacity: 0.78;
+    }
+    .achievement.pro-locked .achievement-icon { filter: grayscale(1) opacity(0.35); }
+    .achievement.pro-locked .achievement-name  { color: var(--text-muted); }
+    .achievement.pro-locked .achievement-state { color: var(--gold); }
+
+    /* Tier toggle button */
+    .tier-toggle {
+      display: flex;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .tier-toggle-btn {
+      background: transparent;
+      border: 1px dashed rgba(246, 200, 96, 0.35);
+      border-radius: var(--radius);
+      padding: 12px 20px;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--gold);
+      transition: all 0.2s ease;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .tier-toggle-btn:hover {
+      border-color: var(--gold);
+      background: rgba(246, 200, 96, 0.05);
+    }
+    .tier-toggle-btn.pro {
+      background: linear-gradient(135deg, rgba(246, 200, 96, 0.12), rgba(246, 200, 96, 0.03));
+      border-style: solid;
+    }
+    .tier-toggle-sub {
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 400;
+      text-transform: none;
+    }
+
+    /* Completion grid (techniques + meditations explored) */
+    .completion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 8px;
+    }
+    .completion-tile {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px 11px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: left;
+      font-family: inherit;
+      color: inherit;
+      transition: all 0.18s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .completion-tile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--c-tech);
+      opacity: 0.25;
+      transition: opacity 0.2s ease;
+    }
+    .completion-tile.med::before { background: var(--c-medit); }
+    .completion-tile.done::before { opacity: 1; }
+    .completion-tile:hover {
+      transform: translateY(-1px);
+      border-color: var(--c-tech);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    }
+    .completion-tile.med:hover { border-color: var(--c-medit); }
+    .completion-tile.done {
+      border-color: color-mix(in srgb, var(--c-plan) 30%, var(--border-soft));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--c-plan) 7%, var(--navy-card)), var(--navy-card));
+    }
+    .ct-state {
+      position: absolute;
+      top: 8px; right: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+    .completion-tile.done .ct-state { color: var(--c-plan); }
+    .ct-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.3;
+      padding-right: 18px;
+    }
+    .completion-tile:not(.done) .ct-title { color: var(--text-muted); }
+    .ct-meta {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
     .stat-card {
       background: var(--navy-card);
       border: 1px solid var(--border-soft);
@@ -3021,6 +3238,8 @@
       .nav-btn svg { width: 19px; height: 19px; }
       .nav-btn span { white-space: nowrap; }
       .profile-stats { grid-template-columns: 1fr 1fr; }
+      .stat-card .stat-value { font-size: 1.4rem; }
+      .completion-grid { grid-template-columns: 1fr 1fr; }
       .achievements-row { gap: 6px; }
       .achievement-icon { font-size: 1.35rem; }
       .achievement-name { font-size: 0.6rem; }
@@ -3277,34 +3496,46 @@
     </div>
     <p class="section-lede">Your practice so far — streak, sessions, achievements, and what you're reading. Everything is stored locally on this device.</p>
 
-    <!-- Stat cards -->
-    <div class="profile-stats">
-      <div class="stat-card streak">
-        <div class="stat-label">Current streak</div>
-        <div class="stat-value" id="stat-streak">0<span class="stat-unit">days</span></div>
-        <div class="stat-sub" id="stat-streak-sub">Start a session to begin</div>
-      </div>
-      <div class="stat-card minutes">
-        <div class="stat-label">Total practiced</div>
-        <div class="stat-value" id="stat-minutes">0<span class="stat-unit">min</span></div>
-        <div class="stat-sub" id="stat-minutes-sub">0 sessions</div>
-      </div>
-    </div>
+    <!-- Stats dashboard (8 cards, populated by renderProfile) -->
+    <div class="profile-stats" id="profile-stats-grid"></div>
+
+    <!-- Favourite practice strip -->
+    <div id="profile-favourite-block"></div>
 
     <!-- Active plan progress -->
     <div class="profile-plan" id="profile-plan-block">
       <!-- Populated by renderProfile() -->
     </div>
 
+    <!-- Next achievement hint -->
+    <div id="profile-next-achievement"></div>
+
     <!-- Achievements -->
     <div class="profile-block">
       <div class="profile-block-head">
         <div class="profile-block-title">Achievements</div>
-        <div class="profile-block-count" id="achievement-count">0 of 5 unlocked</div>
+        <div class="profile-block-count" id="achievement-count">0 of 15 unlocked</div>
       </div>
-      <div class="achievements-row" id="achievements-row">
-        <!-- Populated by renderProfile() -->
+      <div id="achievements-section">
+        <!-- Populated by renderProfile() — Free + Pro tiers each with their own row -->
       </div>
+    </div>
+
+    <!-- Completion trackers -->
+    <div class="profile-block">
+      <div class="profile-block-head">
+        <div class="profile-block-title">Techniques explored</div>
+        <div class="profile-block-count" id="tech-explore-count">0 of 10</div>
+      </div>
+      <div class="completion-grid" id="tech-completion-grid"></div>
+    </div>
+
+    <div class="profile-block">
+      <div class="profile-block-head">
+        <div class="profile-block-title">Meditations explored</div>
+        <div class="profile-block-count" id="med-explore-count">0 of 6</div>
+      </div>
+      <div class="completion-grid" id="med-completion-grid"></div>
     </div>
 
     <!-- Completed sessions -->
@@ -5595,26 +5826,150 @@
   /* ────── Persistent gamification store (localStorage) ────── */
   const STORE_KEY = 'breathly:v1';
 
+  /* ─── Practice grouping for tiered achievements ─── */
+  // Pranayama: the classical yogic breathing practices
+  const PRANAYAMA_IDS = ['nadi-shodhana', 'kapalabhati', 'bhramari', 'ujjayi', 'kumbhaka'];
+  // Modern: practices popularised in Western science/podcasts (Huberman et al.)
+  const MODERN_IDS    = ['physiological-sigh', 'box-breathing', 'yoga-nidra'];
+
+  /* Helpers used by achievement tests + the next-achievement hint */
+  function _completedPracticeIds(s) {
+    return new Set((s.sessions || []).map(x => x.practiceId));
+  }
+  function _sessionsInLastDays(s, days) {
+    const cutoff = Date.now() - days * 86400000;
+    return (s.sessions || []).filter(x => new Date(x.ts).getTime() >= cutoff).length;
+  }
+  function _planFinished(s, requireDays = 30) {
+    if (!s.plan) return false;
+    const total = s.plan.totalDays || 30;
+    if (total < requireDays) return false;
+    const start = new Date(s.plan.startDate).getTime();
+    return Date.now() - start >= requireDays * 86400000;
+  }
+  function _isMorning(session)  { const h = new Date(session.ts).getHours(); return h >= 5  && h < 11; }
+  function _isEvening(session)  { const h = new Date(session.ts).getHours(); return h >= 18 && h < 24; }
+  function _totalMinutes(s)     { return (s.sessions || []).reduce((sum, x) => sum + (x.durationMin || 0), 0); }
+  function _booksRead(s)        { return Object.values(s.readingList || {}).filter(v => v === 'read').length; }
+  function _bestStreak(s)       { return Math.max(s.streak?.longest || 0, s.streak?.current || 0); }
+  function _distinctPracticeCount(s) { return _completedPracticeIds(s).size; }
+
+  /* ─── Achievements (15: 5 free + 10 pro) ─── */
+  // Each has: id, name, icon, tier ('free'|'pro'), test(s), hint, progress(s) → {current, target, label}
   const ACHIEVEMENTS = [
-    { id: 'first-breath',   name: 'First Breath',   icon: '🌬️', test: s => s.sessions.length >= 1,
-      hint: 'Complete your first session.' },
-    { id: 'seven-day',      name: '7-Day Streak',   icon: '🔥', test: s => s.streak.current >= 7,
-      hint: 'Practise seven days in a row.' },
-    { id: 'explorer',       name: 'Explorer',       icon: '🧭', test: s => new Set(s.sessions.map(x => x.practiceId)).size >= 5,
-      hint: 'Try five different practices.' },
-    { id: 'scholar',        name: 'Scholar',        icon: '📚', test: s => Object.values(s.readingList).filter(v => v === 'read').length >= 3,
-      hint: 'Mark three books as read.' },
-    { id: 'the-practice',   name: 'The Practice',   icon: '☸️', test: s => s.sessions.length >= 30,
-      hint: 'Reach 30 completed sessions.' }
+    /* ── Free tier (5) ── */
+    {
+      id: 'first-breath', tier: 'free', name: 'First Breath', icon: '🌬️',
+      hint: 'Complete your first session.',
+      test:     s => s.sessions.length >= 1,
+      progress: s => ({ current: s.sessions.length, target: 1, label: 'session' })
+    },
+    {
+      id: 'seven-day', tier: 'free', name: '7-Day Streak', icon: '🔥',
+      hint: 'Practise seven days in a row.',
+      test:     s => (s.streak?.current || 0) >= 7,
+      progress: s => ({ current: s.streak?.current || 0, target: 7, label: 'days in a row' })
+    },
+    {
+      id: 'explorer', tier: 'free', name: 'Explorer', icon: '🧭',
+      hint: 'Try five different practices.',
+      test:     s => _distinctPracticeCount(s) >= 5,
+      progress: s => ({ current: _distinctPracticeCount(s), target: 5, label: 'different practices' })
+    },
+    {
+      id: 'scholar', tier: 'free', name: 'Scholar', icon: '📚',
+      hint: 'Mark three books as read.',
+      test:     s => _booksRead(s) >= 3,
+      progress: s => ({ current: _booksRead(s), target: 3, label: 'books read' })
+    },
+    {
+      id: 'the-practice', tier: 'free', name: 'The Practice', icon: '☸️',
+      hint: 'Reach 30 completed sessions.',
+      test:     s => s.sessions.length >= 30,
+      progress: s => ({ current: s.sessions.length, target: 30, label: 'sessions' })
+    },
+
+    /* ── Pro tier (10) ── */
+    {
+      id: 'deep-diver', tier: 'pro', name: 'Deep Diver', icon: '🧘',
+      hint: 'Complete every breathing technique.',
+      test:     s => { const c = _completedPracticeIds(s); return TECHNIQUES.every(t => c.has(t.id)); },
+      progress: s => { const c = _completedPracticeIds(s); const done = TECHNIQUES.filter(t => c.has(t.id)).length;
+                       return { current: done, target: TECHNIQUES.length, label: 'techniques' }; }
+    },
+    {
+      id: 'flow-state', tier: 'pro', name: 'Flow State', icon: '🌊',
+      hint: 'Complete 10 sessions in 30 days.',
+      test:     s => _sessionsInLastDays(s, 30) >= 10,
+      progress: s => ({ current: _sessionsInLastDays(s, 30), target: 10, label: 'sessions this month' })
+    },
+    {
+      id: 'summit', tier: 'pro', name: 'Summit', icon: '🏔️',
+      hint: 'Complete a 30-day plan.',
+      test:     s => _planFinished(s, 30),
+      progress: s => {
+        if (!s.plan) return { current: 0, target: 30, label: 'days into a plan' };
+        const elapsed = Math.floor((Date.now() - new Date(s.plan.startDate).getTime()) / 86400000);
+        return { current: Math.min(elapsed, 30), target: 30, label: 'days into a plan' };
+      }
+    },
+    {
+      id: 'ancient', tier: 'pro', name: 'Ancient', icon: '🌿',
+      hint: 'Complete every pranayama practice.',
+      test:     s => { const c = _completedPracticeIds(s); return PRANAYAMA_IDS.every(id => c.has(id)); },
+      progress: s => { const c = _completedPracticeIds(s); const done = PRANAYAMA_IDS.filter(id => c.has(id)).length;
+                       return { current: done, target: PRANAYAMA_IDS.length, label: 'pranayama practices' }; }
+    },
+    {
+      id: 'modern', tier: 'pro', name: 'Modern', icon: '⚡',
+      hint: 'Complete every Huberman-popularised practice.',
+      test:     s => { const c = _completedPracticeIds(s); return MODERN_IDS.every(id => c.has(id)); },
+      progress: s => { const c = _completedPracticeIds(s); const done = MODERN_IDS.filter(id => c.has(id)).length;
+                       return { current: done, target: MODERN_IDS.length, label: 'modern practices' }; }
+    },
+    {
+      id: 'ice-fire', tier: 'pro', name: 'Ice & Fire', icon: '❄️',
+      hint: 'Complete a Wim Hof Method session.',
+      test:     s => (s.sessions || []).some(x => x.practiceId === 'wim-hof-method'),
+      progress: s => ({ current: (s.sessions || []).some(x => x.practiceId === 'wim-hof-method') ? 1 : 0,
+                        target: 1, label: 'Wim Hof session' })
+    },
+    {
+      id: 'night-owl', tier: 'pro', name: 'Night Owl', icon: '🌙',
+      hint: 'Complete 5 evening sessions (after 6pm).',
+      test:     s => (s.sessions || []).filter(_isEvening).length >= 5,
+      progress: s => ({ current: (s.sessions || []).filter(_isEvening).length, target: 5, label: 'evening sessions' })
+    },
+    {
+      id: 'early-bird', tier: 'pro', name: 'Early Bird', icon: '🌅',
+      hint: 'Complete 5 morning sessions (before 11am).',
+      test:     s => (s.sessions || []).filter(_isMorning).length >= 5,
+      progress: s => ({ current: (s.sessions || []).filter(_isMorning).length, target: 5, label: 'morning sessions' })
+    },
+    {
+      id: 'century', tier: 'pro', name: 'Century', icon: '💫',
+      hint: 'Reach 100 total minutes practised.',
+      test:     s => _totalMinutes(s) >= 100,
+      progress: s => ({ current: _totalMinutes(s), target: 100, label: 'minutes practised' })
+    },
+    {
+      id: 'devoted', tier: 'pro', name: 'Devoted', icon: '🙏',
+      hint: 'Maintain a 30-day streak.',
+      test:     s => _bestStreak(s) >= 30,
+      progress: s => ({ current: _bestStreak(s), target: 30, label: 'day streak' })
+    }
   ];
 
   function initStore() {
     return {
       sessions: [],                          // [{id, kind:'technique'|'meditation', practiceId, practiceTitle, durationMin, ts}]
-      streak: { current: 0, lastDate: null },
+      streak: { current: 0, lastDate: null, longest: 0 },
       achievements: {},                      // {achievementId: ISO timestamp earned}
       plan: null,                            // {startDate ISO, totalDays, generatedAt ISO}
-      readingList: {}                        // {bookTitle: 'reading' | 'read'}
+      readingList: {},                       // {bookTitle: 'reading' | 'read'}
+      planAdditions: [],
+      plansGenerated: 0,                     // count of plans ever generated
+      tier: 'free'                           // 'free' | 'pro' — gates display of pro achievements
     };
   }
 
@@ -5624,7 +5979,14 @@
       if (!raw) return initStore();
       const parsed = JSON.parse(raw);
       // Shallow-merge so older stored shapes don't break new fields
-      return Object.assign(initStore(), parsed);
+      const merged = Object.assign(initStore(), parsed);
+      // Deep-merge the nested streak object so older stores without `longest` get the default
+      merged.streak = Object.assign({ current: 0, lastDate: null, longest: 0 }, merged.streak || {});
+      // Backfill longest from current if missing (so existing users don't lose their streak record)
+      if (!merged.streak.longest && merged.streak.current) {
+        merged.streak.longest = merged.streak.current;
+      }
+      return merged;
     } catch (e) { return initStore(); }
   }
 
@@ -6661,6 +7023,7 @@ Include any safety notes briefly where relevant. End with one or two sentences o
     // Record the plan start for the profile/home progress trackers
     const now = new Date().toISOString();
     store.plan = { startDate: now, totalDays: 30, generatedAt: now };
+    store.plansGenerated = (store.plansGenerated || 0) + 1;
     saveStore(store);
 
     // Switch to result view
@@ -7161,6 +7524,10 @@ Build my personalised plan.`;
       store.streak.current = 1;
     }
     store.streak.lastDate = today;
+    // Track the all-time best streak so it survives gaps
+    if (store.streak.current > (store.streak.longest || 0)) {
+      store.streak.longest = store.streak.current;
+    }
   }
 
   function streakIsCurrent() {
@@ -7171,10 +7538,53 @@ Build my personalised plan.`;
     return streakIsCurrent() ? store.streak.current : 0;
   }
 
+  /* Pick the most-completed practice and surface as the "favourite". */
+  function favouritePractice() {
+    const counts = {};
+    (store.sessions || []).forEach(s => {
+      counts[s.practiceId] = (counts[s.practiceId] || 0) + 1;
+    });
+    let best = null;
+    Object.entries(counts).forEach(([id, n]) => {
+      if (!best || n > best.count) {
+        const tech = TECHNIQUES.find(t => t.id === id);
+        const med  = MEDITATIONS.find(m => m.id === id);
+        const item = tech || med;
+        if (item) best = { id, title: item.title, kind: tech ? 'technique' : 'meditation', count: n };
+      }
+    });
+    return best;
+  }
+
+  /* Find the achievement closest to being earned. Skips pro on Free tier and skips already-earned. */
+  function nextAchievementHint() {
+    const candidates = ACHIEVEMENTS
+      .filter(a => !store.achievements[a.id])
+      .filter(a => !(a.tier === 'pro' && store.tier !== 'pro'))
+      .map(a => {
+        const p = a.progress ? a.progress(store) : null;
+        if (!p) return null;
+        const remaining = Math.max(0, p.target - p.current);
+        return { a, p, remaining };
+      })
+      .filter(x => x && x.remaining > 0)
+      .sort((x, y) => x.remaining - y.remaining);
+    if (!candidates.length) return null;
+    const { a, p, remaining } = candidates[0];
+    const unit = remaining === 1 && p.label.endsWith('s') ? p.label.slice(0, -1) : p.label;
+    return {
+      icon: a.icon,
+      text: `You're ${remaining} ${unit} away from ${a.name}.`
+    };
+  }
+
   function checkAchievements() {
     ACHIEVEMENTS.forEach(a => {
       if (store.achievements[a.id]) return;       // already unlocked
       if (a.test(store)) {
+        // Pro-tier achievements are gated: criteria-tested but only "unlock" on Pro.
+        // The UI shows them locked with a padlock until tier flips.
+        if (a.tier === 'pro' && store.tier !== 'pro') return;
         store.achievements[a.id] = new Date().toISOString();
         showToast({
           icon: a.icon,
@@ -7185,6 +7595,15 @@ Build my personalised plan.`;
       }
     });
     saveStore(store);
+  }
+
+  /* Toggle pro/free tier — demo helper. Replays achievement check so newly-eligible
+     pro achievements unlock on upgrade. */
+  function toggleProTier() {
+    store.tier = store.tier === 'pro' ? 'free' : 'pro';
+    saveStore(store);
+    checkAchievements();
+    renderProfile();
   }
 
   /* ════════════════ TOAST ════════════════ */
@@ -7284,6 +7703,12 @@ Build my personalised plan.`;
     const plan = planDayProgress();
     const last = store.sessions[0];
 
+    // This week: sessions and minutes in the last 7 days (rolling window)
+    const cutoff = Date.now() - 7 * 86400000;
+    const recent = (store.sessions || []).filter(s => new Date(s.ts).getTime() >= cutoff);
+    const weekSessions = recent.length;
+    const weekMinutes  = recent.reduce((sum, s) => sum + (s.durationMin || 0), 0);
+
     const rows = [];
 
     // Streak
@@ -7295,6 +7720,18 @@ Build my personalised plan.`;
           streak > 0
             ? `<span class="streak-flame">${streak}</span>-day streak`
             : `<span class="dim">No streak yet — start today</span>`
+        }</span>
+      </div>`);
+
+    // This week (NEW)
+    rows.push(`
+      <div class="summary-row">
+        <span class="row-icon">📅</span>
+        <span class="row-label">This week</span>
+        <span class="row-value">${
+          weekSessions > 0
+            ? `<strong>${weekSessions}</strong> session${weekSessions === 1 ? '' : 's'} · <strong>${weekMinutes}</strong> min`
+            : `<span class="dim">Nothing logged this week</span>`
         }</span>
       </div>`);
 
@@ -7341,22 +7778,74 @@ Build my personalised plan.`;
   /* ════════════════ PROFILE SECTION ════════════════ */
 
   function renderProfile() {
-    // Stat cards
-    const streak = effectiveStreak();
-    document.getElementById('stat-streak').innerHTML =
-      `${streak}<span class="stat-unit">day${streak === 1 ? '' : 's'}</span>`;
-    document.getElementById('stat-streak-sub').textContent =
-      streak > 0
-        ? `Last practised ${formatRelative(store.streak.lastDate + 'T12:00:00')}`
-        : 'Start a session to begin';
+    /* ─── Stats dashboard (8 cards) ─── */
+    const streak     = effectiveStreak();
+    const longest    = Math.max(store.streak?.longest || 0, streak);
+    const totalMin   = _totalMinutes(store);
+    const sessionsN  = store.sessions.length;
+    const techDone   = TECHNIQUES.filter(t => _completedPracticeIds(store).has(t.id)).length;
+    const medDone    = MEDITATIONS.filter(m => _completedPracticeIds(store).has(m.id)).length;
+    const booksOnList = Object.keys(store.readingList || {}).filter(k => ['read', 'reading'].includes(store.readingList[k])).length;
+    const plansGen   = store.plansGenerated || 0;
+    const fav        = favouritePractice();
 
-    const totalMin = store.sessions.reduce((sum, s) => sum + (s.durationMin || 0), 0);
-    document.getElementById('stat-minutes').innerHTML =
-      `${totalMin}<span class="stat-unit">min</span>`;
-    document.getElementById('stat-minutes-sub').textContent =
-      `${store.sessions.length} session${store.sessions.length === 1 ? '' : 's'}`;
+    document.getElementById('profile-stats-grid').innerHTML = `
+      <div class="stat-card sessions">
+        <div class="stat-label">Sessions</div>
+        <div class="stat-value">${sessionsN}</div>
+        <div class="stat-sub">${sessionsN === 0 ? 'Start your first' : 'completed'}</div>
+      </div>
+      <div class="stat-card minutes">
+        <div class="stat-label">Minutes</div>
+        <div class="stat-value">${totalMin}<span class="stat-unit">min</span></div>
+        <div class="stat-sub">${sessionsN ? `~${Math.round(totalMin / sessionsN)} per session` : 'practised'}</div>
+      </div>
+      <div class="stat-card streak">
+        <div class="stat-label">Current streak</div>
+        <div class="stat-value">${streak}<span class="stat-unit">day${streak === 1 ? '' : 's'}</span></div>
+        <div class="stat-sub">${streak > 0 ? `Last practised ${formatRelative(store.streak.lastDate + 'T12:00:00')}` : 'Start a session today'}</div>
+      </div>
+      <div class="stat-card longest">
+        <div class="stat-label">Longest streak</div>
+        <div class="stat-value">${longest}<span class="stat-unit">day${longest === 1 ? '' : 's'}</span></div>
+        <div class="stat-sub">${longest >= 30 ? 'Devoted territory' : longest >= 7 ? 'Building real depth' : 'Best run so far'}</div>
+      </div>
+      <div class="stat-card techniques">
+        <div class="stat-label">Techniques tried</div>
+        <div class="stat-value">${techDone}<span class="stat-unit">/ ${TECHNIQUES.length}</span></div>
+        <div class="stat-sub">${techDone === TECHNIQUES.length ? '✓ All explored' : `${TECHNIQUES.length - techDone} to go`}</div>
+      </div>
+      <div class="stat-card meditations">
+        <div class="stat-label">Meditations tried</div>
+        <div class="stat-value">${medDone}<span class="stat-unit">/ ${MEDITATIONS.length}</span></div>
+        <div class="stat-sub">${medDone === MEDITATIONS.length ? '✓ All explored' : `${MEDITATIONS.length - medDone} to go`}</div>
+      </div>
+      <div class="stat-card books">
+        <div class="stat-label">Reading list</div>
+        <div class="stat-value">${booksOnList}<span class="stat-unit">book${booksOnList === 1 ? '' : 's'}</span></div>
+        <div class="stat-sub">${Object.values(store.readingList || {}).filter(v => v === 'read').length} read</div>
+      </div>
+      <div class="stat-card plans">
+        <div class="stat-label">Plans generated</div>
+        <div class="stat-value">${plansGen}</div>
+        <div class="stat-sub">${plansGen === 0 ? 'Build your first' : plansGen === 1 ? 'one plan so far' : `${plansGen} plans so far`}</div>
+      </div>
+    `;
 
-    // Plan progress
+    /* ─── Favourite practice ─── */
+    const favEl = document.getElementById('profile-favourite-block');
+    if (fav) {
+      favEl.innerHTML = `
+        <div class="favourite-strip" onclick="${fav.kind === 'technique' ? `navigate('techniques'); showTechniqueDetail('${fav.id}')` : `navigate('meditate'); showMeditationDetail('${fav.id}')`}">
+          <div class="fav-label">Favourite practice</div>
+          <div class="fav-title">${escapeHtml(fav.title)}</div>
+          <div class="fav-meta">${fav.count} session${fav.count === 1 ? '' : 's'} · ${fav.kind === 'technique' ? 'Breathwork' : 'Meditation'}</div>
+        </div>`;
+    } else {
+      favEl.innerHTML = '';
+    }
+
+    /* ─── Plan progress ─── */
     const planBlock = document.getElementById('profile-plan-block');
     const plan = planDayProgress();
     if (plan) {
@@ -7377,19 +7866,89 @@ Build my personalised plan.`;
       `;
     }
 
-    // Achievements
-    const unlockedCount = ACHIEVEMENTS.filter(a => store.achievements[a.id]).length;
+    /* ─── Next achievement hint ─── */
+    const next = nextAchievementHint();
+    document.getElementById('profile-next-achievement').innerHTML = next ? `
+      <div class="next-achievement">
+        <span class="next-ach-icon">${next.icon}</span>
+        <div class="next-ach-body">
+          <div class="next-ach-kicker">Next achievement</div>
+          <div class="next-ach-text">${escapeHtml(next.text)}</div>
+        </div>
+      </div>` : '';
+
+    /* ─── Achievements (Free + Pro tiers, padlock on locked pro) ─── */
+    const visibleAchievements = ACHIEVEMENTS.filter(a => store.tier === 'pro' ? true : true); // show all, gating is visual
+    const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'free' || store.tier === 'pro');
+    const unlockedCount = ACHIEVEMENTS.filter(trulyUnlocked).length;
     document.getElementById('achievement-count').textContent =
       `${unlockedCount} of ${ACHIEVEMENTS.length} unlocked`;
-    document.getElementById('achievements-row').innerHTML = ACHIEVEMENTS.map(a => {
-      const unlocked = !!store.achievements[a.id];
+
+    const renderRow = list => `<div class="achievements-row">${list.map(a => {
+      const proLocked = a.tier === 'pro' && store.tier !== 'pro';
+      const unlocked  = trulyUnlocked(a);
       return `
-        <div class="achievement ${unlocked ? 'unlocked' : ''}" title="${escapeHtml(a.hint)}">
+        <div class="achievement ${unlocked ? 'unlocked' : ''} ${proLocked ? 'pro-locked' : ''}" title="${escapeHtml(a.hint)}">
+          ${proLocked ? `<span class="pro-padlock" title="Pro">🔒</span>` : ''}
           <span class="achievement-icon">${a.icon}</span>
           <div class="achievement-name">${escapeHtml(a.name)}</div>
-          <div class="achievement-state">${unlocked ? 'Unlocked' : 'Locked'}</div>
+          <div class="achievement-state">${proLocked ? 'Pro' : unlocked ? 'Unlocked' : 'Locked'}</div>
         </div>`;
-    }).join('');
+    }).join('')}</div>`;
+
+    const freeList = ACHIEVEMENTS.filter(a => a.tier === 'free');
+    const proList  = ACHIEVEMENTS.filter(a => a.tier === 'pro');
+    document.getElementById('achievements-section').innerHTML = `
+      <div class="achievement-tier">
+        <div class="tier-head">
+          <span class="tier-name">Free tier</span>
+          <span class="tier-count">${freeList.filter(trulyUnlocked).length} / ${freeList.length}</span>
+        </div>
+        ${renderRow(freeList)}
+      </div>
+      <div class="achievement-tier">
+        <div class="tier-head">
+          <span class="tier-name">Pro tier</span>
+          <span class="tier-count">${proList.filter(trulyUnlocked).length} / ${proList.length}</span>
+        </div>
+        ${renderRow(proList)}
+      </div>
+      <div class="tier-toggle">
+        ${store.tier === 'pro'
+          ? `<button class="tier-toggle-btn pro" onclick="toggleProTier()">
+              <span>✦ Breathly Pro</span>
+              <span class="tier-toggle-sub">Click to switch back to Free (demo)</span>
+             </button>`
+          : `<button class="tier-toggle-btn" onclick="toggleProTier()">
+              <span>Upgrade to Breathly Pro</span>
+              <span class="tier-toggle-sub">Demo · unlocks the 10 pro achievements</span>
+             </button>`
+        }
+      </div>
+    `;
+
+    /* ─── Completion grids ─── */
+    const completed = _completedPracticeIds(store);
+
+    document.getElementById('tech-explore-count').textContent = `${techDone} of ${TECHNIQUES.length}`;
+    document.getElementById('tech-completion-grid').innerHTML = TECHNIQUES.map(t => `
+      <button class="completion-tile ${completed.has(t.id) ? 'done' : ''}"
+              onclick="navigate('techniques'); showTechniqueDetail('${t.id}')"
+              title="${escapeHtml(completed.has(t.id) ? 'Completed' : 'Not tried yet')}">
+        <span class="ct-state">${completed.has(t.id) ? '✓' : '·'}</span>
+        <span class="ct-title">${escapeHtml(t.title)}</span>
+        <span class="ct-meta">${escapeHtml(t.bestFor)}</span>
+      </button>`).join('');
+
+    document.getElementById('med-explore-count').textContent = `${medDone} of ${MEDITATIONS.length}`;
+    document.getElementById('med-completion-grid').innerHTML = MEDITATIONS.map(m => `
+      <button class="completion-tile med ${completed.has(m.id) ? 'done' : ''}"
+              onclick="navigate('meditate'); showMeditationDetail('${m.id}')"
+              title="${escapeHtml(completed.has(m.id) ? 'Completed' : 'Not tried yet')}">
+        <span class="ct-state">${completed.has(m.id) ? '✓' : '·'}</span>
+        <span class="ct-title">${escapeHtml(m.title)}</span>
+        <span class="ct-meta">${escapeHtml(m.bestFor)}</span>
+      </button>`).join('');
 
     // Sessions list
     document.getElementById('sessions-count').textContent =
