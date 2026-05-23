@@ -12,17 +12,17 @@
                             base spanning the two vesica centres.
   -->
 
-  <!-- Inner triangle: very subtle teal fill, sits behind the strokes -->
+  <!-- Inner triangle: very subtle navy fill, sits behind the strokes -->
   <polygon points="75,100 125,100 100,143.301"
-           fill="#4ECDC4" fill-opacity="0.10" />
+           fill="#1a1a2e" fill-opacity="0.08" />
 
-  <!-- Vesica piscis: two overlapping circles, warm gold -->
+  <!-- Vesica piscis: two overlapping circles, deep navy -->
   <circle cx="75"  cy="100" r="50"
-          fill="none" stroke="#F7B731" stroke-width="1" />
+          fill="none" stroke="#1a1a2e" stroke-width="1" />
   <circle cx="125" cy="100" r="50"
-          fill="none" stroke="#F7B731" stroke-width="1" />
+          fill="none" stroke="#1a1a2e" stroke-width="1" />
 
-  <!-- Outer containing circle: teal, slightly heavier so it reads as the frame -->
+  <!-- Outer containing circle: navy, slightly heavier so it reads as the frame -->
   <circle cx="100" cy="100" r="90"
-          fill="none" stroke="#4ECDC4" stroke-width="1.25" />
+          fill="none" stroke="#1a1a2e" stroke-width="1.25" />
 </svg>

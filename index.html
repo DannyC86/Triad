@@ -48,7 +48,7 @@
       --text-dim:    #aaaacc;
       --border-soft: rgba(26,26,46,0.10);
 
-      --radius:      14px;
+      --radius:      16px;
       --radius-sm:   8px;
       --radius-lg:   20px;
     }
@@ -128,91 +128,133 @@
       max-width: none;
       padding: 0;
       margin: 0;
-      position: relative;
+      background: linear-gradient(135deg, #F5F0E8 0%, #E8EDF5 100%);
       min-height: calc(100vh - 86px);
-      background: var(--bg);
       overflow: hidden;
     }
-    #home.active { display: flex; flex-direction: column; }
+    #home.active { display: flex; align-items: stretch; }
 
-    .home-bg {
-      position: absolute;
-      inset: 0;
-      background-image: url('/static/images/background.png');
-      background-size: cover;
-      background-position: center;
-      z-index: 0;
-      mask-image:
-        linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%),
-        linear-gradient(to bottom, transparent 0%, black 15%, black 80%, transparent 100%);
-      mask-composite: intersect;
-      -webkit-mask-image:
-        linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%),
-        linear-gradient(to bottom, transparent 0%, black 15%, black 80%, transparent 100%);
-      -webkit-mask-composite: destination-in;
-    }
-
-    @media (max-width: 600px) {
-      .home-bg { background-image: url('/static/images/background-mobile.jpg'); }
-    }
-
-    .home-overlay {
-      position: relative;
-      z-index: 1;
+    .home-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      flex: 1;
-      padding: 52px 24px 44px;
       min-height: calc(100vh - 86px);
+      padding: 52px 24px 44px;
+      width: 100%;
     }
 
-    .home-wordmark {
-      text-align: center;
-    }
-    .home-wordmark img {
-      width: 140px;
-      display: block;
-      margin: 0 auto;
-      filter: invert(1);
-    }
-
-    .home-btn-stack {
+    .home-header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 10px;
     }
 
-    .home-img-btn {
-      width: 220px;
-      display: block;
-      cursor: pointer;
-      border: none;
-      outline: none;
-      transition: transform 0.3s ease, filter 0.3s ease;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
+    .home-logo { width: 80px; display: block; }
+
+    .home-wordmark-text {
+      font-size: 2.2rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: #1a1a2e;
+      line-height: 1;
     }
-    .home-img-btn:hover { transform: scale(1.05); filter: drop-shadow(0 8px 20px rgba(0,0,0,0.28)); }
-    .home-img-btn:active { transform: scale(0.98); }
+
+    .home-tagline {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.18em;
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    .home-cards {
+      display: flex;
+      flex-direction: row;
+      gap: 24px;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .home-card {
+      background: #fff;
+      border: 1px solid rgba(26,26,46,0.1);
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(26,26,46,0.08);
+      padding: 32px 24px;
+      width: 200px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      font-family: inherit;
+      text-align: center;
+    }
+
+    .home-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(26,26,46,0.14);
+    }
+
+    .home-card:focus-visible {
+      outline: 2px solid #1a1a2e;
+      outline-offset: 2px;
+    }
+
+    .home-card:active { transform: translateY(-2px); }
+
+    .home-card-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-card-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #1a1a2e;
+      margin-top: 2px;
+    }
+
+    .home-card-sublabel {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-top: -4px;
+    }
+
+    .home-auth-footer {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
 
     .home-auth-link {
-      font-size: 0.82rem;
-      color: #1a1a2e;
-      opacity: 0.6;
       cursor: pointer;
-      text-align: center;
-      letter-spacing: 0.08em;
-      transition: opacity 0.2s;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
       user-select: none;
     }
-    .home-auth-link:hover { opacity: 0.9; }
+
+    .home-auth-link:hover { color: var(--text); }
 
     /* Legacy home elements (kept for JS renderHomeSummary compatibility) */
     .home-summary { display: none; }
     .summary-kicker, .summary-link, .summary-row { display: none; }
+
+    @media (max-width: 600px) {
+      .home-cards { flex-direction: column; align-items: center; width: 100%; }
+      .home-card  { width: 100%; max-width: 320px; padding: 24px 20px; }
+    }
 
     /* ─── Grids / cards (techniques + meditations) ─── */
     .card-grid {
@@ -523,7 +565,7 @@
       width: 100%;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: 10px;
       color: var(--text);
       font-family: inherit;
       font-size: 0.95rem;
@@ -1676,7 +1718,7 @@
     .toast {
       background: rgba(245, 240, 232, 0.97);
       border: 1px solid var(--border);
-      border-radius: 999px;
+      border-radius: 12px;
       padding: 10px 18px;
       font-size: 0.86rem;
       color: var(--text);
@@ -1778,7 +1820,7 @@
       align-items: center;
       gap: 8px;
       padding: 11px 20px;
-      border-radius: 999px;
+      border-radius: 12px;
       border: 1px solid transparent;
       cursor: pointer;
       font-family: inherit;
@@ -2454,7 +2496,7 @@
     .usage-toast {
       background: rgba(245, 240, 232, 0.97);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: 12px;
       padding: 10px 12px 10px 14px;
       font-size: 0.78rem;
       color: var(--text-muted);
@@ -3312,7 +3354,7 @@
     .auth-form input {
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: 10px;
       color: var(--text);
       font-family: inherit;
       font-size: 0.95rem;
@@ -3469,35 +3511,56 @@
 
   <!-- ═════════ HOME ═════════ -->
   <section id="home" class="section active">
-    <div class="home-bg"></div>
-    <div class="home-overlay">
-      <div class="home-wordmark"><img src="/logo-wordmark.svg" alt="Breathly"></div>
-
-      <div class="home-btn-stack">
-        <img
-          src="/static/images/btn-breathwork.svg"
-          class="home-img-btn"
-          alt="Breathwork"
-          onclick="homeNavigate('techniques')"
-          draggable="false"
-        >
-        <img
-          src="/static/images/btn-meditate.svg"
-          class="home-img-btn"
-          alt="Meditate"
-          onclick="homeNavigate('meditate')"
-          draggable="false"
-        >
-        <img
-          src="/static/images/btn-knowledge.svg"
-          class="home-img-btn"
-          alt="Knowledge"
-          onclick="homeNavigate('library')"
-          draggable="false"
-        >
+    <div class="home-container">
+      <div class="home-header">
+        <img src="/logo.svg" class="home-logo" alt="Breathly mark">
+        <div class="home-wordmark-text">Breathly</div>
+        <div class="home-tagline">Ancient wisdom · Modern science · Your practice</div>
       </div>
 
-      <div class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</div>
+      <div class="home-cards">
+        <button class="home-card" onclick="homeNavigate('meditate')">
+          <div class="home-card-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="12" r="5" fill="#1a1a2e" opacity="0.85"/>
+              <path d="M 18,18 C 14,24 8,28 7,33 C 7,41 15,43 24,43 C 33,43 41,41 41,33 C 40,28 34,24 30,18 Z" fill="#1a1a2e" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="home-card-label">Meditate</div>
+          <div class="home-card-sublabel">Meditation</div>
+        </button>
+
+        <button class="home-card" onclick="homeNavigate('techniques')">
+          <div class="home-card-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="5" fill="#1a1a2e" opacity="0.9"/>
+              <circle cx="24" cy="24" r="12" stroke="#1a1a2e" stroke-width="1.5" opacity="0.65"/>
+              <circle cx="24" cy="24" r="20" stroke="#1a1a2e" stroke-width="1" opacity="0.35"/>
+            </svg>
+          </div>
+          <div class="home-card-label">Breath</div>
+          <div class="home-card-sublabel">Breathwork</div>
+        </button>
+
+        <button class="home-card" onclick="homeNavigate('library')">
+          <div class="home-card-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="#1a1a2e">
+              <path d="M 24,37 C 20,27 20,17 24,10 C 28,17 28,27 24,37 Z" opacity="0.9"/>
+              <path d="M 24,37 C 17,29 11,20 13,11 C 17,15 21,28 24,37 Z" opacity="0.75"/>
+              <path d="M 24,37 C 31,29 37,20 35,11 C 31,15 27,28 24,37 Z" opacity="0.75"/>
+              <path d="M 24,37 C 15,31 6,25 6,16 C 11,18 17,29 24,37 Z" opacity="0.55"/>
+              <path d="M 24,37 C 33,31 42,25 42,16 C 37,18 31,29 24,37 Z" opacity="0.55"/>
+              <line x1="24" y1="37" x2="24" y2="44" stroke="#1a1a2e" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="home-card-label">Knowledge</div>
+          <div class="home-card-sublabel">Library</div>
+        </button>
+      </div>
+
+      <div class="home-auth-footer" id="home-auth-footer">
+        <span class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</span>
+      </div>
     </div>
     <!-- Hidden element kept for renderHomeSummary() JS compatibility -->
     <div id="home-summary-body" style="display:none"></div>
@@ -3925,15 +3988,15 @@
     </button>
     <button class="nav-btn" data-section="techniques" onclick="navigate('techniques')">
       <svg viewBox="0 0 24 24"><path d="M12 2c-2 4-4 6-4 9a4 4 0 0 0 8 0c0-3-2-5-4-9z"/><path d="M5 13c0 4 2 7 7 9 5-2 7-5 7-9"/></svg>
-      <span>Techniques</span>
+      <span>Breath</span>
     </button>
     <button class="nav-btn" data-section="meditate" onclick="navigate('meditate')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 21c2-5 5-7 7-7s5 2 7 7"/><path d="M3 16l4-2M21 16l-4-2"/></svg>
-      <span>Meditate</span>
+      <span>Mind</span>
     </button>
     <button class="nav-btn" data-section="library" onclick="navigate('library')">
       <svg viewBox="0 0 24 24"><path d="M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4z"/><path d="M20 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>
-      <span>Library</span>
+      <span>Spirit</span>
     </button>
     <button class="nav-btn" data-section="plan" onclick="navigate('plan')">
       <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/><path d="M8 14h2M14 14h2M8 17h2M14 17h2"/></svg>
@@ -6249,7 +6312,7 @@
   let _lastHomeNav = 0;
   function homeNavigate(target) {
     const now = Date.now();
-    if (now - _lastHomeNav < 600) return;
+    if (now - _lastHomeNav < 400) return;
     _lastHomeNav = now;
     navigate(target);
   }
@@ -8024,6 +8087,14 @@ Build my personalised plan.`;
 
     body.innerHTML = rows.join('');
     refreshStreakBadge();
+    const authFooter = document.getElementById('home-auth-footer');
+    if (authFooter) {
+      if (auth.loggedIn) {
+        authFooter.innerHTML = `<span class="home-auth-link" onclick="navigate('profile')" role="button" tabindex="0">Welcome back &middot; <span style="text-decoration:underline">View Profile</span></span>`;
+      } else {
+        authFooter.innerHTML = `<span class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</span>`;
+      }
+    }
   }
 
   function refreshStreakBadge() {
