@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Breathly — Ancient wisdom. Modern science. Your practice.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     /* ─── Design tokens ─── */
     :root {
@@ -59,7 +59,7 @@
       min-height: 100%;
       background: var(--bg);
       color: var(--text);
-      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
       font-size: 16px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
@@ -105,6 +105,7 @@
       font-weight: 400;
       letter-spacing: 0.01em;
       color: var(--text);
+      font-family: 'Cormorant Garamond', Georgia, serif;
     }
     .section-title .accent { color: var(--accent, var(--teal)); }
 
@@ -160,12 +161,13 @@
     }
 
     .home-wordmark {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-weight: 300;
-      font-size: 1.1rem;
-      letter-spacing: 0.1em;
-      color: #1a1a2e;
       text-align: center;
+    }
+    .home-wordmark img {
+      width: 140px;
+      display: block;
+      margin: 0 auto;
+      filter: invert(1);
     }
 
     .home-btn-stack {
@@ -190,7 +192,6 @@
     .home-img-btn:active { transform: scale(0.98); }
 
     .home-auth-link {
-      font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: 0.82rem;
       color: #1a1a2e;
       opacity: 0.6;
@@ -311,6 +312,7 @@
       letter-spacing: 0.01em;
       margin-bottom: 8px;
       line-height: 1.25;
+      font-family: 'Cormorant Garamond', Georgia, serif;
     }
     .detail-desc {
       color: var(--text-muted);
@@ -3462,25 +3464,25 @@
   <section id="home" class="section active">
     <div class="home-bg"></div>
     <div class="home-overlay">
-      <div class="home-wordmark">Breathly</div>
+      <div class="home-wordmark"><img src="/logo-wordmark.svg" alt="Breathly"></div>
 
       <div class="home-btn-stack">
         <img
-          src="/static/images/btn-breathwork.jpg"
+          src="/static/images/btn-breathwork.png"
           class="home-img-btn"
           alt="Breathwork"
           onclick="homeNavigate('techniques')"
           draggable="false"
         >
         <img
-          src="/static/images/btn-meditate.jpg"
+          src="/static/images/btn-meditate.png"
           class="home-img-btn"
           alt="Meditate"
           onclick="homeNavigate('meditate')"
           draggable="false"
         >
         <img
-          src="/static/images/btn-knowledge.jpg"
+          src="/static/images/btn-knowledge.png"
           class="home-img-btn"
           alt="Knowledge"
           onclick="homeNavigate('library')"
