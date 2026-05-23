@@ -6307,7 +6307,7 @@
   function renderBooksPanel(books) {
     if (!books.length) return '';
     return `<div class="books-grid">${books.map(b => `
-      <button class="book-card" onclick="showBookDetail(LIBRARY.books.find(x => x.title === ${JSON.stringify(b.title)}))">
+      <button class="book-card" onclick="openLibraryEntry('book', '${slug(b.title)}')">
         <div class="book-cover cover-${b.cover && b.cover.hue ? b.cover.hue : 'teal'}">
           <div class="book-cover-icon">${b.cover && b.cover.icon ? b.cover.icon : '📖'}</div>
           <div>
@@ -6325,7 +6325,7 @@
   function renderPeoplePanel(people) {
     if (!people.length) return '';
     return `<div class="people-grid">${people.map(p => `
-      <button class="person-card" onclick="showPersonDetail(LIBRARY.people.find(x => x.name === ${JSON.stringify(p.name)}))">
+      <button class="person-card" onclick="openLibraryEntry('person', '${slug(p.name)}')">
         <div class="person-avatar av-${p.photo && p.photo.hue ? p.photo.hue : 'teal'}">${initialsFromName(p.name)}</div>
         <div class="person-name">${escapeHtml(p.name)}</div>
         <div class="person-discipline">${escapeHtml(p.role)}</div>
@@ -6530,7 +6530,7 @@
     const bookCards = (person.relatedBookTitles || []).map(title => {
       const b = LIBRARY.books.find(x => x.title === title);
       if (!b) return '';
-      return `<button class="related-card" onclick="showBookDetail(LIBRARY.books.find(x => x.title === ${JSON.stringify(b.title)}))">
+      return `<button class="related-card" onclick="openLibraryEntry('book', '${slug(b.title)}')">
         <span class="rc-kicker">Book</span>
         <span class="rc-title">${escapeHtml(b.title)}</span>
         <span class="rc-sub">${escapeHtml(b.author)}</span>
