@@ -5,3 +5,8 @@ __pycache__/
 .env.local
 venv/
 .venv/
+
+# Local SQLite databases — user accounts, sessions, etc.
+users.db
+*.sqlite
+*.sqlite3
