@@ -13,7 +13,16 @@
       "Bash(fc-match \"Arial\")",
       "Bash(fc-match \"sans-serif\")",
       "Bash(curl -s -o /dev/null -w 'served logo-wordmark.svg: %{http_code}\\\\n' http://localhost:5050/logo-wordmark.svg)",
-      "Bash(curl -s -o /tmp/home.html -w \"%{http_code} %{size_download}b\\\\n\" http://localhost:5050/)"
+      "Bash(curl -s -o /tmp/home.html -w \"%{http_code} %{size_download}b\\\\n\" http://localhost:5050/)",
+      "Bash(curl -s -o /tmp/home.html -w 'HTTP %{http_code}, %{size_download}b\\\\n' http://localhost:5050/)",
+      "Bash(playwright --help)",
+      "Bash(~/.local/bin/playwright install *)",
+      "Bash(apt list *)",
+      "Bash(command -v chromium-browser chromium google-chrome)",
+      "Bash(curl -s -o /dev/null -w 'Home page:  %{http_code}, %{size_download}b\\\\n' http://localhost:5050/)",
+      "Bash(curl -s -o /dev/null -w 'logo.svg:   %{http_code}\\\\n' http://localhost:5050/logo.svg)",
+      "Bash(echo \"Nav buttons: $\\(curl -s http://localhost:5050/)",
+      "Bash(git add *)"
     ]
   }
 }
