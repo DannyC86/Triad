@@ -1352,6 +1352,151 @@
       text-transform: none;
     }
 
+    /* ─── Real "Upgrade to Breathly Pro" CTA (teal/gold gradient) ─── */
+    .upgrade-btn {
+      width: 100%;
+      max-width: 360px;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--gold) 100%);
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px 22px;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--navy);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.22s ease;
+      box-shadow: 0 6px 22px rgba(45, 212, 191, 0.25), 0 2px 10px rgba(246, 200, 96, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .upgrade-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .upgrade-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(45, 212, 191, 0.4), 0 4px 16px rgba(246, 200, 96, 0.25);
+    }
+    .upgrade-btn-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      position: relative; z-index: 1;
+    }
+    .upgrade-btn-price {
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      opacity: 0.85;
+      text-transform: uppercase;
+      position: relative; z-index: 1;
+    }
+
+    /* Pro badge — replaces the upgrade button when user is already on Pro */
+    .pro-badge {
+      width: 100%;
+      max-width: 360px;
+      background: linear-gradient(135deg, rgba(246, 200, 96, 0.16), rgba(246, 200, 96, 0.04));
+      border: 1px solid rgba(246, 200, 96, 0.45);
+      border-radius: var(--radius);
+      padding: 14px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .pro-badge-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+    }
+    .pro-badge-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* Waitlist modal */
+    .waitlist-icon {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .waitlist-blurb {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+      text-align: center;
+      margin-bottom: 18px;
+      padding: 0 6px;
+    }
+    .waitlist-foot {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      margin-top: 14px;
+    }
+    .waitlist-success {
+      text-align: center;
+      padding: 16px 8px 6px;
+    }
+    .waitlist-success-icon {
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+    }
+    .waitlist-success h3 {
+      color: var(--text);
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .waitlist-success p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    /* Auth modal sign-up tagline */
+    .auth-signup-tagline {
+      text-align: center;
+      color: var(--gold);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 14px;
+      opacity: 0.85;
+    }
+
+    /* Demo: toggle Pro link at the bottom of profile (testing only — remove before launch) */
+    .profile-demo-toggle {
+      text-align: center;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border-soft);
+    }
+    .profile-demo-toggle a {
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      border-bottom: 1px dashed transparent;
+      transition: all 0.18s ease;
+      text-decoration: none;
+    }
+    .profile-demo-toggle a:hover {
+      color: var(--text-muted);
+      border-bottom-color: var(--text-dim);
+    }
+
     /* Completion grid (techniques + meditations explored) */
     .completion-grid {
       display: grid;
@@ -3769,6 +3914,11 @@
         <!-- Populated by renderProfile() -->
       </div>
     </div>
+
+    <!-- Demo: toggle Pro tier (testing only — remove before launch) -->
+    <div class="profile-demo-toggle">
+      <a onclick="toggleProTier()" id="profile-demo-toggle-link">Demo: toggle Pro tier</a>
+    </div>
   </section>
 
 </div>
@@ -3881,9 +4031,43 @@
         <div class="auth-error" id="auth-error" hidden></div>
         <button type="submit" class="auth-submit" id="auth-submit">Log in</button>
       </form>
+      <p class="auth-signup-tagline" id="auth-signup-tagline" hidden>
+        Free forever · Pro features coming soon
+      </p>
       <p class="auth-skip-wrap">
         <a class="auth-skip" onclick="closeAuthModal()">Continue browsing free →</a>
       </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ Pro waitlist modal ═════════ -->
+<div class="modal-backdrop" id="waitlistModal" onclick="if(event.target===this) closeWaitlistModal()">
+  <div class="modal" style="max-width: 460px;">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <span class="modal-kicker" style="color: var(--gold)">✦ Breathly Pro</span>
+        <span class="modal-title" id="waitlistModalTitle">Pro coming soon</span>
+      </div>
+      <button class="modal-close" onclick="closeWaitlistModal()" title="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="waitlistModalBody">
+      <div class="waitlist-icon">✨</div>
+      <p class="waitlist-blurb">
+        Pro is on the way — guided sessions, advanced AI plans, and unlocked achievements.
+        Drop your email and we'll let you know first.
+      </p>
+      <form class="auth-form" onsubmit="submitWaitlistEmail(event)" novalidate>
+        <label class="auth-field">
+          <span class="auth-field-label">Email</span>
+          <input type="email" id="waitlist-email" autocomplete="email" placeholder="you@example.com" required />
+        </label>
+        <div class="auth-error" id="waitlist-error" hidden></div>
+        <button type="submit" class="auth-submit" id="waitlist-submit">Notify me</button>
+      </form>
+      <p class="waitlist-foot">£4.99/month · cancel anytime · no charge until launch.</p>
     </div>
   </div>
 </div>
@@ -8162,13 +8346,13 @@ Build my personalised plan.`;
       </div>
       <div class="tier-toggle">
         ${store.tier === 'pro'
-          ? `<button class="tier-toggle-btn pro" onclick="toggleProTier()">
-              <span>✦ Breathly Pro</span>
-              <span class="tier-toggle-sub">Click to switch back to Free (demo)</span>
-             </button>`
-          : `<button class="tier-toggle-btn" onclick="toggleProTier()">
-              <span>Upgrade to Breathly Pro</span>
-              <span class="tier-toggle-sub">Demo · unlocks the 10 pro achievements</span>
+          ? `<div class="pro-badge">
+              <span class="pro-badge-title">✦ Breathly Pro</span>
+              <span class="pro-badge-sub">All features unlocked</span>
+             </div>`
+          : `<button class="upgrade-btn" onclick="openWaitlistModal()">
+              <span class="upgrade-btn-title">✦ Upgrade to Breathly Pro</span>
+              <span class="upgrade-btn-price">£4.99 / month</span>
              </button>`
         }
       </div>
@@ -8460,6 +8644,119 @@ Build my personalised plan.`;
     if (pw) pw.autocomplete = _authTab === 'signup' ? 'new-password' : 'current-password';
     const errEl = document.getElementById('auth-error');
     if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
+    // Show the "Free forever · Pro coming soon" tagline only on the Sign up tab
+    const tagline = document.getElementById('auth-signup-tagline');
+    if (tagline) tagline.hidden = _authTab !== 'signup';
+  }
+
+  /* ════════════════ WAITLIST (Pro upgrade placeholder) ════════════════ */
+
+  const WAITLIST_KEY = 'breathly:waitlist';
+
+  function openWaitlistModal() {
+    // Reset state in case it was previously shown
+    const body = document.getElementById('waitlistModalBody');
+    const stored = _loadWaitlist();
+    if (stored && stored.email) {
+      _renderWaitlistAlreadyJoined(stored);
+    } else {
+      _renderWaitlistForm();
+    }
+    document.getElementById('waitlistModal').classList.add('active');
+    setTimeout(() => {
+      const inp = document.getElementById('waitlist-email');
+      if (inp) inp.focus();
+    }, 90);
+  }
+
+  function closeWaitlistModal() {
+    document.getElementById('waitlistModal').classList.remove('active');
+  }
+
+  function _renderWaitlistForm() {
+    const body = document.getElementById('waitlistModalBody');
+    if (!body) return;
+    body.innerHTML = `
+      <div class="waitlist-icon">✨</div>
+      <p class="waitlist-blurb">
+        Pro is on the way — guided sessions, advanced AI plans, and unlocked achievements.
+        Drop your email and we'll let you know first.
+      </p>
+      <form class="auth-form" onsubmit="submitWaitlistEmail(event)" novalidate>
+        <label class="auth-field">
+          <span class="auth-field-label">Email</span>
+          <input type="email" id="waitlist-email" autocomplete="email" placeholder="you@example.com" required />
+        </label>
+        <div class="auth-error" id="waitlist-error" hidden></div>
+        <button type="submit" class="auth-submit" id="waitlist-submit">Notify me</button>
+      </form>
+      <p class="waitlist-foot">£4.99/month · cancel anytime · no charge until launch.</p>
+    `;
+    // Pre-fill with the user's account email if they're logged in
+    if (auth.loggedIn && auth.email) {
+      const inp = document.getElementById('waitlist-email');
+      if (inp) inp.value = auth.email;
+    }
+  }
+
+  function _renderWaitlistAlreadyJoined(stored) {
+    const body = document.getElementById('waitlistModalBody');
+    if (!body) return;
+    const when = stored.joinedAt ? formatRelative(stored.joinedAt) : 'recently';
+    body.innerHTML = `
+      <div class="waitlist-success">
+        <div class="waitlist-success-icon">🙏</div>
+        <h3>You're on the list</h3>
+        <p>
+          We've got <strong style="color: var(--gold)">${escapeHtml(stored.email)}</strong>.
+          We'll be in touch when Pro launches — added ${escapeHtml(when)}.
+        </p>
+      </div>
+      <p class="waitlist-foot" style="margin-top: 22px;">
+        <a class="auth-skip" onclick="_resetWaitlist()">Use a different email</a>
+      </p>
+    `;
+  }
+
+  function _resetWaitlist() {
+    try { localStorage.removeItem(WAITLIST_KEY); } catch (e) {}
+    _renderWaitlistForm();
+  }
+
+  function _loadWaitlist() {
+    try {
+      const raw = localStorage.getItem(WAITLIST_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+
+  function submitWaitlistEmail(event) {
+    if (event && event.preventDefault) event.preventDefault();
+    const inp = document.getElementById('waitlist-email');
+    const errEl = document.getElementById('waitlist-error');
+    const submitBtn = document.getElementById('waitlist-submit');
+    const email = (inp.value || '').trim();
+
+    if (!email.includes('@') || !email.includes('.')) {
+      errEl.textContent = 'Please enter a valid email.';
+      errEl.hidden = false;
+      return;
+    }
+    errEl.hidden = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving…';
+
+    try {
+      const record = { email, joinedAt: new Date().toISOString() };
+      localStorage.setItem(WAITLIST_KEY, JSON.stringify(record));
+      _renderWaitlistAlreadyJoined(record);
+      showToast({ icon: '✨', label: 'Added to the Pro waitlist', autohide: 2400 });
+    } catch (e) {
+      errEl.textContent = 'Could not save — check that localStorage is available.';
+      errEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Notify me';
+    }
   }
 
   /* ─── Submit login or signup ─── */
