@@ -2294,6 +2294,181 @@
       to { opacity: 0; transform: translateX(20px); }
     }
 
+    /* ─── Meditation-specific animations (use --accent so they pick up the section colour: --c-medit inside #meditate) ─── */
+
+    /* anim-mindful: gentle slow breathing orb (8s cycle) */
+    .anim-mindful {
+      width: 200px; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .anim-mindful-orb {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--accent, var(--c-medit)), color-mix(in srgb, var(--accent, var(--c-medit)) 50%, var(--navy)));
+      box-shadow: 0 0 28px color-mix(in srgb, var(--accent, var(--c-medit)) 45%, transparent);
+      animation: orb-mindful 8s ease-in-out infinite;
+    }
+    @keyframes orb-mindful {
+      0%, 100% { transform: scale(0.95); opacity: 0.85; }
+      50%      { transform: scale(1.15); opacity: 1; }
+    }
+
+    /* anim-body-scan: vertical scan line over a body silhouette */
+    .anim-body-scan {
+      width: 80px; height: 200px;
+      color: var(--accent, var(--c-medit));
+    }
+    .anim-body-scan svg { display: block; overflow: visible; }
+    .anim-body-scan .scan-beam {
+      filter: drop-shadow(0 0 8px var(--accent, var(--c-medit)));
+      animation: scan-down 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes scan-down {
+      0%, 6%   { transform: translateY(0);   opacity: 0; }
+      10%      { opacity: 1; }
+      90%      { opacity: 1; }
+      94%, 100%{ transform: translateY(180px); opacity: 0; }
+    }
+
+    /* anim-metta: radiating waves from a central heart */
+    .anim-metta {
+      position: relative;
+      width: 220px; height: 220px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .anim-metta-heart {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--accent, var(--c-medit));
+      box-shadow: 0 0 22px color-mix(in srgb, var(--accent, var(--c-medit)) 70%, transparent);
+      z-index: 2;
+      animation: heart-pulse 3.5s ease-in-out infinite;
+    }
+    @keyframes heart-pulse {
+      0%, 100% { transform: scale(1);    box-shadow: 0 0 18px color-mix(in srgb, var(--accent, var(--c-medit)) 55%, transparent); }
+      50%      { transform: scale(1.18); box-shadow: 0 0 32px color-mix(in srgb, var(--accent, var(--c-medit)) 85%, transparent); }
+    }
+    .anim-metta::before, .anim-metta::after, .anim-metta-ring {
+      content: '';
+      position: absolute;
+      border: 1.5px solid color-mix(in srgb, var(--accent, var(--c-medit)) 50%, transparent);
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      animation: metta-radiate 4.2s ease-out infinite;
+    }
+    .anim-metta::after  { animation-delay: 1.4s; }
+    .anim-metta-ring    { animation-delay: 2.8s; }
+    @keyframes metta-radiate {
+      0%   { transform: scale(1);   opacity: 0.85; }
+      100% { transform: scale(5.5); opacity: 0; }
+    }
+
+    /* anim-nidra: very slow, very gentle deep-rest pulse */
+    .anim-nidra {
+      width: 200px; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .anim-nidra-orb {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%,
+                  color-mix(in srgb, var(--accent, var(--c-medit)) 75%, transparent) 0%,
+                  color-mix(in srgb, var(--accent, var(--c-medit)) 25%, transparent) 60%,
+                  transparent 100%);
+      filter: blur(1.5px);
+      animation: nidra-rest 14s ease-in-out infinite;
+    }
+    @keyframes nidra-rest {
+      0%, 100% { opacity: 0.45; transform: scale(0.92); }
+      50%      { opacity: 0.85; transform: scale(1.12); }
+    }
+
+    /* anim-trataka: candle with flickering flame */
+    .anim-trataka {
+      position: relative;
+      width: 100px; height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .anim-trataka-candle {
+      width: 22px; height: 110px;
+      background: linear-gradient(to bottom,
+                  rgba(232, 216, 160, 0.95) 0%,
+                  rgba(201, 162, 48, 0.85) 60%,
+                  rgba(140, 110, 30, 0.9) 100%);
+      border-radius: 3px 3px 1px 1px;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.3), inset -3px 0 6px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 1;
+    }
+    .anim-trataka-wick {
+      width: 2px; height: 8px;
+      background: #1a0f04;
+      position: absolute;
+      bottom: 110px;
+      z-index: 2;
+    }
+    .anim-trataka-flame {
+      position: absolute;
+      bottom: 116px;
+      width: 18px;
+      height: 34px;
+      background: radial-gradient(ellipse at 50% 80%,
+                  #fff3c4 0%,
+                  #f6c860 30%,
+                  #f5a623 60%,
+                  rgba(246, 100, 30, 0.4) 85%,
+                  transparent 100%);
+      border-radius: 50% 50% 40% 40% / 65% 65% 35% 35%;
+      filter: blur(0.4px) drop-shadow(0 0 18px rgba(246, 200, 96, 0.6))
+                          drop-shadow(0 -6px 24px rgba(246, 150, 60, 0.4));
+      animation: flame-flicker 0.55s ease-in-out infinite;
+      transform-origin: center bottom;
+      z-index: 3;
+    }
+    @keyframes flame-flicker {
+      0%, 100% { transform: scale(1, 1)       skew(0deg);   opacity: 1; }
+      18%      { transform: scale(1.05, 0.94) skew(-2deg);  opacity: 0.94; }
+      36%      { transform: scale(0.94, 1.08) skew(1.5deg); opacity: 1; }
+      55%      { transform: scale(1.04, 0.97) skew(-1.5deg); opacity: 0.92; }
+      78%      { transform: scale(0.97, 1.04) skew(2deg);   opacity: 1; }
+    }
+
+    /* anim-spacious: small dot with vast expanding rings */
+    .anim-spacious {
+      position: relative;
+      width: 220px; height: 220px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .anim-spacious-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent, var(--c-medit));
+      box-shadow: 0 0 24px var(--accent, var(--c-medit)),
+                  0 0 70px color-mix(in srgb, var(--accent, var(--c-medit)) 32%, transparent);
+      z-index: 2;
+      animation: spacious-pulse 5s ease-in-out infinite;
+    }
+    @keyframes spacious-pulse {
+      0%, 100% { transform: scale(1);   opacity: 0.8; }
+      50%      { transform: scale(1.3); opacity: 1; }
+    }
+    .anim-spacious::before, .anim-spacious::after {
+      content: '';
+      position: absolute;
+      border: 1px solid color-mix(in srgb, var(--accent, var(--c-medit)) 28%, transparent);
+      border-radius: 50%;
+      width: 12px; height: 12px;
+      animation: spacious-expand 9s ease-out infinite;
+    }
+    .anim-spacious::after { animation-delay: 4.5s; }
+    @keyframes spacious-expand {
+      0%   { transform: scale(1);    opacity: 0.65; }
+      100% { transform: scale(15);   opacity: 0; }
+    }
+
     /* ─── Library highlight on jump ─── */
     .lib-item.lib-highlight {
       background: linear-gradient(90deg, rgba(246,200,96,0.10), transparent) !important;
@@ -3738,6 +3913,402 @@
     }
   };
 
+  /* ════════════════ RICH MEDITATION DETAILS (5-tab payload) ════════════════ */
+  // Same shape as TECHNIQUE_DETAILS. One entry per practice in MEDITATIONS.
+
+  const MEDITATION_DETAILS = {
+
+    'mindfulness-of-breath': {
+      overview: {
+        what: "Gentle, sustained attention to the natural breath as it is — not as you want it to be. When the mind wanders (it will), you gently return. The most foundational meditation across nearly every contemplative tradition.",
+        keyBenefits: [
+          "Reduces amygdala reactivity over weeks of practice.",
+          "Strengthens sustained attention and decreases mind-wandering.",
+          "Lowers rumination, anxiety, and depressive symptoms.",
+          "Builds equanimity that carries into ordinary life."
+        ],
+        whenToUse: [
+          "Daily — morning is the classical recommendation.",
+          "As a 5-minute reset midday.",
+          "Before sleep as a wind-down.",
+          "Whenever you notice attention has scattered."
+        ],
+        whoFor: "Anyone. The most accessible and best-studied meditation. For trauma survivors, an open-eye variant or a body-anchor may feel safer than closed-eye breath focus."
+      },
+      history: {
+        origins: "Taught by the Buddha himself in the Anapanasati Sutta (Majjhima Nikaya 118) approximately 2,500 years ago. The term anapanasati means 'mindfulness of breathing' — sati (mindfulness) on the pana (breath). One of the earliest formal meditation instructions in recorded history.",
+        evolution: "Preserved unbroken across all Buddhist traditions — Theravada (Mahasi Sayadaw, Ajahn Chah, S.N. Goenka), Mahayana, Zen, Tibetan. Stripped of religious framing and brought to clinical use as the foundation of MBSR (Mindfulness-Based Stress Reduction) by Jon Kabat-Zinn at UMass Medical School in 1979. Now the most-studied meditation practice in contemporary neuroscience.",
+        figures: [
+          { name: "The Buddha",       credit: "Original teacher; the Anapanasati Sutta gives the foundational instructions still followed today." },
+          { name: "Mahasi Sayadaw",   credit: "Burmese monk (1904–1982) whose dry-insight Vipassana method shaped global mindfulness teaching." },
+          { name: "Jon Kabat-Zinn",   credit: "Founder of MBSR (1979); brought breath meditation into clinical and corporate mainstream." },
+          { name: "Jack Kornfield",   credit: "American Theravada teacher; co-founder of Insight Meditation Society and Spirit Rock." }
+        ],
+        ancient: "Likely the oldest formal meditation practice in continuous transmission. Predates writing — passed orally through monastic communities for centuries before being recorded in Pali. The ancient insight: where attention rests, mind becomes. Rest attention on something always present (breath), and you have a permanent meditation object."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "5–10 minutes daily. Set a timer. Notice when you've wandered; return without self-criticism." },
+          { level: "Intermediate", detail: "20–30 minutes. Choose one anchor (nostrils, chest, or belly) and stay with it. Add gentle noting (rising / falling)." },
+          { level: "Advanced",     detail: "Longer sessions; explore the 16 contemplations of the Anapanasati Sutta (body, feelings, mind, mental objects). Retreat work." }
+        ],
+        tips: [
+          "The wandering IS the practice — the return is the rep that builds attention.",
+          "Don't force concentration; invite it. Strain produces tension, not calm.",
+          "Pick one anchor and commit to it for at least a month — switching anchors confuses early development.",
+          "If sleepy, open the eyes slightly. If agitated, lengthen the exhale."
+        ]
+      },
+      science: {
+        physiology: "Slow attention to breath naturally slows respiratory rate, shifts heart-rate variability toward parasympathetic dominance, and lowers cortisol over sustained practice.",
+        neuroscience: "Sara Lazar's lab (Harvard) showed structural changes after 8 weeks of MBSR — increased grey matter density in the hippocampus, insula, and prefrontal cortex; reduced amygdala volume. Long-term practitioners show decreased default-mode network activity during meditation.",
+        research: [
+          "Lazar et al. — 8 weeks of MBSR produces measurable brain structural changes.",
+          "Brewer et al. — meditation experience correlates with default-mode network deactivation.",
+          "Hundreds of MBSR trials for chronic pain, anxiety, depression, and immune function."
+        ],
+        tags: ["Default-mode network", "Amygdala-PFC coupling", "Insula", "Neuroplasticity"]
+      },
+      learn: {
+        animation: "mindful-breath",
+        video: {
+          title: "Guided Meditation: Mindfulness of Breath",
+          teacher: "Jack Kornfield",
+          youtubeId: "qpRpgrlvKa0"
+        }
+      },
+      related: {
+        people:     ["Jack Kornfield", "Andrew Huberman"],
+        books:      ["The Miracle of Mindfulness", "Breath: The New Science of a Lost Art"],
+        techniques: ["ujjayi", "nadi-shodhana", "4-7-8-breathing"]
+      }
+    },
+
+    'body-scan': {
+      overview: {
+        what: "Sequential head-to-toe (or toe-to-head) attention to physical sensation, noticing what's there without trying to change it. The gateway to interoception — the felt sense of the body from within.",
+        keyBenefits: [
+          "Reduces chronic pain perception (substantially in RCT data).",
+          "Improves sleep quality and reduces insomnia.",
+          "Decreases anxiety by anchoring attention in the body.",
+          "Builds interoception — the foundation of emotional regulation."
+        ],
+        whenToUse: [
+          "Before sleep — one of the best wind-down practices.",
+          "During chronic pain flare-ups (gently).",
+          "After a stressful day to release accumulated tension.",
+          "As a daily 20-minute restoration practice."
+        ],
+        whoFor: "Most people, including beginners. Excellent for those with chronic pain or sleep issues. Trauma survivors may benefit from a teacher's guidance to navigate strong sensations safely."
+      },
+      history: {
+        origins: "A traditional element of Buddhist meditation — kayagatasati, 'mindfulness of the body' — taught in the Satipatthana Sutta as one of the four foundations of mindfulness. The 'sweeping' practice of S.N. Goenka's Vipassana lineage is a refined body-scan variant.",
+        evolution: "Brought to clinical mainstream through Jon Kabat-Zinn's MBSR program (1979), where the body scan became one of the foundational practices. Later adapted by trauma therapists — Bessel van der Kolk, Peter Levine — for somatic awareness in trauma recovery. Now used clinically for chronic pain, PTSD, and stress.",
+        figures: [
+          { name: "S.N. Goenka",         credit: "Burmese-Indian teacher (1924–2013) whose Vipassana courses use a refined body-sweep as core practice." },
+          { name: "Jon Kabat-Zinn",      credit: "Formalised the clinical body scan as the entry point to MBSR." },
+          { name: "Bessel van der Kolk", credit: "Trauma researcher; brought body-based awareness into mainstream trauma treatment." }
+        ],
+        ancient: "Buddhist meditation has always emphasised body awareness as a doorway to insight — attention to the body 'roots you in the present moment and grounds away from cognitive rumination.' The Satipatthana Sutta enumerates kayagatasati (body), vedananussati (feeling-tone), cittanupassana (mind), and dhammanupassana (mental objects) as the four foundations. Body comes first because it's the most accessible."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "10-minute guided body scan. Don't worry about being thorough — meet what you notice." },
+          { level: "Intermediate", detail: "20–30 minutes, region by region, no recording needed. Notice sensations without naming them as good or bad." },
+          { level: "Advanced",     detail: "S.N. Goenka's 1-hour sweep — moving attention through the whole body with increasing speed and refinement. Often done in retreats." }
+        ],
+        tips: [
+          "Where you feel nothing, that's still data — neutrality is information, not failure.",
+          "Don't skip uncomfortable areas. Meet them with curiosity, not pressure to change them.",
+          "Lying down is fine — many practitioners do body scan supine.",
+          "If you fall asleep, you needed the rest. Try sitting next time if you want to stay alert."
+        ]
+      },
+      science: {
+        physiology: "Direct training in interoception — the perception of internal bodily states. Reduces sympathetic tone, increases vagal tone, and lowers blood pressure during practice. Long-term: reduced inflammatory markers.",
+        neuroscience: "Activates the insula — the brain's interoceptive hub. Strengthens insula–prefrontal connectivity, which underlies emotional regulation. Reduces Anterior Cingulate Cortex activation during pain (Kabat-Zinn's pain studies).",
+        research: [
+          "Cherkin et al. (2016, JAMA) — MBSR (which centres on body scan) matched CBT for chronic low-back pain, both superior to usual care.",
+          "Multiple pain-modulation studies showing reduced subjective pain ratings during meditation.",
+          "van der Kolk — body-awareness practices integrated into trauma protocols with substantial PTSD outcome data."
+        ],
+        tags: ["Interoception", "Insula", "Pain modulation", "Autonomic shift"]
+      },
+      learn: {
+        animation: "body-scan",
+        video: {
+          title: "Guided Body Scan Meditation",
+          teacher: "Jon Kabat-Zinn",
+          youtubeId: "T0nuKBcyqEM"
+        }
+      },
+      related: {
+        people:     ["Jack Kornfield", "Dr. Stephen Porges"],
+        books:      ["The Miracle of Mindfulness", "Why Zebras Don't Get Ulcers", "The Healing Power of the Breath"],
+        techniques: ["physiological-sigh", "4-7-8-breathing", "bhramari"]
+      }
+    },
+
+    'loving-kindness': {
+      overview: {
+        what: "Systematic cultivation of unconditional benevolence — toward self, loved ones, neutral people, difficult people, and all beings. Five stages. The classical Buddhist practice of metta (loving-kindness).",
+        keyBenefits: [
+          "Increases positive emotions and social connectedness measurably.",
+          "Reduces implicit bias (including racial bias).",
+          "Improves vagal tone and HRV (Kok & Fredrickson 2013).",
+          "Builds compassion as a trait, not just a feeling."
+        ],
+        whenToUse: [
+          "When feeling isolated, lonely, or cut off.",
+          "After conflict — particularly the 'difficult person' stage.",
+          "Before sleep as a closing practice.",
+          "As a daily compassion training."
+        ],
+        whoFor: "Anyone willing to engage emotion. For trauma survivors, modify the difficult-person stage carefully — sometimes years of self-stage work come first."
+      },
+      history: {
+        origins: "Metta Bhavana ('cultivation of loving-kindness') is one of the Buddha's four brahmaviharas (divine abodes): metta, karuna (compassion), mudita (sympathetic joy), upekkha (equanimity). The Karaniya Metta Sutta (Sutta Nipata 1.8) gives the original instructions. Buddhaghosa's 5th-century Visuddhimagga elaborates the five-stage method.",
+        evolution: "Preserved through Theravada lineages. Brought to Western secular practice through Sharon Salzberg's foundational book Lovingkindness (1995) and the Insight Meditation Society. Researched extensively by Barbara Fredrickson (positive psychology, UNC) and Richie Davidson (neuroscience, Wisconsin), establishing it as a measurably effective intervention.",
+        figures: [
+          { name: "The Buddha",       credit: "Original teacher; the Karaniya Metta Sutta is one of the most-chanted Buddhist texts." },
+          { name: "Jack Kornfield",   credit: "Has taught and written about metta extensively; co-founder of Spirit Rock." },
+          { name: "Andrew Huberman",  credit: "Has covered the neuroscience of compassion training and its measurable health effects." }
+        ],
+        ancient: "One of the four 'divine abodes' (brahmaviharas) in Buddhist meditation — the cultivated states said to be where divinity itself dwells. The radical claim: love is a trainable skill, not just a feeling that visits us. Two and a half millennia later, the laboratory has confirmed it: short-term metta practice produces measurable changes in cardiac vagal tone and social cognition."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "Self only. 10 minutes. Phrases: 'May I be safe. May I be healthy. May I be happy. May I live with ease.'" },
+          { level: "Intermediate", detail: "Five stages: self → benefactor → neutral person → difficult person → all beings. 20–30 minutes." },
+          { level: "Advanced",     detail: "Sustain across daily activities. Combine with breath. Customise phrases. Multi-week retreats focused on metta." }
+        ],
+        tips: [
+          "If the self stage feels forced, start with someone you love unconditionally, then return to yourself.",
+          "Don't manufacture the feeling — invite it. Sincere wishes are enough.",
+          "The difficult-person stage may take years. That's normal.",
+          "Adapt the phrases to what resonates. 'May you be free from suffering' is also classical."
+        ]
+      },
+      science: {
+        physiology: "Kok & Fredrickson (2013) showed that even 9 weeks of loving-kindness practice raised cardiac vagal tone — a direct physiological marker of social-emotional health. Reduces cortisol and inflammatory markers.",
+        neuroscience: "Activates the temporoparietal junction (theory of mind), insula (empathy), and the medial prefrontal cortex. Reduces amygdala reactivity to emotional faces. Davidson's lab showed sustained structural changes in long-term Buddhist practitioners.",
+        research: [
+          "Fredrickson — 'Open Hearts Build Lives' (2008) — even short-term metta practice broadens positive emotions and resources.",
+          "Hutcherson et al. — brief metta reduced implicit racial bias compared to control.",
+          "Davidson, Lutz et al. — long-term practitioners show heightened gamma synchrony during compassion meditation."
+        ],
+        tags: ["Vagal tone", "Empathy circuits", "Positive affect", "Social cognition"]
+      },
+      learn: {
+        animation: "metta",
+        video: {
+          title: "Loving-Kindness Meditation",
+          teacher: "Sharon Salzberg",
+          youtubeId: "c7nb35yqu7Y"
+        }
+      },
+      related: {
+        people:     ["Jack Kornfield"],
+        books:      ["The Miracle of Mindfulness", "The Healing Power of the Breath"],
+        techniques: ["bhramari", "4-7-8-breathing", "physiological-sigh"]
+      }
+    },
+
+    'yoga-nidra': {
+      overview: {
+        what: "Non-Sleep Deep Rest — a guided journey through body, breath, and visualisation while lying down, holding you in the hypnagogic state between waking and sleep for 20–45 minutes.",
+        keyBenefits: [
+          "Restores dopamine levels after sleep deprivation (Huberman protocols).",
+          "Enhances neuroplasticity and learning consolidation.",
+          "Profound nervous-system recovery — sometimes equivalent to several hours of sleep.",
+          "Excellent for jet lag and acute stress."
+        ],
+        whenToUse: [
+          "After poor sleep, jet lag, or all-nighters.",
+          "Between intense work blocks (Huberman recommends 10–20 min mid-day).",
+          "Before sleep when wound-up.",
+          "Recovery between athletic sessions or intense days."
+        ],
+        whoFor: "Everyone. Safe for all ages and conditions. Often more accessible than seated meditation — you just lie down and listen."
+      },
+      history: {
+        origins: "Modern Yoga Nidra was developed by Swami Satyananda Saraswati at the Bihar School of Yoga in the 1960s, drawing on tantric Nyasa practices (ritual placement of awareness on body parts) and classical pratyahara (sense withdrawal). The formalised protocol is 20th century, the roots are ancient.",
+        evolution: "Brought to Western audiences through Satyananda's book Yoga Nidra (1976) and Bihar School-trained teachers. Re-popularised globally by Andrew Huberman under the term 'NSDR' (Non-Sleep Deep Rest) on his Huberman Lab podcast (2020+), citing it as a tool for dopamine restoration and learning. Used clinically through Richard Miller's iRest protocol, adopted by the US Department of Veterans Affairs for PTSD.",
+        figures: [
+          { name: "Paramahansa Yogananda", credit: "Brought yogic consciousness practices — including precursors to nidra — to permanent Western residence." },
+          { name: "Andrew Huberman",       credit: "Popularised Yoga Nidra under the name NSDR; brought the dopamine-restoration research to mainstream awareness." },
+          { name: "Dr. Stephen Porges",    credit: "Polyvagal Theory provides the framework for understanding why deep restful states heal the nervous system." }
+        ],
+        ancient: "Roots in tantric Nyasa — the ritual placing of mantras and awareness on specific body parts. Also draws on classical pratyahara (the fifth limb of Patanjali's eight-limbed yoga: withdrawal of the senses). The state of conscious sleep — 'tandra' — is described in classical yoga as a borderland of consciousness with healing properties. What the rishis called yoga nidra, modern science calls the hypnagogic state."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "Follow a guided 20-minute recording lying flat on your back. Don't worry about falling asleep — you'll benefit either way." },
+          { level: "Intermediate", detail: "30–45 minute recordings. Notice the hypnagogic threshold; learn to ride the edge of sleep without crossing it." },
+          { level: "Advanced",     detail: "Self-guided practice. Use as daily restoration. Combine with athletic recovery or learning consolidation routines." }
+        ],
+        tips: [
+          "Lie down — never sit. The whole point is to relax the body completely.",
+          "Cover with a blanket; body temperature drops as you settle.",
+          "Headphones or a quiet room are essential. The guidance is the practice.",
+          "If you fall asleep, you needed it. Don't fight it. Try shorter sessions if you want to stay conscious."
+        ]
+      },
+      science: {
+        physiology: "Heart rate drops, breathing slows, vagal tone rises substantially. Brain enters slow-wave-like states while remaining minimally conscious. Cortisol drops; growth hormone may pulse.",
+        neuroscience: "EEG studies show theta and alpha dominance during yoga nidra — the hallmarks of the hypnagogic state. fMRI shows default-mode network suppression and dopamine restoration in the basal ganglia (basis of Huberman's NSDR claims). Promotes consolidation of recently-learned material.",
+        research: [
+          "Moszeik et al. (2020) — large-sample study showing significant improvements in stress, sleep, and well-being from short yoga nidra practice.",
+          "Studies on iRest in PTSD veterans show clinical effectiveness comparable to evidence-based therapies.",
+          "Kjaer et al. — PET imaging of yoga nidra showing measurable dopamine release during practice."
+        ],
+        tags: ["Theta/alpha waves", "Dopamine restoration", "Default-mode network", "Vagal tone"]
+      },
+      learn: {
+        animation: "nidra",
+        video: {
+          title: "Yoga Nidra for Deep Sleep & Recovery",
+          teacher: "Ally Boothroyd",
+          youtubeId: "M0u9GST_j3s"
+        }
+      },
+      related: {
+        people:     ["Andrew Huberman", "Paramahansa Yogananda", "Dr. Stephen Porges"],
+        books:      ["Science of Breath", "Autobiography of a Yogi", "The Healing Power of the Breath"],
+        techniques: ["4-7-8-breathing", "physiological-sigh", "bhramari"]
+      }
+    },
+
+    'trataka': {
+      overview: {
+        what: "Sustained unblinking gaze at a candle flame followed by internal visualisation of the afterimage. Classical concentration practice — dharana made specific.",
+        keyBenefits: [
+          "Develops single-pointed concentration like no other practice.",
+          "Reduces mind-wandering tendency over weeks.",
+          "Strengthens eye-mind coordination and visualisation capacity.",
+          "Prepares the mind for deeper meditation (Patanjali considered dharana the gateway to dhyana)."
+        ],
+        whenToUse: [
+          "As preparation for seated meditation.",
+          "Evening practice in dim light.",
+          "When concentration feels weak or scattered.",
+          "Before visualisation-based practice."
+        ],
+        whoFor: "Most people. Skip with serious eye conditions, glaucoma, or recent eye surgery. Pregnant women may want to avoid extended sessions."
+      },
+      history: {
+        origins: "One of the six shatkarmas (cleansing practices) in classical Hatha Yoga. Documented in the Hatha Yoga Pradipika (2.31–32) and the Gheranda Samhita (1.53–54). Classified as a kriya — a cleansing practice that polishes both the eyes (literally) and the mind.",
+        evolution: "Preserved through Hatha yoga lineages, particularly in the Bihar School and Sivananda lineages. Less mainstream in Western yoga than asana or meditation, but enjoying a revival via Kundalini yoga, integrative meditation curricula, and contemplative neuroscience studies of concentration training.",
+        figures: [
+          { name: "Paramahansa Yogananda", credit: "Brought yogic concentration practices including trataka into Western awareness." },
+          { name: "Andrew Huberman",       credit: "Has discussed the neuroscience of visual focus and gaze training on his podcast." }
+        ],
+        ancient: "One of the classical kriyas — a cleansing practice that simultaneously cleanses the eyes (literally producing tears that flush the surface) and the mind (sustained single-pointed attention). Related to dharana (concentration), the sixth limb of Patanjali's eight-limbed path. The afterimage practice trains a transition from external object to internal visualisation — mirroring the move from outer to inner that defines deeper meditation."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "5 minutes with the candle 2–3 feet away. Eyes may water — that's the cleansing." },
+          { level: "Intermediate", detail: "10–15 minutes. Spend equal time gazing outwardly and visualising the afterimage with closed eyes." },
+          { level: "Advanced",     detail: "20+ minutes. Combine with breath retention. Build to gazing on a dot (bindu), a yantra, or the open sky." }
+        ],
+        tips: [
+          "Dim room. Steady flame (no draft).",
+          "Don't strain. The flame doesn't need conquering — just held.",
+          "The afterimage IS the practice — when it fades, return to the flame.",
+          "Begin with short sessions to avoid eye strain. Build gradually."
+        ]
+      },
+      science: {
+        physiology: "Eye muscles strengthen and dry-eye symptoms often reduce over time. Tears that flow during gazing physically cleanse the cornea — the literal kriya effect.",
+        neuroscience: "EEG studies show increased alpha coherence during sustained focal gazing. Strengthens the dorsal attention network. The afterimage phase activates visual cortex without external input — a unique training in voluntary visualisation, with its own neural signatures.",
+        research: [
+          "Indian research groups (Telles lab and others) have shown improvements in concentration measures, working memory, and reaction time after consistent trataka practice.",
+          "Studies on focused-attention meditation broadly support attentional benefits of sustained-gaze practices.",
+          "EEG coherence studies suggest measurable shifts in cortical synchrony during trataka."
+        ],
+        tags: ["Dharana", "Alpha coherence", "Visualisation", "Dorsal attention network"]
+      },
+      learn: {
+        animation: "trataka",
+        video: {
+          title: "Trataka — Candle Gazing Meditation",
+          teacher: "Bihar School of Yoga / Satyananda lineage",
+          youtubeId: "qpe9N1Tj-3w"
+        }
+      },
+      related: {
+        people:     ["Paramahansa Yogananda"],
+        books:      ["Light on Pranayama", "Science of Breath", "Autobiography of a Yogi"],
+        techniques: ["ujjayi", "nadi-shodhana", "kumbhaka"]
+      }
+    },
+
+    'open-awareness': {
+      overview: {
+        what: "Resting as awareness itself — without focusing on any object. Thoughts, sounds, and sensations arise and pass without engagement. The practice points at what's already the case: awareness is the ground in which experience appears.",
+        keyBenefits: [
+          "Direct experiential access to non-conceptual awareness.",
+          "Freedom from habitual mental patterns (grasping, aversion, identification).",
+          "Profound equanimity that doesn't depend on conditions.",
+          "Recognition of selfless awareness — the central insight of non-dual traditions."
+        ],
+        whenToUse: [
+          "After establishing a concentration foundation (months of focused-attention practice).",
+          "As a deeper exploration after focused meditation.",
+          "Throughout daily life once recognised — 'life as the meditation hall.'",
+          "When concentration practice has matured to where forcing is the only remaining obstacle."
+        ],
+        whoFor: "Experienced meditators. Beginners may find it disorienting — concentration is the prerequisite, not the alternative."
+      },
+      history: {
+        origins: "Present across multiple traditions, each pointing at the same recognition: Tibetan Dzogchen ('the great perfection'), Zen Shikantaza ('just sitting'), Advaita Vedanta (self-inquiry), Kashmiri Shaivism, Mahamudra. All teach that awareness is what we're looking for AS what's looking.",
+        evolution: "Tibetan Dzogchen carries the explicit pointing-out lineage — from Garab Dorje through Longchenpa (14th c.), Patrul Rinpoche, to modern teachers like Tulku Urgyen and Mingyur Rinpoche. In Zen: Dogen's Shikantaza. In Advaita: Ramana Maharshi (early 20th c.) and modern non-dual teachers Rupert Spira, Loch Kelly, Adyashanti. Krishnamurti's 'choiceless awareness' is a parallel formulation.",
+        figures: [
+          { name: "Paramahansa Yogananda", credit: "Brought the Advaita / non-dual lineage into Western awareness through Kriya Yoga teachings." },
+          { name: "Jack Kornfield",        credit: "Has taught open-awareness practices alongside Theravada concentration in the Western Insight movement." },
+          { name: "Stanislav Grof",        credit: "Explored non-ordinary states of consciousness scientifically — adjacent territory to non-dual recognition." }
+        ],
+        ancient: "Possibly the deepest meditation in the contemplative traditions — pointing not at a technique but at what's already the case. Considered the 'pinnacle' practice in Dzogchen and Mahamudra; in Zen the recognition of 'before thinking.' The ancient assertion: awareness is already free, intrinsically aware, and ever-present. Meditation isn't producing this — it's recognising what was never absent."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "5 minutes. After 10 minutes of concentration practice, gently release the anchor and rest in the openness that remains." },
+          { level: "Intermediate", detail: "20–30 minutes. Allow concentration to fall away naturally. Notice thoughts without following them." },
+          { level: "Advanced",     detail: "Sustained recognition that doesn't require sitting. Life as the meditation hall. Pointing-out instructions from a qualified teacher accelerate this." }
+        ],
+        tips: [
+          "Not a 'blank mind' — awareness is already alive with experience.",
+          "Don't try to make anything special happen. Trying is what obscures.",
+          "If you notice yourself trying, notice that too. Even effort appears in awareness.",
+          "The recognition is now, not later. If it doesn't happen now, sitting longer won't help — it's not in time."
+        ]
+      },
+      science: {
+        physiology: "Heart rate and breath naturally slow. Long-term practitioners show very low baseline arousal — a relaxed alertness distinct from drowsiness.",
+        neuroscience: "Long-term meditators (Davidson and Lutz, studying Tibetan monks) show distinctive gamma synchrony patterns and reduced default-mode network activity during open-awareness practice. The fMRI signature differs from focused-attention meditation — different neural pathways are emphasised.",
+        research: [
+          "Lutz et al. (2004, PNAS) — long-term Buddhist practitioners show high-amplitude gamma synchrony during meditation, especially compassion and open-awareness practices.",
+          "Davidson's lab — sustained structural and functional brain changes in practitioners with 10,000+ hours.",
+          "Less mainstream clinical research because open-awareness is harder to operationalise than focused-attention protocols."
+        ],
+        tags: ["Default-mode network", "Gamma synchrony", "Non-conceptual awareness", "Neural deconstruction"]
+      },
+      learn: {
+        animation: "spacious",
+        video: {
+          title: "Effortless Mindfulness — Glimpse Practices",
+          teacher: "Loch Kelly",
+          youtubeId: "r2_v3IqxGCs"
+        }
+      },
+      related: {
+        people:     ["Jack Kornfield", "Paramahansa Yogananda", "Stanislav Grof"],
+        books:      ["Autobiography of a Yogi", "The Miracle of Mindfulness", "Light on Pranayama"],
+        techniques: ["kumbhaka", "ujjayi", "nadi-shodhana"]
+      }
+    }
+  };
+
   const LIBRARY = {
     books: [
       { title: "Breath: The New Science of a Lost Art", author: "James Nestor", year: 2020, summary: "Modern breathing science as narrative — nasal breathing, CO₂ tolerance, Buteyko, and the historical detectives of breath." },
@@ -3940,10 +4511,12 @@
     `).join('');
   }
 
-  // Router: rich tabbed detail for techniques with TECHNIQUE_DETAILS data; simple detail otherwise.
+  // Router: rich tabbed detail when we have full data for the practice; simple detail otherwise.
   function renderDetail(item, containerId, kind) {
     if (kind === 'technique' && TECHNIQUE_DETAILS[item.id]) {
-      renderTechniqueDetail(item, containerId);
+      renderRichDetail(item, containerId, 'technique');
+    } else if (kind === 'meditation' && MEDITATION_DETAILS[item.id]) {
+      renderRichDetail(item, containerId, 'meditation');
     } else {
       renderSimpleDetail(item, containerId, kind);
     }
@@ -4001,16 +4574,18 @@
          </button>`;
   }
 
-  /* ─── Tabbed technique detail ─── */
-  function renderTechniqueDetail(item, containerId) {
-    const d = TECHNIQUE_DETAILS[item.id];
+  /* ─── Tabbed detail (used for both techniques and meditations) ─── */
+  function renderRichDetail(item, containerId, kind) {
+    const d = (kind === 'meditation' ? MEDITATION_DETAILS : TECHNIQUE_DETAILS)[item.id];
     const container = document.getElementById(containerId);
     const itemIdJs = item.id.replace(/'/g, "\\'");
+    const backFn = kind === 'meditation' ? 'hideMeditationDetail()' : 'hideTechniqueDetail()';
+    const backLabel = kind === 'meditation' ? 'Back to meditations' : 'Back to techniques';
 
     container.innerHTML = `
-      <button class="back-btn" onclick="hideTechniqueDetail()">
+      <button class="back-btn" onclick="${backFn}">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back to techniques
+        ${backLabel}
       </button>
 
       <h1 class="detail-title">${escapeHtml(item.title)}</h1>
@@ -4122,7 +4697,7 @@
 
       <!-- Tab 5: LEARN -->
       <div class="tab-panel" data-panel="learn">
-        <h3>Breathing animation</h3>
+        <h3>${kind === 'meditation' ? 'Meditation animation' : 'Breathing animation'}</h3>
         <div class="learn-animation">
           ${renderAnimation(d.learn.animation)}
           <div class="learn-anim-caption">${escapeHtml(animationCaption(d.learn.animation, item))}</div>
@@ -4145,12 +4720,13 @@
       </div>
 
       <!-- Related blocks -->
-      ${renderRelatedBlock('People to know',         d.related.people.map(name => ({ kind: 'person', name }))) }
-      ${renderRelatedBlock('Books worth reading',    d.related.books.map(title => ({ kind: 'book', title }))) }
-      ${renderRelatedBlock('Related techniques',     d.related.techniques.map(id => ({ kind: 'technique', id }))) }
+      ${renderRelatedBlock('People to know',                                          d.related.people.map(name => ({ kind: 'person', name }))) }
+      ${renderRelatedBlock('Books worth reading',                                     d.related.books.map(title => ({ kind: 'book', title }))) }
+      ${renderRelatedBlock(kind === 'meditation' ? 'Breathwork that complements this' : 'Related techniques',
+                           d.related.techniques.map(id => ({ kind: 'technique', id }))) }
 
       <div class="complete-wrap">
-        ${completeBtnHtml(item, 'technique')}
+        ${completeBtnHtml(item, kind)}
       </div>
     `;
   }
@@ -4209,23 +4785,70 @@
         <div class="anim-expand-hold">
           <div class="anim-expand-hold-orb"></div>
         </div>`;
+
+      /* ─── Meditation animations ─── */
+      case 'mindful-breath': return `
+        <div class="anim-mindful">
+          <div class="anim-mindful-orb"></div>
+        </div>`;
+      case 'body-scan': return `
+        <div class="anim-body-scan">
+          <svg viewBox="0 0 80 200" width="80" height="200" preserveAspectRatio="xMidYMid meet">
+            <!-- Body silhouette: head, shoulders, torso, legs (stroke-only outline) -->
+            <circle cx="40" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.45"/>
+            <path d="M 20 42 Q 24 50, 26 70 L 26 122 Q 26 132, 28 140 L 28 188"
+                  fill="none" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.45"/>
+            <path d="M 60 42 Q 56 50, 54 70 L 54 122 Q 54 132, 52 140 L 52 188"
+                  fill="none" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.45"/>
+            <path d="M 20 42 Q 40 36, 60 42" fill="none" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.45"/>
+            <path d="M 26 122 L 54 122" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+            <!-- Scan beam -->
+            <rect class="scan-beam" x="12" y="6" width="56" height="2" rx="1" fill="currentColor"/>
+          </svg>
+        </div>`;
+      case 'metta': return `
+        <div class="anim-metta">
+          <div class="anim-metta-heart"></div>
+          <div class="anim-metta-ring"></div>
+        </div>`;
+      case 'nidra': return `
+        <div class="anim-nidra">
+          <div class="anim-nidra-orb"></div>
+        </div>`;
+      case 'trataka': return `
+        <div class="anim-trataka">
+          <div class="anim-trataka-flame"></div>
+          <div class="anim-trataka-candle"></div>
+          <div class="anim-trataka-wick"></div>
+        </div>`;
+      case 'spacious': return `
+        <div class="anim-spacious">
+          <div class="anim-spacious-dot"></div>
+        </div>`;
+
       default: return `<div class="anim-478"><div class="anim-478-orb"></div></div>`;
     }
   }
 
   function animationCaption(type, item) {
     switch (type) {
-      case 'box':        return 'Trace the square · 4–4–4–4';
-      case '478':        return 'Inhale 4 · hold 7 · exhale 8';
-      case 'sigh':       return 'Inhale · top-off sniff · long exhale';
-      case 'wim':        return 'One full breath per beat · then retain';
-      case 'reduce':     return 'Gentle, reduced-volume nasal breath';
-      case 'alternate':  return 'Left then right · alternate';
-      case 'rapid':      return 'Sharp exhales · passive inhale';
-      case 'hum':        return 'Steady humming · feel the resonance';
-      case 'slow-wave':  return 'Slow continuous breath · audible ocean';
-      case 'expand-hold': return 'Expand · retain · release';
-      default:           return item.title;
+      case 'box':            return 'Trace the square · 4–4–4–4';
+      case '478':            return 'Inhale 4 · hold 7 · exhale 8';
+      case 'sigh':           return 'Inhale · top-off sniff · long exhale';
+      case 'wim':            return 'One full breath per beat · then retain';
+      case 'reduce':         return 'Gentle, reduced-volume nasal breath';
+      case 'alternate':      return 'Left then right · alternate';
+      case 'rapid':          return 'Sharp exhales · passive inhale';
+      case 'hum':             return 'Steady humming · feel the resonance';
+      case 'slow-wave':      return 'Slow continuous breath · audible ocean';
+      case 'expand-hold':    return 'Expand · retain · release';
+      case 'mindful-breath': return 'Rest attention on the natural breath';
+      case 'body-scan':      return 'Sweep awareness from head to toe';
+      case 'metta':          return 'Radiate goodwill outward · in all directions';
+      case 'nidra':          return 'Drift between waking and sleep';
+      case 'trataka':        return 'Steady gaze · then the inner image';
+      case 'spacious':       return 'Awareness without an object · the open ground';
+      default:               return item.title;
     }
   }
 
@@ -4319,8 +4942,15 @@
   }
 
   /* ─── Actions: Start Session / Add to Plan ─── */
-  function openStartSession(techniqueId) {
-    const item = TECHNIQUES.find(t => t.id === techniqueId);
+  // Look up a practice in either TECHNIQUES or MEDITATIONS by id
+  function findPractice(practiceId) {
+    return TECHNIQUES.find(t => t.id === practiceId)
+        || MEDITATIONS.find(m => m.id === practiceId)
+        || null;
+  }
+
+  function openStartSession(practiceId) {
+    const item = findPractice(practiceId);
     if (item) document.getElementById('startSessionTitle').textContent = item.title;
     document.getElementById('startSessionModal').classList.add('active');
   }
@@ -4328,17 +4958,19 @@
     document.getElementById('startSessionModal').classList.remove('active');
   }
 
-  function addToPlan(techniqueId) {
-    const item = TECHNIQUES.find(t => t.id === techniqueId);
+  function addToPlan(practiceId) {
+    const item = findPractice(practiceId);
     if (!item) return;
     store.planAdditions = store.planAdditions || [];
     // Don't duplicate same-day additions
     const today = todayKey();
-    const alreadyToday = store.planAdditions.some(p => p.practiceId === techniqueId && tsKey(p.addedAt) === today);
+    const alreadyToday = store.planAdditions.some(p => p.practiceId === practiceId && tsKey(p.addedAt) === today);
     if (!alreadyToday) {
+      const kind = TECHNIQUES.find(t => t.id === practiceId) ? 'technique' : 'meditation';
       store.planAdditions.unshift({
-        practiceId: techniqueId,
+        practiceId,
         practiceTitle: item.title,
+        kind,
         addedAt: new Date().toISOString()
       });
       saveStore(store);
