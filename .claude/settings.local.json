@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(pip install *)",
+      "Bash(curl -s http://localhost:5050/)",
+      "Bash(command -v chromium-cli chromium chromium-browser google-chrome)",
+      "Read(//home/daniel/.cache/**)",
+      "Bash(command -v convert magick rsvg-convert inkscape)",
+      "Bash(fc-list : family)",
+      "Bash(fc-match \"Helvetica Neue\")",
+      "Bash(fc-match \"Helvetica\")",
+      "Bash(fc-match \"Arial\")",
+      "Bash(fc-match \"sans-serif\")",
+      "Bash(curl -s -o /dev/null -w 'served logo-wordmark.svg: %{http_code}\\\\n' http://localhost:5050/logo-wordmark.svg)",
+      "Bash(curl -s -o /tmp/home.html -w \"%{http_code} %{size_download}b\\\\n\" http://localhost:5050/)"
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Breathly mark">
+  <title>Breathly</title>
+
+  <!--
+    Sacred geometry mark.
+      · Outer circle      — breath, wholeness, the cycle.
+      · Vesica piscis     — two overlapping circles whose centres lie on each other's
+                            circumference (radius 50, centres 50 apart at (75,100) & (125,100)).
+      · Downward triangle — Shakti / yoni triangle, consciousness descending into form.
+                            Inscribed in the lower half of the mandorla:
+                            apex at the bottom intersection (100, 143.30),
+                            base spanning the two vesica centres.
+  -->
+
+  <!-- Inner triangle: very subtle teal fill, sits behind the strokes -->
+  <polygon points="75,100 125,100 100,143.301"
+           fill="#4ECDC4" fill-opacity="0.10" />
+
+  <!-- Vesica piscis: two overlapping circles, warm gold -->
+  <circle cx="75"  cy="100" r="50"
+          fill="none" stroke="#F7B731" stroke-width="1" />
+  <circle cx="125" cy="100" r="50"
+          fill="none" stroke="#F7B731" stroke-width="1" />
+
+  <!-- Outer containing circle: teal, slightly heavier so it reads as the frame -->
+  <circle cx="100" cy="100" r="90"
+          fill="none" stroke="#4ECDC4" stroke-width="1.25" />
+</svg>

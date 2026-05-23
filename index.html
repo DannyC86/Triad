@@ -1,0 +1,2363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Breathly — Ancient wisdom. Modern science. Your practice.</title>
+  <style>
+    /* ─── Design tokens ─── */
+    :root {
+      --navy:        #0b1220;
+      --navy-mid:    #111827;
+      --navy-light:  #1a2840;
+      --navy-card:   #162035;
+      --navy-deep:   #08101c;
+
+      --teal:        #2dd4bf;
+      --teal-dim:    #1a9e8e;
+      --teal-glow:   rgba(45, 212, 191, 0.15);
+      --teal-faint:  rgba(45, 212, 191, 0.06);
+
+      --gold:        #f6c860;
+      --gold-dim:    #c9a230;
+      --gold-glow:   rgba(246, 200, 96, 0.12);
+
+      /* Per-section accents */
+      --c-home:      #2dd4bf;
+      --c-tech:      #38bdf8;   /* sky cyan */
+      --c-medit:     #a78bfa;   /* soft violet */
+      --c-lib:       #f6c860;   /* gold */
+      --c-plan:      #34d399;   /* emerald */
+
+      --text:        #e8edf5;
+      --text-muted:  #7a8ba3;
+      --text-dim:    #4a5568;
+      --border:      rgba(45, 212, 191, 0.12);
+      --border-soft: rgba(255, 255, 255, 0.06);
+
+      --radius:      14px;
+      --radius-sm:   8px;
+      --radius-lg:   20px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      background: var(--navy);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      padding-bottom: 86px; /* nav clearance */
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(45,212,191,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 80% 90%, rgba(246,200,96,0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app { position: relative; z-index: 1; }
+
+    /* ─── Sections / routing ─── */
+    .section {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px 22px 40px;
+      display: none;
+      animation: section-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    .section.active { display: block; }
+
+    @keyframes section-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Section header (small one — used on Techniques / Meditate / Library / Plan) ─── */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 6px 0 22px;
+      border-bottom: 1px solid var(--border-soft);
+      margin-bottom: 26px;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .section-title .accent { color: var(--accent, var(--teal)); }
+
+    .section-kicker {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .section-lede {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 580px;
+      margin-bottom: 28px;
+    }
+
+    /* ─── HOME ─── */
+    #home { --accent: var(--c-home); }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 64px 16px 32px;
+      gap: 32px;
+    }
+
+    /* ─── Hero mark (sacred-geometry logo, animated to breathe) ─── */
+    .hero-mark {
+      width: 220px;
+      height: 220px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 36px rgba(45, 212, 191, 0.18));
+      animation: mark-breathe 8s ease-in-out infinite;
+    }
+    .hero-mark .mark-outer  { animation: mark-outer-pulse    8s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+    .hero-mark .mark-vesica { animation: mark-vesica-pulse   8s ease-in-out infinite; }
+    .hero-mark .mark-vesica.right { animation-delay: 0.4s; }
+    .hero-mark .mark-triangle { animation: mark-triangle-pulse 8s ease-in-out infinite; }
+
+    @keyframes mark-breathe {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.04); }
+    }
+    @keyframes mark-outer-pulse {
+      0%, 100% { stroke-opacity: 0.55; }
+      50%      { stroke-opacity: 1;    }
+    }
+    @keyframes mark-vesica-pulse {
+      0%, 100% { stroke-opacity: 0.5; }
+      50%      { stroke-opacity: 0.95; }
+    }
+    @keyframes mark-triangle-pulse {
+      0%, 100% { fill-opacity: 0.08; }
+      50%      { fill-opacity: 0.20; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-mark,
+      .hero-mark .mark-outer,
+      .hero-mark .mark-vesica,
+      .hero-mark .mark-triangle { animation: none; }
+    }
+
+    .breath-label {
+      font-size: 0.75rem;
+      color: var(--teal);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      min-height: 1rem;
+      transition: opacity 0.6s ease;
+    }
+
+    .hero-text h1 {
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .hero-text h1 .accent { color: var(--teal); }
+    .hero-text p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .hero-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    .hero-cta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 540px;
+      margin-top: 8px;
+    }
+
+    .hero-cta {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      cursor: pointer;
+      text-align: left;
+      color: var(--text);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      border-color: var(--cta-color, rgba(45,212,191,0.4));
+      box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    }
+    .hero-cta .cta-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cta-color, var(--teal));
+    }
+    .hero-cta .cta-title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .hero-cta .cta-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ─── Grids / cards (techniques + meditations) ─── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 18px 18px 20px;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--accent, var(--teal));
+      opacity: 0.55;
+      transition: opacity 0.22s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.005em;
+      line-height: 1.3;
+    }
+    .card-desc {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .pill {
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text-muted);
+      border: 1px solid var(--border-soft);
+    }
+    .pill.accent {
+      color: var(--accent, var(--teal));
+      border-color: color-mix(in srgb, var(--accent, var(--teal)) 30%, transparent);
+      background: color-mix(in srgb, var(--accent, var(--teal)) 8%, transparent);
+    }
+    .pill.diff-Beginner    { border-color: rgba(52,211,153,0.25); color: #6ee7b7; }
+    .pill.diff-Intermediate{ border-color: rgba(246,200,96,0.3);  color: #f6c860; }
+    .pill.diff-Advanced    { border-color: rgba(248,113,113,0.3); color: #fca5a5; }
+
+    /* ─── Detail view ─── */
+    .detail-view { display: none; }
+    .detail-view.active { display: block; animation: section-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+    .back-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 4px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      transition: color 0.2s ease;
+    }
+    .back-btn:hover { color: var(--accent, var(--teal)); }
+    .back-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+    .detail-title {
+      font-size: 1.7rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .detail-desc {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 18px;
+      max-width: 620px;
+    }
+    .detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .detail-section {
+      margin-bottom: 26px;
+    }
+    .detail-section h3 {
+      font-size: 0.74rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent, var(--teal));
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .detail-section ol,
+    .detail-section ul {
+      list-style: none;
+      padding: 0;
+    }
+    .detail-section ol li,
+    .detail-section ul li {
+      position: relative;
+      padding: 10px 0 10px 36px;
+      border-bottom: 1px solid var(--border-soft);
+      color: var(--text);
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+    .detail-section ol li:last-child,
+    .detail-section ul li:last-child { border-bottom: none; }
+
+    .detail-section ol { counter-reset: step; }
+    .detail-section ol li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--accent, var(--teal)) 14%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent, var(--teal)) 35%, transparent);
+      color: var(--accent, var(--teal));
+      font-size: 0.72rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .detail-section ul li::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 20px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent, var(--teal));
+      opacity: 0.7;
+    }
+
+    .caution-box {
+      background: rgba(248, 113, 113, 0.06);
+      border: 1px solid rgba(248, 113, 113, 0.22);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      color: #fecaca;
+      font-size: 0.86rem;
+      line-height: 1.6;
+    }
+    .caution-box strong {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fca5a5;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    /* ─── Sections coloring ─── */
+    #techniques { --accent: var(--c-tech); }
+    #meditate   { --accent: var(--c-medit); }
+    #library    { --accent: var(--c-lib); }
+    #plan       { --accent: var(--c-plan); }
+
+    /* ─── Library ─── */
+    .lib-group {
+      margin-bottom: 38px;
+    }
+    .lib-group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .lib-group-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.005em;
+    }
+    .lib-group-count {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .lib-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border-soft);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+    }
+    .lib-item {
+      background: var(--navy-card);
+      padding: 16px 18px;
+      transition: background 0.18s ease;
+    }
+    .lib-item:hover { background: var(--navy-light); }
+
+    .lib-item .lib-title {
+      font-size: 0.98rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .lib-item .lib-author {
+      font-size: 0.82rem;
+      color: var(--gold);
+      margin-top: 2px;
+      letter-spacing: 0.01em;
+    }
+    .lib-item .lib-meta {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+    .lib-item .lib-summary {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      line-height: 1.55;
+    }
+
+    /* ─── My Plan ─── */
+    .plan-form {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 28px 26px;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .plan-form h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .plan-form .plan-lede {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 26px;
+    }
+
+    .field {
+      margin-bottom: 22px;
+    }
+    .field label {
+      display: block;
+      font-size: 0.74rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--c-plan);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .field input[type="text"],
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: var(--navy-deep);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 12px 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: rgba(52, 211, 153, 0.4);
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.08);
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      background: var(--navy-deep);
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: inherit;
+    }
+    .chip:hover {
+      border-color: rgba(52, 211, 153, 0.3);
+      color: var(--text);
+    }
+    .chip.active {
+      background: color-mix(in srgb, var(--c-plan) 14%, transparent);
+      border-color: var(--c-plan);
+      color: var(--c-plan);
+    }
+
+    .plan-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981, var(--c-plan));
+      color: var(--navy);
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      margin-top: 6px;
+      box-shadow: 0 0 20px rgba(52, 211, 153, 0.2);
+    }
+    .plan-submit:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(52, 211, 153, 0.35);
+    }
+    .plan-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ─── Plan result + chat ─── */
+    .plan-result {
+      display: none;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .plan-result.active { display: block; }
+
+    .plan-result-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 0 4px 16px;
+      border-bottom: 1px solid var(--border-soft);
+      margin-bottom: 18px;
+    }
+    .plan-result-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .plan-restart {
+      background: transparent;
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .plan-restart:hover {
+      border-color: var(--c-plan);
+      color: var(--c-plan);
+    }
+
+    .plan-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .message {
+      display: flex;
+      gap: 12px;
+      animation: msg-appear 0.3s ease;
+    }
+    .message.user { flex-direction: row-reverse; }
+
+    @keyframes msg-appear {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .avatar.coach {
+      background: linear-gradient(135deg, var(--teal-dim), var(--teal));
+      color: var(--navy);
+      box-shadow: 0 0 12px rgba(45,212,191,0.3);
+    }
+    .avatar.user {
+      background: var(--navy-light);
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+    }
+
+    .bubble {
+      max-width: 82%;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .message.assistant .bubble {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-top-left-radius: 4px;
+      color: var(--text);
+    }
+    .message.user .bubble {
+      background: linear-gradient(135deg, rgba(45,212,191,0.18), rgba(45,212,191,0.1));
+      border: 1px solid rgba(45,212,191,0.25);
+      border-top-right-radius: 4px;
+      color: var(--text);
+    }
+
+    .bubble p { margin-bottom: 10px; }
+    .bubble p:last-child { margin-bottom: 0; }
+    .bubble strong { color: var(--teal); font-weight: 600; }
+    .bubble em { color: var(--gold); font-style: italic; }
+    .bubble h2 { color: var(--gold); font-size: 1rem; font-weight: 700; margin: 14px 0 8px; letter-spacing: -0.005em; }
+    .bubble h3 { color: var(--gold); font-size: 0.92rem; font-weight: 700; margin: 12px 0 6px; }
+    .bubble h4 { color: var(--teal); font-size: 0.85rem; font-weight: 600; margin: 10px 0 4px; }
+    .bubble ul, .bubble ol { padding-left: 22px; margin: 8px 0; }
+    .bubble li { margin-bottom: 4px; }
+    .bubble hr { border: none; border-top: 1px solid var(--border-soft); margin: 14px 0; }
+    .bubble code {
+      background: var(--navy);
+      border: 1px solid var(--border-soft);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.82em;
+      color: var(--teal);
+    }
+
+    .practice-link {
+      color: var(--teal);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(45,212,191,0.45);
+      transition: all 0.18s ease;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .practice-link:hover {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    /* Typing indicator */
+    .typing { display: flex; gap: 12px; }
+    .typing-dots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 14px 18px;
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      border-top-left-radius: 4px;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      opacity: 0.4;
+      animation: dot-pulse 1.4s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot-pulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40%           { opacity: 1;   transform: scale(1);   }
+    }
+
+    /* Chat composer (shared by plan + ask modal) */
+    .composer {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 10px 10px 10px 14px;
+    }
+    .composer textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.92rem;
+      font-family: inherit;
+      line-height: 1.55;
+      resize: none;
+      min-height: 36px;
+      max-height: 140px;
+      padding: 6px 0;
+    }
+    .composer textarea:focus { outline: none; }
+    .composer textarea::placeholder { color: var(--text-dim); }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal-dim), var(--teal));
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 14px rgba(45,212,191,0.25);
+    }
+    .send-btn:hover:not(:disabled) {
+      transform: scale(1.06);
+      box-shadow: 0 0 22px rgba(45,212,191,0.5);
+    }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .send-btn svg { fill: var(--navy); width: 16px; height: 16px; }
+
+    /* ─── Bottom Nav ─── */
+    .nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(11, 18, 32, 0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-top: 1px solid var(--border-soft);
+      padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+    }
+    .nav-inner {
+      max-width: 540px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 4px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.66rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      font-family: inherit;
+      border-radius: var(--radius-sm);
+    }
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.2s ease;
+    }
+    .nav-btn:hover { color: var(--text-muted); }
+    .nav-btn:hover svg { transform: translateY(-1px); }
+
+    .nav-btn.active { color: var(--nav-color, var(--teal)); }
+    .nav-btn.active svg { filter: drop-shadow(0 0 6px var(--nav-glow, rgba(45,212,191,0.45))); }
+
+    .nav-btn[data-section="home"]       { --nav-color: var(--c-home);  --nav-glow: rgba(45,212,191,0.45); }
+    .nav-btn[data-section="techniques"] { --nav-color: var(--c-tech);  --nav-glow: rgba(56,189,248,0.45); }
+    .nav-btn[data-section="meditate"]   { --nav-color: var(--c-medit); --nav-glow: rgba(167,139,250,0.5);  }
+    .nav-btn[data-section="library"]    { --nav-color: var(--c-lib);   --nav-glow: rgba(246,200,96,0.5);   }
+    .nav-btn[data-section="plan"]       { --nav-color: var(--c-plan);  --nav-glow: rgba(52,211,153,0.5);   }
+
+    /* ─── Floating "Ask about this" button on detail pages ─── */
+    .ask-fab {
+      position: fixed;
+      right: 18px;
+      bottom: 100px;
+      z-index: 40;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--teal-dim), var(--teal));
+      color: var(--navy);
+      padding: 11px 16px 11px 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      box-shadow: 0 6px 24px rgba(45,212,191,0.35), 0 0 0 4px rgba(45,212,191,0.08);
+      transition: all 0.2s ease;
+    }
+    .ask-fab svg { width: 16px; height: 16px; fill: var(--navy); }
+    .ask-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(45,212,191,0.5); }
+    .ask-fab.visible { display: inline-flex; }
+
+    /* ─── Ask modal (overlay chat for technique / meditation context) ─── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 16, 28, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fade-in 0.25s ease;
+    }
+    .modal-backdrop.active { display: flex; }
+
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+    @media (min-width: 720px) {
+      .modal-backdrop { align-items: center; padding: 24px; }
+    }
+
+    .modal {
+      background: var(--navy-mid);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      width: 100%;
+      max-width: 640px;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      animation: slide-up 0.32s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    @keyframes slide-up { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    @media (min-width: 720px) {
+      .modal { border-radius: var(--radius-lg); }
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
+    }
+    .modal-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .modal-kicker {
+      font-size: 0.66rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--teal);
+      opacity: 0.8;
+    }
+    .modal-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s ease;
+    }
+    .modal-close:hover { background: var(--navy-light); color: var(--text); }
+    .modal-close svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--navy-light) transparent;
+    }
+    .modal-body::-webkit-scrollbar { width: 4px; }
+    .modal-body::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 4px; }
+
+    .modal-empty {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      padding: 24px 8px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .modal-empty .empty-prompts {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .modal-empty .empty-prompt {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-align: left;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      font-family: inherit;
+      transition: all 0.18s ease;
+    }
+    .modal-empty .empty-prompt:hover {
+      border-color: rgba(45,212,191,0.3);
+      color: var(--text);
+    }
+
+    .modal-foot {
+      padding: 12px 14px 14px;
+      border-top: 1px solid var(--border-soft);
+      flex-shrink: 0;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 600px) {
+      .card-grid { grid-template-columns: 1fr; }
+      .hero-cta-grid { grid-template-columns: 1fr; }
+      .hero-text h1 { font-size: 1.7rem; }
+      .hero-mark { width: 180px; height: 180px; }
+      .detail-title { font-size: 1.4rem; }
+      .section { padding: 18px 16px 32px; }
+      .bubble { max-width: 88%; }
+      .nav-btn { font-size: 0.6rem; }
+      .nav-btn svg { width: 20px; height: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ═════════ HOME ═════════ -->
+  <section id="home" class="section active">
+    <div class="hero">
+      <!-- Sacred-geometry mark: outer circle (cycle), vesica piscis (breath in/out), downward triangle (descent into form) -->
+      <svg class="hero-mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Breathly">
+        <polygon class="mark-triangle" points="75,100 125,100 100,143.301"
+                 fill="var(--teal)" fill-opacity="0.10"/>
+        <circle class="mark-vesica left"  cx="75"  cy="100" r="50"
+                fill="none" stroke="var(--gold)" stroke-width="1" stroke-opacity="0.7"/>
+        <circle class="mark-vesica right" cx="125" cy="100" r="50"
+                fill="none" stroke="var(--gold)" stroke-width="1" stroke-opacity="0.7"/>
+        <circle class="mark-outer" cx="100" cy="100" r="90"
+                fill="none" stroke="var(--teal)" stroke-width="1.25" stroke-opacity="0.75"/>
+      </svg>
+
+      <div class="breath-label" id="breathLabel">Inhale</div>
+
+      <div class="hero-text">
+        <h1>Breath<span class="accent">ly</span></h1>
+        <p>Your guide to conscious breathwork and meditation. Ancient yogic wisdom meets modern neuroscience — all in one place.</p>
+        <div class="hero-meta">Ancient wisdom · Modern science · Your practice</div>
+      </div>
+
+      <div class="hero-cta-grid">
+        <button class="hero-cta" style="--cta-color: var(--c-tech)" onclick="navigate('techniques')">
+          <span class="cta-label">Breathwork</span>
+          <span class="cta-title">Explore techniques</span>
+          <span class="cta-desc">From 4-7-8 to Wim Hof, browse practices for sleep, focus, and energy.</span>
+        </button>
+        <button class="hero-cta" style="--cta-color: var(--c-medit)" onclick="navigate('meditate')">
+          <span class="cta-label">Meditation</span>
+          <span class="cta-title">Find a practice</span>
+          <span class="cta-desc">Body scan, loving-kindness, yoga nidra, and more.</span>
+        </button>
+        <button class="hero-cta" style="--cta-color: var(--c-lib)" onclick="navigate('library')">
+          <span class="cta-label">Library</span>
+          <span class="cta-title">A curated reading list</span>
+          <span class="cta-desc">Books, teachers, research, and podcasts worth your time.</span>
+        </button>
+        <button class="hero-cta" style="--cta-color: var(--c-plan)" onclick="navigate('plan')">
+          <span class="cta-label">AI Coach</span>
+          <span class="cta-title">Build your plan</span>
+          <span class="cta-desc">Answer three questions — get a day-by-day plan personalised to you.</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ TECHNIQUES ═════════ -->
+  <section id="techniques" class="section">
+    <div class="list-view" id="techniques-list">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">Breathwork</div>
+          <h1 class="section-title">Techniques <span class="accent">·</span></h1>
+        </div>
+      </div>
+      <p class="section-lede">Each technique below is a self-contained practice. Tap one for the full protocol, the science behind it, and any safety notes worth knowing.</p>
+      <div class="card-grid" id="techniques-grid"></div>
+    </div>
+    <div class="detail-view" id="techniques-detail"></div>
+  </section>
+
+  <!-- ═════════ MEDITATE ═════════ -->
+  <section id="meditate" class="section">
+    <div class="list-view" id="meditate-list">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">Stillness</div>
+          <h1 class="section-title">Meditate <span class="accent">·</span></h1>
+        </div>
+      </div>
+      <p class="section-lede">Six core meditation practices — from beginner-friendly anchors to advanced non-dual resting. Choose by what your mind needs today, not by what looks impressive.</p>
+      <div class="card-grid" id="meditate-grid"></div>
+    </div>
+    <div class="detail-view" id="meditate-detail"></div>
+  </section>
+
+  <!-- ═════════ LIBRARY ═════════ -->
+  <section id="library" class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Resources</div>
+        <h1 class="section-title">Library <span class="accent">·</span></h1>
+      </div>
+    </div>
+    <p class="section-lede">A curated reading list. The books, teachers, research, and conversations that have shaped what Breathly knows — gathered here so you can go deeper at your own pace.</p>
+
+    <div id="library-content"></div>
+  </section>
+
+  <!-- ═════════ MY PLAN ═════════ -->
+  <section id="plan" class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">AI Coach</div>
+        <h1 class="section-title">My Plan <span class="accent">·</span></h1>
+      </div>
+    </div>
+
+    <div class="plan-form-wrap" id="plan-form-wrap">
+      <div class="plan-form">
+        <h2>Build your personalised plan</h2>
+        <p class="plan-lede">Three quick questions. The Breathly coach will draft a day-by-day plan with specific techniques and meditations — linking straight to the practices in this app.</p>
+
+        <div class="field">
+          <label>1 — Your goal</label>
+          <div class="chip-group" id="plan-goal-chips">
+            <button type="button" class="chip" data-value="Reduce stress and anxiety">Reduce stress &amp; anxiety</button>
+            <button type="button" class="chip" data-value="Sleep better">Sleep better</button>
+            <button type="button" class="chip" data-value="More energy and focus">Energy &amp; focus</button>
+            <button type="button" class="chip" data-value="Emotional resilience and healing">Emotional resilience</button>
+            <button type="button" class="chip" data-value="Spiritual depth and self-inquiry">Spiritual depth</button>
+            <button type="button" class="chip" data-value="Athletic performance">Athletic performance</button>
+          </div>
+          <input type="text" id="plan-goal-other" placeholder="…or describe your own goal" style="margin-top: 12px;" />
+        </div>
+
+        <div class="field">
+          <label>2 — Your experience</label>
+          <div class="chip-group" id="plan-exp-chips">
+            <button type="button" class="chip" data-value="Complete beginner — never practiced">Complete beginner</button>
+            <button type="button" class="chip" data-value="Tried a few times, no regular practice">Some experience</button>
+            <button type="button" class="chip" data-value="Practice regularly (weekly+)">Regular practitioner</button>
+            <button type="button" class="chip" data-value="Daily practice for years">Long-time practitioner</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>3 — Time available each day</label>
+          <div class="chip-group" id="plan-time-chips">
+            <button type="button" class="chip" data-value="5 minutes">5 min</button>
+            <button type="button" class="chip" data-value="10 minutes">10 min</button>
+            <button type="button" class="chip" data-value="20 minutes">20 min</button>
+            <button type="button" class="chip" data-value="30 minutes">30 min</button>
+            <button type="button" class="chip" data-value="45 minutes or more">45+ min</button>
+          </div>
+        </div>
+
+        <button class="plan-submit" id="plan-submit-btn" onclick="submitPlan()">Generate my 7-day plan</button>
+      </div>
+    </div>
+
+    <div class="plan-result" id="plan-result">
+      <div class="plan-result-head">
+        <div class="plan-result-title">Your personalised plan</div>
+        <button class="plan-restart" onclick="restartPlan()">Start over</button>
+      </div>
+      <div class="plan-messages" id="plan-messages"></div>
+      <div class="composer">
+        <textarea id="plan-input" placeholder="Ask a follow-up — adjust the plan, swap a technique, go deeper…" rows="1" oninput="autoResize(this)" onkeydown="handleKey(event, 'plan')"></textarea>
+        <button class="send-btn" onclick="sendPlanMessage()" title="Send">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═════════ Floating Ask FAB ═════════ -->
+<button class="ask-fab" id="askFab" onclick="openAskModal()">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.04 2 11c0 2.48 1.13 4.71 2.93 6.29L4 22l4.92-1.65c.95.28 1.97.43 3.08.43 5.52 0 10-4.04 10-9s-4.48-9-10-9zm0 16.5c-.95 0-1.86-.13-2.71-.38l-.39-.11-2.92.98.83-2.6-.16-.27C5.66 14.95 4.5 13.05 4.5 11 4.5 7.42 7.86 4.5 12 4.5s7.5 2.92 7.5 6.5-3.36 7.5-7.5 7.5z"/></svg>
+  <span id="askFabLabel">Ask about this practice</span>
+</button>
+
+<!-- ═════════ Ask Modal ═════════ -->
+<div class="modal-backdrop" id="askModal" onclick="if(event.target===this) closeAskModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <span class="modal-kicker">Coach</span>
+        <span class="modal-title" id="askModalTitle">Ask about this practice</span>
+      </div>
+      <button class="modal-close" onclick="closeAskModal()" title="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="askModalBody"></div>
+    <div class="modal-foot">
+      <div class="composer">
+        <textarea id="ask-input" placeholder="Ask anything about this practice…" rows="1" oninput="autoResize(this)" onkeydown="handleKey(event, 'ask')"></textarea>
+        <button class="send-btn" onclick="sendAskMessage()" title="Send">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ Bottom Nav ═════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" data-section="home" onclick="navigate('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" data-section="techniques" onclick="navigate('techniques')">
+      <svg viewBox="0 0 24 24"><path d="M12 2c-2 4-4 6-4 9a4 4 0 0 0 8 0c0-3-2-5-4-9z"/><path d="M5 13c0 4 2 7 7 9 5-2 7-5 7-9"/></svg>
+      <span>Techniques</span>
+    </button>
+    <button class="nav-btn" data-section="meditate" onclick="navigate('meditate')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 21c2-5 5-7 7-7s5 2 7 7"/><path d="M3 16l4-2M21 16l-4-2"/></svg>
+      <span>Meditate</span>
+    </button>
+    <button class="nav-btn" data-section="library" onclick="navigate('library')">
+      <svg viewBox="0 0 24 24"><path d="M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4z"/><path d="M20 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>
+      <span>Library</span>
+    </button>
+    <button class="nav-btn" data-section="plan" onclick="navigate('plan')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/><path d="M8 14h2M14 14h2M8 17h2M14 17h2"/></svg>
+      <span>My Plan</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+  /* ════════════════ DATA ════════════════ */
+
+  const TECHNIQUES = [
+    {
+      id: "physiological-sigh",
+      title: "Physiological Sigh",
+      desc: "A double-inhale and long exhale — the fastest reset available, in about 15 seconds.",
+      bestFor: "Stress reset",
+      difficulty: "Beginner",
+      duration: "1 breath cycle · ~15 sec",
+      steps: [
+        "Inhale fully through the nose, filling belly then chest.",
+        "At the top, take a second sharp sniff through the nose (1–2 seconds).",
+        "Exhale slowly and completely through the mouth — longer than the inhale.",
+        "Return to normal breathing. Repeat 1–3 times if needed."
+      ],
+      benefits: [
+        "Fastest evidence-based stress reduction of any voluntary technique.",
+        "Reinflates collapsed alveoli, restoring efficient gas exchange.",
+        "Rapidly offloads accumulated CO₂.",
+        "Activates the vagal parasympathetic response."
+      ],
+      cautions: "Safe for all. No contraindications. Use freely throughout the day."
+    },
+    {
+      id: "4-7-8-breathing",
+      title: "4-7-8 Breathing",
+      desc: "Dr Andrew Weil's natural tranquiliser — a 4-second inhale, 7-second hold, 8-second exhale.",
+      bestFor: "Sleep",
+      difficulty: "Beginner",
+      duration: "3–8 cycles · 2–5 min",
+      steps: [
+        "Exhale completely through the mouth with a soft whoosh.",
+        "Close the mouth and inhale through the nose for a count of 4.",
+        "Hold the breath for a count of 7.",
+        "Exhale through the mouth for a count of 8.",
+        "Repeat the cycle 3–4 times to start, building gradually to 8."
+      ],
+      benefits: [
+        "Rapid parasympathetic activation.",
+        "Reduces anxiety and panic response.",
+        "Induces drowsiness — excellent for falling asleep.",
+        "Interrupts thought loops by occupying working memory."
+      ],
+      cautions: "Avoid in the first trimester of pregnancy. Cardiovascular conditions need medical clearance. Use caution with asthma. Not for children under 12. Never practise near water."
+    },
+    {
+      id: "box-breathing",
+      title: "Box Breathing",
+      desc: "The Navy SEAL favourite — equal counts of 4 in, 4 hold, 4 out, 4 hold. Quiet, controlled, focused.",
+      bestFor: "Focus",
+      difficulty: "Beginner",
+      duration: "4–6 minutes",
+      steps: [
+        "Exhale completely to empty the lungs.",
+        "Inhale through the nose for 4 counts.",
+        "Hold the breath in for 4 counts.",
+        "Exhale through the nose for 4 counts.",
+        "Hold the breath out for 4 counts. Repeat for the full duration."
+      ],
+      benefits: [
+        "Restores prefrontal cortex function under stress.",
+        "Stabilises heart rate and blood pressure.",
+        "Enhances cognitive performance and decision-making.",
+        "Reduces anxiety without inducing dissociation."
+      ],
+      cautions: "Breath retention is contraindicated with serious heart conditions. Pregnancy requires medical clearance. Avoid in water. Some anxiety disorders find holds triggering — back off if so."
+    },
+    {
+      id: "buteyko-method",
+      title: "Buteyko Method",
+      desc: "Restore tolerance to CO₂ through gentle nasal under-breathing — the antidote to chronic over-breathing.",
+      bestFor: "Anxiety / Asthma",
+      difficulty: "Beginner",
+      duration: "3–5 min cycles × 3–4",
+      steps: [
+        "Sit comfortably with the mouth closed.",
+        "Slightly reduce the depth of each nasal breath.",
+        "Maintain a sensation of mild air hunger (never distress).",
+        "Continue for 3–5 minutes with gentle, sustained focus.",
+        "Rest and breathe normally for 2–3 minutes between cycles."
+      ],
+      benefits: [
+        "Reduces the effects of chronic hyperventilation.",
+        "Improves asthma symptoms and reduces reliever use.",
+        "Enhances oxygen delivery via the Bohr effect.",
+        "Restores normal CO₂ chemoreceptor sensitivity."
+      ],
+      cautions: "Avoid with severe respiratory disease. If trialling mouth taping for sleep, start gradually and never over-tighten."
+    },
+    {
+      id: "wim-hof-method",
+      title: "The Wim Hof Method",
+      desc: "Powerful breaths, deliberate retentions, and (optionally) cold — voluntary access to the autonomic nervous system.",
+      bestFor: "Energy / Resilience",
+      difficulty: "Intermediate",
+      duration: "3–4 rounds · 10–15 min",
+      steps: [
+        "Sit or lie down somewhere safe — never near water.",
+        "Take 30–40 powerful breaths through the mouth (full inhale, passive exhale).",
+        "After the final exhale, hold the breath out (30 sec to 3+ min).",
+        "Inhale fully, hold for 15 seconds, then release.",
+        "Rest 1–2 minutes. Repeat for 3–4 rounds."
+      ],
+      benefits: [
+        "Voluntary modulation of the innate immune response (Radboud studies).",
+        "Adrenaline release and sympathetic activation.",
+        "Improved cold tolerance via brown adipose tissue.",
+        "Stress resilience and a measurable sense of vitality."
+      ],
+      cautions: "NEVER practise in water, while driving, or in any unsafe position. Pregnancy contraindicated. Cardiovascular conditions need clearance. Avoid with epilepsy or any history of fainting — risk of loss of consciousness."
+    },
+    {
+      id: "nadi-shodhana",
+      title: "Nadi Shodhana",
+      desc: "Alternate-nostril breathing — the yogi's tool for balancing nervous system and hemispheres.",
+      bestFor: "Balance",
+      difficulty: "Beginner",
+      duration: "5–15 min · 6–12 cycles",
+      steps: [
+        "Sit upright. Form Vishnu Mudra (right hand, fold index and middle fingers).",
+        "Close the right nostril with the thumb; inhale through the left for 4 counts.",
+        "Close both nostrils; hold for 4–16 counts.",
+        "Release the right nostril; exhale through the right for 8 counts.",
+        "Inhale right, hold both, exhale left. That's one cycle — continue."
+      ],
+      benefits: [
+        "Purifies and balances the energetic channels (nadis).",
+        "Reduces cortisol and sympathetic arousal.",
+        "Increases heart rate variability.",
+        "Improves memory and cognitive function."
+      ],
+      cautions: "Generally safe. Avoid extended retentions during pregnancy."
+    },
+    {
+      id: "kapalabhati",
+      title: "Kapalabhati",
+      desc: "Skull-shining breath — sharp, rhythmic abdominal exhales that energise and clear the mind.",
+      bestFor: "Energy",
+      difficulty: "Beginner",
+      duration: "3–5 min · 30–300+ reps",
+      steps: [
+        "Sit upright, hands resting on the knees.",
+        "Take a normal inhale to begin.",
+        "Sharply contract the abdomen to force a forceful exhale through the nose.",
+        "Let the inhale happen passively as the abs release.",
+        "Rhythm: one exhale per second for beginners; 2–3/sec for advanced."
+      ],
+      benefits: [
+        "Stimulates alertness and mental energy.",
+        "Massages the abdominal organs.",
+        "Clears mucus from the respiratory tract.",
+        "Strengthens the diaphragm."
+      ],
+      cautions: "Contraindicated with hypertension, hernia, pregnancy, recent abdominal surgery, or epilepsy."
+    },
+    {
+      id: "bhramari",
+      title: "Bhramari",
+      desc: "Humming bee breath — a soft hum on the exhale that floods the body with nitric oxide and calm.",
+      bestFor: "Sleep / Anxiety",
+      difficulty: "Beginner",
+      duration: "5–10 minutes",
+      steps: [
+        "Sit comfortably, eyes closed.",
+        "Place the index fingers gently over the ears (or use the thumbs to close the canals).",
+        "Inhale fully through the nose.",
+        "Exhale with a steady, continuous humming through the nose.",
+        "Lips gently closed — let the sound resonate in the skull."
+      ],
+      benefits: [
+        "Boosts nasal nitric oxide ~15× over silent breathing.",
+        "Activates the vagus nerve via mechanoreceptor stimulation.",
+        "Induces deep calm and parasympathetic dominance.",
+        "Anecdotally helpful for tinnitus and tension headaches."
+      ],
+      cautions: "Safe for all. No significant contraindications."
+    },
+    {
+      id: "ujjayi",
+      title: "Ujjayi",
+      desc: "Ocean breath — a soft throat constriction creating an audible inner wave that anchors attention.",
+      bestFor: "Focus / Yoga",
+      difficulty: "Beginner",
+      duration: "5–30 minutes",
+      steps: [
+        "Breathe through the nose with the mouth closed.",
+        "Slightly constrict the back of the throat — as if gently fogging a mirror.",
+        "Create a soft oceanic sound, like distant waves.",
+        "Maintain the constriction on both inhale and exhale.",
+        "Let the sound itself be the focal point for attention."
+      ],
+      benefits: [
+        "Slows the breath naturally through resistance.",
+        "Provides an internal auditory anchor for concentration.",
+        "Generates internal heat (tapas).",
+        "Improves gas exchange efficiency."
+      ],
+      cautions: "Safe for all. Most commonly paired with yoga asana practice."
+    },
+    {
+      id: "kumbhaka",
+      title: "Kumbhaka",
+      desc: "Deliberate breath retention — the advanced art of pausing prana to refine awareness.",
+      bestFor: "Deep practice",
+      difficulty: "Advanced",
+      duration: "5 sec – 5+ min (varies)",
+      steps: [
+        "Build a strong foundation with simple breathing first.",
+        "Begin with short 5–10 second retentions after a full inhale.",
+        "Progress gradually over weeks and months — never force.",
+        "Practise with effortlessness, not tension.",
+        "Advanced: combine extended retentions with bandhas (muscular locks) under guidance."
+      ],
+      benefits: [
+        "Accumulates CO₂, enabling vasodilation and the Bohr effect.",
+        "Builds respiratory muscle strength.",
+        "Stimulates mitochondrial adaptation.",
+        "Opens access to deeper meditative states."
+      ],
+      cautions: "Contraindicated in pregnancy. Cardiovascular conditions require medical clearance. Build a strong foundation before attempting. Extended retentions should be supervised by a qualified teacher."
+    }
+  ];
+
+  const MEDITATIONS = [
+    {
+      id: "mindfulness-of-breath",
+      title: "Mindfulness of Breath",
+      desc: "Anapanasati — gentle attention to the natural breath, returning whenever the mind wanders.",
+      bestFor: "Focus",
+      difficulty: "Beginner",
+      duration: "10–60+ minutes",
+      steps: [
+        "Sit in a stable, comfortable position with the eyes closed.",
+        "Take a few intentional breaths to settle into the body.",
+        "Release control — let the breath breathe naturally.",
+        "Choose an anchor: the nostrils, the chest, or the belly's movement.",
+        "Rest attention on the anchor. When the mind wanders, gently return."
+      ],
+      benefits: [
+        "Reduces amygdala reactivity over time.",
+        "Strengthens prefrontal cortex function.",
+        "Decreases rumination and anxiety.",
+        "Builds sustained attention capacity."
+      ],
+      cautions: "None. Safe for all."
+    },
+    {
+      id: "body-scan",
+      title: "Body Scan",
+      desc: "Systematic head-to-toe attention to physical sensation — the gateway to interoception.",
+      bestFor: "Pain / Sleep",
+      difficulty: "Beginner",
+      duration: "20–45 min (or 10-min short)",
+      steps: [
+        "Lie down or sit, eyes closed, body relaxed.",
+        "Move attention slowly from the crown of the head downward.",
+        "Notice each region's sensations without trying to change anything.",
+        "Continue through the whole body to the soles of the feet.",
+        "Rest in whole-body awareness, or repeat upward."
+      ],
+      benefits: [
+        "Reduces chronic pain perception.",
+        "Improves sleep quality.",
+        "Decreases anxiety and tension.",
+        "Strengthens interoceptive awareness."
+      ],
+      cautions: "Appropriate for all. Those with trauma may benefit from a teacher's guidance."
+    },
+    {
+      id: "loving-kindness",
+      title: "Loving-Kindness (Metta)",
+      desc: "Five-stage cultivation of benevolence — toward self, loved ones, strangers, the difficult, and all beings.",
+      bestFor: "Compassion",
+      difficulty: "Intermediate",
+      duration: "20–30 minutes",
+      steps: [
+        "Sit comfortably and close the eyes.",
+        "Phase 1 — Self: silently offer wishes for your own wellbeing.",
+        "Phase 2 — Benefactor: extend the wishes to someone kind to you.",
+        "Phase 3 — Neutral: extend to someone neutral in your life.",
+        "Phase 4 — Difficult: extend to someone challenging.",
+        "Phase 5 — All beings: expand the wishes outward to all life."
+      ],
+      benefits: [
+        "Increases positive emotions and social connectedness.",
+        "Reduces implicit bias and increases empathy.",
+        "Improves vagal tone and lowers resting heart rate.",
+        "Enhances sense of meaning and purpose."
+      ],
+      cautions: "For trauma survivors, the difficult-person phase may need a gentle, optional approach."
+    },
+    {
+      id: "yoga-nidra",
+      title: "Yoga Nidra (NSDR)",
+      desc: "Non-Sleep Deep Rest — guided descent into the hypnagogic state for profound restoration.",
+      bestFor: "Recovery",
+      difficulty: "Beginner",
+      duration: "20–45 minutes",
+      steps: [
+        "Lie down comfortably — you will not move for the duration.",
+        "Close the eyes and take 3–5 slow breaths.",
+        "Rotate awareness through body parts in rapid succession.",
+        "Visualise contrasts: heaviness/lightness, warmth/cool.",
+        "Rest in open awareness or with guided imagery to close."
+      ],
+      benefits: [
+        "Restores dopamine levels after sleep deprivation.",
+        "Enhances neuroplasticity and learning.",
+        "Rapid mental recovery without full sleep.",
+        "Improves overall sleep quality."
+      ],
+      cautions: "Safe for all. Excellent for jet lag and stress recovery."
+    },
+    {
+      id: "trataka",
+      title: "Trataka",
+      desc: "Candle gazing — unwavering visual focus followed by inner visualisation. A classical concentration practice.",
+      bestFor: "Concentration",
+      difficulty: "Intermediate",
+      duration: "5–20 minutes",
+      steps: [
+        "Place a candle at eye level, 2–3 feet away, in a darkened room.",
+        "Sit stably and gaze at the flame without blinking.",
+        "Allow the eyes to water naturally.",
+        "When you must blink, close the eyes and visualise the afterimage.",
+        "Open when the image fades and resume gazing."
+      ],
+      benefits: [
+        "Develops single-pointed concentration (dharana).",
+        "Reduces mind-wandering tendency.",
+        "Strengthens the muscles of the eye.",
+        "Prepares the mind for deeper meditation."
+      ],
+      cautions: "Avoid with serious eye conditions. Never force through dry-eye discomfort."
+    },
+    {
+      id: "open-awareness",
+      title: "Open Awareness",
+      desc: "Resting as awareness itself, without object — the non-dual practice of recognising what's already here.",
+      bestFor: "Insight",
+      difficulty: "Advanced",
+      duration: "5–30+ minutes",
+      steps: [
+        "Sit comfortably and close the eyes.",
+        "Release any impulse to focus on a specific object.",
+        "Allow awareness to be present without an anchor.",
+        "Let thoughts, sounds, and sensations arise and pass without engagement.",
+        "Rest as the space in which all experience appears."
+      ],
+      benefits: [
+        "Direct experiential access to awareness itself.",
+        "Non-conceptual understanding of consciousness.",
+        "Freedom from habitual mental patterns.",
+        "Access to non-dual states of being."
+      ],
+      cautions: "Advanced. Best approached after a solid foundation in concentration practice. Some teachers advise starting with simpler techniques first."
+    }
+  ];
+
+  const LIBRARY = {
+    books: [
+      { title: "Breath: The New Science of a Lost Art", author: "James Nestor", year: 2020, summary: "Modern breathing science as narrative — nasal breathing, CO₂ tolerance, Buteyko, and the historical detectives of breath." },
+      { title: "The Oxygen Advantage", author: "Patrick McKeown", year: 2015, summary: "Buteyko principles applied to athletic performance, with the BOLT test and nasal breathing science." },
+      { title: "Light on Pranayama", author: "B.K.S. Iyengar", year: 1981, summary: "The definitive yogic text on pranayama from the most influential 20th-century yoga master." },
+      { title: "Science of Breath", author: "Swami Rama, Rudolph Ballentine, Alan Hymes", year: 1979, summary: "Rigorous yogic-scientific account of pranayama, anatomy, and prana theory from the Himalayan Institute." },
+      { title: "The Healing Power of the Breath", author: "Richard Brown & Patricia Gerbarg", year: 2012, summary: "Clinical research on coherent breathing and Sudarshan Kriya for anxiety, depression, and PTSD." },
+      { title: "Just Breathe", author: "Dan Brulé", year: 2017, summary: "A comprehensive, experiential introduction to conscious breathing from a leading breathwork teacher." },
+      { title: "The Wim Hof Method", author: "Wim Hof", year: 2020, summary: "A personal account of the method, the life, the vision, and the complete protocol." },
+      { title: "Autobiography of a Yogi", author: "Paramahansa Yogananda", year: 1946, summary: "Foundational yoga and pranayama text bridging Eastern inner science with Western consciousness." },
+      { title: "Why Zebras Don't Get Ulcers", author: "Robert Sapolsky", year: 1994, summary: "The definitive popular explanation of chronic stress and its effects on body and brain." },
+      { title: "The Miracle of Mindfulness", author: "Thich Nhat Hanh", year: 1975, summary: "A gentle Zen introduction to mindfulness of breath, written as a letter to a colleague." },
+      { title: "Breath as Prayer", author: "Jennifer Tucker", year: 2022, summary: "The Christian contemplative tradition of breath prayer, connecting Hesychasm to modern breathwork." },
+      { title: "The Breathing Book", author: "Donna Farhi", year: 1996, summary: "A practical guide to understanding breathing patterns and correcting habitual dysfunction." },
+      { title: "Stealing Fire", author: "Steven Kotler & Jamie Wheal", year: 2017, summary: "Investigation of altered states and performance — from SEALs to executives." },
+      { title: "The Biology of Belief", author: "Bruce Lipton", year: 2005, summary: "How environment and mind regulate gene expression — cell biology meets consciousness." }
+    ],
+    people: [
+      { name: "Wim Hof", role: "Breathwork Pioneer", bio: "Dutch extremist and 26× Guinness record holder. The Radboud University studies on his method proved voluntary modulation of the innate immune response." },
+      { name: "Andrew Huberman", role: "Neuroscientist & Communicator", bio: "Stanford professor of neurobiology. Translates research into practical protocols on his Huberman Lab podcast — including landmark work on the physiological sigh." },
+      { name: "Patrick McKeown", role: "Buteyko Teacher", bio: "Irish breathing instructor who overcame severe asthma through Buteyko. Most influential modern Buteyko teacher; developed the BOLT test." },
+      { name: "Dr. Stephen Porges", role: "Polyvagal Theory", bio: "Distinguished scientist at the Kinsey Institute. His Polyvagal Theory reframed our understanding of trauma and the nervous system." },
+      { name: "Paramahansa Yogananda", role: "Yoga Master (1893–1952)", bio: "The first Indian yoga master in permanent Western residence. Founder of the Self-Realization Fellowship; his Autobiography remains one of the most-read spiritual books in history." },
+      { name: "Stanislav Grof", role: "Transpersonal Psychiatrist", bio: "Czech psychiatrist (b. 1931). Developed Holotropic Breathwork as an LSD alternative after the substance was outlawed — documented profound healing and transpersonal states." },
+      { name: "Konstantin Buteyko", role: "Soviet Physician", bio: "Ukrainian-born physician who discovered that chronic over-breathing harms health. Developed the CO₂ tolerance method — largely suppressed in his lifetime; legacy carried forward by McKeown." },
+      { name: "Dr. Andrew Weil", role: "Integrative Medicine", bio: "Harvard-educated physician and founder of the Arizona Center for Integrative Medicine. Introduced 4-7-8 breathing to Western audiences." },
+      { name: "Jack Kornfield", role: "Buddhist Teacher", bio: "American Theravada-trained teacher. Co-founder of Insight Meditation Society and Spirit Rock — a warm, psychologically sophisticated dharma voice." },
+      { name: "James Nestor", role: "Science Journalist", bio: "American author of Breath. A gifted communicator who self-experimented in the Stanford nose-plugging study and made breath science mainstream." },
+      { name: "Dr. Ela Manga", role: "Physician & Breathwork Advocate", bio: "South African physician pioneering breathwork for burnout and healthcare worker resilience — bridging traditional and modern wellness." },
+      { name: "HeartMath Institute", role: "Heart-Brain Research", bio: "Nonprofit (founded 1991) studying heart-brain coherence and the cardiac electromagnetic field. Developed widely-used HRV tools and coherence techniques." }
+    ],
+    papers: [
+      { title: "Voluntary activation of the sympathetic nervous system and attenuation of the innate immune response in humans", authors: "Kox et al.", year: 2014, topic: "The landmark Radboud study — Wim Hof breathing and immune modulation." },
+      { title: "Brief structured respiration practices enhance mood and reduce physiological arousal", authors: "Balban et al.", year: 2023, topic: "Cyclic sighing vs other breathing protocols for stress and mood — Huberman Lab." },
+      { title: "Brain over body: A study on the willful regulation of autonomic function during cold exposure", authors: "Muzik et al.", year: 2018, topic: "Wim Hof Method, cold tolerance, and brown adipose tissue activation." },
+      { title: "Humming greatly increases nasal nitric oxide", authors: "Weitzberg & Lundberg", year: 2002, topic: "The landmark study on Bhramari and nitric oxide production — a 15× increase." },
+      { title: "Orienting in a defensive world: Mammalian modifications of our evolutionary heritage", authors: "Porges, S.W.", year: 1995, topic: "The original presentation of Polyvagal Theory." },
+      { title: "Effectiveness of a short Yoga Nidra meditation on stress, sleep, and well-being", authors: "Moszeik et al.", year: 2020, topic: "Yoga Nidra / NSDR effectiveness across a large, diverse sample." },
+      { title: "Heart rate variability: New perspectives on physiological mechanisms…", authors: "McCraty & Shaffer", year: 2015, topic: "HRV mechanisms, self-regulation capacity, and health risk assessment." },
+      { title: "Buteyko breathing techniques in asthma: a blinded randomised controlled trial", authors: "Bowler et al.", year: 1998, topic: "Buteyko's measurable effect on reducing asthma medication use." },
+      { title: "Effect of yoga-based interventions on cortisol rhythmicity", authors: "Telles et al.", year: 2013, topic: "Nadi Shodhana and cortisol — stress hormone regulation through alternate-nostril breathing." }
+    ],
+    podcasts: [
+      { name: "Huberman Lab", host: "Andrew Huberman", focus: "Neuroscience and breathing science. Episodes on breathing control, cold exposure, and NSDR — exhaustively referenced." },
+      { name: "Tara Brach Podcast", host: "Tara Brach", focus: "Buddhist meditation and dharma talks — integrating psychology with contemplative practice." },
+      { name: "Jack Kornfield Dharma Talks", host: "Jack Kornfield (Spirit Rock)", focus: "Buddhist teachings and meditation practice — warm, psychologically sophisticated guidance." },
+      { name: "Wim Hof on Joe Rogan & Tim Ferriss", host: "JRE #712, #865 · TFS", focus: "Wim Hof's method, philosophy, and personal journey in long-form conversation." },
+      { name: "James Nestor Interviews", host: "James Nestor (various)", focus: "Breath science research and findings — an accessible popularisation of the field." },
+      { name: "The Science of Breathing (YouTube)", host: "Andrew Huberman", focus: "A free, comprehensive, scientifically grounded overview of breathing science." },
+      { name: "Wim Hof Guided Sessions (YouTube)", host: "Wim Hof", focus: "Free guided rounds of the WHM breathing — the recommended starting point if curious." },
+      { name: "HeartMath Demonstrations (YouTube)", host: "HeartMath Institute", focus: "Practical demonstrations of coherence breathing and the HeartMath protocol." }
+    ]
+  };
+
+  /* Map of practice names → ids for inline linking from AI responses */
+  const PRACTICE_NAME_MAP = (() => {
+    const map = [];
+    const addAlias = (name, section, id) => map.push({ name, section, id });
+    TECHNIQUES.forEach(t => {
+      addAlias(t.title, 'techniques', t.id);
+    });
+    MEDITATIONS.forEach(m => {
+      addAlias(m.title, 'meditate', m.id);
+    });
+    // Extra aliases
+    addAlias("4-7-8", 'techniques', '4-7-8-breathing');
+    addAlias("4-7-8 breathing", 'techniques', '4-7-8-breathing');
+    addAlias("box breathing", 'techniques', 'box-breathing');
+    addAlias("Wim Hof Method", 'techniques', 'wim-hof-method');
+    addAlias("Wim Hof method", 'techniques', 'wim-hof-method');
+    addAlias("WHM", 'techniques', 'wim-hof-method');
+    addAlias("alternate nostril breathing", 'techniques', 'nadi-shodhana');
+    addAlias("alternate-nostril breathing", 'techniques', 'nadi-shodhana');
+    addAlias("Nadi Shodhana", 'techniques', 'nadi-shodhana');
+    addAlias("humming bee breath", 'techniques', 'bhramari');
+    addAlias("Bhramari", 'techniques', 'bhramari');
+    addAlias("Kapalabhati", 'techniques', 'kapalabhati');
+    addAlias("Ujjayi", 'techniques', 'ujjayi');
+    addAlias("ocean breath", 'techniques', 'ujjayi');
+    addAlias("Buteyko", 'techniques', 'buteyko-method');
+    addAlias("physiological sigh", 'techniques', 'physiological-sigh');
+    addAlias("cyclic sighing", 'techniques', 'physiological-sigh');
+    addAlias("Kumbhaka", 'techniques', 'kumbhaka');
+    addAlias("body scan", 'meditate', 'body-scan');
+    addAlias("loving-kindness", 'meditate', 'loving-kindness');
+    addAlias("Loving Kindness", 'meditate', 'loving-kindness');
+    addAlias("Metta", 'meditate', 'loving-kindness');
+    addAlias("Yoga Nidra", 'meditate', 'yoga-nidra');
+    addAlias("yoga nidra", 'meditate', 'yoga-nidra');
+    addAlias("NSDR", 'meditate', 'yoga-nidra');
+    addAlias("Anapanasati", 'meditate', 'mindfulness-of-breath');
+    addAlias("mindfulness of breath", 'meditate', 'mindfulness-of-breath');
+    addAlias("Trataka", 'meditate', 'trataka');
+    addAlias("candle gazing", 'meditate', 'trataka');
+    addAlias("open awareness", 'meditate', 'open-awareness');
+    // Sort by length DESC so longest matches first
+    map.sort((a, b) => b.name.length - a.name.length);
+    return map;
+  })();
+
+  /* ════════════════ STATE ════════════════ */
+
+  const state = {
+    section: 'home',
+    techniqueId: null,
+    meditationId: null,
+    askContext: null,           // {kind: 'technique'|'meditation', id, item}
+    askHistory: [],
+    askLoading: false,
+    planSelections: { goal: '', exp: '', time: '' },
+    planHistory: [],
+    planLoading: false
+  };
+
+  /* ════════════════ NAV ════════════════ */
+
+  function navigate(target, opts = {}) {
+    if (!['home', 'techniques', 'meditate', 'library', 'plan'].includes(target)) return;
+
+    // Hide all sections, deactivate nav
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+    // Activate target
+    document.getElementById(target).classList.add('active');
+    document.querySelector(`.nav-btn[data-section="${target}"]`).classList.add('active');
+    state.section = target;
+
+    // Reset to list view when entering a section freshly
+    if (target === 'techniques' && !opts.keepDetail) hideTechniqueDetail();
+    if (target === 'meditate'   && !opts.keepDetail) hideMeditationDetail();
+
+    // Hide FAB unless on a detail view
+    updateFab();
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ════════════════ TECHNIQUES + MEDITATIONS ════════════════ */
+
+  function renderCardGrid(items, gridId, openFn) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = items.map(item => `
+      <button class="card" onclick="${openFn}('${item.id}')">
+        <div class="card-title">${escapeHtml(item.title)}</div>
+        <div class="card-desc">${escapeHtml(item.desc)}</div>
+        <div class="card-meta">
+          <span class="pill accent">${escapeHtml(item.bestFor)}</span>
+          <span class="pill diff-${item.difficulty}">${item.difficulty}</span>
+          <span class="pill">${escapeHtml(item.duration)}</span>
+        </div>
+      </button>
+    `).join('');
+  }
+
+  function renderDetail(item, containerId, kind) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = `
+      <button class="back-btn" onclick="${kind === 'technique' ? 'hideTechniqueDetail()' : 'hideMeditationDetail()'}">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back to ${kind === 'technique' ? 'techniques' : 'meditations'}
+      </button>
+      <h1 class="detail-title">${escapeHtml(item.title)}</h1>
+      <p class="detail-desc">${escapeHtml(item.desc)}</p>
+      <div class="detail-meta">
+        <span class="pill accent">${escapeHtml(item.bestFor)}</span>
+        <span class="pill diff-${item.difficulty}">${item.difficulty}</span>
+        <span class="pill">${escapeHtml(item.duration)}</span>
+      </div>
+
+      <div class="detail-section">
+        <h3>How to practise</h3>
+        <ol>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
+      </div>
+
+      <div class="detail-section">
+        <h3>Why it works</h3>
+        <ul>${item.benefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
+      </div>
+
+      ${item.cautions ? `
+      <div class="detail-section">
+        <h3>Cautions</h3>
+        <div class="caution-box">
+          <strong>Practice safely</strong>
+          ${escapeHtml(item.cautions)}
+        </div>
+      </div>` : ''}
+    `;
+  }
+
+  function showTechniqueDetail(id) {
+    const item = TECHNIQUES.find(t => t.id === id);
+    if (!item) return;
+    state.techniqueId = id;
+    state.askContext = { kind: 'technique', id, item };
+    document.getElementById('techniques-list').style.display = 'none';
+    const detail = document.getElementById('techniques-detail');
+    renderDetail(item, 'techniques-detail', 'technique');
+    detail.classList.add('active');
+    updateFab();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function hideTechniqueDetail() {
+    state.techniqueId = null;
+    if (state.askContext?.kind === 'technique') state.askContext = null;
+    document.getElementById('techniques-list').style.display = '';
+    document.getElementById('techniques-detail').classList.remove('active');
+    updateFab();
+  }
+
+  function showMeditationDetail(id) {
+    const item = MEDITATIONS.find(m => m.id === id);
+    if (!item) return;
+    state.meditationId = id;
+    state.askContext = { kind: 'meditation', id, item };
+    document.getElementById('meditate-list').style.display = 'none';
+    const detail = document.getElementById('meditate-detail');
+    renderDetail(item, 'meditate-detail', 'meditation');
+    detail.classList.add('active');
+    updateFab();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function hideMeditationDetail() {
+    state.meditationId = null;
+    if (state.askContext?.kind === 'meditation') state.askContext = null;
+    document.getElementById('meditate-list').style.display = '';
+    document.getElementById('meditate-detail').classList.remove('active');
+    updateFab();
+  }
+
+  function updateFab() {
+    const fab = document.getElementById('askFab');
+    const label = document.getElementById('askFabLabel');
+    const onDetail =
+      (state.section === 'techniques' && state.techniqueId) ||
+      (state.section === 'meditate'   && state.meditationId);
+
+    if (onDetail) {
+      fab.classList.add('visible');
+      label.textContent = state.section === 'techniques'
+        ? 'Ask about this technique'
+        : 'Ask about this practice';
+    } else {
+      fab.classList.remove('visible');
+    }
+  }
+
+  /* ════════════════ LIBRARY ════════════════ */
+
+  function renderLibrary() {
+    const container = document.getElementById('library-content');
+    container.innerHTML = `
+      <div class="lib-group">
+        <div class="lib-group-head">
+          <div class="lib-group-title">Books</div>
+          <div class="lib-group-count">${LIBRARY.books.length} titles</div>
+        </div>
+        <div class="lib-list">
+          ${LIBRARY.books.map(b => `
+            <div class="lib-item">
+              <div class="lib-title">${escapeHtml(b.title)}<span class="lib-meta">${b.year}</span></div>
+              <div class="lib-author">${escapeHtml(b.author)}</div>
+              <div class="lib-summary">${escapeHtml(b.summary)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="lib-group">
+        <div class="lib-group-head">
+          <div class="lib-group-title">Key figures</div>
+          <div class="lib-group-count">${LIBRARY.people.length} teachers &amp; researchers</div>
+        </div>
+        <div class="lib-list">
+          ${LIBRARY.people.map(p => `
+            <div class="lib-item">
+              <div class="lib-title">${escapeHtml(p.name)}</div>
+              <div class="lib-author">${escapeHtml(p.role)}</div>
+              <div class="lib-summary">${escapeHtml(p.bio)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="lib-group">
+        <div class="lib-group-head">
+          <div class="lib-group-title">Research papers</div>
+          <div class="lib-group-count">${LIBRARY.papers.length} studies</div>
+        </div>
+        <div class="lib-list">
+          ${LIBRARY.papers.map(p => `
+            <div class="lib-item">
+              <div class="lib-title">${escapeHtml(p.title)}<span class="lib-meta">${p.year}</span></div>
+              <div class="lib-author">${escapeHtml(p.authors)}</div>
+              <div class="lib-summary">${escapeHtml(p.topic)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="lib-group">
+        <div class="lib-group-head">
+          <div class="lib-group-title">Podcasts &amp; channels</div>
+          <div class="lib-group-count">${LIBRARY.podcasts.length} listening recs</div>
+        </div>
+        <div class="lib-list">
+          ${LIBRARY.podcasts.map(p => `
+            <div class="lib-item">
+              <div class="lib-title">${escapeHtml(p.name)}</div>
+              <div class="lib-author">${escapeHtml(p.host)}</div>
+              <div class="lib-summary">${escapeHtml(p.focus)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  /* ════════════════ MY PLAN ════════════════ */
+
+  function initPlanForm() {
+    // Wire up chip groups for single-select
+    ['plan-goal-chips', 'plan-exp-chips', 'plan-time-chips'].forEach(groupId => {
+      const group = document.getElementById(groupId);
+      group.addEventListener('click', e => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const key = groupId === 'plan-goal-chips' ? 'goal' : groupId === 'plan-exp-chips' ? 'exp' : 'time';
+        state.planSelections[key] = chip.dataset.value;
+        if (key === 'goal') document.getElementById('plan-goal-other').value = '';
+      });
+    });
+
+    // "Other" input clears chip selection for goal
+    document.getElementById('plan-goal-other').addEventListener('input', e => {
+      if (e.target.value.trim()) {
+        document.getElementById('plan-goal-chips').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        state.planSelections.goal = e.target.value.trim();
+      }
+    });
+  }
+
+  async function submitPlan() {
+    const goalOther = document.getElementById('plan-goal-other').value.trim();
+    if (goalOther) state.planSelections.goal = goalOther;
+
+    const { goal, exp, time } = state.planSelections;
+    if (!goal) return alert('Please choose or describe a goal.');
+    if (!exp)  return alert('Please choose your experience level.');
+    if (!time) return alert('Please choose how much time you have each day.');
+
+    const prompt =
+`Please build me a personalised 7-day breathwork and meditation plan.
+
+**My goal:** ${goal}
+**My experience level:** ${exp}
+**Time I have each day:** ${time}
+
+Structure the response with a short opening paragraph explaining your reasoning, then a clear day-by-day plan (Day 1 through Day 7) — each day with a heading and 2–4 specific practices to do. Name the specific techniques and meditations directly (e.g. "4-7-8 Breathing", "Box Breathing", "Body Scan", "Yoga Nidra") so I can find them in the app's library.
+
+Include any safety notes briefly where relevant. End with one or two sentences of encouragement about how to use the plan flexibly.`;
+
+    // Switch to result view
+    document.getElementById('plan-form-wrap').style.display = 'none';
+    document.getElementById('plan-result').classList.add('active');
+
+    state.planHistory = [{ role: 'user', content: prompt }];
+    // Render an abbreviated user message for display
+    const displayMsg =
+`Goal: **${goal}**
+Experience: **${exp}**
+Time available: **${time} per day**
+
+Build my personalised plan.`;
+    appendChatMessage('plan-messages', 'user', displayMsg);
+    await runPlanRequest();
+  }
+
+  async function runPlanRequest() {
+    state.planLoading = true;
+    showTyping('plan-messages');
+    try {
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: state.planHistory })
+      });
+      const data = await res.json();
+      hideTyping('plan-messages');
+      if (!res.ok || data.error) {
+        appendChatMessage('plan-messages', 'assistant',
+          `I'm sorry — I encountered an issue: *${data.error || 'unknown error'}*\n\nPlease check that the API key is configured and try again.`);
+        state.planHistory.pop();
+      } else {
+        const reply = data.response;
+        state.planHistory.push({ role: 'assistant', content: reply });
+        appendChatMessage('plan-messages', 'assistant', reply);
+      }
+    } catch (err) {
+      hideTyping('plan-messages');
+      appendChatMessage('plan-messages', 'assistant', 'I lost the connection for a moment. Please check your network and try again.');
+      state.planHistory.pop();
+      console.error(err);
+    }
+    state.planLoading = false;
+  }
+
+  async function sendPlanMessage() {
+    const input = document.getElementById('plan-input');
+    const text = input.value.trim();
+    if (!text || state.planLoading) return;
+    input.value = '';
+    input.style.height = 'auto';
+    state.planHistory.push({ role: 'user', content: text });
+    appendChatMessage('plan-messages', 'user', text);
+    await runPlanRequest();
+  }
+
+  function restartPlan() {
+    state.planSelections = { goal: '', exp: '', time: '' };
+    state.planHistory = [];
+    document.querySelectorAll('#plan-goal-chips .chip, #plan-exp-chips .chip, #plan-time-chips .chip')
+      .forEach(c => c.classList.remove('active'));
+    document.getElementById('plan-goal-other').value = '';
+    document.getElementById('plan-messages').innerHTML = '';
+    document.getElementById('plan-result').classList.remove('active');
+    document.getElementById('plan-form-wrap').style.display = '';
+  }
+
+  /* ════════════════ ASK MODAL ════════════════ */
+
+  function openAskModal() {
+    if (!state.askContext) return;
+    const { kind, item } = state.askContext;
+    document.getElementById('askModalTitle').textContent = item.title;
+
+    const body = document.getElementById('askModalBody');
+    if (state.askHistory.length === 0) {
+      body.innerHTML = `
+        <div class="modal-empty">
+          Ask the Breathly coach anything about <strong style="color: var(--teal)">${escapeHtml(item.title)}</strong> — the science, the experience, when to use it, common pitfalls, or how to adapt it.
+          <div class="empty-prompts">
+            <button class="empty-prompt" onclick="seedAskMessage('How does ${escapeHtml(item.title)} actually work in the body?')">How does it actually work in the body?</button>
+            <button class="empty-prompt" onclick="seedAskMessage('When is the best time of day to practise ${escapeHtml(item.title)}?')">When is the best time of day to practise this?</button>
+            <button class="empty-prompt" onclick="seedAskMessage('What common mistakes do beginners make with ${escapeHtml(item.title)}?')">What common mistakes do beginners make?</button>
+            <button class="empty-prompt" onclick="seedAskMessage('Can you guide me through ${escapeHtml(item.title)} right now?')">Guide me through it right now</button>
+          </div>
+        </div>
+      `;
+    } else {
+      renderAskHistory();
+    }
+
+    document.getElementById('askModal').classList.add('active');
+    setTimeout(() => document.getElementById('ask-input').focus(), 100);
+  }
+
+  function closeAskModal() {
+    document.getElementById('askModal').classList.remove('active');
+  }
+
+  function renderAskHistory() {
+    const body = document.getElementById('askModalBody');
+    body.innerHTML = '';
+    state.askHistory.forEach(msg => {
+      appendChatMessage('askModalBody', msg.role, msg.content, { skipHistory: true });
+    });
+  }
+
+  function seedAskMessage(text) {
+    document.getElementById('ask-input').value = text;
+    autoResize(document.getElementById('ask-input'));
+    sendAskMessage();
+  }
+
+  async function sendAskMessage() {
+    const input = document.getElementById('ask-input');
+    const text = input.value.trim();
+    if (!text || state.askLoading || !state.askContext) return;
+    input.value = '';
+    input.style.height = 'auto';
+
+    // First message — clear the empty state
+    if (state.askHistory.length === 0) {
+      document.getElementById('askModalBody').innerHTML = '';
+    }
+
+    const { kind, item } = state.askContext;
+    // Inject context into the FIRST user message only
+    let payloadContent = text;
+    if (state.askHistory.length === 0) {
+      const kindLabel = kind === 'technique' ? 'breathing technique' : 'meditation practice';
+      payloadContent =
+`(Context: I'm currently looking at the **${item.title}** ${kindLabel} in the Breathly app — best for ${item.bestFor.toLowerCase()}, ${item.difficulty.toLowerCase()} level, typical session ${item.duration.toLowerCase()}. Please tailor your answer to this specific practice.)
+
+${text}`;
+    }
+
+    state.askHistory.push({ role: 'user', content: payloadContent, _display: text });
+    appendChatMessage('askModalBody', 'user', text);
+    state.askLoading = true;
+    showTyping('askModalBody');
+
+    try {
+      const payload = state.askHistory.map(m => ({ role: m.role, content: m.content }));
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: payload })
+      });
+      const data = await res.json();
+      hideTyping('askModalBody');
+      if (!res.ok || data.error) {
+        appendChatMessage('askModalBody', 'assistant',
+          `I'm sorry — I encountered an issue: *${data.error || 'unknown error'}*`);
+        state.askHistory.pop();
+      } else {
+        const reply = data.response;
+        state.askHistory.push({ role: 'assistant', content: reply });
+        appendChatMessage('askModalBody', 'assistant', reply);
+      }
+    } catch (err) {
+      hideTyping('askModalBody');
+      appendChatMessage('askModalBody', 'assistant', 'I lost the connection. Please check your network and try again.');
+      state.askHistory.pop();
+      console.error(err);
+    }
+    state.askLoading = false;
+  }
+
+  /* ════════════════ CHAT helpers (shared) ════════════════ */
+
+  function appendChatMessage(containerId, role, content, opts = {}) {
+    const c = document.getElementById(containerId);
+    const msg = document.createElement('div');
+    msg.className = `message ${role}`;
+    const avatarLabel = role === 'assistant' ? 'B' : 'You';
+    const avatarClass = role === 'assistant' ? 'coach' : 'user';
+    const bubbleContent = role === 'assistant'
+      ? linkPractices(renderMarkdown(content))
+      : renderMarkdown(content);
+    msg.innerHTML = `
+      <div class="avatar ${avatarClass}">${avatarLabel}</div>
+      <div class="bubble">${bubbleContent}</div>
+    `;
+    c.appendChild(msg);
+    scrollChatToBottom(containerId);
+  }
+
+  function showTyping(containerId) {
+    const c = document.getElementById(containerId);
+    const typing = document.createElement('div');
+    typing.className = 'typing';
+    typing.dataset.typing = '1';
+    typing.innerHTML = `
+      <div class="avatar coach">B</div>
+      <div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    `;
+    c.appendChild(typing);
+    scrollChatToBottom(containerId);
+  }
+
+  function hideTyping(containerId) {
+    const c = document.getElementById(containerId);
+    const t = c.querySelector('[data-typing="1"]');
+    if (t) t.remove();
+  }
+
+  function scrollChatToBottom(containerId) {
+    if (containerId === 'askModalBody') {
+      const el = document.getElementById(containerId);
+      el.scrollTop = el.scrollHeight;
+    } else {
+      // Plan messages — scroll page to keep latest in view
+      requestAnimationFrame(() => {
+        const last = document.getElementById(containerId).lastElementChild;
+        if (last) last.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      });
+    }
+  }
+
+  /* ────── Markdown ────── */
+  function renderMarkdown(text) {
+    return text
+      .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*\n]+?)\*/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/^---+$/gm, '<hr>')
+      .replace(/^[-•] (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+      .split(/\n{2,}/)
+      .map(block => {
+        block = block.trim();
+        if (!block) return '';
+        if (block.startsWith('<h') || block.startsWith('<ul') || block.startsWith('<ol') || block.startsWith('<hr') || block.startsWith('<li')) return block;
+        return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+      })
+      .join('\n');
+  }
+
+  /* Replace practice names in AI-generated HTML with clickable links */
+  function linkPractices(html) {
+    // Use a temporary container so we only touch text nodes
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const seen = new Set(); // Don't over-link — once per chunk is enough
+
+    const walker = document.createTreeWalker(wrap, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) => {
+        if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        if (node.parentElement.closest('a, code, .practice-link')) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const textNodes = [];
+    let n; while ((n = walker.nextNode())) textNodes.push(n);
+
+    textNodes.forEach(node => {
+      let text = node.nodeValue;
+      let modified = false;
+      let fragments = [text];
+
+      PRACTICE_NAME_MAP.forEach(({ name, section, id }) => {
+        const key = `${section}:${id}`;
+        if (seen.has(key)) return;
+        const pattern = new RegExp(`\\b(${name.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')})\\b`, 'i');
+        const newFragments = [];
+        for (const frag of fragments) {
+          if (typeof frag !== 'string') { newFragments.push(frag); continue; }
+          const m = frag.match(pattern);
+          if (m) {
+            const idx = m.index;
+            const before = frag.slice(0, idx);
+            const matched = frag.slice(idx, idx + m[0].length);
+            const after = frag.slice(idx + m[0].length);
+            if (before) newFragments.push(before);
+            newFragments.push({ type: 'link', text: matched, section, id });
+            if (after) newFragments.push(after);
+            modified = true;
+            seen.add(key);
+          } else {
+            newFragments.push(frag);
+          }
+        }
+        fragments = newFragments;
+      });
+
+      if (modified) {
+        const parent = node.parentNode;
+        fragments.forEach(frag => {
+          if (typeof frag === 'string') {
+            parent.insertBefore(document.createTextNode(frag), node);
+          } else {
+            const a = document.createElement('a');
+            a.className = 'practice-link';
+            a.dataset.section = frag.section;
+            a.dataset.id = frag.id;
+            a.textContent = frag.text;
+            parent.insertBefore(a, node);
+          }
+        });
+        parent.removeChild(node);
+      }
+    });
+
+    return wrap.innerHTML;
+  }
+
+  // Click handler for practice links (delegated)
+  document.addEventListener('click', e => {
+    const link = e.target.closest('.practice-link');
+    if (!link) return;
+    e.preventDefault();
+    const { section, id } = link.dataset;
+    closeAskModal();
+    navigate(section);
+    if (section === 'techniques') showTechniqueDetail(id);
+    else if (section === 'meditate') showMeditationDetail(id);
+  });
+
+  /* ────── Utilities ────── */
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str ?? ''));
+    return div.innerHTML;
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  }
+
+  function handleKey(e, target) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (target === 'plan') sendPlanMessage();
+      else if (target === 'ask') sendAskMessage();
+    } else if (e.key === 'Escape' && target === 'ask') {
+      closeAskModal();
+    }
+  }
+
+  /* ────── Breath label animation on home orb ────── */
+  const breathPhases = ['Inhale', 'Hold', 'Exhale', 'Rest'];
+  let breathIdx = 0;
+  function cycleBreathLabel() {
+    const el = document.getElementById('breathLabel');
+    if (!el) return;
+    el.style.opacity = '0';
+    setTimeout(() => {
+      breathIdx = (breathIdx + 1) % breathPhases.length;
+      el.textContent = breathPhases[breathIdx];
+      el.style.opacity = '0.75';
+    }, 350);
+    setTimeout(cycleBreathLabel, 2000);
+  }
+
+  /* ════════════════ INIT ════════════════ */
+
+  renderCardGrid(TECHNIQUES, 'techniques-grid', 'showTechniqueDetail');
+  renderCardGrid(MEDITATIONS, 'meditate-grid', 'showMeditationDetail');
+  renderLibrary();
+  initPlanForm();
+  setTimeout(cycleBreathLabel, 2000);
+</script>
+</body>
+</html>
