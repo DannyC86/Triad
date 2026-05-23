@@ -1585,6 +1585,726 @@
     .nav-inner { grid-template-columns: repeat(6, 1fr); }
     .nav-btn[data-section="profile"]    { --nav-color: var(--c-profile); --nav-glow: rgba(253,164,175,0.5); }
 
+    /* ═══════════════ TECHNIQUE DETAIL PAGE (tabbed) ═══════════════ */
+
+    /* Top action bar (Start Session / Add to Plan) */
+    .detail-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 18px 0 24px;
+    }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: all 0.2s ease;
+    }
+    .action-btn svg {
+      width: 16px; height: 16px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--accent, var(--teal)), color-mix(in srgb, var(--accent, var(--teal)) 65%, white 15%));
+      color: var(--navy);
+    }
+    .action-btn.primary svg { stroke: var(--navy); }
+    .action-btn.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px color-mix(in srgb, var(--accent, var(--teal)) 30%, transparent);
+    }
+    .action-btn.secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border-soft);
+    }
+    .action-btn.secondary:hover {
+      border-color: var(--accent, var(--teal));
+      color: var(--accent, var(--teal));
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--border-soft);
+      margin-bottom: 22px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 12px 14px;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.18s ease;
+      flex-shrink: 0;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent, var(--c-tech)); }
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 8px; right: 8px;
+      height: 2px;
+      background: var(--accent, var(--c-tech));
+      border-radius: 2px 2px 0 0;
+    }
+    .tab-panel { display: none; animation: fade-in 0.3s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Tab body shared styling */
+    .tab-panel h3 {
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent, var(--c-tech));
+      margin: 22px 0 10px;
+      font-weight: 600;
+    }
+    .tab-panel h3:first-child { margin-top: 0; }
+    .tab-panel p {
+      color: var(--text);
+      font-size: 0.93rem;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    .tab-panel ul { list-style: none; padding: 0; }
+    .tab-panel ul li {
+      position: relative;
+      padding: 8px 0 8px 22px;
+      color: var(--text);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .tab-panel ul li:last-child { border-bottom: none; }
+    .tab-panel ul li::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 17px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent, var(--c-tech));
+      opacity: 0.65;
+    }
+
+    /* History: figures block */
+    .figures-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .figure-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 14px;
+      padding: 12px 14px;
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+    .figure-row .fig-name {
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .figure-row .fig-credit { color: var(--text-muted); line-height: 1.55; }
+
+    /* How-to: progressions */
+    .progressions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .progression {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 16px;
+      padding: 14px 16px;
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+    }
+    .progression .prog-level {
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent, var(--c-tech));
+      font-weight: 600;
+      align-self: center;
+    }
+    .progression .prog-detail {
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* Science: tags */
+    .sci-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 6px 0 12px;
+    }
+    .sci-tag {
+      background: color-mix(in srgb, var(--accent, var(--c-tech)) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent, var(--c-tech)) 30%, transparent);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      color: var(--accent, var(--c-tech));
+      letter-spacing: 0.02em;
+    }
+
+    /* Learn tab — animation stage + video */
+    .learn-animation {
+      background: var(--navy-deep);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 36px 24px 44px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+      position: relative;
+      overflow: hidden;
+    }
+    .learn-anim-caption {
+      position: absolute;
+      bottom: 12px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .learn-video-wrap {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+    }
+    .learn-video-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+    .learn-video-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 4px 0;
+      font-size: 0.82rem;
+    }
+    .learn-video-meta .vm-title { color: var(--text); font-weight: 500; }
+    .learn-video-meta .vm-teacher {
+      color: var(--gold);
+      font-size: 0.74rem;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── Per-technique animations ─── */
+
+    /* anim-box: square trace, 16s loop, 4s/side */
+    .anim-box {
+      position: relative;
+      width: 200px; height: 200px;
+      border: 1.5px solid color-mix(in srgb, var(--c-tech) 50%, transparent);
+      border-radius: 8px;
+    }
+    .anim-box-dot {
+      position: absolute;
+      width: 14px; height: 14px;
+      background: var(--c-tech);
+      border-radius: 50%;
+      box-shadow: 0 0 18px rgba(56,189,248,0.7);
+      top: -7px; left: -7px;
+      animation: box-trace 16s linear infinite;
+    }
+    @keyframes box-trace {
+      0%   { top: -7px;            left: -7px; }
+      25%  { top: -7px;            left: calc(100% - 7px); }
+      50%  { top: calc(100% - 7px); left: calc(100% - 7px); }
+      75%  { top: calc(100% - 7px); left: -7px; }
+      100% { top: -7px;            left: -7px; }
+    }
+    .anim-box-label {
+      position: absolute;
+      font-size: 0.66rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .anim-box-label.top    { top: -28px; left: 50%; transform: translateX(-50%); }
+    .anim-box-label.right  { right: -85px; top: 50%; transform: translateY(-50%); }
+    .anim-box-label.bottom { bottom: -28px; left: 50%; transform: translateX(-50%); }
+    .anim-box-label.left   { left: -85px; top: 50%; transform: translateY(-50%); }
+
+    /* anim-478: orb expand-hold-contract over 19s */
+    .anim-478 {
+      position: relative;
+      width: 200px; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .anim-478-orb {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--c-tech), color-mix(in srgb, var(--c-tech) 50%, var(--navy)));
+      box-shadow: 0 0 30px color-mix(in srgb, var(--c-tech) 50%, transparent);
+      animation: orb-478 19s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes orb-478 {
+      0%   { transform: scale(1);    box-shadow: 0 0 20px color-mix(in srgb, var(--c-tech) 35%, transparent); }
+      21%  { transform: scale(1.55); box-shadow: 0 0 44px color-mix(in srgb, var(--c-tech) 70%, transparent); }
+      58%  { transform: scale(1.55); box-shadow: 0 0 44px color-mix(in srgb, var(--c-tech) 70%, transparent); }
+      100% { transform: scale(1);    box-shadow: 0 0 20px color-mix(in srgb, var(--c-tech) 35%, transparent); }
+    }
+    .anim-478-ratio {
+      position: absolute;
+      top: -8px;
+      font-size: 0.9rem;
+      letter-spacing: 0.4em;
+      color: var(--c-tech);
+      font-weight: 600;
+    }
+
+    /* anim-sigh: small inhale, sharp second inhale, long exhale */
+    .anim-sigh {
+      position: relative;
+      width: 200px; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .anim-sigh-orb {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--c-tech), color-mix(in srgb, var(--c-tech) 50%, var(--navy)));
+      box-shadow: 0 0 24px color-mix(in srgb, var(--c-tech) 50%, transparent);
+      animation: orb-sigh 7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes orb-sigh {
+      0%   { transform: scale(1); }
+      28%  { transform: scale(1.55); }   /* 2s first inhale (deep) */
+      35%  { transform: scale(1.55); }   /* tiny pause */
+      50%  { transform: scale(1.85); }   /* 1s sharp second sniff (top-off) */
+      100% { transform: scale(1); }      /* 3.5s long exhale */
+    }
+
+    /* anim-wim: pulsing dot for breaths + numeric counter (JS-driven) */
+    .anim-wim {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+    .anim-wim-orb {
+      width: 84px; height: 84px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--c-tech), color-mix(in srgb, var(--c-tech) 50%, var(--navy)));
+      box-shadow: 0 0 30px color-mix(in srgb, var(--c-tech) 50%, transparent);
+      animation: orb-wim 1.6s ease-in-out infinite;
+    }
+    .anim-wim.hold .anim-wim-orb { animation: orb-wim-hold 1.6s ease-in-out infinite; }
+    @keyframes orb-wim {
+      0%, 100% { transform: scale(0.85); }
+      50%      { transform: scale(1.25); }
+    }
+    @keyframes orb-wim-hold {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50%      { transform: scale(1.02); opacity: 0.7; }
+    }
+    .anim-wim-counter {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--c-tech);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+    .anim-wim-phase {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* anim-reduce (Buteyko): small calm pulse with reduced amplitude */
+    .anim-reduce {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      width: 200px; height: 200px;
+    }
+    .anim-reduce-orb {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--c-tech), color-mix(in srgb, var(--c-tech) 40%, var(--navy)));
+      box-shadow: 0 0 18px color-mix(in srgb, var(--c-tech) 35%, transparent);
+      animation: orb-reduce 7s ease-in-out infinite;
+    }
+    @keyframes orb-reduce {
+      0%, 100% { transform: scale(1);    opacity: 0.6; }
+      50%      { transform: scale(1.08); opacity: 0.85; }
+    }
+    .anim-reduce-ring {
+      position: absolute;
+      inset: 30px;
+      border: 1px dashed color-mix(in srgb, var(--c-tech) 25%, transparent);
+      border-radius: 50%;
+    }
+
+    /* anim-alternate (Nadi Shodhana): two alternating orbs */
+    .anim-alternate {
+      display: flex;
+      align-items: center;
+      gap: 80px;
+    }
+    .anim-alternate-orb {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--c-tech), color-mix(in srgb, var(--c-tech) 50%, var(--navy)));
+      animation: alt-orb 8s ease-in-out infinite;
+    }
+    .anim-alternate-orb.right { animation-delay: 4s; }
+    @keyframes alt-orb {
+      0%, 50%, 100% { transform: scale(0.7); opacity: 0.35; }
+      25%           { transform: scale(1.25); opacity: 1; box-shadow: 0 0 26px color-mix(in srgb, var(--c-tech) 55%, transparent); }
+    }
+    .anim-alternate-label {
+      position: absolute;
+      bottom: 14px;
+      font-size: 0.66rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* anim-rapid (Kapalabhati): rapid pulse */
+    .anim-rapid {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .anim-rapid-orb {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--c-tech), color-mix(in srgb, var(--c-tech) 50%, var(--navy)));
+      box-shadow: 0 0 20px color-mix(in srgb, var(--c-tech) 50%, transparent);
+      animation: orb-rapid 0.8s ease-in-out infinite;
+    }
+    @keyframes orb-rapid {
+      0%, 100% { transform: scale(0.85); box-shadow: 0 0 14px color-mix(in srgb, var(--c-tech) 30%, transparent); }
+      40%      { transform: scale(1.15); box-shadow: 0 0 30px color-mix(in srgb, var(--c-tech) 60%, transparent); }
+    }
+
+    /* anim-hum (Bhramari): continuous resonance wave */
+    .anim-hum {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 220px; height: 200px;
+      position: relative;
+    }
+    .anim-hum-orb {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--c-tech), color-mix(in srgb, var(--c-tech) 50%, var(--navy)));
+      box-shadow: 0 0 24px color-mix(in srgb, var(--c-tech) 50%, transparent);
+      animation: orb-hum 4s ease-in-out infinite;
+    }
+    @keyframes orb-hum {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.04); }
+    }
+    .anim-hum::before, .anim-hum::after {
+      content: '';
+      position: absolute;
+      border: 1px solid color-mix(in srgb, var(--c-tech) 35%, transparent);
+      border-radius: 50%;
+      width: 88px; height: 88px;
+      animation: hum-wave 2.5s ease-out infinite;
+    }
+    .anim-hum::after { animation-delay: 1.25s; }
+    @keyframes hum-wave {
+      0%   { transform: scale(1); opacity: 0.7; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    /* anim-slow-wave (Ujjayi): long slow sine */
+    .anim-slow-wave {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 240px; height: 200px;
+    }
+    .anim-slow-wave svg { width: 200px; height: 80px; overflow: visible; }
+    .anim-slow-wave .wave-path {
+      fill: none;
+      stroke: var(--c-tech);
+      stroke-width: 1.5;
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: wave-draw 12s linear infinite;
+      filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c-tech) 45%, transparent));
+    }
+    @keyframes wave-draw {
+      0%   { stroke-dashoffset: 600; }
+      100% { stroke-dashoffset: -600; }
+    }
+
+    /* anim-expand-hold (Kumbhaka): expand, long hold, contract */
+    .anim-expand-hold {
+      display: flex; align-items: center; justify-content: center;
+      width: 200px; height: 200px;
+    }
+    .anim-expand-hold-orb {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 38%, var(--c-tech), color-mix(in srgb, var(--c-tech) 50%, var(--navy)));
+      box-shadow: 0 0 28px color-mix(in srgb, var(--c-tech) 50%, transparent);
+      animation: orb-eh 16s ease-in-out infinite;
+    }
+    @keyframes orb-eh {
+      0%   { transform: scale(1); }
+      15%  { transform: scale(1.6); }
+      75%  { transform: scale(1.6); }    /* long retention */
+      100% { transform: scale(1); }
+    }
+
+    /* ─── Related sections ─── */
+    .related-block { margin: 36px 0 0; }
+    .related-block h3 {
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent, var(--c-tech));
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .related-card {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      color: inherit;
+      text-align: left;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .related-card:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent, var(--c-tech));
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    }
+    .related-card .rc-kicker {
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent, var(--c-tech));
+      font-weight: 600;
+    }
+    .related-card .rc-title {
+      font-size: 0.9rem;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+    .related-card .rc-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ═══════════════ COST CONFIRMATION + USAGE TOAST ═══════════════ */
+
+    .cost-modal-body {
+      padding: 22px 26px 18px;
+    }
+    .cost-modal-body .cost-warning-icon {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .cost-modal-body h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .cost-modal-body p {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .cost-breakdown {
+      background: var(--navy-deep);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 6px;
+      font-size: 0.84rem;
+    }
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      color: var(--text-muted);
+    }
+    .cost-row .cost-label {
+      letter-spacing: 0.04em;
+    }
+    .cost-row .cost-value {
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .cost-row.total {
+      border-top: 1px solid var(--border-soft);
+      margin-top: 6px;
+      padding-top: 10px;
+    }
+    .cost-row.total .cost-label {
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .cost-row.total .cost-value {
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .cost-modal-actions {
+      display: flex;
+      gap: 10px;
+      padding: 0 26px 22px;
+    }
+    .cost-modal-actions .action-btn {
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* Usage toast (bottom right, dismissible) */
+    .usage-toast-region {
+      position: fixed;
+      bottom: 94px;
+      right: 16px;
+      z-index: 110;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      max-width: calc(100vw - 32px);
+    }
+    .usage-toast {
+      background: rgba(17, 24, 39, 0.96);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 10px 12px 10px 14px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: usage-in 0.32s ease;
+      max-width: 320px;
+    }
+    .usage-toast .ut-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
+    }
+    .usage-toast .ut-cost {
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 0.86rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .usage-toast .ut-detail {
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
+    }
+    .usage-toast .ut-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px;
+      flex-shrink: 0;
+      transition: color 0.18s ease;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+    }
+    .usage-toast .ut-close:hover { color: var(--text); background: var(--navy-light); }
+    .usage-toast .ut-close svg {
+      width: 12px; height: 12px;
+      stroke: currentColor; fill: none; stroke-width: 2;
+    }
+    @keyframes usage-in {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .usage-toast.fading { animation: usage-out 0.3s ease forwards; }
+    @keyframes usage-out {
+      to { opacity: 0; transform: translateX(20px); }
+    }
+
+    /* ─── Library highlight on jump ─── */
+    .lib-item.lib-highlight {
+      background: linear-gradient(90deg, rgba(246,200,96,0.10), transparent) !important;
+      box-shadow: inset 3px 0 0 var(--gold);
+      animation: lib-flash 1.6s ease-out;
+    }
+    @keyframes lib-flash {
+      0%   { background: rgba(246, 200, 96, 0.22); }
+      100% { background: transparent; }
+    }
+
     /* ─── Responsive ─── */
     @media (max-width: 600px) {
       .card-grid { grid-template-columns: 1fr; }
@@ -1603,6 +2323,13 @@
       .achievement-state { display: none; }
       .picker-grid { grid-template-columns: 1fr; }
       .summary-row .row-label { width: 78px; }
+      .figure-row, .progression { grid-template-columns: 1fr; gap: 4px; }
+      .related-grid { grid-template-columns: 1fr 1fr; }
+      .anim-box { width: 160px; height: 160px; }
+      .anim-box-label.right, .anim-box-label.left { display: none; }
+      .anim-alternate { gap: 50px; }
+      .tab { font-size: 0.78rem; padding: 11px 10px; }
+      .action-btn { padding: 10px 16px; font-size: 0.82rem; }
     }
   </style>
 </head>
@@ -1882,6 +2609,31 @@
   </div>
 </div>
 
+<!-- ═════════ Start Session placeholder modal ═════════ -->
+<div class="modal-backdrop" id="startSessionModal" onclick="if(event.target===this) closeStartSession()">
+  <div class="modal" style="max-width: 460px;">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <span class="modal-kicker">Guided</span>
+        <span class="modal-title" id="startSessionTitle">Start session</span>
+      </div>
+      <button class="modal-close" onclick="closeStartSession()" title="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" style="text-align: center; padding: 36px 24px 32px;">
+      <div style="font-size: 2.4rem; margin-bottom: 14px;">🧘</div>
+      <h3 style="font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 8px;">Guided sessions coming in the next build</h3>
+      <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; max-width: 340px; margin: 0 auto;">
+        For now, follow the steps in the <strong style="color: var(--c-tech)">How To</strong> tab and tap <strong style="color: var(--c-plan)">Mark complete</strong> when you finish to log your session.
+      </p>
+    </div>
+    <div class="modal-foot" style="display: flex; justify-content: center; gap: 10px;">
+      <button class="action-btn secondary" onclick="closeStartSession()">Got it</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═════════ Floating Ask FAB ═════════ -->
 <button class="ask-fab" id="askFab" onclick="openAskModal()">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.04 2 11c0 2.48 1.13 4.71 2.93 6.29L4 22l4.92-1.65c.95.28 1.97.43 3.08.43 5.52 0 10-4.04 10-9s-4.48-9-10-9zm0 16.5c-.95 0-1.86-.13-2.71-.38l-.39-.11-2.92.98.83-2.6-.16-.27C5.66 14.95 4.5 13.05 4.5 11 4.5 7.42 7.86 4.5 12 4.5s7.5 2.92 7.5 6.5-3.36 7.5-7.5 7.5z"/></svg>
@@ -1911,6 +2663,33 @@
     </div>
   </div>
 </div>
+
+<!-- ═════════ Cost confirmation modal (shown before every API call) ═════════ -->
+<div class="modal-backdrop" id="costModal" onclick="if(event.target===this) costConfirmDecide(false)">
+  <div class="modal" style="max-width: 440px;">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <span class="modal-kicker" id="costModalKicker" style="color: var(--gold)">AI credits</span>
+        <span class="modal-title">This will use AI credits</span>
+      </div>
+      <button class="modal-close" onclick="costConfirmDecide(false)" title="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+      </button>
+    </div>
+    <div class="cost-modal-body">
+      <div class="cost-warning-icon">💸</div>
+      <p id="costModalBlurb">This call will send a short prompt to Claude and stream the response.</p>
+      <div class="cost-breakdown" id="costBreakdown"></div>
+    </div>
+    <div class="cost-modal-actions">
+      <button class="action-btn secondary" onclick="costConfirmDecide(false)">Cancel</button>
+      <button class="action-btn primary" id="costContinueBtn" onclick="costConfirmDecide(true)">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ Usage toast region (bottom-right) ═════════ -->
+<div class="usage-toast-region" id="usage-toast-region"></div>
 
 <!-- ═════════ Bottom Nav ═════════ -->
 <nav class="nav">
@@ -2303,6 +3082,662 @@
     }
   ];
 
+  /* ════════════════ RICH TECHNIQUE DETAILS (5-tab payload) ════════════════ */
+  // Each entry adds Overview / History / How-To / Science / Learn content plus Related links.
+  // Sourced from the docs knowledge base + canonical teachers.
+
+  const TECHNIQUE_DETAILS = {
+
+    'physiological-sigh': {
+      overview: {
+        what: "A double-inhale through the nose followed by an extended exhale through the mouth — a single deliberate cycle of the body's natural reset reflex. Humans sigh spontaneously every ~5 minutes; this is that same circuit, deployed on demand.",
+        keyBenefits: [
+          "The fastest evidence-based stress reduction of any voluntary technique — measurable shift in seconds.",
+          "Fully reinflates collapsed alveoli, restoring efficient gas exchange.",
+          "Rapidly offloads accumulated CO₂.",
+          "Activates the vagal parasympathetic response via the extended exhale."
+        ],
+        whenToUse: [
+          "Acute stress, anxiety spikes, or panic — at the moment.",
+          "Before a difficult conversation, performance, or decision.",
+          "Between tasks as a reset throughout the day.",
+          "Whenever breathing has become shallow."
+        ],
+        whoFor: "Everyone. No contraindications. Safe in pregnancy, with cardiovascular conditions, and for children — it's just a deliberate version of what the body already does."
+      },
+      history: {
+        origins: "Sighing as a respiratory reset has been observed in mammals since the 1930s, but the precise neural circuit was characterised by neuroscientist Jack Feldman at UCLA over decades of brainstem research. Feldman's lab identified the pre-Bötzinger complex — a small cluster of neurons that generates breathing rhythm — and within it the specific neurons that fire the sigh.",
+        evolution: "The voluntary use of the sigh as a stress tool was popularised by Stanford's Andrew Huberman, who synthesised Feldman's circuit research with respiratory physiology into a practical protocol. The Balban et al. 2023 study at Huberman's lab compared cyclic sighing against box breathing and mindfulness — the sigh won on both mood and physiological arousal.",
+        figures: [
+          { name: "Jack Feldman",      credit: "UCLA neuroscientist who identified the pre-Bötzinger complex and the sigh circuit." },
+          { name: "Andrew Huberman",   credit: "Stanford neurobiologist who brought voluntary use of the sigh to mainstream practice." },
+          { name: "Mark Krasnow",      credit: "Stanford molecular biologist; co-discovered the neurons that drive the sigh reflex." }
+        ],
+        ancient: "Sighing as emotional release is universal — the yogic traditions describe involuntary sighing as the body shedding stagnant prana, the Taoists as releasing stuck chi. Unlike pranayama, this technique is not tradition-bound. It's an ancient mammalian reflex being consciously deployed."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "One or two cycles when stressed. Notice the shift in your body before deciding if you need another." },
+          { level: "Intermediate", detail: "Five minutes of cyclic sighing daily — one breath every ~10 seconds. Research-backed dose." },
+          { level: "Advanced",     detail: "Use throughout the day as a between-task reset. Pair with brief eye relaxation for compound effect." }
+        ],
+        tips: [
+          "Make the second inhale a sharp small sniff — not another full breath.",
+          "Let the exhale be longer than the combined inhales. The exhale is where the calming happens.",
+          "Both inhales through the nose; the exhale through the mouth.",
+          "Don't strain. The reset is in the pattern, not the force."
+        ]
+      },
+      science: {
+        physiology: "Alveoli — 300 million per lung — progressively collapse during shallow breathing. A single deep breath can't fully re-expand them; the sharp second inhale provides the extra pressure to pop the most collapsed ones open. The long exhale then dumps the accumulated CO₂ from those newly-reinflated alveoli.",
+        neuroscience: "The extended exhale activates the vagus nerve via baroreceptor and stretch receptor pathways, triggering parasympathetic dominance. Brain-stem chemoreceptors detect the rapid CO₂ drop and signal 'safe' to the limbic system. The cycle bypasses cortical processing — the calm arrives before you can think about it.",
+        research: [
+          "Balban et al. (2023, Cell Reports Medicine) — 5 min/day cyclic sighing outperformed box breathing and mindfulness for mood improvement and reduced respiratory rate.",
+          "Feldman et al. — characterisation of the pre-Bötzinger complex as the breathing rhythm generator.",
+          "Krasnow et al. (Nature 2016) — identified the specific neurons that trigger sighs in mice."
+        ],
+        tags: ["CO₂ offload", "Vagus nerve", "Alveolar recruitment", "Parasympathetic shift"]
+      },
+      learn: {
+        animation: "sigh",
+        video: {
+          title: "Reduce Stress & Anxiety With the Physiological Sigh",
+          teacher: "Andrew Huberman",
+          youtubeId: "rBdhqBGqiMc"
+        }
+      },
+      related: {
+        people:     ["Andrew Huberman", "Dr. Stephen Porges"],
+        books:      ["Breath: The New Science of a Lost Art", "The Healing Power of the Breath"],
+        techniques: ["4-7-8-breathing", "box-breathing", "buteyko-method"]
+      }
+    },
+
+    '4-7-8-breathing': {
+      overview: {
+        what: "A 4-second nasal inhale, 7-second hold, and 8-second exhale through pursed lips — Dr Andrew Weil's adaptation of classical yogic ratio breathing. The ratio matters more than the exact counts.",
+        keyBenefits: [
+          "Rapid parasympathetic activation through the long exhale.",
+          "Reduces anxiety and panic response within a few cycles.",
+          "Induces drowsiness — one of the best techniques for falling asleep.",
+          "Occupies working memory with counting, interrupting rumination loops."
+        ],
+        whenToUse: [
+          "Falling asleep or returning to sleep at 3am.",
+          "Anxiety spikes or panic episodes.",
+          "Before bed as a nightly wind-down.",
+          "Whenever the mind is racing and won't settle."
+        ],
+        whoFor: "Adults and adolescents seeking a deep calming tool. Pregnant women in the first trimester should skip the long hold. Those with severe cardiovascular conditions should consult a physician."
+      },
+      history: {
+        origins: "Adapted by Dr Andrew Weil from classical pranayama in the 1970s–80s. The 1:1.75:2 inhale-hold-exhale ratio echoes the 1:4:2 ratio described in the Hatha Yoga Pradipika and Patanjali's Yoga Sutras — long-exhale breathing has been a yogic calming technique for millennia.",
+        evolution: "Weil — Harvard-trained physician and founder of the Arizona Center for Integrative Medicine — taught the technique to thousands of medical residents and patients from the 1990s onward, then made it mainstream through his books and online presence. It exploded in popularity through YouTube tutorials in the 2010s.",
+        figures: [
+          { name: "Dr. Andrew Weil",        credit: "Adapted and named the 4-7-8 protocol; brought it to Western medical and lay audiences." },
+          { name: "B.K.S. Iyengar",         credit: "Modern systematiser of pranayama ratio breathing in Light on Pranayama." },
+          { name: "Paramahansa Yogananda",  credit: "Brought yogic breathing — including ratio practices — to Western audiences in the 20th century." }
+        ],
+        ancient: "Sama Vritti (equal ratio) and Visama Vritti (uneven ratio) pranayamas are described in classical Hatha texts. The principle that a longer exhale shifts the nervous system parasympathetic is one of the oldest physiological insights in yoga — formalised in writing by the 15th century but practised much earlier."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "3–4 cycles, twice a day. Don't worry about exact seconds if the 8-count exhale feels too long; preserve the 4:7:8 proportion at shorter values." },
+          { level: "Intermediate", detail: "4–8 cycles immediately before bed, with full counts." },
+          { level: "Advanced",     detail: "Multiple sessions throughout the day; use during anxiety; build to comfortable 8 cycles." }
+        ],
+        tips: [
+          "Place the tongue tip against the ridge behind the upper front teeth throughout.",
+          "Exhale through pursed lips with a soft 'whoosh' sound.",
+          "If you feel light-headed, shorten the proportions. Drop to 2-3.5-4.",
+          "The ratio (1:1.75:2) is the active ingredient — not the absolute counts."
+        ]
+      },
+      science: {
+        physiology: "The extended exhale (twice the inhale length) is the engine — it activates vagal afferents that signal 'safe.' The 7-second hold raises CO₂ slightly, producing mild vasodilation via the Bohr effect, which improves oxygen delivery to tissues.",
+        neuroscience: "Counting the breath engages the prefrontal cortex, occupying working memory and disrupting the default-mode network's anxious loops. Combined with the parasympathetic shift, this creates a top-down (cognitive) plus bottom-up (vagal) calming effect.",
+        research: [
+          "Weil's clinical reports over 30+ years with thousands of patients.",
+          "Small RCTs show reduced anxiety scores after consistent practice.",
+          "Pranayama ratio-breathing research broadly supports long-exhale techniques (Brown & Gerbarg, multiple studies)."
+        ],
+        tags: ["Vagus nerve", "Long exhale", "CO₂ modulation", "Cognitive disruption"]
+      },
+      learn: {
+        animation: "478",
+        video: {
+          title: "Dr. Andrew Weil — Breathing Exercises: 4-7-8 Breath",
+          teacher: "Andrew Weil, M.D.",
+          youtubeId: "gz4G31LGyog"
+        }
+      },
+      related: {
+        people:     ["Dr. Andrew Weil", "B.K.S. Iyengar", "Paramahansa Yogananda"],
+        books:      ["Light on Pranayama", "Breath: The New Science of a Lost Art", "Just Breathe"],
+        techniques: ["box-breathing", "nadi-shodhana", "physiological-sigh"]
+      }
+    },
+
+    'box-breathing': {
+      overview: {
+        what: "Equal counts of 4 in, 4 hold, 4 out, 4 hold — a square. Tactical calm: controlled, alert, and balanced, without the drowsiness of 4-7-8.",
+        keyBenefits: [
+          "Restores prefrontal cortex function under acute stress.",
+          "Stabilises heart rate, blood pressure, and arousal.",
+          "Sharpens cognitive performance — calm without sedation.",
+          "Reduces anxiety without inducing dissociation."
+        ],
+        whenToUse: [
+          "Before performance — speaking, competition, exam, decision.",
+          "Between meetings or high-cognitive-load tasks.",
+          "During stress when you need to stay sharp, not sleepy.",
+          "As a 5-minute daily nervous-system tune-up."
+        ],
+        whoFor: "Performers, athletes, operators, and anyone who needs controlled calm. Skip the holds if you have severe cardiovascular conditions or find them anxiety-triggering."
+      },
+      history: {
+        origins: "Direct descendant of yogic Sama Vritti (equal-ratio) pranayama, described in classical Hatha texts. The contemporary 'box' form was popularised in the US military, particularly through Navy SEAL training and Mark Divine's SEALFIT program.",
+        evolution: "Originally a yogic balancing practice. Reformulated for tactical use by military psychologists after research into how breathing affects performance under stress. Reached mainstream awareness through Mark Divine's books, Tim Ferriss's podcast, and law-enforcement / first-responder training programs.",
+        figures: [
+          { name: "Mark Divine",       credit: "Former Navy SEAL commander; founded SEALFIT and popularised box breathing as a tactical resilience tool." },
+          { name: "B.K.S. Iyengar",    credit: "Modern systematiser of Sama Vritti pranayama from which box breathing is derived." },
+          { name: "Andrew Huberman",   credit: "Neuroscience communicator who has covered slow-paced breathing protocols on his podcast." }
+        ],
+        ancient: "Sama Vritti — 'equal fluctuations' — is one of the oldest deliberate breathing practices. Patanjali describes equalised breath as preparation for meditation. The yogis discovered millennia ago what the SEALs rediscovered: that equal in–hold–out–hold breathing produces controlled, lucid calm."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "5 minutes daily at 4-4-4-4. Notice that the holds become natural with practice." },
+          { level: "Intermediate", detail: "4-6-4-6 or 5-5-5-5. Same square principle, longer dwell." },
+          { level: "Advanced",     detail: "6-6-6-6 or 8-8-8-8 — only with a solid foundation. Never strain the holds." }
+        ],
+        tips: [
+          "Soft mental count — don't grip it. The rhythm is more important than precision.",
+          "Holds are pauses, not locks. The breath rests; nothing is forced.",
+          "Sit with a relaxed spine. The breath travels easier in an open body.",
+          "If the holds feel triggering (anxiety, panic history), drop them and breathe 4 in / 4 out only."
+        ]
+      },
+      science: {
+        physiology: "Equal in/out maintains CO₂ stability. The holds train CO₂ tolerance gently. Slow rate (≈3-4 breaths/min at standard 4-count) approaches the 'resonance frequency' (~6 breaths/min) where HRV peaks.",
+        neuroscience: "Equal-ratio breathing measurably increases HRV and reduces amygdala reactivity over weeks of practice. The cognitive engagement of counting routes activity through the prefrontal cortex, supporting executive function under stress.",
+        research: [
+          "Brown & Gerbarg — clinical work on slow-paced breathing for anxiety, PTSD, and depression.",
+          "Multiple HRV studies on slow breathing protocols (~6 breaths/min) showing parasympathetic dominance.",
+          "Used in PTSD treatment protocols, military performance research, and first-responder training."
+        ],
+        tags: ["HRV", "Resonance breathing", "Vagal tone", "Autonomic balance"]
+      },
+      learn: {
+        animation: "box",
+        video: {
+          title: "Box Breathing — Mark Divine on Unbeatable Mind",
+          teacher: "Mark Divine (former Navy SEAL)",
+          youtubeId: "tEmt1Znux58"
+        }
+      },
+      related: {
+        people:     ["Mark Divine", "Dr. Stephen Porges", "B.K.S. Iyengar"],
+        books:      ["The Oxygen Advantage", "Light on Pranayama", "The Healing Power of the Breath"],
+        techniques: ["4-7-8-breathing", "nadi-shodhana", "ujjayi"]
+      }
+    },
+
+    'buteyko-method': {
+      overview: {
+        what: "Gentle nasal under-breathing — deliberately reducing breath volume to restore tolerance for carbon dioxide. The opposite of 'take a big breath.'",
+        keyBenefits: [
+          "Substantially reduces asthma symptoms and reliever-medication use (RCT evidence).",
+          "Reduces chronic anxiety driven by over-breathing.",
+          "Improves sleep quality, particularly when combined with mouth-taping.",
+          "Enhances oxygen delivery to tissues via restored CO₂ chemistry."
+        ],
+        whenToUse: [
+          "Daily training, 5–20 minutes.",
+          "Asthma management as taught by a Buteyko practitioner.",
+          "Switching from mouth-breathing to nasal-breathing.",
+          "Anxiety driven by chronic hyperventilation."
+        ],
+        whoFor: "Asthmatics, anxious breathers, mouth-breathers, chronic over-breathers. Avoid with severe respiratory disease without medical supervision."
+      },
+      history: {
+        origins: "Developed by Konstantin Buteyko in 1952 at the First Moscow Institute of Medicine. While monitoring chronically ill patients, he noticed that the sickest were the heaviest breathers — and that reducing breath volume paradoxically improved their condition. He named over-breathing 'the deep breathing disease.'",
+        evolution: "Largely suppressed in Soviet medicine through Buteyko's career. Survived through small Soviet clinics treating asthmatic children. Brought to the West in the 1990s via Australian and Irish practitioners; Patrick McKeown — who reversed his own severe asthma through the method — became its leading global teacher and developed the BOLT (Body Oxygen Level Test).",
+        figures: [
+          { name: "Konstantin Buteyko",  credit: "Ukrainian-born Soviet physician (1923–2003) who developed the method; suppressed in his lifetime." },
+          { name: "Patrick McKeown",     credit: "Irish breathing instructor; modern voice of Buteyko; author of The Oxygen Advantage." },
+          { name: "James Nestor",        credit: "Brought the method to global mainstream awareness through Breath." }
+        ],
+        ancient: "Buteyko independently rediscovered the same principle as classical pranayama — that slow, light, nasal breathing is health-promoting; that the appetite for air is calibrated by CO₂ tolerance. The yogis called the air-hunger of training 'tapas,' the heat of practice. Buteyko reached the same conclusion through Soviet physiology."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "Measure your BOLT score (exhale, pinch nose, count seconds until first definite air-hunger). Aim for slow nasal breathing 5 min/day." },
+          { level: "Intermediate", detail: "Mouth-taping at night with surgical tape; walking with reduced volume; brief breath-holds." },
+          { level: "Advanced",     detail: "Breath holds while walking; exercise with reduced volume; advanced 'control pause' protocols." }
+        ],
+        tips: [
+          "Air hunger is the goal — mild, sustained. Never distress.",
+          "Practice on an empty stomach.",
+          "Nasal breathing 24/7, day and night, is the foundational lifestyle change.",
+          "BOLT score above 25 seconds is the target; above 40 is excellent."
+        ]
+      },
+      science: {
+        physiology: "Chronic over-breathing washes out CO₂, causing vasoconstriction and the Bohr effect to work against you — haemoglobin holds onto oxygen rather than releasing it to tissues. Buteyko restores the CO₂ set-point so blood vessels dilate and oxygen unloads efficiently.",
+        neuroscience: "Restored CO₂ reduces sympathetic arousal and respiratory rate. Nasal breathing also produces nitric oxide in the sinuses — a bronchodilator and vasodilator — which mouth-breathing bypasses entirely.",
+        research: [
+          "Bowler et al. (1998) — Australian RCT; Buteyko reduced asthma reliever use by 90%.",
+          "McHugh et al. (2003) — New Zealand RCT confirming asthma benefits.",
+          "Nitric oxide research (Lundberg lab) — nasal NO is a key bronchodilator absent in mouth breathing."
+        ],
+        tags: ["CO₂ tolerance", "Bohr effect", "Nitric oxide", "Nasal breathing"]
+      },
+      learn: {
+        animation: "reduce",
+        video: {
+          title: "How to Breathe Less — The Buteyko Method",
+          teacher: "Patrick McKeown",
+          youtubeId: "EUKMNX8jeMA"
+        }
+      },
+      related: {
+        people:     ["Patrick McKeown", "Konstantin Buteyko", "James Nestor"],
+        books:      ["The Oxygen Advantage", "Breath: The New Science of a Lost Art", "The Breathing Book"],
+        techniques: ["nadi-shodhana", "kumbhaka", "ujjayi"]
+      }
+    },
+
+    'wim-hof-method': {
+      overview: {
+        what: "30–40 powerful breaths through the mouth with passive exhales, followed by an exhale-hold (often minutes long), followed by a brief recovery inhale-hold. Usually 3–4 rounds. Frequently paired with cold exposure.",
+        keyBenefits: [
+          "Voluntary modulation of the innate immune response — proven in peer-reviewed research.",
+          "Adrenaline release and sympathetic activation on demand.",
+          "Cold tolerance through brown adipose tissue activation.",
+          "Measurable stress resilience and a felt sense of vitality."
+        ],
+        whenToUse: [
+          "Morning practice — energising, not for evening.",
+          "Before cold exposure as the breathing preparation.",
+          "Resilience training; immune-modulation protocols.",
+          "Never near water, while driving, or in any position where a faint would be dangerous."
+        ],
+        whoFor: "Healthy adults. Strictly contraindicated in pregnancy, epilepsy, cardiovascular disease, or any condition where loss of consciousness is dangerous."
+      },
+      history: {
+        origins: "Wim Hof — 'The Iceman' — developed the method through the 1980s and 90s in the Netherlands after personal tragedy and immersion in cold environments. He drew on Tibetan Tummo (inner-heat) practice, which he encountered through Buddhist sources, and systematised a simplified, accessible Western version.",
+        evolution: "Hof set 26 Guinness World Records including barefoot half-marathon on ice and climbing past 7000m in shorts. The pivotal moment came in 2014 when Matthijs Kox at Radboud University Medical Center published a study showing Hof and trained practitioners could voluntarily suppress the inflammatory response to endotoxin — overturning the assumption that the autonomic nervous system was beyond conscious control.",
+        figures: [
+          { name: "Wim Hof",         credit: "Developer of the method; subject of the foundational scientific studies." },
+          { name: "Matthijs Kox",    credit: "Radboud researcher; lead author of the landmark 2014 PNAS immune-modulation study." },
+          { name: "Andrew Huberman", credit: "Neuroscientist who has explored WHM physiology and cold exposure mechanisms on his podcast." }
+        ],
+        ancient: "A direct simplification of Tibetan Tummo, the inner-heat practice of Vajrayana Buddhism. Tummo masters can raise body temperature enough to dry wet sheets on themselves in freezing caves. Hof's contribution was making a watered-down Tummo accessible to Western practitioners without 20 years of monastic training."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "1–2 rounds, short holds (30–60s). Always lying down, never near water." },
+          { level: "Intermediate", detail: "3–4 rounds, holds extending to 1–2 minutes. Begin pairing with cold showers." },
+          { level: "Advanced",     detail: "Multiple rounds with long retention; integrated cold immersion; daily practice." }
+        ],
+        tips: [
+          "NEVER practice in water, while driving, swimming, or where a faint could harm you.",
+          "Inhale fully, let the exhale fall passively — don't push the exhale.",
+          "The dizziness, tingling, and lightheadedness are normal and part of the response.",
+          "The hold is on the EMPTY lungs after the final exhale, not on a full breath."
+        ]
+      },
+      science: {
+        physiology: "Forced hyperventilation drops blood CO₂ dramatically, producing respiratory alkalosis. The retention then allows oxygen demand to rise before the CO₂-driven 'breathe!' signal returns. The adrenaline release is real and substantial — comparable to first-bungee-jump levels.",
+        neuroscience: "Sympathetic activation releases catecholamines (adrenaline, noradrenaline) voluntarily. fMRI shows activation of the periaqueductal gray and brown adipose tissue under WHM + cold. Voluntary control of normally-involuntary systems is the central scientific finding.",
+        research: [
+          "Kox et al. (2014, PNAS) — landmark immune modulation study; WHM practitioners suppressed inflammatory markers to injected endotoxin.",
+          "Muzik et al. (2018) — fMRI under cold exposure; periaqueductal gray activation suggests top-down pain modulation.",
+          "Multiple follow-up studies on inflammation, mood, and stress resilience."
+        ],
+        tags: ["Sympathetic activation", "CO₂ manipulation", "Adrenaline", "Immune modulation"]
+      },
+      learn: {
+        animation: "wim",
+        video: {
+          title: "Guided Wim Hof Method Breathing",
+          teacher: "Wim Hof",
+          youtubeId: "tybOi4hjZFQ"
+        }
+      },
+      related: {
+        people:     ["Wim Hof", "Andrew Huberman", "Dr. Stephen Porges"],
+        books:      ["The Wim Hof Method", "Stealing Fire", "Breath: The New Science of a Lost Art"],
+        techniques: ["kapalabhati", "kumbhaka", "buteyko-method"]
+      }
+    },
+
+    'nadi-shodhana': {
+      overview: {
+        what: "Alternate-nostril breathing using one hand to gently close one nostril at a time — the yogi's tool for balancing the nervous system and the brain's hemispheres.",
+        keyBenefits: [
+          "Reduces cortisol and sympathetic arousal.",
+          "Improves heart-rate variability and vagal tone.",
+          "Balances the autonomic nervous system.",
+          "Excellent preparation for meditation — clears the channels."
+        ],
+        whenToUse: [
+          "Before meditation as a settling practice.",
+          "In the morning to start the day balanced.",
+          "When feeling scattered, frazzled, or one-sided (over-energised or sluggish).",
+          "As a 5–15 minute daily practice."
+        ],
+        whoFor: "Everyone. No major contraindications. Skip extended retentions during pregnancy."
+      },
+      history: {
+        origins: "One of the oldest documented pranayamas, described in the Hatha Yoga Pradipika (15th century) and earlier yogic texts. Foundational practice across virtually every traditional lineage — Sivananda, Iyengar, Krishnamacharya, Bihar School.",
+        evolution: "Carried forward unbroken through Hatha yoga lineages for centuries. Brought to the West by Paramahansa Yogananda (Self-Realization Fellowship, 1920s), then systematised technically by B.K.S. Iyengar in Light on Pranayama (1981). Today taught in nearly every yoga studio worldwide.",
+        figures: [
+          { name: "B.K.S. Iyengar",        credit: "Most influential modern systematiser of pranayama in Light on Pranayama." },
+          { name: "Paramahansa Yogananda", credit: "Brought yogic breathing — including Nadi Shodhana — to permanent Western residence." },
+          { name: "Swami Rama",            credit: "Demonstrated voluntary autonomic control in lab settings (Menninger Foundation, 1970s)." }
+        ],
+        ancient: "Based on the concept of nadis (energy channels): Ida (left, lunar, cooling) and Pingala (right, solar, heating). Balancing them awakens Sushumna — the central channel — through which Kundalini rises in classical accounts. Beyond metaphysics, modern physiology has confirmed the 'nasal cycle' (Hasegawa & Kern 1977) — one nostril is dominant for ~90 minutes alternating, which the yogis observed by direct attention millennia before lab equipment."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "5 minutes daily. Equal 4-count in and out, no retentions. Use Vishnu Mudra (fold index + middle; use thumb and ring)." },
+          { level: "Intermediate", detail: "Add brief 4-count retentions. 10–15 minutes. Notice the nasal cycle." },
+          { level: "Advanced",     detail: "Classical 1:4:2 ratio (4 in, 16 hold, 8 out). Only after a solid foundation; learn under a teacher." }
+        ],
+        tips: [
+          "Keep the spine erect — let the breath travel freely.",
+          "The breath should be quiet enough that someone next to you wouldn't hear it.",
+          "Let the right hand stay relaxed; no gripping the face.",
+          "If one nostril is fully blocked, breathe on the dominant side until it clears."
+        ]
+      },
+      science: {
+        physiology: "The nasal cycle — confirmed biological reality — alternates dominance roughly every 90 minutes. Each nostril preferentially activates the contralateral cerebral hemisphere. Conscious alternation appears to balance autonomic activity and brain-hemisphere arousal.",
+        neuroscience: "EEG studies show right-nostril breathing tends to activate left-hemisphere (verbal/logical) and sympathetic activity; left-nostril breathing the opposite. Alternation produces measurable improvement in heart-rate variability and cognitive measures.",
+        research: [
+          "Telles et al. (2013) — Nadi Shodhana reduces cortisol and salivary alpha-amylase.",
+          "Hasegawa & Kern (1977) — confirmed the spontaneous nasal cycle in normal subjects.",
+          "Multiple HRV studies showing improvement after consistent practice."
+        ],
+        tags: ["HRV", "Hemispheric balance", "Nasal cycle", "Vagal tone"]
+      },
+      learn: {
+        animation: "alternate",
+        video: {
+          title: "Nadi Shodhana — Alternate Nostril Breathing",
+          teacher: "Sadhguru / Isha Foundation",
+          youtubeId: "8VwufJrUhic"
+        }
+      },
+      related: {
+        people:     ["B.K.S. Iyengar", "Paramahansa Yogananda", "James Nestor"],
+        books:      ["Light on Pranayama", "Science of Breath", "Breath: The New Science of a Lost Art"],
+        techniques: ["bhramari", "ujjayi", "4-7-8-breathing"]
+      }
+    },
+
+    'kapalabhati': {
+      overview: {
+        what: "'Skull-shining breath' — rapid, forceful exhales driven by sharp abdominal contractions, with passive inhales. Energising; one of the classical yogic cleansing practices.",
+        keyBenefits: [
+          "Strong alertness and energy without caffeine.",
+          "Massages the abdominal organs.",
+          "Clears mucus from the respiratory tract.",
+          "Strengthens the diaphragm and core."
+        ],
+        whenToUse: [
+          "Morning practice — energising, not for evening.",
+          "When sluggish, foggy, or low on energy.",
+          "Before meditation in some traditions (Sivananda especially).",
+          "As a respiratory and abdominal kriya (cleansing)."
+        ],
+        whoFor: "Healthy adults. Contraindicated with hypertension, hernia, pregnancy, recent abdominal surgery, glaucoma, or epilepsy."
+      },
+      history: {
+        origins: "One of the shatkarmas — the six cleansing practices — described in the Hatha Yoga Pradipika (2.35–37, 15th century). Considered a kriya (cleansing technique) rather than a pranayama proper, though commonly grouped with the breath practices.",
+        evolution: "Continued unbroken through classical Hatha lineages. Popularised in the West through Sivananda, Iyengar, and Kundalini yoga (where it's foundational). Found mainstream awareness through modern yoga studios.",
+        figures: [
+          { name: "B.K.S. Iyengar",      credit: "Modern systematiser; included Kapalabhati in Light on Pranayama with detailed contraindications." },
+          { name: "Swami Sivananda",     credit: "Founded the Divine Life Society; brought Kapalabhati to broad Western yoga audiences." },
+          { name: "Yogi Bhajan",         credit: "Kundalini Yoga master; made variants of forceful breathing central to his lineage." }
+        ],
+        ancient: "The name 'Kapalabhati' means 'skull-shining' — the practice was believed to polish the skull and brighten the face, both metaphorically (mental clarity) and literally (increased circulation). Classified alongside neti (nasal cleansing) and dhauti (gastric cleansing) as a practice that prepares the body for deeper pranayama and meditation."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "30 sharp exhales at 1/second, 1–2 rounds. Rest 30s between rounds." },
+          { level: "Intermediate", detail: "60–100 exhales per round, 3 rounds. Faster pace (2/sec) acceptable." },
+          { level: "Advanced",     detail: "300+ exhales at fast pace; combine with bandhas (root and abdominal locks); practice with a teacher." }
+        ],
+        tips: [
+          "The force is on the EXHALE only — the inhale happens passively as the abdomen releases.",
+          "Sit upright with a stable spine.",
+          "Hands resting on knees; shoulders relaxed; chest still.",
+          "Stop immediately if dizzy. Sit and breathe normally."
+        ]
+      },
+      science: {
+        physiology: "Forceful abdominal contractions engage the diaphragm and core; rhythmic exhalations modulate CO₂ similarly to controlled hyperventilation. Sympathetic activation produces the energising effect.",
+        neuroscience: "Preliminary EEG studies show increased alertness and shifts in cortical arousal. The combination of physical engagement and breath modulation produces a measurable activation state.",
+        research: [
+          "Limited large-scale RCTs — most evidence is small-sample EEG and cognitive studies.",
+          "Studies from Telles' lab (India) show improvements in attention and reaction time after Kapalabhati.",
+          "Indirect support from broader yoga research on sympathetic activation."
+        ],
+        tags: ["Sympathetic activation", "Diaphragmatic strength", "CO₂ modulation", "Alertness"]
+      },
+      learn: {
+        animation: "rapid",
+        video: {
+          title: "Kapalabhati Breathing — Step by Step",
+          teacher: "Iyengar Yoga / Yoga With Adriene lineage demo",
+          youtubeId: "OxLnJ85ZxKQ"
+        }
+      },
+      related: {
+        people:     ["B.K.S. Iyengar", "Paramahansa Yogananda", "Wim Hof"],
+        books:      ["Light on Pranayama", "Science of Breath", "Autobiography of a Yogi"],
+        techniques: ["wim-hof-method", "kumbhaka", "nadi-shodhana"]
+      }
+    },
+
+    'bhramari': {
+      overview: {
+        what: "'Humming bee breath' — a soft, steady hum on the exhale through closed lips, often with ears gently covered. The vibration is the practice.",
+        keyBenefits: [
+          "Powerfully calming via vagus-nerve stimulation.",
+          "Boosts nasal nitric oxide ~15× over silent breathing.",
+          "Anecdotally helpful for tinnitus and tension headaches.",
+          "Excellent preparation for sleep or meditation."
+        ],
+        whenToUse: [
+          "Before sleep — one of the gentlest wind-downs.",
+          "During acute anxiety.",
+          "With tinnitus to retrain auditory processing.",
+          "As a 5–10 minute daily practice."
+        ],
+        whoFor: "Everyone — one of the safest pranayamas. No significant contraindications."
+      },
+      history: {
+        origins: "Classical Hatha pranayama, named for the bhramara — the black Indian bee whose hum the practice imitates. Documented in the Hatha Yoga Pradipika (2.68) and Gheranda Samhita.",
+        evolution: "Preserved through yoga lineages. Has had a strong scientific resurgence following the 2002 discovery (Weitzberg & Lundberg) that humming dramatically increases nasal nitric oxide — a finding that connected ancient practice to modern molecular biology.",
+        figures: [
+          { name: "B.K.S. Iyengar",         credit: "Systematised the practice in Light on Pranayama with detailed instruction." },
+          { name: "Eddie Weitzberg",        credit: "Karolinska researcher; co-discovered the humming–nitric-oxide effect in 2002." },
+          { name: "Patrick McKeown",        credit: "Has championed Bhramari for nasal NO and vagal stimulation." }
+        ],
+        ancient: "The hum was understood as a connection to inner sound — nada — the seed of meditative absorption. Sustained resonance practices appear across cultures: Tibetan chant, Sufi dhikr, Gregorian chant, Pythagorean musical philosophy. All recognised that vibration is a portal to inwardness."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "5–10 humming exhales, normal volume. Notice the resonance in the skull." },
+          { level: "Intermediate", detail: "10–15 minutes with focused attention on the vibration." },
+          { level: "Advanced",     detail: "Combine with Shanmukhi Mudra (closing ears with thumbs, eyes with fingers) and with kumbhaka." }
+        ],
+        tips: [
+          "Lips gently closed; tongue resting on the floor of the mouth.",
+          "Let the sound be even — same volume throughout the exhale.",
+          "Feel the vibration in the bones of the skull and the chest.",
+          "Closing the ears with thumbs (Shanmukhi Mudra) deepens the internal sound."
+        ]
+      },
+      science: {
+        physiology: "Humming produces dramatic nasal nitric-oxide release — 15× silent breathing. NO is a bronchodilator, vasodilator, and antimicrobial; it improves oxygen uptake in the lungs and is essential to gas-exchange physiology.",
+        neuroscience: "Vibration of the larynx and pharynx stimulates the vagus nerve via mechanoreceptors. The sustained tone provides an auditory anchor for attention, deepening parasympathetic activation.",
+        research: [
+          "Weitzberg & Lundberg (2002, AJRCCM) — landmark; humming raises nasal NO 15-fold.",
+          "Studies on Bhramari for hypertension, sleep quality, and tinnitus with modest but consistent positive findings.",
+          "Vagal-stimulation research supports laryngeal-vibration as an intervention."
+        ],
+        tags: ["Nitric oxide", "Vagus nerve", "Mechanoreceptors", "Resonance"]
+      },
+      learn: {
+        animation: "hum",
+        video: {
+          title: "Bhramari Pranayama — The Humming Bee Breath",
+          teacher: "Iyengar / Sivananda tradition demo",
+          youtubeId: "m9XKBoYbeAo"
+        }
+      },
+      related: {
+        people:     ["B.K.S. Iyengar", "Patrick McKeown", "James Nestor"],
+        books:      ["Light on Pranayama", "Breath: The New Science of a Lost Art", "Science of Breath"],
+        techniques: ["ujjayi", "nadi-shodhana", "4-7-8-breathing"]
+      }
+    },
+
+    'ujjayi': {
+      overview: {
+        what: "'Victorious breath' — a slight constriction at the back of the throat creating a soft audible ocean-like sound, sustained throughout the breath. The yogi's running breath.",
+        keyBenefits: [
+          "Sustained focus through an internal auditory anchor.",
+          "Naturally slows breath rate via mild airflow resistance.",
+          "Generates internal heat (tapas).",
+          "Improves vagal tone over time."
+        ],
+        whenToUse: [
+          "Throughout a yoga asana practice (Ashtanga in particular).",
+          "During long-form meditation.",
+          "During endurance running or athletic effort.",
+          "Any sustained task requiring inner focus."
+        ],
+        whoFor: "Most people. The throat constriction may feel intense at first; ease into it."
+      },
+      history: {
+        origins: "Among the most ancient pranayamas, documented throughout the classical Hatha texts. The Sanskrit name 'Ujjayi' means 'victorious' — the breath that conquers the wandering mind.",
+        evolution: "Central practice in Krishnamacharya's modern yoga (early 20th century), inherited by his students Pattabhi Jois (Ashtanga) and B.K.S. Iyengar. Spread globally through these two streams — Ujjayi is the default breath in most contemporary vinyasa and Ashtanga practice.",
+        figures: [
+          { name: "Krishnamacharya",       credit: "The 'grandfather of modern yoga'; restored Ujjayi to centre of practice." },
+          { name: "Pattabhi Jois",         credit: "Founded Ashtanga Yoga; made Ujjayi the breath of the practice." },
+          { name: "B.K.S. Iyengar",        credit: "Detailed instruction in Light on Pranayama." }
+        ],
+        ancient: "Considered the breath of tapas — internal heat that purifies. Ancient yogis used it for endurance and inner focus across millennia. The internal sound (nada) is connected to meditative practice — sustained attention on subtle sound deepens absorption."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "5 minutes seated, no asana. Find the constriction; feel the sound." },
+          { level: "Intermediate", detail: "Maintain throughout yoga practice. Notice how the breath self-regulates." },
+          { level: "Advanced",     detail: "Sustain through long meditation or athletic effort; combine with kumbhaka." }
+        ],
+        tips: [
+          "Imagine fogging glasses with your breath — that's the constriction, but with the mouth closed.",
+          "The sound should be soft — like distant ocean, not a roar.",
+          "Use the sound as your anchor for attention.",
+          "If the throat tires, soften the constriction."
+        ]
+      },
+      science: {
+        physiology: "Slight glottal narrowing produces airflow resistance, slowing the breath naturally. Slow breath rates approach the resonance frequency (~6 bpm) where HRV peaks. Mild increase in intrathoracic pressure modulates vagal tone.",
+        neuroscience: "The auditory anchor reduces mind-wandering (default-mode network activity). Combined with slow breath rate, this engages parasympathetic dominance while maintaining alertness.",
+        research: [
+          "Studies on slow yogic breathing (which includes Ujjayi) consistently show HRV improvement.",
+          "Contemplative neuroscience supports the role of internal-sound focus in reducing mind-wandering.",
+          "Used in clinical breathing-retraining protocols for anxiety and asthma."
+        ],
+        tags: ["HRV", "Vagal tone", "Attentional anchor", "Airflow resistance"]
+      },
+      learn: {
+        animation: "slow-wave",
+        video: {
+          title: "Ujjayi Pranayama — The Ocean Breath",
+          teacher: "Ashtanga / Iyengar tradition demo",
+          youtubeId: "qd2wQDB6Zf8"
+        }
+      },
+      related: {
+        people:     ["B.K.S. Iyengar", "Paramahansa Yogananda"],
+        books:      ["Light on Pranayama", "Science of Breath"],
+        techniques: ["bhramari", "kumbhaka", "nadi-shodhana"]
+      }
+    },
+
+    'kumbhaka': {
+      overview: {
+        what: "Deliberate breath retention — either after an inhale (Antara Kumbhaka) or after an exhale (Bahya Kumbhaka). Considered by classical teachers the heart of pranayama.",
+        keyBenefits: [
+          "Builds CO₂ tolerance and respiratory muscle strength.",
+          "Stimulates mitochondrial adaptation.",
+          "Access to deep meditative states.",
+          "Refines voluntary control of autonomic function."
+        ],
+        whenToUse: [
+          "Within a sustained pranayama practice — never casually.",
+          "After establishing a foundation in simpler practices (months of consistent training).",
+          "With direct guidance from a qualified teacher for advanced ratios."
+        ],
+        whoFor: "Experienced practitioners only. Contraindicated in pregnancy, cardiovascular conditions, hypertension, glaucoma, or epilepsy."
+      },
+      history: {
+        origins: "Patanjali's Yoga Sutras (~2nd century BCE) define pranayama in three movements: inhale, exhale, and the suspension between (kumbhaka). The Hatha Yoga Pradipika (15th century) elaborates extensively. Considered the heart of pranayama in classical texts.",
+        evolution: "Preserved with great care across lineages because of its power and risk. Iyengar wrote that kumbhaka is 'the most important aspect of pranayama, and the most difficult.' Many traditions consider it the gateway to meditative depth — kumbhaka quietens the autonomic system enough for samadhi (absorption) to arise.",
+        figures: [
+          { name: "Patanjali",            credit: "Defined pranayama and kumbhaka in the Yoga Sutras (classical era)." },
+          { name: "B.K.S. Iyengar",       credit: "Most detailed modern technical instruction in Light on Pranayama." },
+          { name: "T.K.V. Desikachar",    credit: "Krishnamacharya's son; brought sophisticated ratio breathing including kumbhaka to Western audiences." }
+        ],
+        ancient: "The pause between breaths was understood as the place where prana settles and consciousness can rest. The Yoga Sutras describe it as a bridge to dharana (concentration) and dhyana (meditation). The ancient insight: breath is the bridge to consciousness, and the pause is where the bridge is steadiest."
+      },
+      howTo: {
+        progressions: [
+          { level: "Beginner",     detail: "5–10 second holds on full inhale only, with full ease. Build over weeks." },
+          { level: "Intermediate", detail: "Longer holds with bandhas (root, abdominal, throat locks). Approach 30s." },
+          { level: "Advanced",     detail: "Extended retentions (1+ min) within a structured practice. Classical 1:4:2 ratios. Always with a teacher." }
+        ],
+        tips: [
+          "Never force. If the hold takes strain to maintain, it's already too long.",
+          "Build over months, not weeks.",
+          "Inhale-hold and exhale-hold are distinct practices with different effects.",
+          "The bandhas (locks) become essential at advanced levels — learn them under guidance."
+        ]
+      },
+      science: {
+        physiology: "CO₂ rises during retention, producing vasodilation (Bohr effect) and shifting blood-gas chemistry. Diaphragmatic stillness during hold reduces vagal afferent firing, with measurable HRV changes.",
+        neuroscience: "EEG studies of advanced practitioners show brainwave shifts toward alpha and theta during kumbhaka. Voluntary control of normally-autonomic systems strengthens prefrontal–autonomic neural pathways.",
+        research: [
+          "Brown & Gerbarg — Sudarshan Kriya research includes kumbhaka components.",
+          "EEG studies of advanced yogis showing altered cortical states during retention.",
+          "CO₂ physiology and the Bohr effect are well-established in respiratory medicine."
+        ],
+        tags: ["CO₂ elevation", "Bohr effect", "Vagal modulation", "Neural plasticity"]
+      },
+      learn: {
+        animation: "expand-hold",
+        video: {
+          title: "Kumbhaka — Breath Retention in Pranayama",
+          teacher: "Iyengar Yoga tradition demo",
+          youtubeId: "5n2NMTaWRwM"
+        }
+      },
+      related: {
+        people:     ["B.K.S. Iyengar", "Wim Hof", "Patrick McKeown"],
+        books:      ["Light on Pranayama", "Science of Breath", "The Wim Hof Method"],
+        techniques: ["wim-hof-method", "buteyko-method", "ujjayi"]
+      }
+    }
+  };
+
   const LIBRARY = {
     books: [
       { title: "Breath: The New Science of a Lost Art", author: "James Nestor", year: 2020, summary: "Modern breathing science as narrative — nasal breathing, CO₂ tolerance, Buteyko, and the historical detectives of breath." },
@@ -2505,7 +3940,16 @@
     `).join('');
   }
 
+  // Router: rich tabbed detail for techniques with TECHNIQUE_DETAILS data; simple detail otherwise.
   function renderDetail(item, containerId, kind) {
+    if (kind === 'technique' && TECHNIQUE_DETAILS[item.id]) {
+      renderTechniqueDetail(item, containerId);
+    } else {
+      renderSimpleDetail(item, containerId, kind);
+    }
+  }
+
+  function renderSimpleDetail(item, containerId, kind) {
     const container = document.getElementById(containerId);
     container.innerHTML = `
       <button class="back-btn" onclick="${kind === 'technique' ? 'hideTechniqueDetail()' : 'hideMeditationDetail()'}">
@@ -2540,18 +3984,385 @@
       </div>` : ''}
 
       <div class="complete-wrap">
-        ${alreadyCompletedToday(item.id) ? `
-          <button class="complete-btn done" disabled>
-            <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
-            Completed today
-          </button>` : `
-          <button class="complete-btn" onclick="completeSession('${kind === 'technique' ? 'technique' : 'meditation'}', '${item.id}')">
-            <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
-            Mark session complete
-          </button>`
-        }
+        ${completeBtnHtml(item, kind)}
       </div>
     `;
+  }
+
+  function completeBtnHtml(item, kind) {
+    return alreadyCompletedToday(item.id)
+      ? `<button class="complete-btn done" disabled>
+           <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+           Completed today
+         </button>`
+      : `<button class="complete-btn" onclick="completeSession('${kind === 'technique' ? 'technique' : 'meditation'}', '${item.id}')">
+           <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+           Mark session complete
+         </button>`;
+  }
+
+  /* ─── Tabbed technique detail ─── */
+  function renderTechniqueDetail(item, containerId) {
+    const d = TECHNIQUE_DETAILS[item.id];
+    const container = document.getElementById(containerId);
+    const itemIdJs = item.id.replace(/'/g, "\\'");
+
+    container.innerHTML = `
+      <button class="back-btn" onclick="hideTechniqueDetail()">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back to techniques
+      </button>
+
+      <h1 class="detail-title">${escapeHtml(item.title)}</h1>
+      <p class="detail-desc">${escapeHtml(item.desc)}</p>
+      <div class="detail-meta">
+        <span class="pill accent">${escapeHtml(item.bestFor)}</span>
+        <span class="pill diff-${item.difficulty}">${item.difficulty}</span>
+        <span class="pill">${escapeHtml(item.duration)}</span>
+      </div>
+
+      <div class="detail-actions">
+        <button class="action-btn primary" onclick="openStartSession('${itemIdJs}')">
+          <svg viewBox="0 0 24 24"><path d="M5 4l14 8-14 8z"/></svg>
+          Start session
+        </button>
+        <button class="action-btn secondary" onclick="addToPlan('${itemIdJs}')">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          Add to plan
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="overview" onclick="switchTab(this, 'overview')">Overview</button>
+        <button class="tab"        data-tab="history"  onclick="switchTab(this, 'history')">History</button>
+        <button class="tab"        data-tab="howto"    onclick="switchTab(this, 'howto')">How to</button>
+        <button class="tab"        data-tab="science"  onclick="switchTab(this, 'science')">Science</button>
+        <button class="tab"        data-tab="learn"    onclick="switchTab(this, 'learn')">Learn</button>
+      </div>
+
+      <!-- Tab 1: OVERVIEW -->
+      <div class="tab-panel active" data-panel="overview">
+        <h3>What it is</h3>
+        <p>${escapeHtml(d.overview.what)}</p>
+
+        <h3>Key benefits</h3>
+        <ul>${d.overview.keyBenefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
+
+        <h3>When to use it</h3>
+        <ul>${d.overview.whenToUse.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul>
+
+        <h3>Who it's for</h3>
+        <p>${escapeHtml(d.overview.whoFor)}</p>
+
+        ${item.cautions ? `
+          <h3>Cautions</h3>
+          <div class="caution-box">
+            <strong>Practice safely</strong>
+            ${escapeHtml(item.cautions)}
+          </div>` : ''}
+      </div>
+
+      <!-- Tab 2: HISTORY -->
+      <div class="tab-panel" data-panel="history">
+        <h3>Origins &amp; tradition</h3>
+        <p>${escapeHtml(d.history.origins)}</p>
+
+        <h3>How it evolved</h3>
+        <p>${escapeHtml(d.history.evolution)}</p>
+
+        <h3>Key figures</h3>
+        <div class="figures-list">
+          ${d.history.figures.map(f => `
+            <div class="figure-row">
+              <div class="fig-name">${escapeHtml(f.name)}</div>
+              <div class="fig-credit">${escapeHtml(f.credit)}</div>
+            </div>`).join('')}
+        </div>
+
+        <h3>Connection to ancient practice</h3>
+        <p>${escapeHtml(d.history.ancient)}</p>
+      </div>
+
+      <!-- Tab 3: HOW TO -->
+      <div class="tab-panel" data-panel="howto">
+        <h3>The method, step by step</h3>
+        <ul>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+
+        <h3>Typical duration</h3>
+        <p>${escapeHtml(item.duration)} — find your own rhythm within that range.</p>
+
+        <h3>Beginner → advanced progression</h3>
+        <div class="progressions">
+          ${d.howTo.progressions.map(p => `
+            <div class="progression">
+              <div class="prog-level">${escapeHtml(p.level)}</div>
+              <div class="prog-detail">${escapeHtml(p.detail)}</div>
+            </div>`).join('')}
+        </div>
+
+        <h3>Tips</h3>
+        <ul>${d.howTo.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+      </div>
+
+      <!-- Tab 4: SCIENCE -->
+      <div class="tab-panel" data-panel="science">
+        <h3>What's happening in the body</h3>
+        <p>${escapeHtml(d.science.physiology)}</p>
+
+        <h3>Neuroscience</h3>
+        <p>${escapeHtml(d.science.neuroscience)}</p>
+
+        <h3>Key mechanisms</h3>
+        <div class="sci-tags">${d.science.tags.map(t => `<span class="sci-tag">${escapeHtml(t)}</span>`).join('')}</div>
+
+        <h3>Research findings</h3>
+        <ul>${d.science.research.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+      </div>
+
+      <!-- Tab 5: LEARN -->
+      <div class="tab-panel" data-panel="learn">
+        <h3>Breathing animation</h3>
+        <div class="learn-animation">
+          ${renderAnimation(d.learn.animation)}
+          <div class="learn-anim-caption">${escapeHtml(animationCaption(d.learn.animation, item))}</div>
+        </div>
+
+        <h3>Watch the teacher</h3>
+        <div class="learn-video-wrap">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.learn.video.youtubeId)}"
+            title="${escapeHtml(d.learn.video.title)}"
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <div class="learn-video-meta">
+          <span class="vm-title">${escapeHtml(d.learn.video.title)}</span>
+          <span class="vm-teacher">${escapeHtml(d.learn.video.teacher)}</span>
+        </div>
+      </div>
+
+      <!-- Related blocks -->
+      ${renderRelatedBlock('People to know',         d.related.people.map(name => ({ kind: 'person', name }))) }
+      ${renderRelatedBlock('Books worth reading',    d.related.books.map(title => ({ kind: 'book', title }))) }
+      ${renderRelatedBlock('Related techniques',     d.related.techniques.map(id => ({ kind: 'technique', id }))) }
+
+      <div class="complete-wrap">
+        ${completeBtnHtml(item, 'technique')}
+      </div>
+    `;
+  }
+
+  /* Animation render — picks SVG/HTML markup for a given technique animation type. */
+  function renderAnimation(type) {
+    switch (type) {
+      case 'box': return `
+        <div class="anim-box">
+          <span class="anim-box-label top">Inhale · 4</span>
+          <span class="anim-box-label right">Hold · 4</span>
+          <span class="anim-box-label bottom">Exhale · 4</span>
+          <span class="anim-box-label left">Hold · 4</span>
+          <div class="anim-box-dot"></div>
+        </div>`;
+      case '478': return `
+        <div class="anim-478">
+          <div class="anim-478-ratio">4 · 7 · 8</div>
+          <div class="anim-478-orb"></div>
+        </div>`;
+      case 'sigh': return `
+        <div class="anim-sigh">
+          <div class="anim-sigh-orb"></div>
+        </div>`;
+      case 'wim': return `
+        <div class="anim-wim" id="anim-wim-host">
+          <div class="anim-wim-phase" id="anim-wim-phase">Breath</div>
+          <div class="anim-wim-counter" id="anim-wim-counter">1</div>
+          <div class="anim-wim-orb"></div>
+        </div>`;
+      case 'reduce': return `
+        <div class="anim-reduce">
+          <div class="anim-reduce-ring"></div>
+          <div class="anim-reduce-orb"></div>
+        </div>`;
+      case 'alternate': return `
+        <div class="anim-alternate" style="position: relative;">
+          <div class="anim-alternate-orb left"></div>
+          <div class="anim-alternate-orb right"></div>
+        </div>`;
+      case 'rapid': return `
+        <div class="anim-rapid">
+          <div class="anim-rapid-orb"></div>
+        </div>`;
+      case 'hum': return `
+        <div class="anim-hum">
+          <div class="anim-hum-orb"></div>
+        </div>`;
+      case 'slow-wave': return `
+        <div class="anim-slow-wave">
+          <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+            <path class="wave-path" d="M0 40 Q 25 0, 50 40 T 100 40 T 150 40 T 200 40"/>
+          </svg>
+        </div>`;
+      case 'expand-hold': return `
+        <div class="anim-expand-hold">
+          <div class="anim-expand-hold-orb"></div>
+        </div>`;
+      default: return `<div class="anim-478"><div class="anim-478-orb"></div></div>`;
+    }
+  }
+
+  function animationCaption(type, item) {
+    switch (type) {
+      case 'box':        return 'Trace the square · 4–4–4–4';
+      case '478':        return 'Inhale 4 · hold 7 · exhale 8';
+      case 'sigh':       return 'Inhale · top-off sniff · long exhale';
+      case 'wim':        return 'One full breath per beat · then retain';
+      case 'reduce':     return 'Gentle, reduced-volume nasal breath';
+      case 'alternate':  return 'Left then right · alternate';
+      case 'rapid':      return 'Sharp exhales · passive inhale';
+      case 'hum':        return 'Steady humming · feel the resonance';
+      case 'slow-wave':  return 'Slow continuous breath · audible ocean';
+      case 'expand-hold': return 'Expand · retain · release';
+      default:           return item.title;
+    }
+  }
+
+  /* ─── Related blocks ─── */
+  function renderRelatedBlock(title, items) {
+    if (!items.length) return '';
+    const cards = items.map(it => {
+      if (it.kind === 'person') {
+        const person = LIBRARY.people.find(p => p.name === it.name);
+        const sub = person ? person.role : '';
+        return `<button class="related-card" onclick="openLibraryEntry('person','${slug(it.name)}')">
+          <span class="rc-kicker">Person</span>
+          <span class="rc-title">${escapeHtml(it.name)}</span>
+          ${sub ? `<span class="rc-sub">${escapeHtml(sub)}</span>` : ''}
+        </button>`;
+      }
+      if (it.kind === 'book') {
+        const book = LIBRARY.books.find(b => b.title === it.title);
+        const sub = book ? book.author : '';
+        return `<button class="related-card" onclick="openLibraryEntry('book','${slug(it.title)}')">
+          <span class="rc-kicker">Book</span>
+          <span class="rc-title">${escapeHtml(it.title)}</span>
+          ${sub ? `<span class="rc-sub">${escapeHtml(sub)}</span>` : ''}
+        </button>`;
+      }
+      if (it.kind === 'technique') {
+        const t = TECHNIQUES.find(x => x.id === it.id);
+        if (!t) return '';
+        return `<button class="related-card" onclick="navigate('techniques'); showTechniqueDetail('${t.id}')">
+          <span class="rc-kicker">Technique</span>
+          <span class="rc-title">${escapeHtml(t.title)}</span>
+          <span class="rc-sub">${escapeHtml(t.bestFor)} · ${escapeHtml(t.duration)}</span>
+        </button>`;
+      }
+      return '';
+    }).join('');
+    return `<div class="related-block">
+      <h3>${escapeHtml(title)}</h3>
+      <div class="related-grid">${cards}</div>
+    </div>`;
+  }
+
+  /* Tab switching */
+  function switchTab(btn, panelName) {
+    const root = btn.closest('.detail-view');
+    if (!root) return;
+    root.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    root.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const panel = root.querySelector(`[data-panel="${panelName}"]`);
+    if (panel) panel.classList.add('active');
+
+    // Drive the Wim Hof counter only when its tab is visible
+    if (panelName === 'learn' && document.getElementById('anim-wim-host')) {
+      startWimCounter();
+    } else {
+      stopWimCounter();
+    }
+  }
+
+  /* Wim Hof counter — JS-driven (one beat per ~1.6s, count 1→30, then 10s hold, repeat) */
+  let wimTimer = null;
+  function startWimCounter() {
+    stopWimCounter();
+    const counterEl = document.getElementById('anim-wim-counter');
+    const phaseEl   = document.getElementById('anim-wim-phase');
+    const host      = document.getElementById('anim-wim-host');
+    if (!counterEl || !phaseEl || !host) return;
+    let n = 0;
+    function tick() {
+      n += 1;
+      if (n <= 30) {
+        counterEl.textContent = String(n);
+        phaseEl.textContent = 'Breath ' + n + ' / 30';
+        host.classList.remove('hold');
+        wimTimer = setTimeout(tick, 1600);
+      } else if (n === 31) {
+        counterEl.textContent = '—';
+        phaseEl.textContent = 'Retain · empty lungs';
+        host.classList.add('hold');
+        wimTimer = setTimeout(tick, 10000);
+      } else {
+        n = 0;
+        wimTimer = setTimeout(tick, 800);
+      }
+    }
+    tick();
+  }
+  function stopWimCounter() {
+    if (wimTimer) { clearTimeout(wimTimer); wimTimer = null; }
+  }
+
+  /* ─── Actions: Start Session / Add to Plan ─── */
+  function openStartSession(techniqueId) {
+    const item = TECHNIQUES.find(t => t.id === techniqueId);
+    if (item) document.getElementById('startSessionTitle').textContent = item.title;
+    document.getElementById('startSessionModal').classList.add('active');
+  }
+  function closeStartSession() {
+    document.getElementById('startSessionModal').classList.remove('active');
+  }
+
+  function addToPlan(techniqueId) {
+    const item = TECHNIQUES.find(t => t.id === techniqueId);
+    if (!item) return;
+    store.planAdditions = store.planAdditions || [];
+    // Don't duplicate same-day additions
+    const today = todayKey();
+    const alreadyToday = store.planAdditions.some(p => p.practiceId === techniqueId && tsKey(p.addedAt) === today);
+    if (!alreadyToday) {
+      store.planAdditions.unshift({
+        practiceId: techniqueId,
+        practiceTitle: item.title,
+        addedAt: new Date().toISOString()
+      });
+      saveStore(store);
+    }
+    showToast({ icon: '🙏', label: alreadyToday ? 'Already in your plan' : 'Added to your plan', autohide: 2400 });
+  }
+
+  /* ─── Slug helper + library navigation ─── */
+  function slug(s) {
+    return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
+  function openLibraryEntry(kind, slugId) {
+    navigate('library');
+    setTimeout(() => highlightLibraryEntry(slugId), 200);
+  }
+
+  function highlightLibraryEntry(slugId) {
+    document.querySelectorAll('.lib-item.lib-highlight').forEach(el => el.classList.remove('lib-highlight'));
+    const el = document.querySelector(`[data-lib-id="${slugId}"]`);
+    if (!el) return;
+    el.classList.add('lib-highlight');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => el.classList.remove('lib-highlight'), 2400);
   }
 
   function alreadyCompletedToday(practiceId) {
@@ -2754,6 +4565,23 @@ Build my personalised plan.`;
 
   async function runPlanRequest() {
     state.planLoading = true;
+    const confirmed = await confirmApiCall({
+      callType: 'plan',
+      messages: state.planHistory,
+      context: null
+    });
+    if (!confirmed) {
+      // User cancelled — roll back the just-pushed user turn
+      const lastIsUser = state.planHistory.length && state.planHistory[state.planHistory.length - 1].role === 'user';
+      if (lastIsUser) state.planHistory.pop();
+      // Remove the user bubble that was rendered before the API call
+      const msgsEl = document.getElementById('plan-messages');
+      if (msgsEl && msgsEl.lastElementChild && msgsEl.lastElementChild.classList.contains('user')) {
+        msgsEl.lastElementChild.remove();
+      }
+      state.planLoading = false;
+      return;
+    }
     showTyping('plan-messages');
     try {
       const res = await fetch('/ask', {
@@ -2771,6 +4599,7 @@ Build my personalised plan.`;
         const reply = data.response;
         state.planHistory.push({ role: 'assistant', content: reply });
         appendChatMessage('plan-messages', 'assistant', reply);
+        if (data.usage) showUsageToast(data.usage);
       }
     } catch (err) {
       hideTyping('plan-messages');
@@ -2862,27 +4691,43 @@ Build my personalised plan.`;
     }
 
     const { kind, item } = state.askContext;
-    // Inject context into the FIRST user message only
-    let payloadContent = text;
-    if (state.askHistory.length === 0) {
-      const kindLabel = kind === 'technique' ? 'breathing technique' : 'meditation practice';
-      payloadContent =
-`(Context: I'm currently looking at the **${item.title}** ${kindLabel} in the Breathly app — best for ${item.bestFor.toLowerCase()}, ${item.difficulty.toLowerCase()} level, typical session ${item.duration.toLowerCase()}. Please tailor your answer to this specific practice.)
 
-${text}`;
-    }
-
-    state.askHistory.push({ role: 'user', content: payloadContent, _display: text });
+    // Push the clean user message — no in-message context wrapping anymore.
+    state.askHistory.push({ role: 'user', content: text });
     appendChatMessage('askModalBody', 'user', text);
     state.askLoading = true;
-    showTyping('askModalBody');
 
+    // Build the small per-technique context block (single doc, not the full knowledge base)
+    const techContext = buildTechniqueContext(item, kind);
+
+    const confirmed = await confirmApiCall({
+      callType: 'ask',
+      messages: state.askHistory,
+      context: techContext,
+      practiceTitle: item.title
+    });
+    if (!confirmed) {
+      // Roll back: drop the user message + its rendered bubble
+      state.askHistory.pop();
+      const body = document.getElementById('askModalBody');
+      if (body && body.lastElementChild && body.lastElementChild.classList.contains('user')) {
+        body.lastElementChild.remove();
+      }
+      // If that was the first message, restore the empty-state guidance
+      if (state.askHistory.length === 0) openAskModal();
+      state.askLoading = false;
+      return;
+    }
+
+    showTyping('askModalBody');
     try {
-      const payload = state.askHistory.map(m => ({ role: m.role, content: m.content }));
       const res = await fetch('/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: payload })
+        body: JSON.stringify({
+          messages: state.askHistory.map(m => ({ role: m.role, content: m.content })),
+          context: techContext
+        })
       });
       const data = await res.json();
       hideTyping('askModalBody');
@@ -2894,6 +4739,7 @@ ${text}`;
         const reply = data.response;
         state.askHistory.push({ role: 'assistant', content: reply });
         appendChatMessage('askModalBody', 'assistant', reply);
+        if (data.usage) showUsageToast(data.usage);
       }
     } catch (err) {
       hideTyping('askModalBody');
@@ -2902,6 +4748,66 @@ ${text}`;
       console.error(err);
     }
     state.askLoading = false;
+  }
+
+  /* Build a compact context blob for "Ask about this technique" — single practice only,
+     not the 163K knowledge base. ~600 tokens for a typical technique. */
+  function buildTechniqueContext(item, kind) {
+    const lines = [];
+    lines.push(`# ${item.title}`);
+    lines.push(`Best for: ${item.bestFor}. Difficulty: ${item.difficulty}. Typical duration: ${item.duration}.`);
+    lines.push('');
+    lines.push(`Short description: ${item.desc}`);
+    lines.push('');
+
+    // Pull rich detail if available (techniques have TECHNIQUE_DETAILS; meditations don't yet)
+    const d = TECHNIQUE_DETAILS[item.id];
+    if (d) {
+      lines.push('## Overview');
+      lines.push(d.overview.what);
+      lines.push('Key benefits:');
+      d.overview.keyBenefits.forEach(b => lines.push(`- ${b}`));
+      lines.push('When to use:');
+      d.overview.whenToUse.forEach(w => lines.push(`- ${w}`));
+      lines.push(`Who it's for: ${d.overview.whoFor}`);
+      lines.push('');
+
+      lines.push('## History');
+      lines.push(`Origins: ${d.history.origins}`);
+      lines.push(`Evolution: ${d.history.evolution}`);
+      lines.push('Key figures:');
+      d.history.figures.forEach(f => lines.push(`- ${f.name}: ${f.credit}`));
+      lines.push(`Ancient connection: ${d.history.ancient}`);
+      lines.push('');
+
+      lines.push('## How to');
+      lines.push('Steps:');
+      item.steps.forEach(s => lines.push(`- ${s}`));
+      lines.push('Progressions:');
+      d.howTo.progressions.forEach(p => lines.push(`- ${p.level}: ${p.detail}`));
+      lines.push('Tips:');
+      d.howTo.tips.forEach(t => lines.push(`- ${t}`));
+      lines.push('');
+
+      lines.push('## Science');
+      lines.push(`Physiology: ${d.science.physiology}`);
+      lines.push(`Neuroscience: ${d.science.neuroscience}`);
+      lines.push(`Key mechanisms: ${d.science.tags.join(', ')}`);
+      lines.push('Research:');
+      d.science.research.forEach(r => lines.push(`- ${r}`));
+    } else {
+      // Fallback for meditations or unspecified entries
+      lines.push('Steps:');
+      item.steps.forEach(s => lines.push(`- ${s}`));
+      lines.push('Benefits:');
+      item.benefits.forEach(b => lines.push(`- ${b}`));
+    }
+
+    if (item.cautions) {
+      lines.push('');
+      lines.push(`## Cautions\n${item.cautions}`);
+    }
+    return lines.join('\n');
   }
 
   /* ════════════════ CHAT helpers (shared) ════════════════ */
@@ -3425,6 +5331,116 @@ ${text}`;
       el.style.opacity = '0.8';
     }, 350);
     setTimeout(cycleBreathLabel, 2000);
+  }
+
+  /* ════════════════ COST CONFIRMATION + USAGE TOAST ════════════════ */
+
+  // Claude Sonnet 4.x pricing (USD per token). Update here if the rate sheet changes.
+  const PRICE_INPUT_PER_TOKEN  = 0.000003;   // $3 / 1M
+  const PRICE_OUTPUT_PER_TOKEN = 0.000015;   // $15 / 1M
+  const PRICE_CACHE_WRITE_RATE = 1.25;       // cache-write tokens cost 25% more than base input
+  const PRICE_CACHE_READ_RATE  = 0.10;       // cache-read tokens cost 10% of base input
+
+  // System prompt size is ~constant across calls now that the knowledge base is gone.
+  // Set conservatively so the estimate doesn't undershoot.
+  const SYSTEM_PROMPT_TOKEN_ESTIMATE = 320;
+
+  // Rough char-to-token estimator. Claude tokenises closer to 3.8 chars/token in English,
+  // so 4 is a slight under-estimate — good for a conservative cost ceiling.
+  function estimateTokens(text) {
+    if (!text) return 0;
+    return Math.max(1, Math.ceil(text.length / 4));
+  }
+
+  function formatCost(usd) {
+    if (usd < 0.001) return '<$0.001';
+    return '$' + usd.toFixed(3);
+  }
+
+  function estimateCallCost({ messages = [], context = '', maxOutput = 2048, minOutput = 200 }) {
+    const msgTokens = messages.reduce((sum, m) => sum + estimateTokens(m.content || ''), 0);
+    const contextTokens = estimateTokens(context || '');
+    const inputTokens = SYSTEM_PROMPT_TOKEN_ESTIMATE + contextTokens + msgTokens;
+    const inputCost = inputTokens * PRICE_INPUT_PER_TOKEN;
+    return {
+      inputTokens, contextTokens, msgTokens,
+      minCost: inputCost + (minOutput * PRICE_OUTPUT_PER_TOKEN),
+      maxCost: inputCost + (maxOutput * PRICE_OUTPUT_PER_TOKEN)
+    };
+  }
+
+  let _costResolver = null;
+  function confirmApiCall(opts) {
+    // opts: { callType: 'plan' | 'ask', messages, context, practiceTitle? }
+    return new Promise((resolve) => {
+      _costResolver = resolve;
+
+      const est = estimateCallCost({
+        messages: opts.messages || [],
+        context: opts.context || ''
+      });
+
+      const blurb = opts.callType === 'plan'
+        ? 'Generates or updates your personalised plan using Claude. Your existing plan data is not re-sent — only the conversation in this chat.'
+        : `Sends only the <strong style="color: var(--c-tech)">${escapeHtml(opts.practiceTitle || 'this technique')}</strong> content (not the full library) as context for the coach.`;
+
+      document.getElementById('costModalBlurb').innerHTML = blurb;
+
+      document.getElementById('costBreakdown').innerHTML = `
+        <div class="cost-row"><span class="cost-label">Input (est.)</span>
+          <span class="cost-value">${est.inputTokens.toLocaleString()} tokens</span></div>
+        <div class="cost-row"><span class="cost-label">Output (cap)</span>
+          <span class="cost-value">up to 2,048 tokens</span></div>
+        <div class="cost-row total"><span class="cost-label">Estimated cost</span>
+          <span class="cost-value">${formatCost(est.minCost)} – ${formatCost(est.maxCost)}</span></div>
+      `;
+
+      document.getElementById('costModal').classList.add('active');
+      // Focus Continue so Enter accepts
+      setTimeout(() => document.getElementById('costContinueBtn').focus(), 80);
+    });
+  }
+
+  function costConfirmDecide(go) {
+    document.getElementById('costModal').classList.remove('active');
+    const r = _costResolver;
+    _costResolver = null;
+    if (r) r(go);
+  }
+
+  // Compute actual USD cost from server-reported usage
+  function actualCostUSD(usage) {
+    if (!usage) return 0;
+    const base   = (usage.input_tokens || 0) * PRICE_INPUT_PER_TOKEN;
+    const cWrite = (usage.cache_creation_input_tokens || 0) * PRICE_INPUT_PER_TOKEN * PRICE_CACHE_WRITE_RATE;
+    const cRead  = (usage.cache_read_input_tokens     || 0) * PRICE_INPUT_PER_TOKEN * PRICE_CACHE_READ_RATE;
+    const out    = (usage.output_tokens || 0) * PRICE_OUTPUT_PER_TOKEN;
+    return base + cWrite + cRead + out;
+  }
+
+  function showUsageToast(usage) {
+    const region = document.getElementById('usage-toast-region');
+    if (!region) return;
+    const cost = actualCostUSD(usage);
+    const t = document.createElement('div');
+    t.className = 'usage-toast';
+    const inDetail = (usage.cache_read_input_tokens || 0) > 0
+      ? `${usage.input_tokens || 0} in · ${usage.cache_read_input_tokens} cached`
+      : `${(usage.input_tokens || 0) + (usage.cache_creation_input_tokens || 0)} in`;
+    t.innerHTML = `
+      <div class="ut-body">
+        <span class="ut-cost">${formatCost(cost)}</span>
+        <span class="ut-detail">${inDetail} · ${usage.output_tokens || 0} out</span>
+      </div>
+      <button class="ut-close" onclick="this.parentElement.classList.add('fading'); setTimeout(() => this.parentElement.remove(), 300)" title="Dismiss">
+        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+      </button>
+    `;
+    region.appendChild(t);
+    // Auto-dismiss after 10s, but only if user hasn't already
+    setTimeout(() => {
+      if (t.parentElement) { t.classList.add('fading'); setTimeout(() => t.remove(), 300); }
+    }, 10000);
   }
 
   /* ════════════════ INIT ════════════════ */
