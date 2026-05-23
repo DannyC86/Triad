@@ -3615,74 +3615,252 @@
   <!-- ═════════ HOME ═════════ -->
   <section id="home" class="section active">
 
-    <!-- Compact top header -->
-    <header class="home-header">
-      <button class="home-brand" onclick="navigate('home')" aria-label="Breathly home">
-        <!-- Small mark -->
-        <svg class="home-brand-mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <polygon points="75,100 125,100 100,143.301" fill="var(--teal)" fill-opacity="0.14"/>
-          <circle cx="75"  cy="100" r="50" fill="none" stroke="var(--gold)" stroke-width="3" stroke-opacity="0.85"/>
-          <circle cx="125" cy="100" r="50" fill="none" stroke="var(--gold)" stroke-width="3" stroke-opacity="0.85"/>
-          <circle cx="100" cy="100" r="90" fill="none" stroke="var(--teal)" stroke-width="3.5"/>
-        </svg>
-        <span class="home-brand-name">Breath<span class="accent">ly</span></span>
-      </button>
+    <!-- Hidden compatibility shim: the auth layer's updateAuthUi() targets #profileIconBtn.
+         Keeping it in the DOM (off-screen) lets the existing auth code keep working and gives
+         our home topbar a MutationObserver signal for auth state changes. -->
+    <button id="profileIconBtn" class="profile-icon-btn"
+            onclick="handleProfileIconClick()"
+            aria-hidden="true" tabindex="-1"
+            style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; pointer-events: none;">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
+      <span class="streak-badge hidden" id="home-streak-badge">0</span>
+    </button>
 
-      <button class="profile-icon-btn" id="profileIconBtn" onclick="handleProfileIconClick()" aria-label="Open profile" title="Profile">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
-        <span class="streak-badge hidden" id="home-streak-badge">0</span>
-      </button>
-    </header>
+    <div class="home-scene home-animate" id="home-scene">
 
-    <!-- Hero: interactive orb -->
-    <div class="hero">
-      <button class="hero-orb-btn" id="hero-orb-btn" onclick="openSessionPicker()" aria-label="Choose a quick session">
-        <!-- Sacred-geometry mark: outer circle (cycle), vesica piscis (breath in/out), downward triangle (descent into form) -->
-        <svg class="hero-mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Breathly">
-          <polygon class="mark-triangle" points="75,100 125,100 100,143.301"
-                   fill="var(--teal)" fill-opacity="0.10"/>
-          <circle class="mark-vesica left"  cx="75"  cy="100" r="50"
-                  fill="none" stroke="var(--gold)" stroke-width="1" stroke-opacity="0.7"/>
-          <circle class="mark-vesica right" cx="125" cy="100" r="50"
-                  fill="none" stroke="var(--gold)" stroke-width="1" stroke-opacity="0.7"/>
-          <circle class="mark-outer" cx="100" cy="100" r="90"
-                  fill="none" stroke="var(--teal)" stroke-width="1.25" stroke-opacity="0.75"/>
-        </svg>
-      </button>
+      <!-- ── Ink-wash forest backdrop ── -->
+      <svg class="home-forest" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="mistTop" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#F5F0E8" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#E8DFCE" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="mistMid" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#D9CDB6" stop-opacity="0"/>
+            <stop offset="50%" stop-color="#D9CDB6" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#D9CDB6" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="mistBot" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#C9BCA3" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#A89C84" stop-opacity="0.35"/>
+          </linearGradient>
+        </defs>
+        <!-- Mist layers -->
+        <rect width="1200" height="800" fill="url(#mistTop)"/>
+        <rect y="340" width="1200" height="220" fill="url(#mistMid)"/>
+        <rect y="620" width="1200" height="180" fill="url(#mistBot)"/>
 
-      <div class="breath-label" id="breathLabel">Inhale</div>
-      <div class="hero-orb-hint">Tap to begin a session</div>
-      <div class="hero-tagline">Ancient wisdom · Modern science · Your practice</div>
+        <!-- Left tree -->
+        <g stroke="#1a1a2e" fill="none" stroke-linecap="round">
+          <path d="M 80 800 L 80 280" stroke-width="1.4" opacity="0.6"/>
+          <path d="M 80 380 Q 60 360 40 365 M 80 380 Q 95 365 110 360" stroke-width="0.9" opacity="0.5"/>
+          <path d="M 80 450 Q 56 440 38 450 M 80 460 Q 100 445 122 450" stroke-width="0.9" opacity="0.45"/>
+          <path d="M 80 540 Q 60 530 42 545 M 80 555 Q 100 545 118 555" stroke-width="0.8" opacity="0.4"/>
+          <!-- Secondary trees, fainter -->
+          <path d="M 180 800 L 180 410" stroke-width="1.1" opacity="0.35"/>
+          <path d="M 26 800 L 26 470" stroke-width="0.9" opacity="0.3"/>
+          <path d="M 250 800 L 250 510" stroke-width="0.8" opacity="0.22"/>
+        </g>
 
-      <div class="home-actions">
-        <button class="home-action breathing" onclick="navigate('techniques')">
-          <svg class="action-icon" viewBox="0 0 24 24"><path d="M12 2c-2 4-4 6-4 9a4 4 0 0 0 8 0c0-3-2-5-4-9z"/><path d="M5 13c0 4 2 7 7 9 5-2 7-5 7-9"/></svg>
-          <div>
-            <div class="action-kicker">Breathwork</div>
-            <div class="action-title">Start Breathing</div>
-          </div>
-          <div class="action-sub">10 techniques — for sleep, focus, energy, calm.</div>
-        </button>
-        <button class="home-action meditation" onclick="navigate('meditate')">
-          <svg class="action-icon" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 21c2-5 5-7 7-7s5 2 7 7"/><path d="M3 16l4-2M21 16l-4-2"/></svg>
-          <div>
-            <div class="action-kicker">Stillness</div>
-            <div class="action-title">Start Meditation</div>
-          </div>
-          <div class="action-sub">6 practices — from body scan to yoga nidra.</div>
-        </button>
+        <!-- Right tree -->
+        <g stroke="#1a1a2e" fill="none" stroke-linecap="round">
+          <path d="M 1120 800 L 1120 280" stroke-width="1.4" opacity="0.6"/>
+          <path d="M 1120 380 Q 1140 360 1160 365 M 1120 380 Q 1105 365 1090 360" stroke-width="0.9" opacity="0.5"/>
+          <path d="M 1120 450 Q 1144 440 1162 450 M 1120 460 Q 1100 445 1078 450" stroke-width="0.9" opacity="0.45"/>
+          <path d="M 1120 540 Q 1140 530 1158 545 M 1120 555 Q 1100 545 1082 555" stroke-width="0.8" opacity="0.4"/>
+          <path d="M 1020 800 L 1020 410" stroke-width="1.1" opacity="0.35"/>
+          <path d="M 1174 800 L 1174 470" stroke-width="0.9" opacity="0.3"/>
+          <path d="M 950 800 L 950 510" stroke-width="0.8" opacity="0.22"/>
+        </g>
+
+        <!-- Distant tree-line silhouette, ink wash -->
+        <g fill="#1a1a2e" opacity="0.12">
+          <path d="M 0 600 L 60 575 L 110 590 L 170 565 L 230 590 L 290 580 L 350 600 L 0 600 Z"/>
+          <path d="M 850 600 L 910 575 L 970 585 L 1030 565 L 1090 590 L 1140 575 L 1200 600 L 850 600 Z"/>
+        </g>
+      </svg>
+
+      <!-- ── Persistent topbar ── -->
+      <div class="home-topbar">
+        <div class="home-wordmark">Breathly</div>
+        <nav class="home-top-actions">
+          <button class="home-sound muted" id="home-sound-btn"
+                  onclick="toggleHomeSound()"
+                  aria-label="Toggle ambient sound" aria-pressed="false" title="Play ambient sound">
+            <!-- Muted state (default) -->
+            <svg viewBox="0 0 24 24" class="home-sound-icon-muted" aria-hidden="true">
+              <path d="M3 9v6h4l5 4V5L7 9H3z"/>
+              <path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <!-- Playing state -->
+            <svg viewBox="0 0 24 24" class="home-sound-icon-on" aria-hidden="true">
+              <path d="M3 9v6h4l5 4V5L7 9H3z"/>
+              <path d="M16 8a4.5 4.5 0 0 1 0 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M19 5a8 8 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <a class="home-link" id="home-signin-link" onclick="handleHomeSignInClick()">sign in</a>
+          <a class="home-link" id="home-join-link" onclick="handleHomeJoinClick()">join</a>
+        </nav>
       </div>
 
-      <!-- Profile summary tile -->
-      <button class="home-summary" onclick="navigate('profile')" aria-label="Open profile">
-        <div class="home-summary-head">
-          <span class="summary-kicker">Your practice</span>
-          <span class="summary-link">View profile →</span>
+      <!-- ── Centre: oak doors with warm light behind ── -->
+      <div class="home-center">
+        <div class="home-doorway" aria-hidden="true">
+          <div class="home-light"></div>
+          <div class="home-door home-door-left">
+            <svg viewBox="0 0 100 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="oakL" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"  stop-color="#6b4f2e"/>
+                  <stop offset="50%" stop-color="#4d3920"/>
+                  <stop offset="100%" stop-color="#3a2a17"/>
+                </linearGradient>
+              </defs>
+              <path d="M 5 195 L 5 30 Q 5 5 50 5 L 50 195 Z" fill="url(#oakL)" stroke="#2a1d10" stroke-width="0.9"/>
+              <!-- Inset panels -->
+              <rect x="12" y="35" width="32" height="55" fill="none" stroke="#2a1d10" stroke-width="0.6" opacity="0.6"/>
+              <rect x="12" y="100" width="32" height="55" fill="none" stroke="#2a1d10" stroke-width="0.6" opacity="0.6"/>
+              <!-- Wood grain -->
+              <g stroke="#2a1d10" stroke-width="0.3" opacity="0.35" fill="none">
+                <path d="M 20 10 Q 22 100 18 195"/>
+                <path d="M 30 10 Q 33 80 28 195"/>
+                <path d="M 40 10 Q 38 120 42 195"/>
+              </g>
+              <!-- Handle near the inner edge -->
+              <circle cx="42" cy="118" r="2.2" fill="#a37b3e"/>
+              <circle cx="42" cy="118" r="1" fill="#5a3e1a"/>
+            </svg>
+          </div>
+          <div class="home-door home-door-right">
+            <svg viewBox="0 0 100 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="oakR" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"  stop-color="#6b4f2e"/>
+                  <stop offset="50%" stop-color="#4d3920"/>
+                  <stop offset="100%" stop-color="#3a2a17"/>
+                </linearGradient>
+              </defs>
+              <path d="M 95 195 L 95 30 Q 95 5 50 5 L 50 195 Z" fill="url(#oakR)" stroke="#2a1d10" stroke-width="0.9"/>
+              <rect x="56" y="35" width="32" height="55" fill="none" stroke="#2a1d10" stroke-width="0.6" opacity="0.6"/>
+              <rect x="56" y="100" width="32" height="55" fill="none" stroke="#2a1d10" stroke-width="0.6" opacity="0.6"/>
+              <g stroke="#2a1d10" stroke-width="0.3" opacity="0.35" fill="none">
+                <path d="M 80 10 Q 78 100 82 195"/>
+                <path d="M 70 10 Q 67 80 72 195"/>
+                <path d="M 60 10 Q 62 120 58 195"/>
+              </g>
+              <circle cx="58" cy="118" r="2.2" fill="#a37b3e"/>
+              <circle cx="58" cy="118" r="1" fill="#5a3e1a"/>
+            </svg>
+          </div>
         </div>
-        <div id="home-summary-body">
-          <!-- Populated by renderHomeSummary() -->
-        </div>
-      </button>
+        <p class="home-tagline">step inside</p>
+      </div>
+
+      <!-- ── Three portals (revealed after doors open) ── -->
+      <div class="home-portals">
+        <button class="home-portal" data-portal="breathwork"
+                onclick="enterPortal('breathwork')" aria-label="Breathwork">
+          <div class="portal-scene">
+            <svg viewBox="0 0 100 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs>
+                <linearGradient id="pathLight" x1="0.5" y1="0" x2="0.5" y2="1">
+                  <stop offset="0%"  stop-color="#f8eccd" stop-opacity="0.9"/>
+                  <stop offset="100%" stop-color="#d9bd84" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <rect width="100" height="80" fill="#1a1a2e" opacity="0.5"/>
+              <!-- Light shaft from top -->
+              <path d="M 36 0 L 64 0 L 58 80 L 42 80 Z" fill="url(#pathLight)"/>
+              <!-- Tree silhouettes flanking -->
+              <g fill="#1a1a2e" opacity="0.85">
+                <path d="M 0 80 L 12 45 L 24 80 Z"/>
+                <path d="M 76 80 L 88 40 L 100 80 Z"/>
+                <path d="M 22 80 L 30 55 L 38 80 Z" opacity="0.6"/>
+                <path d="M 62 80 L 70 52 L 78 80 Z" opacity="0.6"/>
+              </g>
+              <!-- Mist bands -->
+              <g stroke="#f8eccd" stroke-width="0.5" stroke-linecap="round" opacity="0.35" fill="none">
+                <path d="M 5 58 Q 50 56 95 58"/>
+                <path d="M 10 68 Q 50 66 90 68"/>
+              </g>
+              <!-- Receding path -->
+              <path d="M 42 80 L 49 30 L 51 30 L 58 80" fill="#f8eccd" opacity="0.18"/>
+            </svg>
+          </div>
+          <span class="portal-label">breathwork</span>
+        </button>
+
+        <button class="home-portal" data-portal="meditation"
+                onclick="enterPortal('meditation')" aria-label="Meditation">
+          <div class="portal-scene">
+            <svg viewBox="0 0 100 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <!-- Night sky -->
+              <rect width="100" height="48" fill="#1a1a2e" opacity="0.85"/>
+              <!-- Moon -->
+              <circle cx="50" cy="22" r="11" fill="#f4e9c5" opacity="0.95"/>
+              <circle cx="46" cy="20" r="11" fill="#1a1a2e" opacity="0.10"/>
+              <!-- Still water -->
+              <rect y="48" width="100" height="32" fill="#0d0f1a"/>
+              <!-- Moon reflection -->
+              <ellipse cx="50" cy="54" rx="10"  ry="2"   fill="#f4e9c5" opacity="0.55"/>
+              <ellipse cx="50" cy="60" rx="8"   ry="1.5" fill="#f4e9c5" opacity="0.3"/>
+              <ellipse cx="50" cy="66" rx="6"   ry="1"   fill="#f4e9c5" opacity="0.18"/>
+              <ellipse cx="50" cy="72" rx="4"   ry="0.8" fill="#f4e9c5" opacity="0.12"/>
+              <!-- Surface ripples -->
+              <ellipse cx="50" cy="48" rx="30" ry="1.6" fill="none" stroke="#f4e9c5" stroke-width="0.4" opacity="0.35"/>
+              <ellipse cx="50" cy="48" rx="45" ry="2.2" fill="none" stroke="#f4e9c5" stroke-width="0.3" opacity="0.2"/>
+            </svg>
+          </div>
+          <span class="portal-label">meditation</span>
+        </button>
+
+        <button class="home-portal" data-portal="knowledge"
+                onclick="enterPortal('knowledge')" aria-label="Knowledge">
+          <div class="portal-scene">
+            <svg viewBox="0 0 100 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs>
+                <radialGradient id="candleGlow" cx="0.5" cy="0.45" r="0.6">
+                  <stop offset="0%"  stop-color="#f6c860" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="#f6c860" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <!-- Warm dark backdrop -->
+              <rect width="100" height="80" fill="#1a1a2e" opacity="0.85"/>
+              <!-- Bookshelves -->
+              <g fill="#3a2a17">
+                <rect x="6"  y="18" width="6" height="50"/>
+                <rect x="13" y="20" width="5" height="48"/>
+                <rect x="19" y="16" width="6" height="52"/>
+                <rect x="26" y="22" width="5" height="46"/>
+                <rect x="32" y="18" width="5" height="50"/>
+                <rect x="63" y="18" width="5" height="50"/>
+                <rect x="69" y="22" width="5" height="46"/>
+                <rect x="75" y="16" width="6" height="52"/>
+                <rect x="82" y="20" width="5" height="48"/>
+                <rect x="88" y="18" width="6" height="50"/>
+              </g>
+              <!-- Spine highlights -->
+              <g fill="#c9a230" opacity="0.65">
+                <rect x="7"  y="18" width="1" height="50"/>
+                <rect x="20" y="16" width="1" height="52"/>
+                <rect x="33" y="18" width="1" height="50"/>
+                <rect x="76" y="16" width="1" height="52"/>
+                <rect x="89" y="18" width="1" height="50"/>
+              </g>
+              <!-- Warm glow halo -->
+              <rect x="10" y="0" width="80" height="80" fill="url(#candleGlow)"/>
+              <!-- Candle -->
+              <rect x="48" y="46" width="4" height="10" fill="#f4e9c5"/>
+              <rect x="46" y="56" width="8" height="3"  fill="#5a3e1a"/>
+              <!-- Flame -->
+              <ellipse cx="50" cy="40" rx="2.4" ry="5.5" fill="#f6c860"/>
+              <ellipse cx="50" cy="38" rx="1.2" ry="3"   fill="#fff3c4"/>
+            </svg>
+          </div>
+          <span class="portal-label">knowledge</span>
+        </button>
+      </div>
     </div>
   </section>
 
