@@ -142,6 +142,14 @@
       background-size: cover;
       background-position: center;
       z-index: 0;
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 15%, black 80%, transparent 100%);
+      mask-composite: intersect;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 15%, black 80%, transparent 100%);
+      -webkit-mask-composite: destination-in;
     }
 
     @media (max-width: 600px) {
@@ -183,12 +191,11 @@
       cursor: pointer;
       border: none;
       outline: none;
-      border-radius: 6px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease, filter 0.3s ease;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
-    .home-img-btn:hover { transform: scale(1.05); box-shadow: 0 8px 28px rgba(0,0,0,0.18); }
+    .home-img-btn:hover { transform: scale(1.05); filter: drop-shadow(0 8px 20px rgba(0,0,0,0.28)); }
     .home-img-btn:active { transform: scale(0.98); }
 
     .home-auth-link {
@@ -3468,21 +3475,21 @@
 
       <div class="home-btn-stack">
         <img
-          src="/static/images/btn-breathwork.png"
+          src="/static/images/btn-breathwork.svg"
           class="home-img-btn"
           alt="Breathwork"
           onclick="homeNavigate('techniques')"
           draggable="false"
         >
         <img
-          src="/static/images/btn-meditate.png"
+          src="/static/images/btn-meditate.svg"
           class="home-img-btn"
           alt="Meditate"
           onclick="homeNavigate('meditate')"
           draggable="false"
         >
         <img
-          src="/static/images/btn-knowledge.png"
+          src="/static/images/btn-knowledge.svg"
           class="home-img-btn"
           alt="Knowledge"
           onclick="homeNavigate('library')"

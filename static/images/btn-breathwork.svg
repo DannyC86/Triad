@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <filter id="wc" x="-15%" y="-15%" width="130%" height="130%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="10" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <radialGradient id="g" cx="48%" cy="44%" r="54%">
+      <stop offset="0%" stop-color="#3d4a7a"/>
+      <stop offset="100%" stop-color="#1e2a4a"/>
+    </radialGradient>
+  </defs>
+  <path d="M 152 28 C 208 22 264 65 268 122 C 272 182 246 232 220 256 C 194 278 162 282 138 273 C 104 262 66 240 50 207 C 32 172 40 132 50 104 C 60 70 96 34 152 28 Z"
+        fill="url(#g)" filter="url(#wc)"/>
+  <path d="M 150,109 C 155,109 161,113 161,118 C 161,124 155,130 150,130 C 144,130 138,124 138,118 C 138,110 145,103 153,102 C 162,101 170,108 170,118 C 170,130 160,140 148,141 C 133,142 122,131 122,118 C 122,103 134,92 150,91 C 167,90 180,103 180,118"
+        fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <text x="150" y="200" text-anchor="middle" fill="white"
+        font-family="system-ui,-apple-system,sans-serif"
+        font-size="14" font-weight="300" letter-spacing="2.2" opacity="0.88">BREATHWORK</text>
+</svg>
