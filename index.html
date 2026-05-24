@@ -117,7 +117,7 @@
     .section {
       max-width: 920px;
       margin: 0 auto;
-      padding: 28px 24px 44px;
+      padding: 80px 24px 44px;
       display: none;
       animation: section-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
       background: var(--bg);
@@ -292,20 +292,20 @@
     .summary-kicker, .summary-link, .summary-row { display: none; }
 
     @media (max-width: 600px) {
-      #home               { min-height: calc(100dvh - 72px); }
+      #home               { min-height: calc(100dvh - 52px); }
       .home-container     { display: flex; flex-direction: column; justify-content: space-between;
-                            min-height: calc(100dvh - 72px); padding: 16px 20px; }
+                            min-height: calc(100dvh - 52px); padding: 16px 20px; }
       .home-logo          { width: 48px; }
       .home-wordmark-text { font-size: 1.6rem; line-height: 1; }
       .home-tagline       { font-size: 0.65rem; white-space: nowrap; line-height: 1; }
       .home-header        { gap: 6px; }
-      .home-cards         { flex-direction: column; align-items: center; width: 100%; gap: 10px; }
-      .home-card          { width: 100%; max-width: 320px; padding: 14px 16px;
-                            max-height: 140px; min-height: 0; }
-      .home-card-icon     { width: 28px; height: 28px; }
-      .home-card-icon svg { width: 28px; height: 28px; }
-      .home-card-label    { font-size: 0.68rem; }
-      .home-card-sublabel { font-size: 0.62rem; }
+      .home-cards         { flex-direction: column; align-items: center; width: 100%; gap: 8px; }
+      .home-card          { width: 100%; max-width: 320px; padding: 12px 16px;
+                            max-height: 120px; min-height: 0; }
+      .home-card-icon     { width: 26px; height: 26px; }
+      .home-card-icon svg { width: 26px; height: 26px; }
+      .home-card-label    { font-size: 0.66rem; }
+      .home-card-sublabel { font-size: 0.60rem; }
       .home-auth-footer   { font-size: 0.72rem; }
     }
 
@@ -898,26 +898,30 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border-top: 1px solid var(--border);
-      padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+      border-radius: 24px 24px 0 0;
+      overflow: hidden;
+      padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
     }
     .nav-inner {
       max-width: 540px;
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
-      justify-items: center;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: stretch;
     }
     .nav-btn {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      gap: 3px;
       padding: 8px 4px;
+      min-height: 44px;
       background: transparent;
       border: none;
       color: rgba(26,26,46,0.45);
-      font-size: 0.62rem;
+      font-size: 0.65rem;
       letter-spacing: 0.06em;
       cursor: pointer;
       transition: color 0.2s ease;
@@ -946,41 +950,74 @@
     .nav-btn[data-section="meditate"]   { --nav-color: var(--gold); }
     .nav-btn[data-section="library"]    { --nav-color: var(--gold); }
 
-    /* Mind / Body / Spirit icons slightly larger than Home / Profile */
+    /* Mind / Body / Spirit icons larger than Home / Profile */
     .nav-btn[data-section="meditate"]   svg,
     .nav-btn[data-section="techniques"] svg,
-    .nav-btn[data-section="library"]    svg { width: 26px; height: 26px; }
+    .nav-btn[data-section="library"]    svg { width: 28px; height: 28px; }
+    .nav-btn[data-section="meditate"]   span,
+    .nav-btn[data-section="techniques"] span,
+    .nav-btn[data-section="library"]    span { font-size: 0.68rem; font-weight: 500; }
 
-    /* Persistent home FAB */
-    .home-fab {
+    /* ─── Top header bar ─── */
+    .top-header {
       position: fixed;
-      top: 16px;
-      left: 16px;
-      z-index: 100;
-      width: 36px;
-      height: 36px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      z-index: 50;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+    .top-header.hidden { display: none; }
+    .top-header-wordmark {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+    .top-header-wordmark:hover { opacity: 0.75; }
+    .top-header-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       background: transparent;
-      border: none;
+      border: 1.5px solid var(--border);
       cursor: pointer;
       color: var(--text-muted);
-      padding: 4px;
-      border-radius: 50%;
-      transition: color 0.2s ease;
+      transition: border-color 0.2s, color 0.2s;
+      font-family: inherit;
+      overflow: hidden;
     }
-    .home-fab svg {
-      width: 28px;
-      height: 28px;
+    .top-header-avatar.logged-in {
+      border-color: var(--gold);
+      color: var(--gold);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .top-header-avatar svg {
+      width: 18px;
+      height: 18px;
       stroke: currentColor;
       fill: none;
       stroke-width: 1.5;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-    .home-fab:hover { color: var(--text); }
-    .home-fab.hidden { display: none; }
+    .top-header-avatar:hover { border-color: var(--text-soft); color: var(--text-soft); }
 
     /* Global focus styles for accessibility */
     *:focus-visible {
@@ -3614,9 +3651,9 @@
       .card-grid { grid-template-columns: 1fr; }
       .home-img-btn { width: 180px; }
       .detail-title { font-size: 1.4rem; }
-      .section { padding: 18px 16px 32px; }
+      .section { padding: 70px 16px 32px; }
       .bubble { max-width: 88%; }
-      .nav-btn { font-size: 0.55rem; }
+      .nav-btn { font-size: 0.58rem; }
       .nav-btn svg { width: 19px; height: 19px; }
       .nav-btn span { white-space: nowrap; }
       .profile-stats { grid-template-columns: 1fr 1fr; }
@@ -4166,10 +4203,13 @@
 <!-- ═════════ Usage toast region (bottom-right) ═════════ -->
 <div class="usage-toast-region" id="usage-toast-region"></div>
 
-<!-- Persistent home icon — hidden on the home section itself -->
-<button class="home-fab hidden" id="home-fab" onclick="navigate('home')" aria-label="Go to home">
-  <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
-</button>
+<!-- ═════════ Top Header — hidden on home ═════════ -->
+<header class="top-header hidden" id="top-header">
+  <button class="top-header-wordmark" onclick="navigate('home')" aria-label="Go to home">Breathly</button>
+  <button class="top-header-avatar" id="profileIconBtn" onclick="handleProfileIconClick()" aria-label="Profile">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
+  </button>
+</header>
 
 <!-- ═════════ Bottom Nav ═════════ -->
 <nav class="nav">
@@ -6518,9 +6558,9 @@
     if (_navBtn) _navBtn.classList.add('active');
     state.section = target;
 
-    // Show/hide persistent home FAB
-    const _homeFab = document.getElementById('home-fab');
-    if (_homeFab) _homeFab.classList.toggle('hidden', target === 'home');
+    // Show/hide top header (hidden on home)
+    const _topHeader = document.getElementById('top-header');
+    if (_topHeader) _topHeader.classList.toggle('hidden', target === 'home');
 
     // Reset to list view when entering a section freshly
     if (target === 'techniques' && !opts.keepDetail) hideTechniqueDetail();
@@ -8982,7 +9022,7 @@ Build my personalised plan.`;
       btn.title = auth.email || 'Account';
       btn.setAttribute('aria-label', 'Open profile (' + (auth.email || '') + ')');
       btn.innerHTML =
-        `<span class="profile-initial">${escapeHtml(initial)}</span>` +
+        `<span>${escapeHtml(initial)}</span>` +
         `<span class="streak-badge hidden" id="home-streak-badge">0</span>`;
     } else {
       btn.classList.add('guest');
@@ -8990,7 +9030,7 @@ Build my personalised plan.`;
       btn.title = 'Log in or sign up';
       btn.setAttribute('aria-label', 'Log in or sign up');
       btn.innerHTML =
-        `<span class="profile-login-text">Log in</span>` +
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>` +
         `<span class="streak-badge hidden" id="home-streak-badge">0</span>`;
     }
     // The streak badge was just re-rendered — restore its current value
