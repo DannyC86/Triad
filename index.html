@@ -3129,6 +3129,51 @@
     .lib-panel { display: none; animation: fade-in 0.3s ease; }
     .lib-panel.active { display: block; }
 
+    /* ─── Breathwork / Meditations practice list ─── */
+    .practice-list { display: flex; flex-direction: column; gap: 8px; }
+    .practice-list-card {
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--navy-card);
+      cursor: pointer; text-align: left;
+      font-family: inherit; width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .practice-list-card:hover { border-color: var(--gold); box-shadow: 0 2px 8px rgba(26,26,46,0.08); }
+    .practice-list-card-title { font-size: 0.92rem; font-weight: 600; color: var(--text); }
+    .practice-list-card-desc  { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+    .practice-list-pills { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+    .practice-list-pill {
+      font-size: 0.65rem; padding: 2px 8px;
+      border-radius: 999px; border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ─── Knowledge practice detail (Overview / History / Science) ─── */
+    .know-detail-head {
+      margin-bottom: 24px;
+    }
+    .know-detail-title { font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .know-detail-desc  { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+    .know-section { border-top: 1px solid var(--border); padding: 20px 0; }
+    .know-section-heading {
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold); font-weight: 600; margin-bottom: 14px;
+    }
+    .know-section h4 { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; margin-top: 14px; }
+    .know-section h4:first-child { margin-top: 0; }
+    .know-section p { font-size: 0.88rem; line-height: 1.65; color: var(--text); margin-bottom: 10px; }
+    .know-section ul { list-style: none; padding: 0; margin: 0 0 10px; }
+    .know-section ul li { font-size: 0.88rem; line-height: 1.6; padding: 3px 0 3px 14px; position: relative; color: var(--text); }
+    .know-section ul li::before { content: '·'; position: absolute; left: 0; color: var(--text-muted); }
+    .know-figures { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+    .know-figure-name   { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .know-figure-credit { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+    .know-sci-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .know-sci-tag { font-size: 0.72rem; padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--text-muted); }
+
     /* ─── Books grid ─── */
     .books-grid {
       display: grid;
@@ -3878,21 +3923,29 @@
 
       <!-- Tab bar -->
       <div class="lib-tabs">
-        <button class="lib-tab active" data-libtab="books"    onclick="switchLibraryTab('books')">
+        <button class="lib-tab active" data-libtab="books"       onclick="switchLibraryTab('books')">
           <span class="lib-tab-label">Books</span><span class="lib-tab-count" id="lib-count-books"></span>
         </button>
-        <button class="lib-tab"        data-libtab="people"   onclick="switchLibraryTab('people')">
+        <button class="lib-tab"        data-libtab="people"      onclick="switchLibraryTab('people')">
           <span class="lib-tab-label">People</span><span class="lib-tab-count" id="lib-count-people"></span>
         </button>
-        <button class="lib-tab"        data-libtab="podcasts" onclick="switchLibraryTab('podcasts')">
+        <button class="lib-tab"        data-libtab="podcasts"    onclick="switchLibraryTab('podcasts')">
           <span class="lib-tab-label">Podcasts</span><span class="lib-tab-count" id="lib-count-podcasts"></span>
+        </button>
+        <button class="lib-tab"        data-libtab="breathwork"  onclick="switchLibraryTab('breathwork')">
+          <span class="lib-tab-label">Breathwork</span>
+        </button>
+        <button class="lib-tab"        data-libtab="meditations" onclick="switchLibraryTab('meditations')">
+          <span class="lib-tab-label">Meditations</span>
         </button>
       </div>
 
       <!-- Tab panels -->
-      <div class="lib-panel active" data-libpanel="books"    id="lib-panel-books"></div>
-      <div class="lib-panel"        data-libpanel="people"   id="lib-panel-people"></div>
-      <div class="lib-panel"        data-libpanel="podcasts" id="lib-panel-podcasts"></div>
+      <div class="lib-panel active" data-libpanel="books"       id="lib-panel-books"></div>
+      <div class="lib-panel"        data-libpanel="people"      id="lib-panel-people"></div>
+      <div class="lib-panel"        data-libpanel="podcasts"    id="lib-panel-podcasts"></div>
+      <div class="lib-panel"        data-libpanel="breathwork"  id="lib-panel-breathwork"></div>
+      <div class="lib-panel"        data-libpanel="meditations" id="lib-panel-meditations"></div>
 
       <!-- Empty state for "no matches" -->
       <div class="lib-empty" id="lib-empty-state" hidden>
@@ -6865,7 +6918,7 @@
       <!-- Tab 3: EXPLORE -->
       <div class="tab-panel" data-panel="explore">
         <div class="explore-cta">
-          <button class="explore-cta-btn" onclick="navigate('library')">
+          <button class="explore-cta-btn" onclick="openKnowledgeEntry('${kind}', '${itemIdJs}')">
             Explore in Knowledge →
           </button>
           <p class="explore-cta-sub">Dive deeper into the history, science and people behind this practice</p>
@@ -7355,10 +7408,10 @@
 
   // UI state for the library view
   const libUiState = {
-    tab: 'books',              // 'books' | 'people' | 'podcasts'
+    tab: 'books',              // 'books' | 'people' | 'podcasts' | 'breathwork' | 'meditations'
     search: '',
     activeFilters: new Set(),  // theme strings from LIBRARY_THEMES
-    detail: null               // { kind: 'book'|'person', id } when a detail view is open
+    detail: null               // { kind, id, sourceTab } when a detail view is open
   };
 
   function initialsFromName(name) {
@@ -7399,16 +7452,18 @@
     document.getElementById('lib-count-people').textContent   = people.length;
     document.getElementById('lib-count-podcasts').textContent = podcasts.length;
 
-    document.getElementById('lib-panel-books').innerHTML    = renderBooksPanel(books);
-    document.getElementById('lib-panel-people').innerHTML   = renderPeoplePanel(people);
-    document.getElementById('lib-panel-podcasts').innerHTML = renderPodcastsPanel(podcasts);
+    document.getElementById('lib-panel-books').innerHTML      = renderBooksPanel(books);
+    document.getElementById('lib-panel-people').innerHTML     = renderPeoplePanel(people);
+    document.getElementById('lib-panel-podcasts').innerHTML   = renderPodcastsPanel(podcasts);
+    document.getElementById('lib-panel-breathwork').innerHTML = renderBreathworkPanel();
+    document.getElementById('lib-panel-meditations').innerHTML= renderMeditationsPanel();
 
-    // Show empty state if the active tab has zero matches
+    // Show empty state only for filterable tabs (books/people/podcasts)
+    const filterableTabs = ['books', 'people', 'podcasts'];
     const counts = { books: books.length, people: people.length, podcasts: podcasts.length };
-    const showEmpty = counts[libUiState.tab] === 0;
+    const showEmpty = filterableTabs.includes(libUiState.tab) && counts[libUiState.tab] === 0;
     const emptyEl = document.getElementById('lib-empty-state');
     if (emptyEl) emptyEl.hidden = !showEmpty;
-    // Hide the current panel content if empty (let empty state show instead)
     document.querySelectorAll('.lib-panel').forEach(p => {
       p.style.display = (p.dataset.libpanel === libUiState.tab && showEmpty) ? 'none' : '';
     });
@@ -7461,6 +7516,32 @@
           </a>` : ''}
         </div>
       </div>`).join('')}</div>`;
+  }
+
+  function renderBreathworkPanel() {
+    return `<div class="practice-list">${TECHNIQUES.map(t => `
+      <button class="practice-list-card" onclick="showKnowledgePracticeDetail('technique','${escapeJs(t.id)}')">
+        <div class="practice-list-card-title">${escapeHtml(t.title)}</div>
+        <div class="practice-list-card-desc">${escapeHtml(t.desc)}</div>
+        <div class="practice-list-pills">
+          <span class="practice-list-pill">${escapeHtml(t.bestFor)}</span>
+          <span class="practice-list-pill">${escapeHtml(t.difficulty)}</span>
+          <span class="practice-list-pill">${escapeHtml(t.duration)}</span>
+        </div>
+      </button>`).join('')}</div>`;
+  }
+
+  function renderMeditationsPanel() {
+    return `<div class="practice-list">${MEDITATIONS.map(m => `
+      <button class="practice-list-card" onclick="showKnowledgePracticeDetail('meditation','${escapeJs(m.id)}')">
+        <div class="practice-list-card-title">${escapeHtml(m.title)}</div>
+        <div class="practice-list-card-desc">${escapeHtml(m.desc)}</div>
+        <div class="practice-list-pills">
+          <span class="practice-list-pill">${escapeHtml(m.bestFor)}</span>
+          <span class="practice-list-pill">${escapeHtml(m.difficulty)}</span>
+          <span class="practice-list-pill">${escapeHtml(m.duration)}</span>
+        </div>
+      </button>`).join('')}</div>`;
   }
 
   /* ─── Filter + search engine ─── */
@@ -7536,7 +7617,7 @@
 
   /* ─── Tab switching ─── */
   function switchLibraryTab(tab) {
-    if (!['books','people','podcasts'].includes(tab)) return;
+    if (!['books','people','podcasts','breathwork','meditations'].includes(tab)) return;
     libUiState.tab = tab;
     document.querySelectorAll('.lib-tab').forEach(b => b.classList.toggle('active', b.dataset.libtab === tab));
     document.querySelectorAll('.lib-panel').forEach(p => p.classList.toggle('active', p.dataset.libpanel === tab));
@@ -7704,10 +7785,91 @@
   }
 
   function hideLibraryDetail() {
+    const prevTab = (libUiState.detail && libUiState.detail.sourceTab) || libUiState.tab;
     libUiState.detail = null;
     document.getElementById('library-list').style.display = '';
     document.getElementById('library-detail').classList.remove('active');
+    switchLibraryTab(prevTab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ─── Knowledge practice detail (Overview / History / Science) ─── */
+  function showKnowledgePracticeDetail(kind, id) {
+    const item    = kind === 'meditation' ? MEDITATIONS.find(m => m.id === id) : TECHNIQUES.find(t => t.id === id);
+    const details = kind === 'meditation' ? MEDITATION_DETAILS[id] : TECHNIQUE_DETAILS[id];
+    if (!item || !details) return;
+    const sourceTab = kind === 'meditation' ? 'meditations' : 'breathwork';
+    libUiState.detail = { kind: 'practice', id, sourceTab };
+    document.getElementById('library-list').style.display = 'none';
+    const det = document.getElementById('library-detail');
+    det.innerHTML = renderKnowledgePracticeDetail(item, details);
+    det.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderKnowledgePracticeDetail(item, d) {
+    const ov = d.overview, hi = d.history, sc = d.science;
+    return `
+      <button class="back-btn" onclick="hideLibraryDetail()">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back to library
+      </button>
+
+      <div class="know-detail-head">
+        <div class="know-detail-title">${escapeHtml(item.title)}</div>
+        <div class="know-detail-desc">${escapeHtml(item.desc)}</div>
+      </div>
+
+      <div class="know-section">
+        <div class="know-section-heading">Overview</div>
+        <h4>What it is</h4>
+        ${collapseP(ov.what, item.id + '-kw-what')}
+        <h4>Key benefits</h4>
+        <ul>${ov.keyBenefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
+        <h4>When to use it</h4>
+        <ul>${ov.whenToUse.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul>
+        <h4>Who it's for</h4>
+        <p>${escapeHtml(ov.whoFor)}</p>
+      </div>
+
+      <div class="know-section">
+        <div class="know-section-heading">History</div>
+        <h4>Origins &amp; tradition</h4>
+        ${collapseP(hi.origins, item.id + '-kw-origins')}
+        <h4>How it evolved</h4>
+        ${collapseP(hi.evolution, item.id + '-kw-evolution')}
+        <h4>Key figures</h4>
+        <div class="know-figures">
+          ${hi.figures.map(f => `
+            <div class="know-figure">
+              <div class="know-figure-name">${escapeHtml(f.name)}</div>
+              <div class="know-figure-credit">${escapeHtml(f.credit)}</div>
+            </div>`).join('')}
+        </div>
+        <h4>Connection to ancient practice</h4>
+        <p>${escapeHtml(hi.ancient)}</p>
+      </div>
+
+      <div class="know-section">
+        <div class="know-section-heading">Science</div>
+        <h4>What's happening in the body</h4>
+        ${collapseP(sc.physiology, item.id + '-kw-phys')}
+        <h4>Neuroscience</h4>
+        ${collapseP(sc.neuroscience, item.id + '-kw-neuro')}
+        <h4>Key mechanisms</h4>
+        <div class="know-sci-tags">${sc.tags.map(t => `<span class="know-sci-tag">${escapeHtml(t)}</span>`).join('')}</div>
+        <h4>Research findings</h4>
+        <ul>${sc.research.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+      </div>
+    `;
+  }
+
+  /* Navigate to Knowledge and open a specific practice entry directly */
+  function openKnowledgeEntry(kind, id) {
+    const tab = kind === 'meditation' ? 'meditations' : 'breathwork';
+    navigate('library', { keepDetail: true });
+    switchLibraryTab(tab);
+    showKnowledgePracticeDetail(kind, id);
   }
 
   /* Wraps toggleRead() so the book detail re-renders to reflect the new state */
