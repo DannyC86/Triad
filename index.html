@@ -165,24 +165,16 @@
       max-width: 580px;
       margin-bottom: 28px;
     }
-    /* Lede inline with header title — right column */
+    /* Lede — always right column, never stacks */
+    .section-head > div:first-child { flex-shrink: 0; max-width: 55%; }
     .section-head .section-lede {
-      font-size: 0.72rem;
+      font-size: 0.70rem;
       line-height: 1.55;
-      max-width: 45%;
-      margin: 4px 0 0;
-      flex-shrink: 0;
+      max-width: 42%;
+      margin: 0;
       color: var(--text-soft);
       text-align: right;
-    }
-    @media (max-width: 480px) {
-      .section-head { flex-wrap: wrap; }
-      .section-head .section-lede {
-        max-width: 100%;
-        margin-top: 8px;
-        font-size: 0.70rem;
-        text-align: left;
-      }
+      align-self: flex-start;
     }
 
     /* ─── HOME ─── */
