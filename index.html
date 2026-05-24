@@ -175,7 +175,7 @@
       padding: 0;
       margin: 0;
       background: linear-gradient(135deg, #F5F0E8 0%, #E8EDF5 100%);
-      min-height: calc(100vh - 124px);
+      min-height: calc(100dvh - 124px);
       overflow: hidden;
     }
     #home.active { display: flex; align-items: stretch; }
@@ -185,7 +185,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      min-height: calc(100vh - 124px);
+      min-height: calc(100dvh - 124px);
       padding: 36px 24px 32px;
       width: 100%;
     }
@@ -995,8 +995,9 @@
       overflow: hidden;
     }
     .top-header-avatar.logged-in {
+      background: var(--gold);
       border-color: var(--gold);
-      color: var(--gold);
+      color: #fff;
       font-size: 0.85rem;
       font-weight: 600;
     }
@@ -1023,14 +1024,14 @@
     .ask-fab {
       position: fixed;
       right: 18px;
-      bottom: 100px;
+      bottom: 140px;
       z-index: 40;
       display: none;
       align-items: center;
       gap: 8px;
-      background: var(--navy);
-      color: #fff;
-      padding: 11px 16px 11px 14px;
+      background: var(--text);
+      color: var(--bg);
+      padding: 11px 18px 11px 14px;
       border-radius: 999px;
       border: none;
       cursor: pointer;
@@ -1041,9 +1042,12 @@
       box-shadow: 0 6px 24px rgba(26,26,46,0.25);
       transition: all 0.2s ease;
     }
-    .ask-fab svg { width: 16px; height: 16px; fill: #fff; }
+    .ask-fab svg { width: 16px; height: 16px; fill: var(--bg); }
     .ask-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(26,26,46,0.35); }
     .ask-fab.visible { display: inline-flex; }
+    @media (max-width: 600px) {
+      .ask-fab { padding: 10px 18px 10px 13px; font-size: 0.82rem; bottom: 140px; }
+    }
 
     /* ─── Ask modal (overlay chat for technique / meditation context) ─── */
     .modal-backdrop {
@@ -2943,37 +2947,30 @@
     .lib-search-clear:hover { background: var(--navy-light); color: var(--text); }
     .lib-search-clear svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    /* Filter pills */
-    .lib-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 22px;
-    }
-    .lib-filter {
-      background: var(--navy-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 999px;
-      padding: 7px 13px;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.16s ease;
-      font-family: inherit;
-      letter-spacing: 0.01em;
-    }
-    .lib-filter:hover {
-      border-color: rgba(201, 169, 110, 0.4);
+    /* Filter dropdown */
+    .lib-filter-select {
+      width: 100%;
+      background: var(--bg);
       color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 36px 10px 14px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8aaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
     }
-    .lib-filter.active {
-      background: color-mix(in srgb, var(--gold) 14%, transparent);
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-    .lib-filter.all-pill {
-      font-weight: 600;
-      letter-spacing: 0.04em;
+    .lib-filter-select:focus {
+      border-color: rgba(201, 169, 110, 0.45);
+      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.08);
     }
 
     /* Tabs */
@@ -3780,10 +3777,18 @@
         </button>
       </div>
 
-      <!-- Theme filter pills -->
-      <div class="lib-filters" id="lib-filters">
-        <!-- Populated by renderLibrary() -->
-      </div>
+      <!-- Theme filter dropdown -->
+      <select class="lib-filter-select" id="lib-filter-select" onchange="onLibFilterChange(this.value)">
+        <option value="">All themes</option>
+        <option value="Anxiety &amp; Stress">Anxiety &amp; Stress</option>
+        <option value="Sleep">Sleep</option>
+        <option value="Focus &amp; Performance">Focus &amp; Performance</option>
+        <option value="Spirituality &amp; Consciousness">Spirituality &amp; Consciousness</option>
+        <option value="Science &amp; Research">Science &amp; Research</option>
+        <option value="Ancient Traditions">Ancient Traditions</option>
+        <option value="Cold Exposure">Cold Exposure</option>
+        <option value="Beginners">Beginners</option>
+      </select>
 
       <!-- Tab bar -->
       <div class="lib-tabs">
@@ -7189,15 +7194,15 @@
   }
 
   function renderLibraryFilters() {
-    const el = document.getElementById('lib-filters');
-    if (!el) return;
-    el.innerHTML = `
-      <button class="lib-filter all-pill ${libUiState.activeFilters.size === 0 ? 'active' : ''}"
-              onclick="clearLibFilters()">All</button>
-      ${LIBRARY_THEMES.map(t => `
-        <button class="lib-filter ${libUiState.activeFilters.has(t) ? 'active' : ''}"
-                onclick="toggleLibFilter('${escapeJs(t)}')">${escapeHtml(t)}</button>`).join('')}
-    `;
+    const sel = document.getElementById('lib-filter-select');
+    if (!sel) return;
+    sel.value = libUiState.activeFilters.size === 1 ? [...libUiState.activeFilters][0] : '';
+  }
+
+  function onLibFilterChange(val) {
+    libUiState.activeFilters.clear();
+    if (val) libUiState.activeFilters.add(val);
+    renderLibraryAllPanels();
   }
 
   function renderLibraryAllPanels() {
