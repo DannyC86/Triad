@@ -238,9 +238,9 @@
       border: 1px solid var(--border);
       border-radius: 20px;
       box-shadow: 0 4px 16px rgba(26,26,46,0.08);
-      padding: 10px 16px;
+      padding: 14px 16px;
       width: 180px;
-      max-height: 80px;
+      max-height: 140px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -278,6 +278,18 @@
       color: var(--text-muted);
       letter-spacing: 0.06em;
     }
+
+    .home-card-icon {
+      width: 40px;
+      height: 40px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2px;
+    }
+    .home-card-icon svg { width: 40px; height: 40px; }
+    @media (max-width: 600px) { .home-card-icon { display: none; } }
 
     .home-auth-footer {
       font-size: 0.72rem;
@@ -3887,16 +3899,55 @@
 
       <div class="home-cards">
         <button class="home-card" onclick="homeNavigate('meditate')">
+          <div class="home-card-icon">
+            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <!-- Lotus: central petal -->
+              <path d="M20 30 C20 22 16 16 20 10 C24 16 20 22 20 30Z"/>
+              <!-- Left inner petal -->
+              <path d="M20 30 C14 26 10 20 13 14 C17 18 18 24 20 30Z"/>
+              <!-- Right inner petal -->
+              <path d="M20 30 C26 26 30 20 27 14 C23 18 22 24 20 30Z"/>
+              <!-- Left outer petal -->
+              <path d="M20 30 C11 28 6 21 8 14 C12 16 16 22 20 30Z"/>
+              <!-- Right outer petal -->
+              <path d="M20 30 C29 28 34 21 32 14 C28 16 24 22 20 30Z"/>
+              <!-- Water line -->
+              <path d="M8 30 Q14 28 20 30 Q26 32 32 30"/>
+            </svg>
+          </div>
           <div class="home-card-label">Mind</div>
           <div class="home-card-sublabel">Meditate</div>
         </button>
 
         <button class="home-card" onclick="homeNavigate('techniques')">
+          <div class="home-card-icon">
+            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <!-- Breath arc — expanding spiral of arcs suggesting inhale/exhale -->
+              <path d="M20 20 C20 16 17 13 20 10 C23 13 20 16 20 20Z"/>
+              <path d="M20 20 C14 18 11 13 14 8 C17 11 18 16 20 20Z"/>
+              <path d="M20 20 C26 18 29 13 26 8 C23 11 22 16 20 20Z"/>
+              <path d="M20 20 C10 20 7 14 9 8 C13 10 17 15 20 20Z"/>
+              <path d="M20 20 C30 20 33 14 31 8 C27 10 23 15 20 20Z"/>
+              <line x1="20" y1="20" x2="20" y2="30"/>
+              <path d="M15 30 Q20 28 25 30"/>
+            </svg>
+          </div>
           <div class="home-card-label">Body</div>
           <div class="home-card-sublabel">Breathwork</div>
         </button>
 
         <button class="home-card" onclick="homeNavigate('library')">
+          <div class="home-card-icon">
+            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <!-- Open book -->
+              <path d="M20 30 L8 28 L8 12 C12 12 17 14 20 17 C23 14 28 12 32 12 L32 28 Z"/>
+              <line x1="20" y1="17" x2="20" y2="30"/>
+              <!-- Flame above book -->
+              <path d="M20 12 C20 9 18 7 20 5 C22 7 20 9 20 12Z"/>
+              <path d="M20 12 C18 10 16 8 18 6 C19 8 19 10 20 12Z"/>
+              <path d="M20 12 C22 10 24 8 22 6 C21 8 21 10 20 12Z"/>
+            </svg>
+          </div>
           <div class="home-card-label">Spirit</div>
           <div class="home-card-sublabel">Knowledge</div>
         </button>
