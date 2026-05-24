@@ -1092,33 +1092,63 @@
     .home-card:focus-visible { outline-offset: 3px; }
 
     /* ─── Floating "Ask about this" button on detail pages ─── */
-    .ask-fab {
+    /* ─── Detail action bar (Ask + Mark Complete) ─── */
+    .detail-action-bar {
       position: fixed;
-      right: 18px;
-      bottom: 140px;
+      bottom: 72px;
+      left: 0; right: 0;
       z-index: 40;
       display: none;
       align-items: center;
-      gap: 8px;
-      background: var(--text);
-      color: var(--bg);
-      padding: 11px 18px 11px 14px;
-      border-radius: 999px;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+    .detail-action-bar.visible { display: flex; }
+    .dab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 44px;
+      border-radius: 12px;
       border: none;
       cursor: pointer;
       font-family: inherit;
-      font-size: 0.84rem;
+      font-size: 0.88rem;
       font-weight: 500;
       letter-spacing: 0.01em;
-      box-shadow: 0 6px 24px rgba(26,26,46,0.25);
-      transition: all 0.2s ease;
+      transition: opacity 0.18s, box-shadow 0.18s;
     }
-    .ask-fab svg { width: 16px; height: 16px; fill: var(--bg); }
-    .ask-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(26,26,46,0.35); }
-    .ask-fab.visible { display: inline-flex; }
-    @media (max-width: 600px) {
-      .ask-fab { padding: 10px 18px 10px 13px; font-size: 0.82rem; bottom: 140px; }
+    .dab-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .dab-ask {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
     }
+    .dab-ask svg { stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .dab-ask:hover { border-color: var(--text-muted); }
+    .dab-complete {
+      background: linear-gradient(135deg, var(--c-plan), #10b981);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.28);
+    }
+    .dab-complete svg { stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .dab-complete:hover { opacity: 0.88; }
+    .dab-complete.done {
+      background: transparent;
+      border: 1.5px solid rgba(90,138,138,0.4);
+      color: var(--c-plan);
+      box-shadow: none;
+      cursor: default;
+    }
+    .dab-complete.done svg { stroke: var(--c-plan); }
+    .dab-complete.done:hover { opacity: 1; }
+
+    /* Extra bottom padding on detail views so content clears both bars */
+    .detail-view.active { padding-bottom: 80px; }
 
     /* ─── Ask modal (overlay chat for technique / meditation context) ─── */
     .modal-backdrop {
@@ -4195,11 +4225,17 @@
   </div>
 </div>
 
-<!-- ═════════ Floating Ask FAB ═════════ -->
-<button class="ask-fab" id="askFab" onclick="openAskModal()">
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.04 2 11c0 2.48 1.13 4.71 2.93 6.29L4 22l4.92-1.65c.95.28 1.97.43 3.08.43 5.52 0 10-4.04 10-9s-4.48-9-10-9zm0 16.5c-.95 0-1.86-.13-2.71-.38l-.39-.11-2.92.98.83-2.6-.16-.27C5.66 14.95 4.5 13.05 4.5 11 4.5 7.42 7.86 4.5 12 4.5s7.5 2.92 7.5 6.5-3.36 7.5-7.5 7.5z"/></svg>
-  <span id="askFabLabel">Ask about this practice</span>
-</button>
+<!-- ═════════ Detail action bar ═════════ -->
+<div class="detail-action-bar" id="detailActionBar">
+  <button class="dab-btn dab-ask" onclick="openAskModal()">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Ask
+  </button>
+  <button class="dab-btn dab-complete" id="dabCompleteBtn" onclick="dabCompleteAction()">
+    <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+    Mark Complete
+  </button>
+</div>
 
 <!-- ═════════ Ask Modal ═════════ -->
 <div class="modal-backdrop" id="askModal" onclick="if(event.target===this) closeAskModal()">
@@ -6808,10 +6844,6 @@
           ${escapeHtml(item.cautions)}
         </div>
       </div>` : ''}
-
-      <div class="complete-wrap">
-        ${completeBtnHtml(item, kind)}
-      </div>
     `;
   }
 
@@ -6923,10 +6955,6 @@
           </button>
           <p class="explore-cta-sub">Dive deeper into the history, science and people behind this practice</p>
         </div>
-      </div>
-
-      <div class="complete-wrap">
-        ${completeBtnHtml(item, kind)}
       </div>
     `;
   }
@@ -7388,20 +7416,29 @@
   }
 
   function updateFab() {
-    const fab = document.getElementById('askFab');
-    const label = document.getElementById('askFabLabel');
-    const onDetail =
+    const bar         = document.getElementById('detailActionBar');
+    const completeBtn = document.getElementById('dabCompleteBtn');
+    const onDetail    =
       (state.section === 'techniques' && state.techniqueId) ||
       (state.section === 'meditate'   && state.meditationId);
 
-    if (onDetail) {
-      fab.classList.add('visible');
-      label.textContent = state.section === 'techniques'
-        ? 'Ask about this technique'
-        : 'Ask about this practice';
-    } else {
-      fab.classList.remove('visible');
+    if (!bar) return;
+    bar.classList.toggle('visible', !!onDetail);
+
+    if (onDetail && completeBtn && state.askContext) {
+      const done = alreadyCompletedToday(state.askContext.id);
+      completeBtn.classList.toggle('done', done);
+      completeBtn.disabled = done;
+      completeBtn.innerHTML = done
+        ? `<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Done today`
+        : `<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Mark Complete`;
     }
+  }
+
+  function dabCompleteAction() {
+    if (!state.askContext) return;
+    completeSession(state.askContext.kind, state.askContext.id);
+    updateFab();
   }
 
   /* ════════════════ LIBRARY — tabbed, searchable, filterable ════════════════ */
