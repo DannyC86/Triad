@@ -3114,7 +3114,11 @@
       gap: 2px;
       border-bottom: 1px solid var(--border-soft);
       margin-bottom: 22px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
     }
+    .lib-tabs::-webkit-scrollbar { display: none; }
     .lib-tab {
       background: transparent;
       border: none;
@@ -3130,6 +3134,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     .lib-tab:hover { color: var(--text); }
     .lib-tab.active { color: var(--gold); }
