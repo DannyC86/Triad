@@ -3153,15 +3153,16 @@
     .lib-search-clear:hover { background: var(--navy-light); color: var(--text); }
     .lib-search-clear svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    /* Filter dropdown */
+    /* Filter dropdowns — stacked */
     .lib-filters-row {
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      gap: 8px;
       margin-bottom: 20px;
     }
     .lib-type-select,
     .lib-filter-select {
-      flex: 1;
+      width: 100%;
       background: var(--bg);
       color: var(--text);
       border: 1px solid var(--border);
@@ -7575,8 +7576,28 @@
     renderLibraryAllPanels();
   }
 
+  const _LIB_TYPE_TOPICS = {
+    all:         ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
+    books:       ['Anxiety & Stress', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
+    people:      ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
+    podcasts:    ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
+    breathwork:  ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
+    meditations: ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Beginners'],
+  };
+
   function onLibTypeChange(val) {
-    switchLibraryTab(val || 'all');
+    const type = val || 'all';
+    // Repopulate topic dropdown for this content type
+    const topicSel = document.getElementById('lib-filter-select');
+    if (topicSel) {
+      const topics = _LIB_TYPE_TOPICS[type] || _LIB_TYPE_TOPICS.all;
+      topicSel.innerHTML = `<option value="">All topics</option>` +
+        topics.map(t => `<option value="${t}">${t}</option>`).join('');
+      topicSel.value = '';
+    }
+    // Reset active topic filter then switch type
+    libUiState.activeFilters.clear();
+    switchLibraryTab(type);
   }
 
   function renderLibraryAllPanels() {
