@@ -292,17 +292,21 @@
     .summary-kicker, .summary-link, .summary-row { display: none; }
 
     @media (max-width: 600px) {
-      .home-container     { padding: 32px 20px 28px; }
-      .home-logo          { width: 60px; }
-      .home-wordmark-text { font-size: 1.8rem; }
-      .home-tagline       { font-size: 0.68rem; }
+      #home               { min-height: calc(100dvh - 72px); }
+      .home-container     { display: flex; flex-direction: column; justify-content: space-between;
+                            min-height: calc(100dvh - 72px); padding: 16px 20px; }
+      .home-logo          { width: 48px; }
+      .home-wordmark-text { font-size: 1.6rem; line-height: 1; }
+      .home-tagline       { font-size: 0.65rem; white-space: nowrap; line-height: 1; }
       .home-header        { gap: 6px; }
-      .home-cards         { flex-direction: column; align-items: center; width: 100%; gap: 12px; }
-      .home-card          { width: 100%; max-width: 320px; padding: 20px 16px; }
-      .home-card-icon     { width: 32px; height: 32px; }
-      .home-card-icon svg { width: 32px; height: 32px; }
-      .home-card-label    { font-size: 0.7rem; }
-      .home-auth-footer   { font-size: 0.75rem; }
+      .home-cards         { flex-direction: column; align-items: center; width: 100%; gap: 10px; }
+      .home-card          { width: 100%; max-width: 320px; padding: 14px 16px;
+                            max-height: 140px; min-height: 0; }
+      .home-card-icon     { width: 28px; height: 28px; }
+      .home-card-icon svg { width: 28px; height: 28px; }
+      .home-card-label    { font-size: 0.68rem; }
+      .home-card-sublabel { font-size: 0.62rem; }
+      .home-auth-footer   { font-size: 0.72rem; }
     }
 
     /* ─── Grids / cards (techniques + meditations) ─── */
@@ -902,6 +906,7 @@
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 4px;
+      justify-items: center;
     }
     .nav-btn {
       display: flex;
@@ -940,6 +945,42 @@
     .nav-btn[data-section="techniques"] { --nav-color: var(--gold); }
     .nav-btn[data-section="meditate"]   { --nav-color: var(--gold); }
     .nav-btn[data-section="library"]    { --nav-color: var(--gold); }
+
+    /* Mind / Body / Spirit icons slightly larger than Home / Profile */
+    .nav-btn[data-section="meditate"]   svg,
+    .nav-btn[data-section="techniques"] svg,
+    .nav-btn[data-section="library"]    svg { width: 26px; height: 26px; }
+
+    /* Persistent home FAB */
+    .home-fab {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      border-radius: 50%;
+      transition: color 0.2s ease;
+    }
+    .home-fab svg {
+      width: 28px;
+      height: 28px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .home-fab:hover { color: var(--text); }
+    .home-fab.hidden { display: none; }
 
     /* Global focus styles for accessibility */
     *:focus-visible {
@@ -4125,6 +4166,11 @@
 <!-- ═════════ Usage toast region (bottom-right) ═════════ -->
 <div class="usage-toast-region" id="usage-toast-region"></div>
 
+<!-- Persistent home icon — hidden on the home section itself -->
+<button class="home-fab hidden" id="home-fab" onclick="navigate('home')" aria-label="Go to home">
+  <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+</button>
+
 <!-- ═════════ Bottom Nav ═════════ -->
 <nav class="nav">
   <div class="nav-inner">
@@ -6471,6 +6517,10 @@
     const _navBtn = document.querySelector(`.nav-btn[data-section="${target}"]`);
     if (_navBtn) _navBtn.classList.add('active');
     state.section = target;
+
+    // Show/hide persistent home FAB
+    const _homeFab = document.getElementById('home-fab');
+    if (_homeFab) _homeFab.classList.toggle('hidden', target === 'home');
 
     // Reset to list view when entering a section freshly
     if (target === 'techniques' && !opts.keepDetail) hideTechniqueDetail();
