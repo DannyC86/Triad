@@ -6932,12 +6932,6 @@
         </div>
       </div>
 
-      <!-- Related blocks -->
-      ${renderRelatedBlock('People to know',                                          d.related.people.map(name => ({ kind: 'person', name }))) }
-      ${renderRelatedBlock('Books worth reading',                                     d.related.books.map(title => ({ kind: 'book', title }))) }
-      ${renderRelatedBlock(kind === 'meditation' ? 'Breathwork that complements this' : 'Related techniques',
-                           d.related.techniques.map(id => ({ kind: 'technique', id }))) }
-
       <div class="complete-wrap">
         ${completeBtnHtml(item, kind)}
       </div>
