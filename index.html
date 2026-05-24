@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Breathly — Ancient wisdom. Modern science. Your practice.</title>
+  <title>Triad — Mind. Body. Spirit. Aligned.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem('breathly:theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
@@ -91,8 +91,7 @@
     [data-theme="dark"] .toast              { background: rgba(10,15,30,0.97); }
     [data-theme="dark"] .usage-toast        { background: rgba(10,15,30,0.97); }
     [data-theme="dark"] *:focus-visible     { outline-color: var(--text-soft); }
-    [data-theme="dark"] .top-header img[src*="logo"],
-    [data-theme="dark"] #home img[src*="logo"] { filter: invert(1) brightness(2); }
+    /* logo uses currentColor — no filter needed */
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -197,8 +196,10 @@
     }
 
     .home-logo {
-      width: 70px;
+      width: 80px;
+      height: 80px;
       display: block;
+      color: var(--text);
       animation: logo-breathe 4s ease-in-out infinite;
     }
 
@@ -966,19 +967,54 @@
       padding: 0 16px;
     }
     .top-header.hidden { display: none; }
-    .top-header-wordmark {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--text);
-      letter-spacing: 0.04em;
+    /* ─── Header brand (left side) ─── */
+    .top-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       background: transparent;
       border: none;
       cursor: pointer;
       padding: 0;
+    }
+    .top-header-brand:hover { opacity: 0.75; }
+    .top-header-logo { color: var(--text); flex-shrink: 0; display: block; }
+    .top-header-brand-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+    .top-header-wordmark {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.22em;
       line-height: 1;
     }
-    .top-header-wordmark:hover { opacity: 0.75; }
+    .top-header-slogan {
+      font-size: 0.55rem;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      line-height: 1;
+    }
+    /* ─── Header right side ─── */
+    .top-header-right { display: flex; align-items: center; gap: 10px; }
+    .top-header-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 9px;
+      border: 1px solid rgba(201,169,110,0.35);
+      border-radius: 999px;
+      font-size: 0.57rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .top-header-badge svg { width: 10px; height: 10px; fill: var(--gold); flex-shrink: 0; }
     .top-header-avatar {
       width: 32px;
       height: 32px;
@@ -1011,6 +1047,43 @@
       stroke-linejoin: round;
     }
     .top-header-avatar:hover { border-color: var(--text-soft); color: var(--text-soft); }
+
+    /* ─── Breath Pacer overlay ─── */
+    .pacer-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: var(--bg);
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .pacer-overlay.active { display: flex; }
+    .pacer-container { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 360px; }
+    .pacer-head { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .pacer-title { font-size: 1.05rem; font-weight: 500; color: var(--text); letter-spacing: 0.02em; }
+    .pacer-close { background: transparent; border: none; cursor: pointer; color: var(--text-muted); padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .pacer-close:hover { color: var(--text); }
+    .pacer-presets { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; justify-content: center; }
+    .pacer-preset-btn { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-family: inherit; font-size: 0.79rem; cursor: pointer; transition: all 0.18s ease; }
+    .pacer-preset-btn.active { background: color-mix(in srgb, var(--gold) 12%, transparent); border-color: var(--gold); color: var(--gold); }
+    .pacer-svg-wrap { position: relative; }
+    .pacer-svg-wrap svg { color: var(--text); display: block; }
+    .pacer-controls { margin-top: 36px; }
+    .pacer-start-btn { padding: 13px 52px; border-radius: 999px; border: none; background: var(--gold); color: #fff; font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; letter-spacing: 0.08em; transition: opacity 0.2s, transform 0.1s; }
+    .pacer-start-btn:hover { opacity: 0.88; }
+    .pacer-start-btn:active { transform: scale(0.97); }
+
+    /* ─── YouTube Verified Demonstration card ─── */
+    .yt-demo-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; margin-bottom: 4px; }
+    .yt-demo-top  { display: flex; gap: 14px; align-items: flex-start; }
+    .yt-demo-icon { width: 44px; height: 44px; background: color-mix(in srgb, var(--gold) 12%, transparent); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--gold); }
+    .yt-demo-icon svg { width: 20px; height: 20px; fill: currentColor; }
+    .yt-demo-body { display: flex; flex-direction: column; gap: 3px; }
+    .yt-demo-label  { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+    .yt-demo-title  { font-size: 0.92rem; font-weight: 500; color: var(--text); line-height: 1.4; }
+    .yt-demo-teacher{ font-size: 0.78rem; color: var(--text-muted); }
+    .yt-demo-btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border: 1px solid var(--border); border-radius: 999px; font-size: 0.82rem; font-weight: 500; color: var(--text); text-decoration: none; width: fit-content; transition: border-color 0.2s, color 0.2s; font-family: inherit; }
+    .yt-demo-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .yt-demo-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
     /* Global focus styles for accessibility */
     *:focus-visible {
@@ -1341,7 +1414,7 @@
       text-transform: none;
     }
 
-    /* ─── Real "Upgrade to Breathly Pro" CTA (teal/gold gradient) ─── */
+    /* ─── Real "Upgrade to Triad Pro" CTA (teal/gold gradient) ─── */
     .upgrade-btn {
       width: 100%;
       max-width: 360px;
@@ -3671,7 +3744,15 @@
   <section id="home" class="section active">
     <div class="home-container">
       <div class="home-header">
-        <img src="/logo.svg" class="home-logo" alt="Breathly mark">
+        <svg class="home-logo" viewBox="0 0 100 100" fill="none" aria-label="Triad mark">
+          <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1"/>
+          <polygon points="50,14 81,68 19,68" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="50" cy="14" r="11" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
+          <circle cx="81" cy="68" r="11" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
+          <circle cx="19" cy="68" r="11" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
+          <circle cx="50" cy="50" r="5" stroke="currentColor" stroke-width="0.5" opacity="0.4"/>
+          <circle cx="50" cy="50" r="1.5" fill="currentColor"/>
+        </svg>
       </div>
 
       <div class="home-cards">
@@ -3832,7 +3913,7 @@
     <div class="plan-form-wrap" id="plan-form-wrap">
       <div class="plan-form">
         <h2>Build your personalised plan</h2>
-        <p class="plan-lede">Three quick questions. The Breathly coach will draft a day-by-day plan with specific techniques and meditations — linking straight to the practices in this app.</p>
+        <p class="plan-lede">Three quick questions. The Triad coach will draft a day-by-day plan with specific techniques and meditations — linking straight to the practices in this app.</p>
 
         <div class="field">
           <label>1 — Your goal</label>
@@ -4016,27 +4097,42 @@
   </div>
 </div>
 
-<!-- ═════════ Start Session placeholder modal ═════════ -->
-<div class="modal-backdrop" id="startSessionModal" onclick="if(event.target===this) closeStartSession()">
-  <div class="modal" style="max-width: 460px;">
-    <div class="modal-head">
-      <div class="modal-title-wrap">
-        <span class="modal-kicker">Guided</span>
-        <span class="modal-title" id="startSessionTitle">Start session</span>
-      </div>
-      <button class="modal-close" onclick="closeStartSession()" title="Close">
-        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+<!-- ═════════ Breath Pacer Overlay ═════════ -->
+<div class="pacer-overlay" id="pacerOverlay">
+  <div class="pacer-container">
+    <div class="pacer-head">
+      <span class="pacer-title" id="pacerTitle">Breath Pacer</span>
+      <button class="pacer-close" onclick="closePacer()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="22" height="22"><path d="M6 6L18 18M18 6L6 18"/></svg>
       </button>
     </div>
-    <div class="modal-body" style="text-align: center; padding: 36px 24px 32px;">
-      <div style="font-size: 2.4rem; margin-bottom: 14px;">🧘</div>
-      <h3 style="font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 8px;">Guided sessions coming in the next build</h3>
-      <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; max-width: 340px; margin: 0 auto;">
-        For now, follow the steps in the <strong style="color: var(--c-tech)">How To</strong> tab and tap <strong style="color: var(--c-plan)">Mark complete</strong> when you finish to log your session.
-      </p>
+    <div class="pacer-presets">
+      <button class="pacer-preset-btn active" data-preset="sigh" onclick="setPacerPreset('sigh')">Physiological Sigh · 12s</button>
+      <button class="pacer-preset-btn" data-preset="478" onclick="setPacerPreset('478')">4-7-8 Breath · 19s</button>
     </div>
-    <div class="modal-foot" style="display: flex; justify-content: center; gap: 10px;">
-      <button class="action-btn secondary" onclick="closeStartSession()">Got it</button>
+    <div class="pacer-svg-wrap">
+      <svg id="pacerSvg" viewBox="-20 -18 140 136" fill="none" width="240" height="240">
+        <defs>
+          <filter id="nodeGlow" x="-150%" y="-150%" width="400%" height="400%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="0.8"/>
+        <polygon points="50,14 81,68 19,68" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="50" cy="14" r="11" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
+        <circle cx="81" cy="68" r="11" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
+        <circle cx="19" cy="68" r="11" stroke="currentColor" stroke-width="0.4" opacity="0.2"/>
+        <circle cx="50" cy="50" r="4.5" stroke="currentColor" stroke-width="0.4" opacity="0.3"/>
+        <circle cx="50" cy="50" r="1.5" fill="currentColor" opacity="0.4"/>
+        <text id="pacerLbl0" x="50" y="1"   text-anchor="middle" font-size="6" fill="currentColor" letter-spacing="1.5" opacity="0.38" font-family="'DM Sans',sans-serif">INHALE</text>
+        <text id="pacerLbl1" x="103" y="72"  text-anchor="start"  font-size="6" fill="currentColor" letter-spacing="1.5" opacity="0.38" font-family="'DM Sans',sans-serif">HOLD</text>
+        <text id="pacerLbl2" x="-3"  y="72"  text-anchor="end"    font-size="6" fill="currentColor" letter-spacing="1.5" opacity="0.38" font-family="'DM Sans',sans-serif">EXHALE</text>
+        <circle id="pacerNode" cx="19" cy="68" r="3.5" fill="#C9A96E" filter="url(#nodeGlow)"/>
+      </svg>
+    </div>
+    <div class="pacer-controls">
+      <button class="pacer-start-btn" id="pacerStartBtn" onclick="togglePacer()">Start</button>
     </div>
   </div>
 </div>
@@ -4076,7 +4172,7 @@
   <div class="modal" style="max-width: 440px;">
     <div class="modal-head">
       <div class="modal-title-wrap">
-        <span class="modal-kicker">Breathly</span>
+        <span class="modal-kicker">Triad</span>
         <span class="modal-title" id="authModalTitle">Welcome</span>
       </div>
       <button class="modal-close" onclick="closeAuthModal()" title="Close">
@@ -4116,7 +4212,7 @@
   <div class="modal" style="max-width: 460px;">
     <div class="modal-head">
       <div class="modal-title-wrap">
-        <span class="modal-kicker" style="color: var(--gold)">✦ Breathly Pro</span>
+        <span class="modal-kicker" style="color: var(--gold)">✦ Triad Pro</span>
         <span class="modal-title" id="waitlistModalTitle">Pro coming soon</span>
       </div>
       <button class="modal-close" onclick="closeWaitlistModal()" title="Close">
@@ -4147,7 +4243,7 @@
   <div class="modal" style="max-width: 420px;">
     <div class="modal-head">
       <div class="modal-title-wrap">
-        <span class="modal-kicker" style="color: var(--gold)">✦ Breathly Pro</span>
+        <span class="modal-kicker" style="color: var(--gold)">✦ Triad Pro</span>
         <span class="modal-title">Unlock the full experience</span>
       </div>
       <button class="modal-close" onclick="closePaywallModal()" title="Close">
@@ -4200,10 +4296,30 @@
 
 <!-- ═════════ Top Header — hidden on home ═════════ -->
 <header class="top-header hidden" id="top-header">
-  <button class="top-header-wordmark" onclick="navigate('home')" aria-label="Go to home">Breathly</button>
-  <button class="top-header-avatar" id="profileIconBtn" onclick="handleProfileIconClick()" aria-label="Profile">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
+  <button class="top-header-brand" onclick="navigate('home')" aria-label="Go to home">
+    <svg class="top-header-logo" viewBox="0 0 100 100" width="30" height="30" fill="none" aria-hidden="true">
+      <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1"/>
+      <polygon points="50,14 81,68 19,68" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="50" cy="14" r="11" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
+      <circle cx="81" cy="68" r="11" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
+      <circle cx="19" cy="68" r="11" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
+      <circle cx="50" cy="50" r="5" stroke="currentColor" stroke-width="0.5" opacity="0.4"/>
+      <circle cx="50" cy="50" r="1.5" fill="currentColor"/>
+    </svg>
+    <div class="top-header-brand-text">
+      <span class="top-header-wordmark">TRIAD</span>
+      <span class="top-header-slogan">Mind. Body. Spirit. Aligned.</span>
+    </div>
   </button>
+  <div class="top-header-right">
+    <div class="top-header-badge" aria-label="Your data stays on your device">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/></svg>
+      LOCAL &amp; SECURE
+    </div>
+    <button class="top-header-avatar" id="profileIconBtn" onclick="handleProfileIconClick()" aria-label="Profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
+    </button>
+  </div>
 </header>
 
 <!-- ═════════ Bottom Nav ═════════ -->
@@ -6797,19 +6913,22 @@
           <div class="learn-anim-caption">${escapeHtml(animationCaption(d.learn.animation, item))}</div>
         </div>
 
-        <h3>Watch the teacher</h3>
-        <div class="learn-video-wrap">
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.learn.video.youtubeId)}"
-            title="${escapeHtml(d.learn.video.title)}"
-            loading="lazy"
-            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-            referrerpolicy="strict-origin-when-cross-origin"></iframe>
-        </div>
-        <div class="learn-video-meta">
-          <span class="vm-title">${escapeHtml(d.learn.video.title)}</span>
-          <span class="vm-teacher">${escapeHtml(d.learn.video.teacher)}</span>
+        <h3>Verified demonstration</h3>
+        <div class="yt-demo-card">
+          <div class="yt-demo-top">
+            <div class="yt-demo-icon">
+              <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+            <div class="yt-demo-body">
+              <span class="yt-demo-label">Verified demonstration</span>
+              <span class="yt-demo-title">${escapeHtml(d.learn.video.title)}</span>
+              <span class="yt-demo-teacher">${escapeHtml(d.learn.video.teacher)}</span>
+            </div>
+          </div>
+          <a class="yt-demo-btn" href="https://www.youtube.com/watch?v=${encodeURIComponent(d.learn.video.youtubeId)}" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Watch on YouTube
+          </a>
         </div>
       </div>
 
@@ -7044,12 +7163,144 @@
   }
 
   function openStartSession(practiceId) {
-    const item = findPractice(practiceId);
-    if (item) document.getElementById('startSessionTitle').textContent = item.title;
-    document.getElementById('startSessionModal').classList.add('active');
+    openPacer(practiceId);
   }
   function closeStartSession() {
-    document.getElementById('startSessionModal').classList.remove('active');
+    closePacer();
+  }
+
+  /* ─── Breath Pacer ─── */
+  const _PACER_VERTS = [
+    { x: 50, y: 14 },  // 0 = top = INHALE
+    { x: 81, y: 68 },  // 1 = BR  = HOLD
+    { x: 19, y: 68 },  // 2 = BL  = EXHALE
+  ];
+  const _PACER_PRESETS = {
+    sigh: { phases: [
+      { from: 2, to: 0, move: 2500, dwell: 800  },
+      { from: 0, to: 1, move: 800,  dwell: 400  },
+      { from: 1, to: 2, move: 7500, dwell: 0    },
+    ]},
+    '478': { phases: [
+      { from: 2, to: 0, move: 4000, dwell: 7000 },
+      { from: 0, to: 1, move: 500,  dwell: 0    },
+      { from: 1, to: 2, move: 8000, dwell: 0    },
+    ]}
+  };
+  let _pacerRunning  = false;
+  let _pacerRaf      = null;
+  let _pacerStart    = null;
+  let _pacerPhaseIdx = 0;
+  let _pacerPhaseStart = null;
+  let _pacerPreset   = 'sigh';
+
+  function openPacer(practiceId) {
+    const overlay = document.getElementById('pacerOverlay');
+    if (!overlay) return;
+    _pacerStop();
+    _pacerSetPreset(_pacerPreset, false);
+    overlay.classList.add('active');
+  }
+
+  function closePacer() {
+    _pacerStop();
+    const overlay = document.getElementById('pacerOverlay');
+    if (overlay) overlay.classList.remove('active');
+  }
+
+  function togglePacer() {
+    if (_pacerRunning) {
+      _pacerStop();
+    } else {
+      _pacerRunning = true;
+      _pacerPhaseIdx = 0;
+      _pacerPhaseStart = null;
+      _pacerSyncBtn();
+      _pacerRaf = requestAnimationFrame(_pacerTick);
+    }
+  }
+
+  function _pacerStop() {
+    _pacerRunning = false;
+    if (_pacerRaf) { cancelAnimationFrame(_pacerRaf); _pacerRaf = null; }
+    _pacerPhaseStart = null;
+    const preset = _PACER_PRESETS[_pacerPreset];
+    if (preset) {
+      const startVert = preset.phases[0].from;
+      _pacerSetNode(_PACER_VERTS[startVert]);
+    }
+    _pacerHighlight(-1);
+    _pacerSyncBtn();
+  }
+
+  function setPacerPreset(val) {
+    _pacerSetPreset(val, true);
+  }
+
+  function _pacerSetPreset(val, restart) {
+    if (!_PACER_PRESETS[val]) return;
+    _pacerPreset = val;
+    _pacerSyncPresetBtns();
+    if (_pacerRunning || restart) {
+      _pacerStop();
+    }
+    const preset = _PACER_PRESETS[val];
+    _pacerSetNode(_PACER_VERTS[preset.phases[0].from]);
+    _pacerHighlight(-1);
+  }
+
+  function _pacerSetNode(v) {
+    const n = document.getElementById('pacerNode');
+    if (n) { n.setAttribute('cx', v.x); n.setAttribute('cy', v.y); }
+  }
+
+  function _pacerHighlight(vertIdx) {
+    for (let i = 0; i < 3; i++) {
+      const el = document.getElementById('pacerLbl' + i);
+      if (el) el.setAttribute('opacity', i === vertIdx ? '1' : '0.38');
+    }
+  }
+
+  function _pacerSyncBtn() {
+    const btn = document.getElementById('pacerStartBtn');
+    if (btn) btn.textContent = _pacerRunning ? 'Pause' : 'Start';
+  }
+
+  function _pacerSyncPresetBtns() {
+    document.querySelectorAll('.pacer-preset-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.preset === _pacerPreset);
+    });
+  }
+
+  function _easeInOut(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+
+  function _pacerTick(now) {
+    if (!_pacerRunning) return;
+    const preset = _PACER_PRESETS[_pacerPreset];
+    if (!preset) { _pacerStop(); return; }
+    if (_pacerPhaseStart === null) _pacerPhaseStart = now;
+
+    const phase = preset.phases[_pacerPhaseIdx];
+    const elapsed = now - _pacerPhaseStart;
+    const totalPhase = phase.move + phase.dwell;
+
+    if (elapsed < phase.move) {
+      const t = _easeInOut(elapsed / phase.move);
+      const a = _PACER_VERTS[phase.from];
+      const b = _PACER_VERTS[phase.to];
+      _pacerSetNode({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+      _pacerHighlight(elapsed < phase.move * 0.5 ? phase.from : phase.to);
+    } else if (elapsed < totalPhase) {
+      _pacerSetNode(_PACER_VERTS[phase.to]);
+      _pacerHighlight(phase.to);
+    } else {
+      _pacerPhaseIdx = (_pacerPhaseIdx + 1) % preset.phases.length;
+      _pacerPhaseStart = now;
+    }
+
+    _pacerRaf = requestAnimationFrame(_pacerTick);
   }
 
   function addToPlan(practiceId) {
@@ -7696,7 +7947,7 @@ Build my personalised plan.`;
     if (state.askHistory.length === 0) {
       body.innerHTML = `
         <div class="modal-empty">
-          Ask the Breathly coach anything about <strong style="color: var(--teal)">${escapeHtml(item.title)}</strong> — the science, the experience, when to use it, common pitfalls, or how to adapt it.
+          Ask the Triad coach anything about <strong style="color: var(--teal)">${escapeHtml(item.title)}</strong> — the science, the experience, when to use it, common pitfalls, or how to adapt it.
           <div class="empty-prompts">
             <button class="empty-prompt" onclick="seedAskMessage('How does ${escapeHtml(item.title)} actually work in the body?')">How does it actually work in the body?</button>
             <button class="empty-prompt" onclick="seedAskMessage('When is the best time of day to practise ${escapeHtml(item.title)}?')">When is the best time of day to practise this?</button>
@@ -8499,11 +8750,11 @@ Build my personalised plan.`;
       <div class="tier-toggle">
         ${store.tier === 'pro'
           ? `<div class="pro-badge">
-              <span class="pro-badge-title">✦ Breathly Pro</span>
+              <span class="pro-badge-title">✦ Triad Pro</span>
               <span class="pro-badge-sub">All features unlocked</span>
              </div>`
           : `<button class="upgrade-btn" onclick="openWaitlistModal()">
-              <span class="upgrade-btn-title">✦ Upgrade to Breathly Pro</span>
+              <span class="upgrade-btn-title">✦ Upgrade to Triad Pro</span>
               <span class="upgrade-btn-price">£4.99 / month</span>
              </button>`
         }
@@ -8990,7 +9241,7 @@ Build my personalised plan.`;
       if (state && state.section === 'profile') renderProfile();
       showToast({
         icon: _authTab === 'signup' ? '🌱' : '👋',
-        label: _authTab === 'signup' ? 'Welcome to Breathly' : 'Welcome back',
+        label: _authTab === 'signup' ? 'Welcome to Triad' : 'Welcome back',
         autohide: 2200
       });
     } catch (e) {
@@ -9047,7 +9298,7 @@ Build my personalised plan.`;
     if (!el) return;
     if (auth.loggedIn) {
       const initial = ((auth.email || 'U')[0] || 'U').toUpperCase();
-      const tierLabel = auth.tier === 'pro' ? '✦ Breathly Pro' : 'Free account';
+      const tierLabel = auth.tier === 'pro' ? '✦ Triad Pro' : 'Free account';
       el.innerHTML = `
         <div class="profile-account">
           <div class="account-info">
