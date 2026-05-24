@@ -165,17 +165,24 @@
       max-width: 580px;
       margin-bottom: 28px;
     }
-    /* Lede inline with header title */
+    /* Lede inline with header title — right column */
     .section-head .section-lede {
       font-size: 0.72rem;
       line-height: 1.55;
       max-width: 45%;
       margin: 4px 0 0;
       flex-shrink: 0;
+      color: var(--text-soft);
+      text-align: right;
     }
-    @media (max-width: 600px) {
+    @media (max-width: 480px) {
       .section-head { flex-wrap: wrap; }
-      .section-head .section-lede { max-width: 100%; margin-top: 8px; font-size: 0.72rem; }
+      .section-head .section-lede {
+        max-width: 100%;
+        margin-top: 8px;
+        font-size: 0.70rem;
+        text-align: left;
+      }
     }
 
     /* ─── HOME ─── */
