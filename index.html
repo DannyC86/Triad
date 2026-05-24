@@ -252,8 +252,17 @@
     .summary-kicker, .summary-link, .summary-row { display: none; }
 
     @media (max-width: 600px) {
-      .home-cards { flex-direction: column; align-items: center; width: 100%; }
-      .home-card  { width: 100%; max-width: 320px; padding: 24px 20px; }
+      .home-container     { padding: 32px 20px 28px; }
+      .home-logo          { width: 60px; }
+      .home-wordmark-text { font-size: 1.8rem; }
+      .home-tagline       { font-size: 0.68rem; }
+      .home-header        { gap: 6px; }
+      .home-cards         { flex-direction: column; align-items: center; width: 100%; gap: 12px; }
+      .home-card          { width: 100%; max-width: 320px; padding: 20px 16px; }
+      .home-card-icon     { width: 32px; height: 32px; }
+      .home-card-icon svg { width: 32px; height: 32px; }
+      .home-card-label    { font-size: 0.7rem; }
+      .home-auth-footer   { font-size: 0.75rem; }
     }
 
     /* ─── Grids / cards (techniques + meditations) ─── */
@@ -891,7 +900,14 @@
     .nav-btn[data-section="techniques"] { --nav-color: var(--gold); }
     .nav-btn[data-section="meditate"]   { --nav-color: var(--gold); }
     .nav-btn[data-section="library"]    { --nav-color: var(--gold); }
-    .nav-btn[data-section="plan"]       { --nav-color: var(--gold); }
+
+    /* Global focus styles for accessibility */
+    *:focus-visible {
+      outline: 2px solid #1a1a2e;
+      outline-offset: 2px;
+    }
+    .nav-btn:focus-visible { outline-offset: 0; }
+    .home-card:focus-visible { outline-offset: 3px; }
 
     /* ─── Floating "Ask about this" button on detail pages ─── */
     .ask-fab {
@@ -3521,9 +3537,14 @@
       <div class="home-cards">
         <button class="home-card" onclick="homeNavigate('meditate')">
           <div class="home-card-icon">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <circle cx="24" cy="12" r="5" fill="#1a1a2e" opacity="0.85"/>
-              <path d="M 18,18 C 14,24 8,28 7,33 C 7,41 15,43 24,43 C 33,43 41,41 41,33 C 40,28 34,24 30,18 Z" fill="#1a1a2e" opacity="0.85"/>
+            <!-- Lotus flower: center petal + two each side -->
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 24,38 C 20,28 20,16 24,10 C 28,16 28,28 24,38 Z"/>
+              <path d="M 24,38 C 18,30 13,19 15,11 C 18,15 22,28 24,38 Z"/>
+              <path d="M 24,38 C 30,30 35,19 33,11 C 30,15 26,28 24,38 Z"/>
+              <path d="M 24,38 C 14,33 7,23 9,14 C 13,17 19,30 24,38 Z"/>
+              <path d="M 24,38 C 34,33 41,23 39,14 C 35,17 29,30 24,38 Z"/>
+              <line x1="24" y1="38" x2="24" y2="44"/>
             </svg>
           </div>
           <div class="home-card-label">Meditate</div>
@@ -3532,10 +3553,11 @@
 
         <button class="home-card" onclick="homeNavigate('techniques')">
           <div class="home-card-icon">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <circle cx="24" cy="24" r="5" fill="#1a1a2e" opacity="0.9"/>
-              <circle cx="24" cy="24" r="12" stroke="#1a1a2e" stroke-width="1.5" opacity="0.65"/>
-              <circle cx="24" cy="24" r="20" stroke="#1a1a2e" stroke-width="1" opacity="0.35"/>
+            <!-- Three concentric arcs: outward breath waves -->
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#1a1a2e" stroke-linecap="round">
+              <path d="M 18,32 Q 24,22 30,32" stroke-width="2.5"/>
+              <path d="M 11,36 Q 24,16 37,36" stroke-width="2"/>
+              <path d="M 4,40 Q 24,10 44,40" stroke-width="1.5"/>
             </svg>
           </div>
           <div class="home-card-label">Breath</div>
@@ -3544,13 +3566,12 @@
 
         <button class="home-card" onclick="homeNavigate('library')">
           <div class="home-card-icon">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="#1a1a2e">
-              <path d="M 24,37 C 20,27 20,17 24,10 C 28,17 28,27 24,37 Z" opacity="0.9"/>
-              <path d="M 24,37 C 17,29 11,20 13,11 C 17,15 21,28 24,37 Z" opacity="0.75"/>
-              <path d="M 24,37 C 31,29 37,20 35,11 C 31,15 27,28 24,37 Z" opacity="0.75"/>
-              <path d="M 24,37 C 15,31 6,25 6,16 C 11,18 17,29 24,37 Z" opacity="0.55"/>
-              <path d="M 24,37 C 33,31 42,25 42,16 C 37,18 31,29 24,37 Z" opacity="0.55"/>
-              <line x1="24" y1="37" x2="24" y2="44" stroke="#1a1a2e" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            <!-- Open book with flame above -->
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 24,22 C 21,18 18,13 20,9 C 21,7 22,6 24,5 C 26,6 27,7 28,9 C 30,13 27,18 24,22 Z"/>
+              <path d="M 8,32 L 8,44 L 24,42 L 24,30 Z"/>
+              <path d="M 40,32 L 40,44 L 24,42 L 24,30 Z"/>
+              <path d="M 8,32 Q 24,28 40,32"/>
             </svg>
           </div>
           <div class="home-card-label">Knowledge</div>
@@ -3730,6 +3751,12 @@
 
     <!-- Account header (populated by renderProfile) -->
     <div id="profile-account-header"></div>
+
+    <!-- My Plan shortcut -->
+    <button class="action-btn primary" onclick="navigate('plan')" style="width:100%; justify-content:center; margin-bottom:20px;">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/><path d="M8 14h2M14 14h2M8 17h2M14 17h2"/></svg>
+      My Plan
+    </button>
 
     <!-- Stats dashboard (8 cards, populated by renderProfile) -->
     <div class="profile-stats" id="profile-stats-grid"></div>
@@ -3952,6 +3979,35 @@
   </div>
 </div>
 
+<!-- ═════════ Paywall modal ═════════ -->
+<div class="modal-backdrop" id="paywallModal" onclick="if(event.target===this) closePaywallModal()">
+  <div class="modal" style="max-width: 420px;">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <span class="modal-kicker" style="color: var(--gold)">✦ Breathly Pro</span>
+        <span class="modal-title">Unlock the full experience</span>
+      </div>
+      <button class="modal-close" onclick="closePaywallModal()" title="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="color: var(--text-soft); line-height: 1.6; margin-bottom: 20px;">
+        Unlock AI-powered plans, personalised coaching and unlimited practice tracking.
+      </p>
+      <div style="text-align: center; margin-bottom: 24px;">
+        <span style="font-size: 2rem; font-weight: 300; color: var(--text);">£4.99</span>
+        <span style="color: var(--text-muted); font-size: 0.88rem;"> / month</span>
+      </div>
+      <button class="auth-submit" onclick="closePaywallModal(); openWaitlistModal();" style="width: 100%; margin-bottom: 12px;">Upgrade to Pro</button>
+      <div style="text-align: center;">
+        <span onclick="closePaywallModal()" role="button" tabindex="0"
+          style="font-size: 0.82rem; color: var(--text-muted); cursor: pointer; letter-spacing: 0.04em; user-select: none;">Maybe later</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═════════ Cost confirmation modal (shown before every API call) ═════════ -->
 <div class="modal-backdrop" id="costModal" onclick="if(event.target===this) costConfirmDecide(false)">
   <div class="modal" style="max-width: 440px;">
@@ -3986,21 +4042,17 @@
       <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
       <span>Home</span>
     </button>
-    <button class="nav-btn" data-section="techniques" onclick="navigate('techniques')">
-      <svg viewBox="0 0 24 24"><path d="M12 2c-2 4-4 6-4 9a4 4 0 0 0 8 0c0-3-2-5-4-9z"/><path d="M5 13c0 4 2 7 7 9 5-2 7-5 7-9"/></svg>
-      <span>Breath</span>
-    </button>
     <button class="nav-btn" data-section="meditate" onclick="navigate('meditate')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 21c2-5 5-7 7-7s5 2 7 7"/><path d="M3 16l4-2M21 16l-4-2"/></svg>
       <span>Mind</span>
     </button>
+    <button class="nav-btn" data-section="techniques" onclick="navigate('techniques')">
+      <svg viewBox="0 0 24 24"><path d="M12 2c-2 4-4 6-4 9a4 4 0 0 0 8 0c0-3-2-5-4-9z"/><path d="M5 13c0 4 2 7 7 9 5-2 7-5 7-9"/></svg>
+      <span>Body</span>
+    </button>
     <button class="nav-btn" data-section="library" onclick="navigate('library')">
       <svg viewBox="0 0 24 24"><path d="M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4z"/><path d="M20 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>
       <span>Spirit</span>
-    </button>
-    <button class="nav-btn" data-section="plan" onclick="navigate('plan')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/><path d="M8 14h2M14 14h2M8 17h2M14 17h2"/></svg>
-      <span>My Plan</span>
     </button>
     <button class="nav-btn" data-section="profile" onclick="navigate('profile')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
@@ -6326,7 +6378,8 @@
 
     // Activate target
     document.getElementById(target).classList.add('active');
-    document.querySelector(`.nav-btn[data-section="${target}"]`).classList.add('active');
+    const _navBtn = document.querySelector(`.nav-btn[data-section="${target}"]`);
+    if (_navBtn) _navBtn.classList.add('active');
     state.section = target;
 
     // Reset to list view when entering a section freshly
@@ -6817,6 +6870,7 @@
   }
 
   function addToPlan(practiceId) {
+    if (!requirePro()) return;
     const item = findPractice(practiceId);
     if (!item) return;
     store.planAdditions = store.planAdditions || [];
@@ -7370,6 +7424,17 @@ Build my personalised plan.`;
 
   async function runPlanRequest() {
     state.planLoading = true;
+    // Gate: must be logged in and Pro
+    if (!requirePro()) {
+      const lastIsUser = state.planHistory.length && state.planHistory[state.planHistory.length - 1].role === 'user';
+      if (lastIsUser) state.planHistory.pop();
+      const msgsEl = document.getElementById('plan-messages');
+      if (msgsEl && msgsEl.lastElementChild && msgsEl.lastElementChild.classList.contains('user')) {
+        msgsEl.lastElementChild.remove();
+      }
+      state.planLoading = false;
+      return;
+    }
     const confirmed = await confirmApiCall({
       callType: 'plan',
       messages: state.planHistory,
@@ -7487,6 +7552,7 @@ Build my personalised plan.`;
     const input = document.getElementById('ask-input');
     const text = input.value.trim();
     if (!text || state.askLoading || !state.askContext) return;
+    if (!requirePro()) return;
     input.value = '';
     input.style.height = 'auto';
 
@@ -8376,6 +8442,15 @@ Build my personalised plan.`;
       minCost: inputCost + (minOutput * PRICE_OUTPUT_PER_TOKEN),
       maxCost: inputCost + (maxOutput * PRICE_OUTPUT_PER_TOKEN)
     };
+  }
+
+  function openPaywallModal()  { document.getElementById('paywallModal').classList.add('active'); }
+  function closePaywallModal() { document.getElementById('paywallModal').classList.remove('active'); }
+
+  function requirePro() {
+    if (!auth.loggedIn) { openAuthModal('signup'); return false; }
+    if (store.tier !== 'pro') { openPaywallModal(); return false; }
+    return true;
   }
 
   let _costResolver = null;
