@@ -6,6 +6,7 @@
   <title>Breathly — Ancient wisdom. Modern science. Your practice.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('breathly:theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
   <style>
     /* ─── Design tokens ─── */
     :root {
@@ -52,6 +53,45 @@
       --radius-sm:   8px;
       --radius-lg:   20px;
     }
+
+    /* ─── Dark theme ─── */
+    [data-theme="dark"] {
+      --bg:          #0A0F1E;
+      --bg-section:  #111827;
+      --text:        #F5F0E8;
+      --text-soft:   #B0B8D0;
+      --text-muted:  #6B7A99;
+      --border:      rgba(245,240,232,0.1);
+      --card-bg:     #1a2235;
+      --nav-bg:      rgba(10,15,30,0.96);
+
+      /* Legacy aliases — dark equivalents */
+      --navy:        #F5F0E8;
+      --navy-mid:    #111827;
+      --navy-light:  #1e2a40;
+      --navy-card:   #1a2235;
+      --navy-deep:   rgba(245,240,232,0.03);
+      --border-soft: rgba(245,240,232,0.08);
+      --text-dim:    #4a5a78;
+      --teal:        #7ab8b8;
+      --teal-dim:    #5a9898;
+      --teal-glow:   rgba(122,184,184,0.15);
+      --teal-faint:  rgba(122,184,184,0.06);
+      --gold-glow:   rgba(201,169,110,0.15);
+    }
+
+    /* Hardcoded-colour fixes for dark theme */
+    [data-theme="dark"] .nav                { background: var(--nav-bg); }
+    [data-theme="dark"] #home               { background: linear-gradient(135deg, #0A0F1E 0%, #0d1428 100%); }
+    [data-theme="dark"] .home-card          { background: var(--card-bg); border-color: var(--border); }
+    [data-theme="dark"] .home-wordmark-text { color: var(--text); }
+    [data-theme="dark"] .home-card-label    { color: var(--text); }
+    [data-theme="dark"] .home-card-icon svg path,
+    [data-theme="dark"] .home-card-icon svg circle,
+    [data-theme="dark"] .home-card-icon svg line { stroke: var(--text); }
+    [data-theme="dark"] .toast              { background: rgba(10,15,30,0.97); }
+    [data-theme="dark"] .usage-toast        { background: rgba(10,15,30,0.97); }
+    [data-theme="dark"] *:focus-visible     { outline-color: var(--text-soft); }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -850,7 +890,7 @@
       left: 0;
       right: 0;
       z-index: 50;
-      background: rgba(245, 240, 232, 0.96);
+      background: var(--nav-bg, rgba(245, 240, 232, 0.96));
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border-top: 1px solid var(--border);
@@ -1349,6 +1389,41 @@
       font-weight: 600;
       margin-top: 14px;
       opacity: 0.85;
+    }
+
+    /* Theme toggle */
+    .theme-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .theme-toggle-label {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+    }
+    .theme-switch {
+      display: flex;
+      background: var(--navy-light);
+      border-radius: 20px;
+      padding: 3px;
+      gap: 2px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .theme-switch-opt {
+      padding: 5px 14px;
+      border-radius: 16px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+    .theme-switch-opt.active {
+      background: var(--navy-card);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
     }
 
     /* Demo: toggle Pro link at the bottom of profile (testing only — remove before launch) */
@@ -3819,6 +3894,21 @@
       </div>
       <div id="reading-list-wrap">
         <!-- Populated by renderProfile() -->
+      </div>
+    </div>
+
+    <!-- Appearance settings -->
+    <div class="profile-block" style="margin-top: 24px;">
+      <div class="profile-block-head">
+        <div class="profile-block-title">Appearance</div>
+      </div>
+      <div class="theme-toggle-row">
+        <span class="theme-toggle-label">Theme</span>
+        <div class="theme-switch" onclick="toggleTheme()" role="switch" tabindex="0"
+             onkeydown="if(event.key==='Enter'||event.key===' ')toggleTheme()">
+          <span class="theme-switch-opt active" id="theme-opt-light">Light</span>
+          <span class="theme-switch-opt"        id="theme-opt-dark">Dark</span>
+        </div>
       </div>
     </div>
 
@@ -8444,6 +8534,21 @@ Build my personalised plan.`;
     };
   }
 
+  /* ─── Theme toggle ─── */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('breathly:theme', next);
+    updateThemeToggle();
+  }
+
+  function updateThemeToggle() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.getElementById('theme-opt-light')?.classList.toggle('active', !isDark);
+    document.getElementById('theme-opt-dark')?.classList.toggle('active',  isDark);
+  }
+
   function openPaywallModal()  { document.getElementById('paywallModal').classList.add('active'); }
   function closePaywallModal() { document.getElementById('paywallModal').classList.remove('active'); }
 
@@ -8944,6 +9049,9 @@ Build my personalised plan.`;
   initPlanForm();
   renderHomeSummary();           // initial summary tile + streak badge
   setTimeout(cycleBreathLabel, 2000);
+
+  // Sync theme toggle UI with saved preference
+  updateThemeToggle();
 
   // Paint guest state immediately, then hydrate from /auth/me asynchronously
   updateAuthUi();
