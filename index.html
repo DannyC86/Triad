@@ -135,7 +135,7 @@
     /* ─── Section header (small one — used on Techniques / Meditate / Library / Plan) ─── */
     .section-head {
       display: flex;
-      align-items: baseline;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 16px;
       padding: 6px 0 24px;
@@ -165,6 +165,18 @@
       max-width: 580px;
       margin-bottom: 28px;
     }
+    /* Lede inline with header title */
+    .section-head .section-lede {
+      font-size: 0.72rem;
+      line-height: 1.55;
+      max-width: 45%;
+      margin: 4px 0 0;
+      flex-shrink: 0;
+    }
+    @media (max-width: 600px) {
+      .section-head { flex-wrap: wrap; }
+      .section-head .section-lede { max-width: 100%; margin-top: 8px; font-size: 0.72rem; }
+    }
 
     /* ─── HOME ─── */
     #home {
@@ -172,6 +184,7 @@
       padding: 52px 0 0;
       margin: 0;
       background: linear-gradient(135deg, #F5F0E8 0%, #E8EDF5 100%);
+      background-attachment: fixed;
       min-height: calc(100dvh - 72px);
       overflow: hidden;
     }
@@ -226,13 +239,15 @@
       border: 1px solid var(--border);
       border-radius: 20px;
       box-shadow: 0 4px 16px rgba(26,26,46,0.08);
-      padding: 18px 16px;
+      padding: 10px 16px;
       width: 180px;
+      max-height: 80px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 4px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       -webkit-tap-highlight-color: transparent;
       outline: none;
@@ -253,7 +268,7 @@
     .home-card:active { transform: translateY(-2px); }
 
     .home-card-label {
-      font-size: 1.15rem;
+      font-size: 1rem;
       font-weight: 600;
       letter-spacing: 0.04em;
       color: var(--text);
@@ -269,6 +284,7 @@
       font-size: 0.72rem;
       color: var(--text-muted);
       text-align: center;
+      padding: 16px 0;
     }
 
     .home-auth-link {
@@ -286,11 +302,12 @@
 
     @media (max-width: 600px) {
       #home            { min-height: calc(100dvh - 72px); padding-top: 52px; }
-      .home-container  { min-height: calc(100dvh - 124px); padding: 20px 20px 20px; }
-      .home-logo       { width: 130px; height: 130px; }
-      .home-cards      { flex-direction: column; align-items: center; width: 100%; gap: 10px; }
-      .home-card       { width: 100%; max-width: 320px; padding: 16px 20px; }
-      .home-auth-footer { font-size: 0.72rem; }
+      .home-container  { min-height: calc(100dvh - 124px); padding: 16px 20px; }
+      .home-logo       { width: 110px; height: 110px; padding-top: 12px; margin-bottom: 8px; }
+      .home-logo-slogan { margin-bottom: 20px; }
+      .home-cards      { flex-direction: column; align-items: center; width: 100%; gap: 8px; }
+      .home-card       { width: 100%; max-width: 320px; padding: 10px 16px; max-height: 70px; }
+      .home-auth-footer { padding: 12px 0; font-size: 0.72rem; }
     }
 
     /* ─── Grids / cards (techniques + meditations) ─── */
@@ -932,6 +949,7 @@
     }
     .nav-btn:hover { color: var(--navy); }
     .nav-btn:hover svg { transform: translateY(-1px); }
+    .nav-btn:not(:last-child) { box-shadow: inset -1px 0 0 var(--border); }
 
     .nav-btn.active { color: var(--gold); }
     .nav-btn.active svg { filter: none; }
@@ -1065,7 +1083,9 @@
     .pacer-preset-btn.active { background: color-mix(in srgb, var(--gold) 12%, transparent); border-color: var(--gold); color: var(--gold); }
     .pacer-svg-wrap { position: relative; }
     .pacer-svg-wrap svg { color: var(--text); display: block; }
-    .pacer-controls { margin-top: 36px; }
+    .pacer-phase-display { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); min-height: 1.5em; text-align: center; margin: 12px 0 4px; }
+    .pacer-steps-wrap { font-size: 0.79rem; color: var(--text-muted); text-align: center; max-width: 240px; line-height: 1.55; min-height: 2.5em; }
+    .pacer-controls { margin-top: 20px; }
     .pacer-start-btn { padding: 13px 52px; border-radius: 999px; border: none; background: var(--gold); color: #fff; font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; letter-spacing: 0.08em; transition: opacity 0.2s, transform 0.1s; }
     .pacer-start-btn:hover { opacity: 0.88; }
     .pacer-start-btn:active { transform: scale(0.97); }
@@ -1245,6 +1265,13 @@
     }
     .modal-body::-webkit-scrollbar { width: 4px; }
     .modal-body::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 4px; }
+    .modal-privacy { max-height: 88dvh; }
+    .privacy-body { gap: 8px; font-size: 0.88rem; line-height: 1.65; }
+    .privacy-body h3 { font-size: 1rem; font-weight: 700; margin: 16px 0 4px; }
+    .privacy-body h4 { font-size: 0.88rem; font-weight: 600; margin: 12px 0 4px; }
+    .privacy-body ul { margin: 4px 0 4px 18px; }
+    .privacy-body a { color: var(--gold); text-decoration: none; }
+    .privacy-body p { margin: 4px 0; }
 
     .modal-empty {
       color: var(--text-muted);
@@ -1621,6 +1648,21 @@
       color: var(--text-muted);
       border-bottom-color: var(--text-dim);
     }
+    .profile-legal-link {
+      text-align: center;
+      margin-top: 10px;
+      padding-bottom: 20px;
+    }
+    .profile-legal-link a {
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      text-decoration: none;
+      border-bottom: 1px dashed transparent;
+      transition: all 0.18s ease;
+    }
+    .profile-legal-link a:hover { color: var(--text-muted); border-bottom-color: var(--text-dim); }
 
     /* Completion grid (techniques + meditations explored) */
     .completion-grid {
@@ -2081,6 +2123,10 @@
       flex-wrap: wrap;
       margin: 18px 0 24px;
     }
+    .howto-start-wrap {
+      margin: 20px 0;
+    }
+    .howto-start-wrap .action-btn { width: 100%; justify-content: center; }
     .action-btn {
       display: inline-flex;
       align-items: center;
@@ -2313,23 +2359,41 @@
       padding: 48px 24px;
       gap: 16px;
     }
+    .explore-cta-heading {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
     .explore-cta-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 14px 28px;
       border-radius: 999px;
-      border: none;
-      background: var(--gold);
-      color: #fff;
       font-family: inherit;
       font-size: 1rem;
       font-weight: 600;
       letter-spacing: 0.02em;
       cursor: pointer;
       transition: opacity 0.2s;
+      width: 100%;
+      max-width: 280px;
+      justify-content: center;
     }
-    .explore-cta-btn:hover { opacity: 0.85; }
+    .explore-btn-knowledge {
+      border: 1.5px solid var(--text-muted);
+      background: transparent;
+      color: var(--text);
+    }
+    .explore-btn-knowledge:hover { border-color: var(--text); }
+    .explore-btn-ask {
+      border: none;
+      background: var(--gold);
+      color: #fff;
+    }
+    .explore-btn-ask:hover { opacity: 0.85; }
     .explore-cta-sub {
       font-size: 0.82rem;
       color: var(--text-muted);
@@ -3083,8 +3147,14 @@
     .lib-search-clear svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
 
     /* Filter dropdown */
+    .lib-filters-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .lib-type-select,
     .lib-filter-select {
-      width: 100%;
+      flex: 1;
       background: var(--bg);
       color: var(--text);
       border: 1px solid var(--border);
@@ -3092,7 +3162,6 @@
       padding: 10px 36px 10px 14px;
       font-family: inherit;
       font-size: 0.88rem;
-      margin-bottom: 16px;
       cursor: pointer;
       outline: none;
       -webkit-appearance: none;
@@ -3103,63 +3172,10 @@
       background-size: 16px;
       transition: border-color 0.18s ease, box-shadow 0.18s ease;
     }
+    .lib-type-select:focus,
     .lib-filter-select:focus {
       border-color: rgba(201, 169, 110, 0.45);
       box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.08);
-    }
-
-    /* Tabs */
-    .lib-tabs {
-      display: flex;
-      gap: 2px;
-      border-bottom: 1px solid var(--border-soft);
-      margin-bottom: 22px;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none;
-    }
-    .lib-tabs::-webkit-scrollbar { display: none; }
-    .lib-tab {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-family: inherit;
-      font-size: 0.92rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      padding: 12px 16px;
-      cursor: pointer;
-      position: relative;
-      transition: color 0.18s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-    .lib-tab:hover { color: var(--text); }
-    .lib-tab.active { color: var(--gold); }
-    .lib-tab.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px; left: 12px; right: 12px;
-      height: 2px;
-      background: var(--gold);
-      border-radius: 2px 2px 0 0;
-    }
-    .lib-tab-count {
-      font-size: 0.7rem;
-      background: var(--navy-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 999px;
-      padding: 2px 8px;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-    }
-    .lib-tab.active .lib-tab-count {
-      background: color-mix(in srgb, var(--gold) 12%, transparent);
-      border-color: rgba(201, 169, 110, 0.3);
-      color: var(--gold);
     }
 
     .lib-panel { display: none; animation: fade-in 0.3s ease; }
@@ -3902,8 +3918,8 @@
           <div class="section-kicker">Breathwork</div>
           <h1 class="section-title">Techniques <span class="accent">·</span></h1>
         </div>
+        <p class="section-lede">Every technique here is a complete practice. Tap any option for the full guided routine.</p>
       </div>
-      <p class="section-lede">Each technique below is a self-contained practice. Tap one for the full protocol, the science behind it, and any safety notes worth knowing.</p>
       <div class="card-grid" id="techniques-grid"></div>
     </div>
     <div class="detail-view" id="techniques-detail"></div>
@@ -3917,8 +3933,8 @@
           <div class="section-kicker">Stillness</div>
           <h1 class="section-title">Meditate <span class="accent">·</span></h1>
         </div>
+        <p class="section-lede">A growing collection of core practices. From simple ways to steady your mind to deeper states of resting awareness.</p>
       </div>
-      <p class="section-lede">Six core meditation practices — from beginner-friendly anchors to advanced non-dual resting. Choose by what your mind needs today, not by what looks impressive.</p>
       <div class="card-grid" id="meditate-grid"></div>
     </div>
     <div class="detail-view" id="meditate-detail"></div>
@@ -3932,8 +3948,8 @@
           <div class="section-kicker">Resources</div>
           <h1 class="section-title">Library <span class="accent">·</span></h1>
         </div>
+        <p class="section-lede">Our curated library of books, teachers and big ideas. Filter by topic, search the collection. Learn the History &amp; Science</p>
       </div>
-      <p class="section-lede">A curated collection of books, teachers, and conversations. Filter by theme, search across all three, and tap any entry to go deeper.</p>
 
       <!-- Search bar -->
       <div class="lib-search">
@@ -3944,44 +3960,40 @@
         </button>
       </div>
 
-      <!-- Theme filter dropdown -->
-      <select class="lib-filter-select" id="lib-filter-select" onchange="onLibFilterChange(this.value)">
-        <option value="">All themes</option>
-        <option value="Anxiety &amp; Stress">Anxiety &amp; Stress</option>
-        <option value="Sleep">Sleep</option>
-        <option value="Focus &amp; Performance">Focus &amp; Performance</option>
-        <option value="Spirituality &amp; Consciousness">Spirituality &amp; Consciousness</option>
-        <option value="Science &amp; Research">Science &amp; Research</option>
-        <option value="Ancient Traditions">Ancient Traditions</option>
-        <option value="Cold Exposure">Cold Exposure</option>
-        <option value="Beginners">Beginners</option>
-      </select>
+      <!-- Hidden count elements (referenced by JS) -->
+      <span id="lib-count-books" hidden></span>
+      <span id="lib-count-people" hidden></span>
+      <span id="lib-count-podcasts" hidden></span>
 
-      <!-- Tab bar -->
-      <div class="lib-tabs">
-        <button class="lib-tab active" data-libtab="books"       onclick="switchLibraryTab('books')">
-          <span class="lib-tab-label">Books</span><span class="lib-tab-count" id="lib-count-books"></span>
-        </button>
-        <button class="lib-tab"        data-libtab="people"      onclick="switchLibraryTab('people')">
-          <span class="lib-tab-label">People</span><span class="lib-tab-count" id="lib-count-people"></span>
-        </button>
-        <button class="lib-tab"        data-libtab="podcasts"    onclick="switchLibraryTab('podcasts')">
-          <span class="lib-tab-label">Podcasts</span><span class="lib-tab-count" id="lib-count-podcasts"></span>
-        </button>
-        <button class="lib-tab"        data-libtab="breathwork"  onclick="switchLibraryTab('breathwork')">
-          <span class="lib-tab-label">Breathwork</span>
-        </button>
-        <button class="lib-tab"        data-libtab="meditations" onclick="switchLibraryTab('meditations')">
-          <span class="lib-tab-label">Meditations</span>
-        </button>
+      <!-- Dual filter dropdowns -->
+      <div class="lib-filters-row">
+        <select class="lib-type-select" id="lib-type-select" onchange="onLibTypeChange(this.value)">
+          <option value="all">All content</option>
+          <option value="books">Books</option>
+          <option value="people">People</option>
+          <option value="podcasts">Podcasts</option>
+          <option value="breathwork">Breathwork</option>
+          <option value="meditations">Meditations</option>
+        </select>
+        <select class="lib-filter-select" id="lib-filter-select" onchange="onLibFilterChange(this.value)">
+          <option value="">All topics</option>
+          <option value="Anxiety &amp; Stress">Anxiety &amp; Stress</option>
+          <option value="Sleep">Sleep</option>
+          <option value="Focus &amp; Performance">Focus &amp; Performance</option>
+          <option value="Spirituality &amp; Consciousness">Spirituality &amp; Consciousness</option>
+          <option value="Science &amp; Research">Science &amp; Research</option>
+          <option value="Ancient Traditions">Ancient Traditions</option>
+          <option value="Cold Exposure">Cold Exposure</option>
+          <option value="Beginners">Beginners</option>
+        </select>
       </div>
 
-      <!-- Tab panels -->
+      <!-- Content panels -->
       <div class="lib-panel active" data-libpanel="books"       id="lib-panel-books"></div>
-      <div class="lib-panel"        data-libpanel="people"      id="lib-panel-people"></div>
-      <div class="lib-panel"        data-libpanel="podcasts"    id="lib-panel-podcasts"></div>
-      <div class="lib-panel"        data-libpanel="breathwork"  id="lib-panel-breathwork"></div>
-      <div class="lib-panel"        data-libpanel="meditations" id="lib-panel-meditations"></div>
+      <div class="lib-panel active" data-libpanel="people"      id="lib-panel-people"></div>
+      <div class="lib-panel active" data-libpanel="podcasts"    id="lib-panel-podcasts"></div>
+      <div class="lib-panel active" data-libpanel="breathwork"  id="lib-panel-breathwork"></div>
+      <div class="lib-panel active" data-libpanel="meditations" id="lib-panel-meditations"></div>
 
       <!-- Empty state for "no matches" -->
       <div class="lib-empty" id="lib-empty-state" hidden>
@@ -4069,8 +4081,8 @@
         <div class="section-kicker">You</div>
         <h1 class="section-title">Profile <span class="accent">·</span></h1>
       </div>
+      <p class="section-lede">Your practice so far — streak, sessions, achievements, and what you're reading. Everything is stored locally on this device.</p>
     </div>
-    <p class="section-lede">Your practice so far — streak, sessions, achievements, and what you're reading. Everything is stored locally on this device.</p>
 
     <!-- Account header (populated by renderProfile) -->
     <div id="profile-account-header"></div>
@@ -4164,6 +4176,11 @@
     <div class="profile-demo-toggle">
       <a onclick="toggleProTier()" id="profile-demo-toggle-link">Demo: toggle Pro tier</a>
     </div>
+
+    <!-- Privacy & Legal -->
+    <div class="profile-legal-link">
+      <a onclick="openPrivacyModal()">Privacy &amp; Legal</a>
+    </div>
   </section>
 
 </div>
@@ -4203,6 +4220,7 @@
     <div class="pacer-presets">
       <button class="pacer-preset-btn active" data-preset="sigh" onclick="setPacerPreset('sigh')">Physiological Sigh · 12s</button>
       <button class="pacer-preset-btn" data-preset="478" onclick="setPacerPreset('478')">4-7-8 Breath · 19s</button>
+      <button class="pacer-preset-btn" data-preset="free" onclick="setPacerPreset('free')">Free Breath</button>
     </div>
     <div class="pacer-svg-wrap">
       <svg id="pacerSvg" viewBox="-20 -18 140 136" fill="none" width="240" height="240">
@@ -4225,22 +4243,77 @@
         <circle id="pacerNode" cx="19" cy="68" r="3.5" fill="#C9A96E" filter="url(#nodeGlow)"/>
       </svg>
     </div>
+    <div class="pacer-phase-display" id="pacerPhaseDisplay"></div>
+    <div class="pacer-steps-wrap" id="pacerStepsWrap"></div>
     <div class="pacer-controls">
       <button class="pacer-start-btn" id="pacerStartBtn" onclick="togglePacer()">Start</button>
     </div>
   </div>
 </div>
 
-<!-- ═════════ Detail action bar ═════════ -->
-<div class="detail-action-bar" id="detailActionBar">
-  <button class="dab-btn dab-ask" onclick="openAskModal()">
-    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    Ask
-  </button>
-  <button class="dab-btn dab-complete" id="dabCompleteBtn" onclick="dabCompleteAction()">
-    <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
-    Mark Complete
-  </button>
+
+<!-- ═════════ Privacy Modal ═════════ -->
+<div class="modal-backdrop" id="privacyModal" onclick="if(event.target===this) closePrivacyModal()">
+  <div class="modal modal-privacy">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <span class="modal-kicker">Legal</span>
+        <span class="modal-title">Privacy &amp; Legal</span>
+      </div>
+      <button class="modal-close" onclick="closePrivacyModal()" title="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body privacy-body">
+      <h3>Privacy Policy</h3>
+      <p><strong>Last updated:</strong> 24 May 2026</p>
+      <p>Breathly ("we", "us", "our") is operated by an individual developer based in the United Kingdom. This policy explains how we handle your information when you use the Breathly web application ("the App").</p>
+
+      <h4>1. Who we are</h4>
+      <p>Data controller: Daniel Clark, United Kingdom. Contact: <a href="mailto:daniel.clark@live.co.uk">daniel.clark@live.co.uk</a></p>
+
+      <h4>2. What data we collect</h4>
+      <p><strong>Data stored locally on your device only (not sent to us):</strong></p>
+      <ul>
+        <li>Your practice sessions, streak, and completion history</li>
+        <li>Your reading list and achievements</li>
+        <li>Your theme preference (light / dark)</li>
+        <li>Your plan and any waitlist sign-up (email address, stored in your browser's localStorage)</li>
+      </ul>
+      <p><strong>Data sent to our servers only when you use AI features:</strong></p>
+      <ul>
+        <li>The text of your question when you use "Ask an Expert"</li>
+        <li>The practice context (technique or meditation name) for that question</li>
+        <li>Answers are streamed back and not permanently stored by us</li>
+      </ul>
+      <p>We do not use cookies, analytics trackers, or advertising networks. We do not collect your name, location, or device identifiers.</p>
+
+      <h4>3. Legal basis for processing (UK GDPR)</h4>
+      <p>When you use the AI Ask feature, we process your question text on the basis of <strong>legitimate interests</strong> (Article 6(1)(f) UK GDPR) — specifically, to provide the service you have requested. We have assessed that this does not override your privacy interests given the limited, transient nature of the data.</p>
+      <p>If you sign up to our waitlist, we process your email address on the basis of <strong>consent</strong> (Article 6(1)(a) UK GDPR). You may withdraw consent at any time by emailing us.</p>
+
+      <h4>4. Data retention</h4>
+      <ul>
+        <li><strong>Local data:</strong> stored indefinitely in your browser until you clear your site data or use the reset option.</li>
+        <li><strong>AI query text:</strong> processed transiently; not stored on our servers after the response is delivered.</li>
+        <li><strong>Waitlist email:</strong> retained until you ask us to remove it.</li>
+      </ul>
+
+      <h4>5. Third-party processors</h4>
+      <p>We use Anthropic, Inc. (USA) to power AI responses. Your query text is sent to Anthropic's API under their published privacy policy. Anthropic is a sub-processor acting on our instructions. International transfers to the USA are made under the UK International Data Transfer Agreement (IDTA) / standard contractual clauses.</p>
+      <p>We use Railway (USA) to host the application server. Railway processes server logs (IP address, timestamps) for security and operational purposes only.</p>
+
+      <h4>6. Your rights under UK GDPR</h4>
+      <p>You have the right to: access, rectify, or erase your personal data; restrict or object to processing; and data portability. To exercise any of these rights, email us at <a href="mailto:daniel.clark@live.co.uk">daniel.clark@live.co.uk</a>. You also have the right to lodge a complaint with the ICO (ico.org.uk).</p>
+
+      <h4>7. Changes to this policy</h4>
+      <p>We may update this policy from time to time. The "last updated" date at the top will reflect any changes. Continued use of the App constitutes acceptance of the updated policy.</p>
+
+      <h3 style="margin-top:28px">Terms of Use</h3>
+      <p>Breathly is provided for informational and general wellness purposes only. It is not a medical device and does not provide medical advice. Always consult a qualified healthcare professional before beginning any new breathwork or meditation practice, particularly if you have a cardiovascular, respiratory, or mental health condition.</p>
+      <p>By using the App you agree not to use it for any unlawful purpose. The App is provided "as is" without warranty of any kind.</p>
+    </div>
+  </div>
 </div>
 
 <!-- ═════════ Ask Modal ═════════ -->
@@ -6837,6 +6910,13 @@
         <ol>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
       </div>
 
+      <div class="howto-start-wrap">
+        <button class="action-btn primary" onclick="openStartSession('${item.id.replace(/'/g, "\\'")}')">
+          <svg viewBox="0 0 24 24"><path d="M5 4l14 8-14 8z"/></svg>
+          Start session
+        </button>
+      </div>
+
       <div class="detail-section">
         <h3>Why it works</h3>
         <ul>${item.benefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
@@ -6887,17 +6967,6 @@
         <span class="pill">${escapeHtml(item.duration)}</span>
       </div>
 
-      <div class="detail-actions">
-        <button class="action-btn primary" onclick="openStartSession('${itemIdJs}')">
-          <svg viewBox="0 0 24 24"><path d="M5 4l14 8-14 8z"/></svg>
-          Start session
-        </button>
-        <button class="action-btn secondary" onclick="addToPlan('${itemIdJs}')">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-          Add to plan
-        </button>
-      </div>
-
       <!-- Tabs -->
       <div class="tabs" role="tablist">
         <button class="tab active" data-tab="howto"   onclick="switchTab(this, 'howto')">How To</button>
@@ -6910,8 +6979,15 @@
         <h3>The method, step by step</h3>
         <ul>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
 
-        <h3>Typical duration</h3>
-        <p>${escapeHtml(item.duration)} — find your own rhythm within that range.</p>
+        <div class="howto-start-wrap">
+          <button class="action-btn primary" onclick="openStartSession('${itemIdJs}')">
+            <svg viewBox="0 0 24 24"><path d="M5 4l14 8-14 8z"/></svg>
+            Start session
+          </button>
+        </div>
+
+        <h3>Tips</h3>
+        <ul>${d.howTo.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
 
         <h3>Beginner → advanced progression</h3>
         <div class="progressions">
@@ -6921,9 +6997,6 @@
               <div class="prog-detail">${escapeHtml(p.detail)}</div>
             </div>`).join('')}
         </div>
-
-        <h3>Tips</h3>
-        <ul>${d.howTo.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
       </div>
 
       <!-- Tab 2: LEARN -->
@@ -6956,10 +7029,13 @@
       <!-- Tab 3: EXPLORE -->
       <div class="tab-panel" data-panel="explore">
         <div class="explore-cta">
-          <button class="explore-cta-btn" onclick="openKnowledgeEntry('${kind}', '${itemIdJs}')">
-            Explore in Knowledge →
+          <p class="explore-cta-heading">Go deeper</p>
+          <button class="explore-cta-btn explore-btn-knowledge" onclick="openKnowledgeEntry('${kind}', '${itemIdJs}')">
+            Explore the Knowledge
           </button>
-          <p class="explore-cta-sub">Dive deeper into the history, science and people behind this practice</p>
+          <button class="explore-cta-btn explore-btn-ask" onclick="openAskModal()">
+            Ask an Expert
+          </button>
         </div>
       </div>
     `;
@@ -7206,6 +7282,10 @@
       { from: 2, to: 0, move: 4000, dwell: 7000 },
       { from: 0, to: 1, move: 500,  dwell: 0    },
       { from: 1, to: 2, move: 8000, dwell: 0    },
+    ]},
+    free: { phases: [
+      { from: 2, to: 0, move: 4000, dwell: 0 },
+      { from: 0, to: 2, move: 4000, dwell: 0 },
     ]}
   };
   let _pacerRunning  = false;
@@ -7219,7 +7299,29 @@
     const overlay = document.getElementById('pacerOverlay');
     if (!overlay) return;
     _pacerStop();
-    _pacerSetPreset(_pacerPreset, false);
+
+    const item = practiceId ? findPractice(practiceId) : null;
+
+    // Title
+    const titleEl = document.getElementById('pacerTitle');
+    if (titleEl) titleEl.textContent = item ? item.title : 'Breath Pacer';
+
+    // Auto-select preset
+    let preset = 'free';
+    if (practiceId === 'physiological-sigh') preset = 'sigh';
+    else if (practiceId === '4-7-8-breathing') preset = '478';
+    _pacerSetPreset(preset, false);
+
+    // Steps
+    const stepsEl = document.getElementById('pacerStepsWrap');
+    if (stepsEl && item && item.steps && item.steps.length) {
+      stepsEl.innerHTML = item.steps.map((s, i) =>
+        `<div style="margin-bottom:4px"><strong>${i + 1}.</strong> ${escapeHtml(s)}</div>`
+      ).join('');
+    } else if (stepsEl) {
+      stepsEl.innerHTML = '';
+    }
+
     overlay.classList.add('active');
   }
 
@@ -7280,6 +7382,9 @@
       const el = document.getElementById('pacerLbl' + i);
       if (el) el.setAttribute('opacity', i === vertIdx ? '1' : '0.38');
     }
+    const phaseNames = ['Inhale', 'Hold', 'Exhale'];
+    const phaseEl = document.getElementById('pacerPhaseDisplay');
+    if (phaseEl) phaseEl.textContent = vertIdx >= 0 ? phaseNames[vertIdx] : '';
   }
 
   function _pacerSyncBtn() {
@@ -7421,37 +7526,13 @@
     updateFab();
   }
 
-  function updateFab() {
-    const bar         = document.getElementById('detailActionBar');
-    const completeBtn = document.getElementById('dabCompleteBtn');
-    const onDetail    =
-      (state.section === 'techniques' && state.techniqueId) ||
-      (state.section === 'meditate'   && state.meditationId);
-
-    if (!bar) return;
-    bar.classList.toggle('visible', !!onDetail);
-
-    if (onDetail && completeBtn && state.askContext) {
-      const done = alreadyCompletedToday(state.askContext.id);
-      completeBtn.classList.toggle('done', done);
-      completeBtn.disabled = done;
-      completeBtn.innerHTML = done
-        ? `<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Done today`
-        : `<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Mark Complete`;
-    }
-  }
-
-  function dabCompleteAction() {
-    if (!state.askContext) return;
-    completeSession(state.askContext.kind, state.askContext.id);
-    updateFab();
-  }
+  function updateFab() { /* no-op — action bar removed */ }
 
   /* ════════════════ LIBRARY — tabbed, searchable, filterable ════════════════ */
 
   // UI state for the library view
   const libUiState = {
-    tab: 'books',              // 'books' | 'people' | 'podcasts' | 'breathwork' | 'meditations'
+    tab: 'all',                // 'all' | 'books' | 'people' | 'podcasts' | 'breathwork' | 'meditations'
     search: '',
     activeFilters: new Set(),  // theme strings from LIBRARY_THEMES
     detail: null               // { kind, id, sourceTab } when a detail view is open
@@ -7475,9 +7556,10 @@
   }
 
   function renderLibraryFilters() {
-    const sel = document.getElementById('lib-filter-select');
-    if (!sel) return;
-    sel.value = libUiState.activeFilters.size === 1 ? [...libUiState.activeFilters][0] : '';
+    const topicSel = document.getElementById('lib-filter-select');
+    if (topicSel) topicSel.value = libUiState.activeFilters.size === 1 ? [...libUiState.activeFilters][0] : '';
+    const typeSel = document.getElementById('lib-type-select');
+    if (typeSel) typeSel.value = libUiState.tab;
   }
 
   function onLibFilterChange(val) {
@@ -7486,30 +7568,38 @@
     renderLibraryAllPanels();
   }
 
+  function onLibTypeChange(val) {
+    switchLibraryTab(val || 'all');
+  }
+
   function renderLibraryAllPanels() {
     const books    = filterItems(LIBRARY.books,    'book');
     const people   = filterItems(LIBRARY.people,   'person');
     const podcasts = filterItems(LIBRARY.podcasts, 'podcast');
 
-    document.getElementById('lib-count-books').textContent    = books.length;
-    document.getElementById('lib-count-people').textContent   = people.length;
-    document.getElementById('lib-count-podcasts').textContent = podcasts.length;
+    const tab = libUiState.tab;
+    const allMode = tab === 'all';
+    const panels = ['books', 'people', 'podcasts', 'breathwork', 'meditations'];
 
+    // Render content into each panel
     document.getElementById('lib-panel-books').innerHTML      = renderBooksPanel(books);
     document.getElementById('lib-panel-people').innerHTML     = renderPeoplePanel(people);
     document.getElementById('lib-panel-podcasts').innerHTML   = renderPodcastsPanel(podcasts);
     document.getElementById('lib-panel-breathwork').innerHTML = renderBreathworkPanel();
     document.getElementById('lib-panel-meditations').innerHTML= renderMeditationsPanel();
 
-    // Show empty state only for filterable tabs (books/people/podcasts)
+    // Show/hide panels based on selected type
+    panels.forEach(p => {
+      const el = document.getElementById('lib-panel-' + p);
+      if (el) el.classList.toggle('active', allMode || p === tab);
+    });
+
+    // Empty state: only for specific filterable type with no results
     const filterableTabs = ['books', 'people', 'podcasts'];
     const counts = { books: books.length, people: people.length, podcasts: podcasts.length };
-    const showEmpty = filterableTabs.includes(libUiState.tab) && counts[libUiState.tab] === 0;
+    const showEmpty = !allMode && filterableTabs.includes(tab) && counts[tab] === 0;
     const emptyEl = document.getElementById('lib-empty-state');
     if (emptyEl) emptyEl.hidden = !showEmpty;
-    document.querySelectorAll('.lib-panel').forEach(p => {
-      p.style.display = (p.dataset.libpanel === libUiState.tab && showEmpty) ? 'none' : '';
-    });
   }
 
   function renderBooksPanel(books) {
@@ -7660,10 +7750,10 @@
 
   /* ─── Tab switching ─── */
   function switchLibraryTab(tab) {
-    if (!['books','people','podcasts','breathwork','meditations'].includes(tab)) return;
+    if (!['all','books','people','podcasts','breathwork','meditations'].includes(tab)) return;
     libUiState.tab = tab;
-    document.querySelectorAll('.lib-tab').forEach(b => b.classList.toggle('active', b.dataset.libtab === tab));
-    document.querySelectorAll('.lib-panel').forEach(p => p.classList.toggle('active', p.dataset.libpanel === tab));
+    const typeSel = document.getElementById('lib-type-select');
+    if (typeSel) typeSel.value = tab;
     renderLibraryAllPanels();
   }
 
@@ -8105,6 +8195,14 @@ Build my personalised plan.`;
 
   function closeAskModal() {
     document.getElementById('askModal').classList.remove('active');
+  }
+
+  function openPrivacyModal() {
+    document.getElementById('privacyModal').classList.add('active');
+  }
+
+  function closePrivacyModal() {
+    document.getElementById('privacyModal').classList.remove('active');
   }
 
   function renderAskHistory() {
