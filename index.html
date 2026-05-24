@@ -85,9 +85,7 @@
     [data-theme="dark"] #home               { background: linear-gradient(135deg, #0A0F1E 0%, #0d1428 100%); }
     [data-theme="dark"] .home-card          { background: var(--card-bg); border-color: var(--border); }
     [data-theme="dark"] .home-card-label    { color: var(--text); }
-    [data-theme="dark"] .home-card-icon svg path,
-    [data-theme="dark"] .home-card-icon svg circle,
-    [data-theme="dark"] .home-card-icon svg line { stroke: var(--text); }
+    [data-theme="dark"] #home               { background: linear-gradient(135deg, var(--bg) 0%, var(--card-bg) 100%); }
     [data-theme="dark"] .toast              { background: rgba(10,15,30,0.97); }
     [data-theme="dark"] .usage-toast        { background: rgba(10,15,30,0.97); }
     [data-theme="dark"] *:focus-visible     { outline-color: var(--text-soft); }
@@ -171,10 +169,10 @@
     /* ─── HOME ─── */
     #home {
       max-width: none;
-      padding: 0;
+      padding: 52px 0 0;
       margin: 0;
       background: linear-gradient(135deg, #F5F0E8 0%, #E8EDF5 100%);
-      min-height: calc(100dvh - 124px);
+      min-height: calc(100dvh - 72px);
       overflow: hidden;
     }
     #home.active { display: flex; align-items: stretch; }
@@ -185,7 +183,7 @@
       align-items: center;
       justify-content: space-between;
       min-height: calc(100dvh - 124px);
-      padding: 36px 24px 32px;
+      padding: 28px 24px 28px;
       width: 100%;
     }
 
@@ -193,14 +191,23 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 12px;
     }
 
     .home-logo {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       display: block;
       color: var(--text);
       animation: logo-breathe 4s ease-in-out infinite;
+    }
+
+    .home-logo-slogan {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: center;
     }
 
     .home-cards {
@@ -216,14 +223,13 @@
       border: 1px solid var(--border);
       border-radius: 20px;
       box-shadow: 0 4px 16px rgba(26,26,46,0.08);
-      padding: 14px 16px;
+      padding: 18px 16px;
       width: 180px;
-      max-height: 110px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       -webkit-tap-highlight-color: transparent;
       outline: none;
@@ -243,27 +249,17 @@
 
     .home-card:active { transform: translateY(-2px); }
 
-    .home-card-icon {
-      width: 26px;
-      height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .home-card-icon svg { width: 26px; height: 26px; }
-
     .home-card-label {
-      font-size: 0.66rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #1a1a2e;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text);
     }
 
     .home-card-sublabel {
-      font-size: 0.60rem;
+      font-size: 0.65rem;
       color: var(--text-muted);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
     }
 
     .home-auth-footer {
@@ -286,12 +282,11 @@
     .summary-kicker, .summary-link, .summary-row { display: none; }
 
     @media (max-width: 600px) {
-      #home            { min-height: calc(100dvh - 124px); }
-      .home-container  { min-height: calc(100dvh - 124px); padding: 24px 20px 20px; }
-      .home-logo       { width: 48px; }
-      .home-cards      { flex-direction: column; align-items: center; width: 100%; gap: 10px; }
-      .home-card       { width: 100%; max-width: 320px; padding: 14px 16px;
-                         max-height: 110px; min-height: 0; }
+      #home            { min-height: calc(100dvh - 72px); padding-top: 52px; }
+      .home-container  { min-height: calc(100dvh - 124px); padding: 20px 20px 20px; }
+      .home-logo       { width: 72px; height: 72px; }
+      .home-cards      { flex-direction: row; align-items: stretch; width: 100%; gap: 8px; }
+      .home-card       { flex: 1; padding: 16px 10px; }
       .home-auth-footer { font-size: 0.72rem; }
     }
 
@@ -3753,50 +3748,23 @@
           <circle cx="50" cy="50" r="5" stroke="currentColor" stroke-width="0.5" opacity="0.4"/>
           <circle cx="50" cy="50" r="1.5" fill="currentColor"/>
         </svg>
+        <span class="home-logo-slogan">Mind. Body. Spirit. Aligned.</span>
       </div>
 
       <div class="home-cards">
         <button class="home-card" onclick="homeNavigate('meditate')">
-          <div class="home-card-icon">
-            <!-- Lotus flower: center petal + two each side -->
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M 24,38 C 20,28 20,16 24,10 C 28,16 28,28 24,38 Z"/>
-              <path d="M 24,38 C 18,30 13,19 15,11 C 18,15 22,28 24,38 Z"/>
-              <path d="M 24,38 C 30,30 35,19 33,11 C 30,15 26,28 24,38 Z"/>
-              <path d="M 24,38 C 14,33 7,23 9,14 C 13,17 19,30 24,38 Z"/>
-              <path d="M 24,38 C 34,33 41,23 39,14 C 35,17 29,30 24,38 Z"/>
-              <line x1="24" y1="38" x2="24" y2="44"/>
-            </svg>
-          </div>
-          <div class="home-card-label">Meditate</div>
-          <div class="home-card-sublabel">Meditation</div>
+          <div class="home-card-label">Mind</div>
+          <div class="home-card-sublabel">Meditate</div>
         </button>
 
         <button class="home-card" onclick="homeNavigate('techniques')">
-          <div class="home-card-icon">
-            <!-- Three concentric arcs: outward breath waves -->
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#1a1a2e" stroke-linecap="round">
-              <path d="M 18,32 Q 24,22 30,32" stroke-width="2.5"/>
-              <path d="M 11,36 Q 24,16 37,36" stroke-width="2"/>
-              <path d="M 4,40 Q 24,10 44,40" stroke-width="1.5"/>
-            </svg>
-          </div>
-          <div class="home-card-label">Breath</div>
+          <div class="home-card-label">Body</div>
           <div class="home-card-sublabel">Breathwork</div>
         </button>
 
         <button class="home-card" onclick="homeNavigate('library')">
-          <div class="home-card-icon">
-            <!-- Open book with flame above -->
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M 24,22 C 21,18 18,13 20,9 C 21,7 22,6 24,5 C 26,6 27,7 28,9 C 30,13 27,18 24,22 Z"/>
-              <path d="M 8,32 L 8,44 L 24,42 L 24,30 Z"/>
-              <path d="M 40,32 L 40,44 L 24,42 L 24,30 Z"/>
-              <path d="M 8,32 Q 24,28 40,32"/>
-            </svg>
-          </div>
-          <div class="home-card-label">Knowledge</div>
-          <div class="home-card-sublabel">Library</div>
+          <div class="home-card-label">Spirit</div>
+          <div class="home-card-sublabel">Knowledge</div>
         </button>
       </div>
 
@@ -4294,10 +4262,10 @@
 <!-- ═════════ Usage toast region (bottom-right) ═════════ -->
 <div class="usage-toast-region" id="usage-toast-region"></div>
 
-<!-- ═════════ Top Header — hidden on home ═════════ -->
-<header class="top-header hidden" id="top-header">
+<!-- ═════════ Top Header ═════════ -->
+<header class="top-header" id="top-header">
   <button class="top-header-brand" onclick="navigate('home')" aria-label="Go to home">
-    <svg class="top-header-logo" viewBox="0 0 100 100" width="30" height="30" fill="none" aria-hidden="true">
+    <svg class="top-header-logo" viewBox="0 0 100 100" width="28" height="28" fill="none" aria-hidden="true">
       <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1"/>
       <polygon points="50,14 81,68 19,68" stroke="currentColor" stroke-width="1.5"/>
       <circle cx="50" cy="14" r="11" stroke="currentColor" stroke-width="0.5" opacity="0.25"/>
@@ -4306,16 +4274,9 @@
       <circle cx="50" cy="50" r="5" stroke="currentColor" stroke-width="0.5" opacity="0.4"/>
       <circle cx="50" cy="50" r="1.5" fill="currentColor"/>
     </svg>
-    <div class="top-header-brand-text">
-      <span class="top-header-wordmark">TRIAD</span>
-      <span class="top-header-slogan">Mind. Body. Spirit. Aligned.</span>
-    </div>
+    <span class="top-header-wordmark">TRIAD</span>
   </button>
   <div class="top-header-right">
-    <div class="top-header-badge" aria-label="Your data stays on your device">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/></svg>
-      LOCAL &amp; SECURE
-    </div>
     <button class="top-header-avatar" id="profileIconBtn" onclick="handleProfileIconClick()" aria-label="Profile">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
     </button>
@@ -6668,10 +6629,6 @@
     const _navBtn = document.querySelector(`.nav-btn[data-section="${target}"]`);
     if (_navBtn) _navBtn.classList.add('active');
     state.section = target;
-
-    // Show/hide top header (hidden on home)
-    const _topHeader = document.getElementById('top-header');
-    if (_topHeader) _topHeader.classList.toggle('hidden', target === 'home');
 
     // Reset to list view when entering a section freshly
     if (target === 'techniques' && !opts.keepDetail) hideTechniqueDetail();
