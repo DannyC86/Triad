@@ -2273,6 +2273,40 @@
       letter-spacing: 0.02em;
     }
 
+    /* Explore tab — CTA card */
+    .explore-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 24px;
+      gap: 16px;
+    }
+    .explore-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      border: none;
+      background: var(--gold);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .explore-cta-btn:hover { opacity: 0.85; }
+    .explore-cta-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
     /* Learn tab — animation stage + video */
     .learn-animation {
       background: var(--bg-section);
@@ -6775,62 +6809,13 @@
 
       <!-- Tabs -->
       <div class="tabs" role="tablist">
-        <button class="tab active" data-tab="overview" onclick="switchTab(this, 'overview')">Overview</button>
-        <button class="tab"        data-tab="history"  onclick="switchTab(this, 'history')">History</button>
-        <button class="tab"        data-tab="howto"    onclick="switchTab(this, 'howto')">How to</button>
-        <button class="tab"        data-tab="science"  onclick="switchTab(this, 'science')">Science</button>
-        <button class="tab"        data-tab="learn"    onclick="switchTab(this, 'learn')">Learn</button>
+        <button class="tab active" data-tab="howto"   onclick="switchTab(this, 'howto')">How To</button>
+        <button class="tab"        data-tab="learn"   onclick="switchTab(this, 'learn')">Learn</button>
+        <button class="tab"        data-tab="explore" onclick="switchTab(this, 'explore')">Explore</button>
       </div>
 
-      <!-- Tab 1: OVERVIEW -->
-      <div class="tab-panel active" data-panel="overview">
-        <div class="tldr-block">
-          <p>${escapeHtml(item.desc)} ${item.benefits && item.benefits[0] ? escapeHtml(item.benefits[0]) : ''}</p>
-        </div>
-
-        <h3>What it is</h3>
-        ${collapseP(d.overview.what, item.id + '-what')}
-
-        <h3>Key benefits</h3>
-        <ul>${d.overview.keyBenefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
-
-        <h3>When to use it</h3>
-        <ul>${d.overview.whenToUse.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul>
-
-        <h3>Who it's for</h3>
-        <p>${escapeHtml(d.overview.whoFor)}</p>
-
-        ${item.cautions ? `
-          <h3>Cautions</h3>
-          <div class="caution-box ${cautionClass(item.cautions)}">
-            <strong>Practice safely</strong>
-            ${escapeHtml(item.cautions)}
-          </div>` : ''}
-      </div>
-
-      <!-- Tab 2: HISTORY -->
-      <div class="tab-panel" data-panel="history">
-        <h3>Origins &amp; tradition</h3>
-        ${collapseP(d.history.origins, item.id + '-origins')}
-
-        <h3>How it evolved</h3>
-        ${collapseP(d.history.evolution, item.id + '-evolution')}
-
-        <h3>Key figures</h3>
-        <div class="figures-list">
-          ${d.history.figures.map(f => `
-            <div class="figure-row">
-              <div class="fig-name">${escapeHtml(f.name)}</div>
-              <div class="fig-credit">${escapeHtml(f.credit)}</div>
-            </div>`).join('')}
-        </div>
-
-        <h3>Connection to ancient practice</h3>
-        <p>${escapeHtml(d.history.ancient)}</p>
-      </div>
-
-      <!-- Tab 3: HOW TO -->
-      <div class="tab-panel" data-panel="howto">
+      <!-- Tab 1: HOW TO -->
+      <div class="tab-panel active" data-panel="howto">
         <h3>The method, step by step</h3>
         <ul>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
 
@@ -6850,22 +6835,7 @@
         <ul>${d.howTo.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
       </div>
 
-      <!-- Tab 4: SCIENCE -->
-      <div class="tab-panel" data-panel="science">
-        <h3>What's happening in the body</h3>
-        ${collapseP(d.science.physiology, item.id + '-physiology')}
-
-        <h3>Neuroscience</h3>
-        ${collapseP(d.science.neuroscience, item.id + '-neuro')}
-
-        <h3>Key mechanisms</h3>
-        <div class="sci-tags">${d.science.tags.map(t => `<span class="sci-tag">${escapeHtml(t)}</span>`).join('')}</div>
-
-        <h3>Research findings</h3>
-        <ul>${d.science.research.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
-      </div>
-
-      <!-- Tab 5: LEARN -->
+      <!-- Tab 2: LEARN -->
       <div class="tab-panel" data-panel="learn">
         <h3>${kind === 'meditation' ? 'Meditation animation' : 'Breathing animation'}</h3>
         <div class="learn-animation">
@@ -6889,6 +6859,16 @@
             <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             Watch on YouTube
           </a>
+        </div>
+      </div>
+
+      <!-- Tab 3: EXPLORE -->
+      <div class="tab-panel" data-panel="explore">
+        <div class="explore-cta">
+          <button class="explore-cta-btn" onclick="navigate('library')">
+            Explore in Knowledge →
+          </button>
+          <p class="explore-cta-sub">Dive deeper into the history, science and people behind this practice</p>
         </div>
       </div>
 
