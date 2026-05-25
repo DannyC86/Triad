@@ -8388,12 +8388,13 @@ var _introPlayedThisSession = false;
     const key = title + '||' + author;
     if (key in _bookCoverCache) return _bookCoverCache[key];
     try {
-      const base = 'https://www.googleapis.com/books/v1/volumes?maxResults=1&fields=items(volumeInfo(imageLinks))&q=';
+      const base = 'https://www.googleapis.com/books/v1/volumes?maxResults=1&q=';
       const q1 = 'intitle:' + encodeURIComponent(title) + '+inauthor:' + encodeURIComponent(author);
       const res = await fetch(base + q1);
       if (!res.ok) throw new Error();
       const data = await res.json();
       let links = data?.items?.[0]?.volumeInfo?.imageLinks;
+      console.log('BookCover:', title, links);
       if (!links) {
         const q2 = 'intitle:' + encodeURIComponent(title);
         const res2 = await fetch(base + q2);
