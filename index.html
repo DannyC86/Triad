@@ -1173,6 +1173,59 @@
     .pacer-start-btn:hover { opacity: 0.88; }
     .pacer-start-btn:active { transform: scale(0.97); }
 
+    /* ─── Session Engine ─── */
+    .session-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: #0A0F1E;
+      display: none; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      overflow-y: auto;
+    }
+    .session-overlay.active { display: flex; }
+    .session-prestart {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; width: 100%; max-width: 380px; margin: 0 auto; padding: 40px 24px;
+    }
+    .session-prestart-title { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 400; color: #F5F0E8; text-align: center; margin-bottom: 10px; }
+    .session-prestart-desc { font-size: 0.9rem; color: rgba(245,240,232,0.6); text-align: center; margin-bottom: 32px; line-height: 1.6; max-width: 300px; }
+    .session-loops-label { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #C9A96E; margin-bottom: 12px; }
+    .session-loops-grid { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 36px; }
+    .session-loops-btn { padding: 9px 20px; border-radius: 999px; border: 1px solid rgba(201,169,110,0.3); background: transparent; color: rgba(245,240,232,0.7); font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all 0.18s ease; }
+    .session-loops-btn.active { background: rgba(201,169,110,0.12); border-color: #C9A96E; color: #C9A96E; }
+    .session-begin-btn { width: 100%; padding: 16px; border-radius: 999px; border: none; background: #C9A96E; color: #0A0F1E; font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; letter-spacing: 0.06em; transition: opacity 0.2s; margin-bottom: 16px; }
+    .session-begin-btn:hover { opacity: 0.88; }
+    .session-cancel-link { background: none; border: none; color: rgba(245,240,232,0.4); font-family: inherit; font-size: 0.85rem; cursor: pointer; padding: 8px; }
+    .session-cancel-link:hover { color: rgba(245,240,232,0.7); }
+    .session-view {
+      display: none; flex-direction: column; align-items: center;
+      width: 100%; min-height: 100vh; padding: 0 24px 40px;
+    }
+    .session-view.active { display: flex; }
+    .session-header { width: 100%; max-width: 380px; display: flex; align-items: center; justify-content: space-between; padding: 20px 0 32px; }
+    .session-tech-name { font-size: 0.95rem; font-weight: 500; color: rgba(245,240,232,0.8); letter-spacing: 0.02em; }
+    .session-close-btn { background: transparent; border: none; cursor: pointer; color: rgba(245,240,232,0.5); padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.18s; }
+    .session-close-btn:hover { color: rgba(245,240,232,0.9); }
+    .session-canvas-wrap { position: relative; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; }
+    #sessOrb { transition: r 0.15s ease; }
+    .session-phase-label { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 300; color: #F5F0E8; margin-top: 28px; letter-spacing: 0.04em; min-height: 3rem; transition: opacity 0.15s ease; text-align: center; }
+    .session-phase-label.fade { opacity: 0; }
+    .session-cycle-count { font-size: 0.78rem; color: rgba(245,240,232,0.35); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 10px; }
+    .session-spacer { flex: 1; min-height: 32px; }
+    .session-controls { padding: 0 0 20px; }
+    .session-pause-btn { padding: 13px 52px; border-radius: 999px; border: 1px solid rgba(201,169,110,0.4); background: transparent; color: #C9A96E; font-family: inherit; font-size: 1rem; font-weight: 500; cursor: pointer; letter-spacing: 0.08em; transition: all 0.2s; }
+    .session-pause-btn:hover { background: rgba(201,169,110,0.08); }
+    .session-pause-btn.paused { background: rgba(201,169,110,0.12); }
+    .session-complete {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; width: 100%; max-width: 380px; margin: 0 auto; padding: 40px 24px;
+    }
+    .session-complete.active { display: flex; }
+    .session-complete-icon { font-size: 2.8rem; margin-bottom: 20px; }
+    .session-complete-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; color: #F5F0E8; text-align: center; margin-bottom: 10px; }
+    .session-complete-detail { font-size: 0.88rem; color: rgba(245,240,232,0.5); text-align: center; margin-bottom: 36px; line-height: 1.6; }
+    .session-return-btn { width: 100%; padding: 16px; border-radius: 999px; border: none; background: #C9A96E; color: #0A0F1E; font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .session-return-btn:hover { opacity: 0.88; }
+
     /* ─── YouTube Verified Demonstration card ─── */
     .yt-demo-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; margin-bottom: 4px; }
     .yt-demo-top  { display: flex; gap: 14px; align-items: flex-start; }
@@ -4579,6 +4632,56 @@ var _introPlayedThisSession = false;
 </div>
 
 
+<!-- ═════════ Session Engine Overlay ═════════ -->
+<div class="session-overlay" id="sessionOverlay">
+
+  <!-- Pre-start modal -->
+  <div class="session-prestart" id="sessionPrestart">
+    <div class="session-prestart-title" id="sessionPrestartTitle"></div>
+    <div class="session-prestart-desc" id="sessionPrestartDesc"></div>
+    <div class="session-loops-label">Cycles</div>
+    <div class="session-loops-grid" id="sessionLoopsGrid"></div>
+    <button class="session-begin-btn" onclick="sessionBegin()">Begin</button>
+    <button class="session-cancel-link" onclick="sessionCancel()">Cancel</button>
+  </div>
+
+  <!-- Active session view -->
+  <div class="session-view" id="sessionView">
+    <div class="session-header">
+      <span class="session-tech-name" id="sessionTechName"></span>
+      <button class="session-close-btn" onclick="sessionConfirmClose()" aria-label="End session">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="22" height="22"><path d="M6 6L18 18M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="session-canvas-wrap">
+      <svg id="sessionSvg" viewBox="0 0 220 220" width="220" height="220" style="overflow:visible">
+        <defs>
+          <filter id="sessOrbGlow" x="-200%" y="-200%" width="500%" height="500%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <circle id="sessOrb" cx="110" cy="15" r="5" fill="#C9A96E" filter="url(#sessOrbGlow)"/>
+      </svg>
+    </div>
+    <div class="session-phase-label" id="sessionPhaseLabel"></div>
+    <div class="session-cycle-count" id="sessionCycleCount"></div>
+    <div class="session-spacer"></div>
+    <div class="session-controls">
+      <button class="session-pause-btn" id="sessionPauseBtn" onclick="sessionTogglePause()">Pause</button>
+    </div>
+  </div>
+
+  <!-- Completion screen -->
+  <div class="session-complete" id="sessionComplete">
+    <div class="session-complete-icon">🙏</div>
+    <div class="session-complete-title">Session Complete</div>
+    <div class="session-complete-detail" id="sessionCompleteDetail"></div>
+    <button class="session-return-btn" onclick="sessionReturn()">Return to Practice</button>
+  </div>
+
+</div>
+
 <!-- ═════════ Privacy Modal ═════════ -->
 <div class="modal-backdrop" id="privacyModal" onclick="if(event.target===this) closePrivacyModal()">
   <div class="modal modal-privacy">
@@ -7584,10 +7687,10 @@ var _introPlayedThisSession = false;
   }
 
   function openStartSession(practiceId) {
-    openPacer(practiceId);
+    openSession(practiceId);
   }
   function closeStartSession() {
-    closePacer();
+    sessionCancel();
   }
 
   /* ─── Breath Pacer ─── */
@@ -7752,6 +7855,336 @@ var _introPlayedThisSession = false;
 
     _pacerRaf = requestAnimationFrame(_pacerTick);
   }
+
+  /* ════════════════ SESSION ENGINE ════════════════ */
+
+  const RHYTHMS = {
+    'box-breathing': { phases: [
+      { type: 'IN',   dur: 4, label: 'Inhale' },
+      { type: 'HOLD', dur: 4, label: 'Hold'   },
+      { type: 'OUT',  dur: 4, label: 'Exhale' },
+      { type: 'HOLD', dur: 4, label: 'Hold'   },
+    ]},
+    '4-7-8-breathing': { phases: [
+      { type: 'IN',   dur: 4, label: 'Inhale' },
+      { type: 'HOLD', dur: 7, label: 'Hold'   },
+      { type: 'OUT',  dur: 8, label: 'Exhale' },
+    ]},
+    'physiological-sigh': { phases: [
+      { type: 'IN',  dur: 1.5, label: 'Double Inhale' },
+      { type: 'IN',  dur: 1.5, label: 'Double Inhale' },
+      { type: 'OUT', dur: 6,   label: 'Exhale'        },
+    ]},
+    'wim-hof-method': { pathShape: 'circle', phases: [
+      { type: 'IN',   dur: 2,   label: 'Inhale' },
+      { type: 'HOLD', dur: 0.5, label: 'Hold'   },
+      { type: 'OUT',  dur: 2,   label: 'Exhale' },
+    ]},
+    'nadi-shodhana': { phases: [
+      { type: 'IN',   dur: 4, label: 'Inhale Left'  },
+      { type: 'HOLD', dur: 4, label: 'Hold'         },
+      { type: 'OUT',  dur: 4, label: 'Exhale Right' },
+      { type: 'HOLD', dur: 4, label: 'Hold'         },
+    ]},
+    'kapalabhati': { phases: [
+      { type: 'OUT', dur: 0.3, label: 'Exhale' },
+      { type: 'IN',  dur: 0.3, label: 'Inhale' },
+    ]},
+    'bhramari': { phases: [
+      { type: 'IN',   dur: 4, label: 'Inhale' },
+      { type: 'HOLD', dur: 2, label: 'Hold'   },
+      { type: 'OUT',  dur: 6, label: 'Hum'    },
+    ]},
+    'buteyko-method': { phases: [
+      { type: 'IN',  dur: 5, label: 'Inhale (light)' },
+      { type: 'OUT', dur: 5, label: 'Exhale (light)' },
+    ]},
+  };
+
+  const _SESS_DEFAULT_RHYTHM = { phases: [
+    { type: 'IN',  dur: 4, label: 'Inhale' },
+    { type: 'OUT', dur: 4, label: 'Exhale' },
+  ]};
+
+  let _sess = {
+    practiceId: null, techniqueTitle: null,
+    phases: [], pathShape: null, loopCount: 5, currentLoop: 1,
+    phaseIdx: 0, phaseStart: null,
+    running: false, paused: false, pausedElapsed: 0,
+    raf: null, sessionStart: null,
+  };
+
+  function _sessEase(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+
+  function _sessPolygonVerts(n) {
+    const cx = 110, cy = 110, r = 95;
+    const v = [];
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI / 2 + i * 2 * Math.PI / n;
+      v.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+    }
+    return v;
+  }
+
+  function _sessOrbPos(shape, phases, phaseIdx, t) {
+    const n = phases.length;
+    const te = _sessEase(t);
+    if (shape === 'circle') {
+      const a = -Math.PI / 2 + (phaseIdx + te) * 2 * Math.PI / n;
+      return { x: 110 + 95 * Math.cos(a), y: 110 + 95 * Math.sin(a) };
+    }
+    if (shape === 'oval') {
+      const startA = phaseIdx === 0 ? -Math.PI / 2 : Math.PI / 2;
+      const a = startA + te * Math.PI;
+      return { x: 110 + 100 * Math.cos(a), y: 110 + 60 * Math.sin(a) };
+    }
+    const verts = _sessPolygonVerts(n);
+    const from = verts[phaseIdx];
+    const to   = verts[(phaseIdx + 1) % n];
+    return { x: from.x + (to.x - from.x) * te, y: from.y + (to.y - from.y) * te };
+  }
+
+  function _sessRenderPath() {
+    const svg = document.getElementById('sessionSvg');
+    const orb = document.getElementById('sessOrb');
+    svg.querySelectorAll('.sess-path,.sess-dot').forEach(e => e.remove());
+    const ns = 'http://www.w3.org/2000/svg';
+    const shape = _sess.pathShape;
+    const n = _sess.phases.length;
+
+    function mkEl(tag, attrs) {
+      const el = document.createElementNS(ns, tag);
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+      return el;
+    }
+    function insertBefore(el) { svg.insertBefore(el, orb); }
+
+    if (shape === 'circle') {
+      insertBefore(mkEl('circle', { class: 'sess-path', cx: 110, cy: 110, r: 95, stroke: '#C9A96E', 'stroke-width': '1.5', fill: 'none' }));
+      return;
+    }
+    if (shape === 'oval') {
+      insertBefore(mkEl('ellipse', { class: 'sess-path', cx: 110, cy: 110, rx: 100, ry: 60, stroke: '#C9A96E', 'stroke-width': '1.5', fill: 'none' }));
+      [[110, 50], [110, 170]].forEach(([dx, dy]) => {
+        insertBefore(mkEl('circle', { class: 'sess-dot', cx: dx, cy: dy, r: 3, fill: '#C9A96E', opacity: '0.55' }));
+      });
+      return;
+    }
+    const verts = _sessPolygonVerts(n);
+    const pts = verts.map(v => `${v.x.toFixed(1)},${v.y.toFixed(1)}`).join(' ');
+    insertBefore(mkEl('polygon', { class: 'sess-path', points: pts, stroke: '#C9A96E', 'stroke-width': '1.5', fill: 'none' }));
+    verts.forEach(v => {
+      insertBefore(mkEl('circle', { class: 'sess-dot', cx: v.x.toFixed(1), cy: v.y.toFixed(1), r: 3, fill: '#C9A96E', opacity: '0.55' }));
+    });
+  }
+
+  function _sessPlaceOrb(t) {
+    const orb = document.getElementById('sessOrb');
+    if (!orb) return;
+    const pos = _sessOrbPos(_sess.pathShape, _sess.phases, _sess.phaseIdx, t);
+    orb.setAttribute('cx', pos.x.toFixed(2));
+    orb.setAttribute('cy', pos.y.toFixed(2));
+  }
+
+  function _sessVertexPulse() {
+    const orb = document.getElementById('sessOrb');
+    if (!orb) return;
+    orb.setAttribute('r', '8');
+    setTimeout(() => { if (orb) orb.setAttribute('r', '5'); }, 180);
+  }
+
+  function _sessUpdatePhaseLabel(fade) {
+    const el = document.getElementById('sessionPhaseLabel');
+    if (!el) return;
+    const label = _sess.phases[_sess.phaseIdx].label;
+    if (fade) {
+      el.classList.add('fade');
+      setTimeout(() => { el.textContent = label; el.classList.remove('fade'); }, 150);
+    } else {
+      el.textContent = label;
+    }
+  }
+
+  function _sessUpdateCycleCount() {
+    const el = document.getElementById('sessionCycleCount');
+    if (!el) return;
+    el.textContent = _sess.loopCount === null
+      ? `Cycle ${_sess.currentLoop}`
+      : `Cycle ${_sess.currentLoop} of ${_sess.loopCount}`;
+  }
+
+  function _sessTick(now) {
+    if (!_sess.running || _sess.paused) return;
+    if (_sess.phaseStart === null) _sess.phaseStart = now;
+
+    const phaseDurMs = _sess.phases[_sess.phaseIdx].dur * 1000;
+    const elapsed = now - _sess.phaseStart;
+    const t = Math.min(elapsed / phaseDurMs, 1);
+
+    _sessPlaceOrb(t);
+
+    if (t >= 1) {
+      _sessVertexPulse();
+      const nextIdx = (_sess.phaseIdx + 1) % _sess.phases.length;
+      const isLoopEnd = nextIdx === 0;
+      if (isLoopEnd) {
+        if (_sess.loopCount !== null && _sess.currentLoop >= _sess.loopCount) {
+          _sessComplete(); return;
+        }
+        _sess.currentLoop++;
+        _sessUpdateCycleCount();
+      }
+      _sess.phaseIdx = nextIdx;
+      _sess.phaseStart = now;
+      _sessUpdatePhaseLabel(true);
+    }
+    _sess.raf = requestAnimationFrame(_sessTick);
+  }
+
+  function _sessStop() {
+    _sess.running = false;
+    _sess.paused = false;
+    if (_sess.raf) { cancelAnimationFrame(_sess.raf); _sess.raf = null; }
+  }
+
+  function _sessComplete() {
+    _sessStop();
+    const totalMs = performance.now() - _sess.sessionStart;
+    const totalMin = Math.round(totalMs / 60000);
+    const totalSec = Math.round(totalMs / 1000);
+
+    const kind = TECHNIQUES.find(t => t.id === _sess.practiceId) ? 'technique' : 'meditation';
+    store.sessions.unshift({
+      id: 's_' + Date.now().toString(36),
+      kind,
+      practiceId: _sess.practiceId,
+      practiceTitle: _sess.techniqueTitle,
+      durationMin: Math.max(1, totalMin),
+      ts: new Date().toISOString(),
+    });
+    updateStreakOnComplete();
+    saveStore(store);
+    checkAchievements();
+    refreshStreakBadge();
+
+    const timeStr = totalMin >= 1 ? `${totalMin} min` : `${totalSec} sec`;
+    const cycles = _sess.loopCount === null ? _sess.currentLoop - 1 : _sess.loopCount;
+    document.getElementById('sessionCompleteDetail').textContent =
+      `${cycles} cycle${cycles !== 1 ? 's' : ''} · ${timeStr}`;
+
+    document.getElementById('sessionView').classList.remove('active');
+    document.getElementById('sessionComplete').classList.add('active');
+  }
+
+  function openSession(practiceId) {
+    const item = findPractice(practiceId);
+    const r = RHYTHMS[practiceId] || _SESS_DEFAULT_RHYTHM;
+    const n = r.phases.length;
+    _sess.practiceId = practiceId;
+    _sess.techniqueTitle = item ? item.title : practiceId;
+    _sess.phases = r.phases;
+    _sess.pathShape = r.pathShape || (n <= 2 ? 'oval' : n === 3 ? 'triangle' : n === 4 ? 'diamond' : 'circle');
+    _sess.loopCount = 5;
+
+    document.getElementById('sessionPrestartTitle').textContent = _sess.techniqueTitle;
+    document.getElementById('sessionPrestartDesc').textContent = item ? item.desc : '';
+    _sessRenderLoopBtns(5);
+
+    document.getElementById('sessionPrestart').style.display = 'flex';
+    document.getElementById('sessionView').classList.remove('active');
+    document.getElementById('sessionComplete').classList.remove('active');
+    document.getElementById('sessionOverlay').classList.add('active');
+
+    _sessRenderPath();
+  }
+
+  function _sessRenderLoopBtns(def) {
+    _sess.loopCount = def;
+    const grid = document.getElementById('sessionLoopsGrid');
+    grid.innerHTML = [3, 5, 10, 20, null].map(n =>
+      `<button class="session-loops-btn${n === def ? ' active' : ''}" onclick="sessionSetLoops(${n})">${n === null ? 'Infinite' : n}</button>`
+    ).join('');
+  }
+
+  function sessionSetLoops(n) {
+    _sess.loopCount = n;
+    document.querySelectorAll('.session-loops-btn').forEach(btn => {
+      const v = btn.textContent.trim() === 'Infinite' ? null : parseInt(btn.textContent.trim());
+      btn.classList.toggle('active', v === n);
+    });
+  }
+
+  function sessionBegin() {
+    document.getElementById('sessionPrestart').style.display = 'none';
+    const view = document.getElementById('sessionView');
+    view.classList.add('active');
+
+    document.getElementById('sessionTechName').textContent = _sess.techniqueTitle;
+    const pauseBtn = document.getElementById('sessionPauseBtn');
+    pauseBtn.textContent = 'Pause';
+    pauseBtn.classList.remove('paused');
+
+    _sess.phaseIdx = 0;
+    _sess.currentLoop = 1;
+    _sess.phaseStart = null;
+    _sess.running = true;
+    _sess.paused = false;
+    _sess.sessionStart = performance.now();
+
+    _sessUpdateCycleCount();
+    _sessUpdatePhaseLabel(false);
+    _sessPlaceOrb(0);
+
+    _sess.raf = requestAnimationFrame(_sessTick);
+  }
+
+  function sessionCancel() {
+    _sessStop();
+    document.getElementById('sessionOverlay').classList.remove('active');
+  }
+
+  function sessionConfirmClose() {
+    if (_sess.running || _sess.paused) {
+      if (!confirm('End this session early?')) return;
+    }
+    sessionCancel();
+  }
+
+  function sessionTogglePause() {
+    const btn = document.getElementById('sessionPauseBtn');
+    if (_sess.paused) {
+      _sess.paused = false;
+      _sess.phaseStart = performance.now() - _sess.pausedElapsed;
+      btn.textContent = 'Pause';
+      btn.classList.remove('paused');
+      _sess.raf = requestAnimationFrame(_sessTick);
+    } else {
+      _sess.pausedElapsed = _sess.phaseStart !== null ? performance.now() - _sess.phaseStart : 0;
+      _sess.paused = true;
+      if (_sess.raf) { cancelAnimationFrame(_sess.raf); _sess.raf = null; }
+      btn.textContent = 'Resume';
+      btn.classList.add('paused');
+    }
+  }
+
+  function sessionReturn() {
+    const practiceId = _sess.practiceId;
+    _sessStop();
+    document.getElementById('sessionOverlay').classList.remove('active');
+    const item = findPractice(practiceId);
+    if (item) {
+      const kind = TECHNIQUES.find(t => t.id === practiceId) ? 'technique' : 'meditation';
+      if (kind === 'technique' && state.techniqueId === practiceId) {
+        renderDetail(item, 'techniques-detail', 'technique');
+      } else if (kind === 'meditation' && state.meditationId === practiceId) {
+        renderDetail(item, 'meditate-detail', 'meditation');
+      }
+    }
+  }
+
+  /* ════════════════════════════════════════════════ */
 
   function addToPlan(practiceId) {
     if (!requirePro()) return;
