@@ -198,17 +198,18 @@
     #intro-svg-wrap {
       width: 180px;
       height: 180px;
+      color: #1a1a2e;
       animation: intro-shrink 1s 2s ease-in-out both;
     }
     #intro-svg-wrap svg { width: 100%; height: 100%; }
     #intro-circle {
-      stroke-dasharray: 565.5;
-      stroke-dashoffset: 565.5;
+      stroke-dasharray: 578;
+      stroke-dashoffset: 578;
       animation: intro-draw-stroke 0.8s 0s ease-in-out forwards;
     }
     #intro-triangle {
-      stroke-dasharray: 150;
-      stroke-dashoffset: 150;
+      stroke-dasharray: 373;
+      stroke-dashoffset: 373;
       animation: intro-draw-stroke 0.8s 0.8s ease-in-out forwards;
     }
     #intro-dot {
@@ -3972,18 +3973,16 @@
   <div id="intro-content">
     <div id="intro-svg-wrap">
       <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="intro-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#C9A96E"/>
-            <stop offset="100%" stop-color="#F0D080"/>
-          </linearGradient>
-        </defs>
-        <circle id="intro-circle" cx="100" cy="100" r="90"
-                stroke="url(#intro-gold)" stroke-width="1.25" fill="none"/>
-        <path   id="intro-triangle" d="M75,100 L125,100 L100,143.301 Z"
-                stroke="url(#intro-gold)" stroke-width="1.2" fill="none"/>
-        <circle id="intro-dot" cx="100" cy="100" r="5"
-                fill="url(#intro-gold)"/>
+        <circle id="intro-circle" cx="100" cy="100" r="92"
+                stroke="currentColor" stroke-width="1" fill="none"/>
+        <polygon id="intro-triangle" points="100,28 162,136 38,136"
+                 stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <circle cx="100" cy="28"  r="22" stroke="currentColor" stroke-width="0.5" opacity="0.25" fill="none"/>
+        <circle cx="162" cy="136" r="22" stroke="currentColor" stroke-width="0.5" opacity="0.25" fill="none"/>
+        <circle cx="38"  cy="136" r="22" stroke="currentColor" stroke-width="0.5" opacity="0.25" fill="none"/>
+        <circle cx="100" cy="100" r="10" stroke="currentColor" stroke-width="0.5" opacity="0.4"  fill="none"/>
+        <circle id="intro-dot" cx="100" cy="100" r="3"
+                fill="currentColor"/>
       </svg>
     </div>
     <div id="intro-title">TRIAD</div>
