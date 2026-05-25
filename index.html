@@ -3313,8 +3313,8 @@
     /* ─── Books grid ─── */
     .books-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 14px;
+      grid-template-columns: 1fr;
+      gap: 8px;
     }
     .book-card {
       background: var(--navy-card);
@@ -3324,7 +3324,8 @@
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      align-items: stretch;
       font-family: inherit;
       color: inherit;
       text-align: left;
@@ -3394,8 +3395,60 @@
     }
 
     /* Real cover image replaces gradient */
-    .book-cover.has-cover-img { background: #111 !important; }
+    .book-cover.has-cover-img { background-color: #111 !important; }
     .book-cover.has-cover-img .book-cover-icon { display: none; }
+
+    /* List card: thumbnail strip on left */
+    .book-card .book-cover {
+      width: 64px;
+      min-width: 64px;
+      aspect-ratio: unset;
+      padding: 0;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      border-radius: 0;
+    }
+    .book-card-body {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .book-card-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .book-card-author {
+      font-size: 0.75rem;
+      color: var(--gold);
+      letter-spacing: 0.03em;
+      margin-top: 1px;
+    }
+    .book-card-year {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+    .book-card-summary {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
 
     /* Cover hues */
     .cover-teal    { background: linear-gradient(135deg, #1a9e8e, #0e6c61); }
@@ -3678,35 +3731,137 @@
 
     /* ═══════════════ Person detail view ═══════════════ */
 
-    .person-detail-head {
+    /* ═══════════════ Person profile ═══════════════ */
+    .person-banner {
+      border-radius: var(--radius);
+      padding: 36px 20px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin: 4px 0 24px;
+    }
+    .person-banner .person-avatar {
+      width: 80px; height: 80px;
+      font-size: 1.9rem;
+      margin-bottom: 14px;
+      border: 2px solid rgba(255,255,255,0.35);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
+    .person-banner-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 6px;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .person-banner-role {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.82);
+      font-weight: 500;
+    }
+    .person-section {
+      margin-bottom: 26px;
+      padding-bottom: 26px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .person-section:last-child { border-bottom: none; margin-bottom: 0; }
+    .person-section h3 {
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin: 0 0 14px;
+    }
+    .person-why {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--text);
+      font-style: italic;
+      margin: 0;
+    }
+    .person-bio {
+      font-size: 0.92rem;
+      line-height: 1.68;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .person-contrib-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      counter-reset: contrib;
+    }
+    .person-contrib-list li {
+      position: relative;
+      padding: 9px 0 9px 32px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text);
+      border-bottom: 1px solid var(--border-soft);
+      counter-increment: contrib;
+    }
+    .person-contrib-list li::before {
+      content: counter(contrib);
+      position: absolute;
+      left: 0; top: 10px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #fff;
+      font-size: 0.64rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 22px;
-      margin: 12px 0 26px;
-      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0.85;
     }
-    .person-detail-head .person-avatar {
-      width: 96px; height: 96px;
-      font-size: 1.7rem;
+    .person-contrib-list li:last-child { border-bottom: none; }
+    .person-books-grid { display: flex; flex-direction: column; gap: 8px; }
+    .person-book-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      color: inherit;
+      transition: border-color 0.15s;
+      width: 100%;
     }
-    .person-detail-info h1 {
-      font-size: 1.7rem;
+    .person-book-card:hover { border-color: rgba(201,169,110,0.35); }
+    .person-book-cover {
+      width: 38px; min-width: 38px; height: 52px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      color: rgba(255,255,255,0.9);
+    }
+    .person-book-info { min-width: 0; flex: 1; }
+    .person-book-info .pbc-title {
+      font-size: 0.88rem;
       font-weight: 600;
-      letter-spacing: -0.015em;
-      margin-bottom: 6px;
-    }
-    .person-detail-info .person-detail-role {
-      color: var(--gold);
-      font-size: 0.86rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-    .person-detail-info .person-detail-bio {
       color: var(--text);
-      font-size: 0.95rem;
-      line-height: 1.65;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .person-book-info .pbc-author {
+      font-size: 0.73rem;
+      color: var(--gold);
+      margin-top: 2px;
     }
 
     /* ═══════════════ Responsive tweaks ═══════════════ */
@@ -3716,7 +3871,6 @@
       .person-detail-head .person-avatar { width: 76px; height: 76px; font-size: 1.4rem; }
       .person-detail-info h1 { font-size: 1.4rem; }
       .lib-tab { font-size: 0.85rem; padding: 11px 12px; }
-      .books-grid { grid-template-columns: 1fr 1fr; }
       .people-grid { grid-template-columns: 1fr 1fr; }
     }
 
@@ -7775,7 +7929,6 @@ var _introPlayedThisSession = false;
     document.getElementById('lib-panel-books').innerHTML      = renderBooksPanel(books);
     applyBookCovers(books);
     document.getElementById('lib-panel-people').innerHTML     = renderPeoplePanel(people);
-    applyPersonPhotos(people);
     document.getElementById('lib-panel-podcasts').innerHTML   = renderPodcastsPanel(podcasts);
     applyPodcastArtwork(podcasts);
     document.getElementById('lib-panel-breathwork').innerHTML = renderBreathworkPanel();
@@ -7802,13 +7955,21 @@ var _introPlayedThisSession = false;
     const key = title + '||' + author;
     if (key in _bookCoverCache) return _bookCoverCache[key];
     try {
-      const q = encodeURIComponent('intitle:' + title + ' inauthor:' + author);
-      const url = 'https://www.googleapis.com/books/v1/volumes?q=' + q +
-                  '&maxResults=1&fields=items(volumeInfo(imageLinks))';
-      const res = await fetch(url);
+      const base = 'https://www.googleapis.com/books/v1/volumes?maxResults=1&fields=items(volumeInfo(imageLinks))&q=';
+      const q1 = 'intitle:' + encodeURIComponent(title) + '+inauthor:' + encodeURIComponent(author);
+      const res = await fetch(base + q1);
       if (!res.ok) throw new Error();
       const data = await res.json();
-      const thumb = data?.items?.[0]?.volumeInfo?.imageLinks?.thumbnail ?? null;
+      let links = data?.items?.[0]?.volumeInfo?.imageLinks;
+      if (!links) {
+        const q2 = 'intitle:' + encodeURIComponent(title);
+        const res2 = await fetch(base + q2);
+        if (res2.ok) {
+          const data2 = await res2.json();
+          links = data2?.items?.[0]?.volumeInfo?.imageLinks;
+        }
+      }
+      const thumb = links?.thumbnail || links?.smallThumbnail || null;
       const imgUrl = thumb ? thumb.replace('http://', 'https://') : null;
       _bookCoverCache[key] = imgUrl;
       return imgUrl;
@@ -7918,14 +8079,12 @@ var _introPlayedThisSession = false;
       <button class="book-card" onclick="openLibraryEntry('book', '${slug(b.title)}')">
         <div class="book-cover cover-${b.cover && b.cover.hue ? b.cover.hue : 'teal'}" id="bcover-${slug(b.title)}">
           <div class="book-cover-icon">${b.cover && b.cover.icon ? b.cover.icon : '📖'}</div>
-          <div>
-            <div class="book-cover-title">${escapeHtml(b.title.split(':')[0])}</div>
-            <div class="book-cover-author">${escapeHtml(b.author)}</div>
-          </div>
         </div>
-        <div class="book-card-meta">
-          <div class="book-year">${b.year}</div>
-          <div class="book-summary">${escapeHtml(b.summary)}</div>
+        <div class="book-card-body">
+          <div class="book-card-title">${escapeHtml(b.title)}</div>
+          <div class="book-card-author">${escapeHtml(b.author)}</div>
+          <div class="book-card-year">${b.year}</div>
+          <div class="book-card-summary">${escapeHtml(b.summary)}</div>
         </div>
       </button>`).join('')}</div>`;
   }
