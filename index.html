@@ -4077,8 +4077,213 @@
       margin-top: 2px;
     }
 
+    /* ═══════════════ Magazine detail pages ═══════════════ */
+
+    /* Hero — full-bleed, breaks out of section horizontal padding */
+    .detail-hero {
+      position: relative;
+      overflow: hidden;
+      margin-top: -80px;
+      margin-left: -24px;
+      margin-right: -24px;
+      width: calc(100% + 48px);
+      height: 40vh;
+      min-height: 200px;
+      max-height: 380px;
+    }
+    .detail-hero-full {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: blur(14px);
+      transform: scale(1.09);
+      opacity: 0.55;
+      transition: filter 0.7s ease, transform 0.7s ease, opacity 0.5s ease;
+    }
+    .detail-hero-full.loaded {
+      filter: none;
+      transform: none;
+      opacity: 1;
+    }
+    .detail-hero-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 65%;
+      background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.18) 65%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px 24px;
+      z-index: 2;
+    }
+    .detail-hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 500;
+      color: #fff;
+      line-height: 1.15;
+      margin: 0 0 5px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+    }
+    .detail-hero-sub {
+      font-size: 0.87rem;
+      color: rgba(255,255,255,0.8);
+      margin: 0;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    }
+    /* Floating back button inside hero */
+    .detail-back-floating {
+      position: absolute;
+      top: 16px; left: 16px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.38);
+      color: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 7px 14px 7px 10px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .detail-back-floating:hover { background: rgba(0,0,0,0.58); }
+    .detail-back-floating svg {
+      width: 16px; height: 16px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Desktop hero: taller, rounded */
+    @media (min-width: 768px) {
+      .detail-hero {
+        height: auto;
+        min-height: 0;
+        aspect-ratio: 21/9;
+        max-height: 600px;
+        border-radius: 0 0 12px 12px;
+      }
+    }
+
+    /* Content container */
+    .detail-content {
+      max-width: 750px;
+      margin: 0 auto;
+      padding: 28px 0 0;
+    }
+    .detail-content-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin: 0 0 8px;
+    }
+    .detail-content-byline { font-size: 0.95rem; color: var(--gold); margin-bottom: 4px; }
+    .detail-content-year {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      margin-bottom: 18px;
+    }
+    .detail-body-text {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--text);
+      margin: 0 0 22px;
+    }
+
+    /* Section headings inside detail pages */
+    .detail-section-heading {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin: 0 0 14px;
+    }
+
+    /* Pull quotes */
+    .detail-pull-quote {
+      border-left: 3px solid var(--gold);
+      padding: 2px 0 2px 20px;
+      margin: 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--text-soft);
+      line-height: 1.55;
+    }
+
+    /* Two-column grid for sections with pull quotes */
+    .detail-section-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-top: 12px;
+    }
+    @media (min-width: 768px) {
+      .detail-section-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+      }
+      .detail-section-grid--flip .detail-pull-quote { order: 2; }
+      .detail-section-grid--flip > *:last-child { order: 1; }
+    }
+
+    /* CTA footer */
+    .detail-cta-footer {
+      margin-top: 40px;
+      text-align: center;
+      padding-bottom: 16px;
+    }
+    .detail-hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 40px;
+    }
+    .detail-cta-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .detail-cta-btn {
+      display: inline-block;
+      background: var(--gold);
+      color: #1a1a2e;
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 16px 28px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 300px;
+      text-align: center;
+      transition: background 0.18s, transform 0.15s;
+      border: none;
+      cursor: pointer;
+    }
+    .detail-cta-btn:hover { background: #b8944e; transform: translateY(-1px); }
+
     /* ═══════════════ Responsive tweaks ═══════════════ */
     @media (max-width: 600px) {
+      .detail-hero {
+        margin-top: -70px;
+        margin-left: -16px;
+        margin-right: -16px;
+        width: calc(100% + 32px);
+      }
       .book-detail-head { grid-template-columns: 130px 1fr; gap: 16px; }
       .book-detail-info h1 { font-size: 1.3rem; }
       .person-detail-head .person-avatar { width: 76px; height: 76px; font-size: 1.4rem; }
@@ -8591,6 +8796,18 @@ var _introPlayedThisSession = false;
 
   function updateFab() { /* no-op — action bar removed */ }
 
+  /* ─── Magazine detail helpers ─── */
+  function _firstSentence(text) {
+    if (!text) return '';
+    const m = (text || '').match(/^[^.!?]+[.!?]/);
+    return m ? m[0] : text.substring(0, 130) + (text.length > 130 ? '…' : '');
+  }
+  function _applyHeroImage(imgEl, imgUrl) {
+    if (!imgEl || !imgUrl) return;
+    imgEl.onload = () => imgEl.classList.add('loaded');
+    imgEl.src = imgUrl;
+  }
+
   /* ════════════════ LIBRARY — tabbed, searchable, filterable ════════════════ */
 
   // UI state for the library view
@@ -9031,75 +9248,85 @@ var _introPlayedThisSession = false;
     document.getElementById('library-list').style.display = 'none';
     const detail = document.getElementById('library-detail');
     const inReading = store.readingList && store.readingList[book.title] === 'read';
-    detail.innerHTML = `
-      <button class="back-btn" onclick="hideLibraryDetail()">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back to library
-      </button>
-
-      <div class="book-detail-head">
-        <div class="book-cover cover-${book.cover && book.cover.hue ? book.cover.hue : 'teal'}" id="bcover-detail">
-          <div class="book-cover-icon">${book.cover && book.cover.icon ? book.cover.icon : '📖'}</div>
-          <div>
-            <div class="book-cover-title">${escapeHtml(book.title.split(':')[0])}</div>
-            <div class="book-cover-author">${escapeHtml(book.author)}</div>
-          </div>
+    const hue = (book.cover && book.cover.hue) ? book.cover.hue : 'teal';
+    let si = 0;
+    const secQ = (heading, quote, bodyHtml) => {
+      si++;
+      const flip = si % 2 === 0 ? ' detail-section-grid--flip' : '';
+      return `<div class="book-section">
+        <h3 class="detail-section-heading">${heading}</h3>
+        <div class="detail-section-grid${flip}">
+          <blockquote class="detail-pull-quote">${escapeHtml(quote)}</blockquote>
+          <div>${bodyHtml}</div>
         </div>
-        <div class="book-detail-info">
-          <h1>${escapeHtml(book.title)}</h1>
-          <div class="book-detail-author">${escapeHtml(book.author)}</div>
-          <div class="book-detail-year">First published ${book.year}</div>
-          <p class="book-detail-summary">${escapeHtml(book.summary)}</p>
-          <div class="book-detail-actions">
-            <button class="action-btn primary reading-state-btn ${inReading ? 'read' : ''}"
-                    onclick="toggleReadFromDetail(${JSON.stringify(book.title).replace(/"/g, '&quot;')})">
-              <svg viewBox="0 0 24 24">${inReading
-                ? '<path d="M5 12l5 5L20 7"/>'
-                : '<path d="M12 5v14M5 12h14"/>'
-              }</svg>
-              ${inReading ? 'On your reading list' : 'Add to reading list'}
-            </button>
-            ${book.amazonUrl ? `<a class="action-btn secondary" href="${escapeHtml(book.amazonUrl)}" target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
-              Buy on Amazon
-            </a>` : ''}
-          </div>
+      </div>`;
+    };
+    detail.innerHTML = `
+      <div class="detail-hero cover-${hue}">
+        <img class="detail-hero-full" id="detail-hero-full" alt="${escapeHtml(book.title)}" loading="lazy">
+        <button class="detail-back-floating" onclick="hideLibraryDetail()">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back
+        </button>
+        <div class="detail-hero-overlay">
+          <h2 class="detail-hero-title">${escapeHtml(book.title.split(':')[0])}</h2>
+          <p class="detail-hero-sub">${escapeHtml(book.author)} · ${book.year}</p>
         </div>
       </div>
 
-      ${book.whyMatters ? `
-        <div class="book-section">
-          <h3>Why it matters</h3>
-          <p>${escapeHtml(book.whyMatters)}</p>
-        </div>` : ''}
+      <div class="detail-content">
+        <h1 class="detail-content-title">${escapeHtml(book.title)}</h1>
+        <div class="detail-content-byline">${escapeHtml(book.author)}</div>
+        <div class="detail-content-year">First published ${book.year}</div>
+        <div class="book-detail-actions" style="margin-bottom:22px">
+          <button class="action-btn primary reading-state-btn ${inReading ? 'read' : ''}"
+                  onclick="toggleReadFromDetail(${JSON.stringify(book.title).replace(/"/g, '&quot;')})">
+            <svg viewBox="0 0 24 24">${inReading
+              ? '<path d="M5 12l5 5L20 7"/>'
+              : '<path d="M12 5v14M5 12h14"/>'
+            }</svg>
+            ${inReading ? 'On your reading list' : 'Add to reading list'}
+          </button>
+        </div>
+        <p class="detail-body-text">${escapeHtml(book.summary)}</p>
 
-      ${book.keyThemes && book.keyThemes.length ? `
-        <div class="book-section">
-          <h3>Key themes</h3>
-          <div class="book-themes">
-            ${book.keyThemes.map(t => `<span class="book-theme">${escapeHtml(t)}</span>`).join('')}
-          </div>
-        </div>` : ''}
+        ${book.whyMatters ? secQ('Why it matters', _firstSentence(book.whyMatters),
+          `<p class="detail-body-text">${escapeHtml(book.whyMatters)}</p>`) : ''}
 
-      ${book.chapters && book.chapters.length ? `
-        <div class="book-section">
-          <h3>Chapter overview</h3>
-          <ol class="book-chapters">
-            ${book.chapters.map(c => `<li>${escapeHtml(c)}</li>`).join('')}
-          </ol>
-        </div>` : ''}
+        ${book.keyThemes && book.keyThemes.length ? `
+          <div class="book-section">
+            <h3 class="detail-section-heading">Key themes</h3>
+            <div class="book-themes">
+              ${book.keyThemes.map(t => `<span class="book-theme">${escapeHtml(t)}</span>`).join('')}
+            </div>
+          </div>` : ''}
 
-      ${book.themes && book.themes.length ? `
-        <div class="book-section">
-          <h3>Best for</h3>
-          <div class="book-themes">
-            ${book.themes.map(t => `<span class="book-theme">${escapeHtml(t)}</span>`).join('')}
-          </div>
-        </div>` : ''}
+        ${book.chapters && book.chapters.length ? `
+          <div class="book-section">
+            <h3 class="detail-section-heading">Chapter overview</h3>
+            <ol class="book-chapters">
+              ${book.chapters.map(c => `<li>${escapeHtml(c)}</li>`).join('')}
+            </ol>
+          </div>` : ''}
+
+        ${book.themes && book.themes.length ? `
+          <div class="book-section">
+            <h3 class="detail-section-heading">Best for</h3>
+            <div class="book-themes">
+              ${book.themes.map(t => `<span class="book-theme">${escapeHtml(t)}</span>`).join('')}
+            </div>
+          </div>` : ''}
+
+        ${book.amazonUrl ? `
+          <div class="detail-cta-footer">
+            <hr class="detail-hr">
+            <div class="detail-cta-label">External Resource</div>
+            <a class="detail-cta-btn" href="${escapeHtml(book.amazonUrl)}" target="_blank" rel="noopener noreferrer">Get the Book →</a>
+          </div>` : ''}
+      </div>
     `;
     detail.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    applyDetailBookCover(book);
+    fetchBookCover(book.title, book.author).then(url => _applyHeroImage(document.getElementById('detail-hero-full'), url));
   }
 
   /* ─── Person detail ─── */
@@ -9108,6 +9335,20 @@ var _introPlayedThisSession = false;
     libUiState.detail = { kind: 'person', id: slug(person.name) };
     document.getElementById('library-list').style.display = 'none';
     const detail = document.getElementById('library-detail');
+    const hue = (person.photo && person.photo.hue) ? person.photo.hue : 'teal';
+    const wikiUrl = 'https://en.wikipedia.org/wiki/' + encodeURIComponent(person.name.replace(/ /g, '_'));
+    let si = 0;
+    const secQ = (heading, quote, bodyHtml) => {
+      si++;
+      const flip = si % 2 === 0 ? ' detail-section-grid--flip' : '';
+      return `<div class="book-section">
+        <h3 class="detail-section-heading">${heading}</h3>
+        <div class="detail-section-grid${flip}">
+          <blockquote class="detail-pull-quote">${escapeHtml(quote)}</blockquote>
+          <div>${bodyHtml}</div>
+        </div>
+      </div>`;
+    };
 
     const techCards = (person.relatedTechniqueIds || []).map(id => {
       const t = TECHNIQUES.find(x => x.id === id);
@@ -9129,61 +9370,65 @@ var _introPlayedThisSession = false;
       </button>`;
     }).join('');
 
-    detail.innerHTML = `
-      <button class="back-btn" onclick="hideLibraryDetail()">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back to library
-      </button>
+    const contribList = (person.contributions || []).map(c => `
+      <li style="position:relative;padding:8px 0 8px 22px;color:var(--text);font-size:0.95rem;line-height:1.65;border-bottom:1px solid var(--border-soft);">
+        <span style="position:absolute;left:6px;top:18px;width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.7;"></span>
+        ${escapeHtml(c)}
+      </li>`).join('');
 
-      <div class="person-detail-head">
-        <div class="person-avatar av-${person.photo && person.photo.hue ? person.photo.hue : 'teal'}" id="pavatar-detail">${initialsFromName(person.name)}</div>
-        <div class="person-detail-info">
-          <h1>${escapeHtml(person.name)}</h1>
-          <div class="person-detail-role">${escapeHtml(person.role)}</div>
-          <p class="person-detail-bio">${escapeHtml(person.bio)}</p>
+    detail.innerHTML = `
+      <div class="detail-hero cover-${hue}">
+        <img class="detail-hero-full" id="detail-hero-full" alt="${escapeHtml(person.name)}" loading="lazy">
+        <button class="detail-back-floating" onclick="hideLibraryDetail()">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back
+        </button>
+        <div class="detail-hero-overlay">
+          <h2 class="detail-hero-title">${escapeHtml(person.name)}</h2>
+          <p class="detail-hero-sub">${escapeHtml(person.role)}</p>
         </div>
       </div>
 
-      ${person.whyMatters ? `
-        <div class="book-section">
-          <h3>Why they matter</h3>
-          <p>${escapeHtml(person.whyMatters)}</p>
-        </div>` : ''}
+      <div class="detail-content">
+        <h1 class="detail-content-title">${escapeHtml(person.name)}</h1>
+        <div class="detail-content-byline">${escapeHtml(person.role)}</div>
+        <p class="detail-body-text" style="margin-top:14px">${escapeHtml(person.bio)}</p>
 
-      ${person.contributions && person.contributions.length ? `
-        <div class="book-section">
-          <h3>Key contributions</h3>
-          <ul style="list-style:none;padding:0;">
-            ${person.contributions.map(c => `<li style="position:relative;padding:8px 0 8px 22px;color:var(--text);font-size:0.92rem;line-height:1.6;border-bottom:1px solid var(--border-soft);">
-              <span style="position:absolute;left:6px;top:17px;width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.7;"></span>
-              ${escapeHtml(c)}
-            </li>`).join('')}
-          </ul>
-        </div>` : ''}
+        ${person.whyMatters ? secQ('Why they matter', _firstSentence(person.whyMatters),
+          `<p class="detail-body-text">${escapeHtml(person.whyMatters)}</p>`) : ''}
 
-      ${person.themes && person.themes.length ? `
-        <div class="book-section">
-          <h3>Themes</h3>
-          <div class="book-themes">
-            ${person.themes.map(t => `<span class="book-theme">${escapeHtml(t)}</span>`).join('')}
-          </div>
-        </div>` : ''}
+        ${person.contributions && person.contributions.length ? secQ('Key contributions', person.contributions[0],
+          `<ul style="list-style:none;padding:0;margin:0;">${contribList}</ul>`) : ''}
 
-      ${techCards ? `
-        <div class="related-block" style="--accent: var(--c-tech);">
-          <h3>Related techniques</h3>
-          <div class="related-grid">${techCards}</div>
-        </div>` : ''}
+        ${person.themes && person.themes.length ? `
+          <div class="book-section">
+            <h3 class="detail-section-heading">Themes</h3>
+            <div class="book-themes">
+              ${person.themes.map(t => `<span class="book-theme">${escapeHtml(t)}</span>`).join('')}
+            </div>
+          </div>` : ''}
 
-      ${bookCards ? `
-        <div class="related-block" style="--accent: var(--gold);">
-          <h3>Related books</h3>
-          <div class="related-grid">${bookCards}</div>
-        </div>` : ''}
+        ${techCards ? `
+          <div class="related-block" style="--accent: var(--c-tech);">
+            <h3>Related techniques</h3>
+            <div class="related-grid">${techCards}</div>
+          </div>` : ''}
+
+        ${bookCards ? `
+          <div class="related-block" style="--accent: var(--gold);">
+            <h3>Related books</h3>
+            <div class="related-grid">${bookCards}</div>
+          </div>` : ''}
+
+        <div class="detail-cta-footer">
+          <hr class="detail-hr">
+          <div class="detail-cta-label">External Resource</div>
+          <a class="detail-cta-btn" href="${wikiUrl}" target="_blank" rel="noopener noreferrer">Explore Their Work →</a>
+        </div>
+      </div>
     `;
     detail.classList.add('active');
-    applyDetailPersonPhoto(person);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    fetchPersonPhoto(person.name).then(url => _applyHeroImage(document.getElementById('detail-hero-full'), url));
   }
 
   function hideLibraryDetail() {
@@ -9204,53 +9449,49 @@ var _introPlayedThisSession = false;
     const det = document.getElementById('library-detail');
     const episodes = _PODCAST_EPISODES[slugId] || [];
     det.innerHTML = `
-      <button class="back-btn" onclick="hideLibraryDetail()">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back to library
-      </button>
-
-      <div class="podcast-detail-head">
-        <div class="podcast-detail-art" id="pcast-detail-art">
-          <img id="pcast-detail-img" src="" alt="">
-        </div>
-        <div>
-          <div class="podcast-detail-name">${escapeHtml(podcast.name)}</div>
-          <div class="podcast-detail-host">${escapeHtml(podcast.host)}</div>
-          <div class="podcast-detail-themes">
-            ${(podcast.themes || []).map(t => `<span class="podcast-detail-theme">${escapeHtml(t)}</span>`).join('')}
-          </div>
+      <div class="detail-hero cover-teal">
+        <img class="detail-hero-full" id="detail-hero-full" alt="${escapeHtml(podcast.name)}" loading="lazy">
+        <button class="detail-back-floating" onclick="hideLibraryDetail()">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back
+        </button>
+        <div class="detail-hero-overlay">
+          <h2 class="detail-hero-title">${escapeHtml(podcast.name)}</h2>
+          <p class="detail-hero-sub">${escapeHtml(podcast.host)}</p>
         </div>
       </div>
 
-      <div class="podcast-detail-desc">${escapeHtml(podcast.focus)}</div>
+      <div class="detail-content">
+        <h1 class="detail-content-title">${escapeHtml(podcast.name)}</h1>
+        <div class="detail-content-byline">${escapeHtml(podcast.host)}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 18px">
+          ${(podcast.themes || []).map(t => `<span class="book-theme">${escapeHtml(t)}</span>`).join('')}
+        </div>
+        <p class="detail-body-text">${escapeHtml(podcast.focus)}</p>
 
-      ${podcast.url ? `
-        <div style="margin-bottom: 24px;">
-          <a class="action-btn primary" href="${escapeHtml(podcast.url)}" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
-            Listen
-          </a>
-        </div>` : ''}
+        ${episodes.length ? `
+          <div class="book-section">
+            <h3 class="detail-section-heading">Notable Episodes</h3>
+            <div class="podcast-episode-list">
+              ${episodes.map(ep => `
+                <div class="podcast-episode">
+                  <div class="podcast-episode-title">${escapeHtml(ep.title)}</div>
+                  <div class="podcast-episode-desc">${escapeHtml(ep.desc)}</div>
+                  <div class="podcast-episode-meta">${escapeHtml(ep.ep)}${ep.duration ? ' · ' + escapeHtml(ep.duration) : ''}</div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}
 
-      ${episodes.length ? `
-        <div class="podcast-detail-section-title">Notable Episodes</div>
-        <div class="podcast-episode-list">
-          ${episodes.map(ep => `
-            <div class="podcast-episode">
-              <div class="podcast-episode-title">${escapeHtml(ep.title)}</div>
-              <div class="podcast-episode-desc">${escapeHtml(ep.desc)}</div>
-              <div class="podcast-episode-meta">${escapeHtml(ep.ep)}${ep.duration ? ' · ' + escapeHtml(ep.duration) : ''}</div>
-            </div>`).join('')}
-        </div>` : ''}
+        ${podcast.url ? `
+          <div class="detail-cta-footer">
+            <hr class="detail-hr">
+            <div class="detail-cta-label">External Resource</div>
+            <a class="detail-cta-btn" href="${escapeHtml(podcast.url)}" target="_blank" rel="noopener noreferrer">Listen Now →</a>
+          </div>` : ''}
+      </div>
     `;
     det.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    fetchPodcastArtwork(podcast.name).then(imgUrl => {
-      if (!imgUrl) return;
-      const artEl = document.getElementById('pcast-detail-art');
-      const imgEl = document.getElementById('pcast-detail-img');
-      if (artEl && imgEl) { imgEl.onload = () => artEl.classList.add('has-art'); imgEl.src = imgUrl; }
-    });
+    fetchPodcastArtwork(podcast.name).then(url => _applyHeroImage(document.getElementById('detail-hero-full'), url));
   }
 
   /* ─── Knowledge practice detail (Overview / History / Science) ─── */
