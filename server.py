@@ -175,6 +175,11 @@ def index():
     return send_from_directory(".", "index.html")
 
 
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(".", "logo.svg", mimetype="image/svg+xml")
+
+
 @app.route("/config")
 def config():
     return jsonify({"googleBooksKey": os.getenv("GOOGLE_BOOKS_API_KEY", "")})
