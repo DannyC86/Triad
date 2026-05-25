@@ -175,6 +175,11 @@ def index():
     return send_from_directory(".", "index.html")
 
 
+@app.route("/config")
+def config():
+    return jsonify({"googleBooksKey": os.getenv("GOOGLE_BOOKS_API_KEY", "")})
+
+
 # ─────────────────────────── Routes — auth ───────────────────────────
 
 def _valid_email(s: str) -> bool:
