@@ -3392,6 +3392,10 @@
       letter-spacing: 0.08em;
     }
 
+    /* Real cover image replaces gradient */
+    .book-cover.has-cover-img { background: #111 !important; }
+    .book-cover.has-cover-img .book-cover-icon { display: none; }
+
     /* Cover hues */
     .cover-teal    { background: linear-gradient(135deg, #1a9e8e, #0e6c61); }
     .cover-sky     { background: linear-gradient(135deg, #38bdf8, #1e4f78); }
@@ -7757,6 +7761,7 @@ var _introPlayedThisSession = false;
 
     // Render content into each panel
     document.getElementById('lib-panel-books').innerHTML      = renderBooksPanel(books);
+    applyBookCovers(books);
     document.getElementById('lib-panel-people').innerHTML     = renderPeoplePanel(people);
     document.getElementById('lib-panel-podcasts').innerHTML   = renderPodcastsPanel(podcasts);
     document.getElementById('lib-panel-breathwork').innerHTML = renderBreathworkPanel();
@@ -7776,11 +7781,58 @@ var _introPlayedThisSession = false;
     if (emptyEl) emptyEl.hidden = !showEmpty;
   }
 
+  /* ─── Google Books cover image fetching ─── */
+  const _bookCoverCache = {};
+
+  async function fetchBookCover(title, author) {
+    const key = title + '||' + author;
+    if (key in _bookCoverCache) return _bookCoverCache[key];
+    try {
+      const q = encodeURIComponent('intitle:' + title + ' inauthor:' + author);
+      const url = 'https://www.googleapis.com/books/v1/volumes?q=' + q +
+                  '&maxResults=1&fields=items(volumeInfo(imageLinks))';
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const thumb = data?.items?.[0]?.volumeInfo?.imageLinks?.thumbnail ?? null;
+      const imgUrl = thumb ? thumb.replace('http://', 'https://') : null;
+      _bookCoverCache[key] = imgUrl;
+      return imgUrl;
+    } catch (_) {
+      _bookCoverCache[key] = null;
+      return null;
+    }
+  }
+
+  function _applyCoverToEl(el, imgUrl) {
+    if (!el || !imgUrl) return;
+    const img = new Image();
+    img.onload = () => {
+      el.style.backgroundImage = 'url(' + imgUrl + ')';
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center top';
+      el.classList.add('has-cover-img');
+    };
+    img.src = imgUrl;
+  }
+
+  function applyBookCovers(books) {
+    books.forEach(async (b) => {
+      const imgUrl = await fetchBookCover(b.title, b.author);
+      _applyCoverToEl(document.getElementById('bcover-' + slug(b.title)), imgUrl);
+    });
+  }
+
+  async function applyDetailBookCover(book) {
+    const imgUrl = await fetchBookCover(book.title, book.author);
+    _applyCoverToEl(document.getElementById('bcover-detail'), imgUrl);
+  }
+
   function renderBooksPanel(books) {
     if (!books.length) return '';
     return `<div class="books-grid">${books.map(b => `
       <button class="book-card" onclick="openLibraryEntry('book', '${slug(b.title)}')">
-        <div class="book-cover cover-${b.cover && b.cover.hue ? b.cover.hue : 'teal'}">
+        <div class="book-cover cover-${b.cover && b.cover.hue ? b.cover.hue : 'teal'}" id="bcover-${slug(b.title)}">
           <div class="book-cover-icon">${b.cover && b.cover.icon ? b.cover.icon : '📖'}</div>
           <div>
             <div class="book-cover-title">${escapeHtml(b.title.split(':')[0])}</div>
@@ -7945,7 +7997,7 @@ var _introPlayedThisSession = false;
       </button>
 
       <div class="book-detail-head">
-        <div class="book-cover cover-${book.cover && book.cover.hue ? book.cover.hue : 'teal'}">
+        <div class="book-cover cover-${book.cover && book.cover.hue ? book.cover.hue : 'teal'}" id="bcover-detail">
           <div class="book-cover-icon">${book.cover && book.cover.icon ? book.cover.icon : '📖'}</div>
           <div>
             <div class="book-cover-title">${escapeHtml(book.title.split(':')[0])}</div>
@@ -8006,6 +8058,7 @@ var _introPlayedThisSession = false;
     `;
     detail.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    applyDetailBookCover(book);
   }
 
   /* ─── Person detail ─── */
