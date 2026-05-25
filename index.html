@@ -3303,14 +3303,69 @@
     .lib-search-clear:hover { background: var(--navy-light); color: var(--text); }
     .lib-search-clear svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    /* Filter dropdowns — stacked */
-    .lib-filters-row {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 20px;
+    /* ─── Featured carousel ─── */
+    .lib-featured { margin-bottom: 20px; }
+    .lib-featured-label {
+      font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold); font-weight: 600; margin-bottom: 10px;
     }
-    .lib-type-select,
+    .lib-featured-scroll {
+      display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .lib-featured-scroll::-webkit-scrollbar { display: none; }
+    .lib-feat-card {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-width: 140px; max-width: 140px;
+      flex-shrink: 0;
+      cursor: pointer;
+      font-family: inherit; color: inherit; text-align: left;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .lib-feat-card:hover { border-color: rgba(201,169,110,0.45); box-shadow: 0 4px 16px rgba(26,26,46,0.12); }
+    .lib-feat-thumb {
+      width: 100%; aspect-ratio: 4/3; border-radius: 8px;
+      margin-bottom: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; overflow: hidden;
+    }
+    .lib-feat-type {
+      font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 2px;
+    }
+    .lib-feat-title {
+      font-size: 0.84rem; font-weight: 600; color: var(--text); line-height: 1.25;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .lib-feat-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ─── Horizontal pill nav ─── */
+    .lib-pills-row {
+      display: flex; gap: 7px; overflow-x: auto;
+      padding-bottom: 4px; margin-bottom: 14px;
+      scrollbar-width: none;
+    }
+    .lib-pills-row::-webkit-scrollbar { display: none; }
+    .lib-pill {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-family: inherit; font-size: 0.82rem;
+      color: var(--text-muted);
+      cursor: pointer; white-space: nowrap;
+      transition: background 0.16s, border-color 0.16s, color 0.16s;
+    }
+    .lib-pill.active {
+      background: var(--gold); border-color: var(--gold);
+      color: #0A0F1E; font-weight: 600;
+    }
+    .lib-pill:hover:not(.active) { border-color: rgba(201,169,110,0.4); color: var(--text); }
+
+    /* ─── Topic filter (single dropdown, replaces stacked pair) ─── */
     .lib-filter-select {
       width: 100%;
       background: var(--bg);
@@ -3329,12 +3384,96 @@
       background-position: right 12px center;
       background-size: 16px;
       transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      margin-bottom: 16px;
+      display: block;
     }
-    .lib-type-select:focus,
     .lib-filter-select:focus {
       border-color: rgba(201, 169, 110, 0.45);
       box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.08);
     }
+
+    /* ─── Universal library card ─── */
+    .lib-cards-list { display: flex; flex-direction: column; gap: 8px; }
+    .lib-card {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 11px 12px;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer; text-align: left;
+      font-family: inherit; color: inherit; width: 100%;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .lib-card:hover { border-color: rgba(201,169,110,0.4); box-shadow: 0 2px 10px rgba(26,26,46,0.10); }
+    .lib-card-thumb {
+      width: 52px; height: 52px; min-width: 52px;
+      border-radius: 8px; overflow: hidden; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.35rem;
+    }
+    .lib-card-thumb--circle { border-radius: 50%; }
+    .lib-card-initials {
+      font-size: 0.8rem; font-weight: 700;
+      color: rgba(255,255,255,0.92); text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .lib-card-thumb.has-photo .lib-card-initials { display: none; }
+    .lib-card-thumb.has-photo { background-size: cover !important; background-position: center top !important; }
+    .lib-card-thumb.has-cover-img > * { display: none !important; }
+    .lib-card-thumb-img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .lib-card.has-artwork .lib-card-thumb-img { display: block; }
+    .lib-card-body { flex: 1; min-width: 0; }
+    .lib-card-type {
+      font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1px;
+    }
+    .lib-card-title {
+      font-size: 0.88rem; font-weight: 600; color: var(--text); line-height: 1.25;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .lib-card-sub {
+      font-size: 0.73rem; color: var(--text-muted); margin-top: 1px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lib-card-pills { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+    .lib-card-pill {
+      font-size: 0.62rem; padding: 2px 7px; border-radius: 999px;
+      background: color-mix(in srgb, var(--gold) 8%, transparent);
+      color: var(--gold); border: 1px solid rgba(201,169,110,0.22);
+    }
+    .lib-card-chevron { width: 16px; height: 16px; flex-shrink: 0; stroke: var(--text-dim); fill: none; stroke-width: 1.8; }
+
+    /* ─── Podcast detail ─── */
+    .podcast-detail-head {
+      display: flex; gap: 16px; align-items: flex-start; margin-bottom: 18px;
+    }
+    .podcast-detail-art {
+      width: 88px; height: 88px; min-width: 88px;
+      border-radius: 12px; overflow: hidden; flex-shrink: 0;
+      background: linear-gradient(135deg, #1a9e8e, #0e6c61);
+    }
+    .podcast-detail-art img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .podcast-detail-art.has-art img { display: block; }
+    .podcast-detail-name { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 3px; line-height: 1.25; }
+    .podcast-detail-host { font-size: 0.78rem; color: var(--gold); margin-bottom: 8px; }
+    .podcast-detail-themes { display: flex; flex-wrap: wrap; gap: 6px; }
+    .podcast-detail-theme {
+      font-size: 0.64rem; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 999px;
+      background: color-mix(in srgb, var(--gold) 9%, transparent);
+      color: var(--gold); border: 1px solid rgba(201,169,110,0.25);
+    }
+    .podcast-detail-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+    .podcast-detail-section-title {
+      font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold); font-weight: 600; margin-bottom: 10px;
+    }
+    .podcast-episode-list { display: flex; flex-direction: column; gap: 8px; }
+    .podcast-episode {
+      background: var(--navy-card); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+    }
+    .podcast-episode-title { font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .podcast-episode-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; }
+    .podcast-episode-meta { font-size: 0.68rem; color: var(--text-dim); margin-top: 5px; }
 
     .lib-panel { display: none; animation: fade-in 0.3s ease; }
     .lib-panel.active { display: block; }
@@ -4352,6 +4491,12 @@ var _introPlayedThisSession = false;
         <p class="section-lede">Our curated library of books, teachers and big ideas. Filter by topic, search the collection. Learn the History &amp; Science</p>
       </div>
 
+      <!-- Featured carousel -->
+      <div class="lib-featured">
+        <div class="lib-featured-label">Start here</div>
+        <div class="lib-featured-scroll" id="lib-featured-scroll"></div>
+      </div>
+
       <!-- Search bar -->
       <div class="lib-search">
         <svg class="lib-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -4366,28 +4511,38 @@ var _introPlayedThisSession = false;
       <span id="lib-count-people" hidden></span>
       <span id="lib-count-podcasts" hidden></span>
 
-      <!-- Dual filter dropdowns -->
-      <div class="lib-filters-row">
-        <select class="lib-type-select" id="lib-type-select" onchange="onLibTypeChange(this.value)">
-          <option value="all">All content</option>
-          <option value="books">Books</option>
-          <option value="people">People</option>
-          <option value="podcasts">Podcasts</option>
-          <option value="breathwork">Breathwork</option>
-          <option value="meditations">Meditations</option>
-        </select>
-        <select class="lib-filter-select" id="lib-filter-select" onchange="onLibFilterChange(this.value)">
-          <option value="">All topics</option>
-          <option value="Anxiety &amp; Stress">Anxiety &amp; Stress</option>
-          <option value="Sleep">Sleep</option>
-          <option value="Focus &amp; Performance">Focus &amp; Performance</option>
-          <option value="Spirituality &amp; Consciousness">Spirituality &amp; Consciousness</option>
-          <option value="Science &amp; Research">Science &amp; Research</option>
-          <option value="Ancient Traditions">Ancient Traditions</option>
-          <option value="Cold Exposure">Cold Exposure</option>
-          <option value="Beginners">Beginners</option>
-        </select>
+      <!-- Hidden type select (kept for JS compat) -->
+      <select id="lib-type-select" style="display:none" onchange="onLibTypeChange(this.value)">
+        <option value="all">All content</option>
+        <option value="books">Books</option>
+        <option value="people">People</option>
+        <option value="podcasts">Podcasts</option>
+        <option value="breathwork">Breathwork</option>
+        <option value="meditations">Meditations</option>
+      </select>
+
+      <!-- Horizontal pill nav -->
+      <div class="lib-pills-row" id="lib-pills-row">
+        <button class="lib-pill active" data-tab="all" onclick="onLibPillClick('all')">All</button>
+        <button class="lib-pill" data-tab="books" onclick="onLibPillClick('books')">Books</button>
+        <button class="lib-pill" data-tab="people" onclick="onLibPillClick('people')">People</button>
+        <button class="lib-pill" data-tab="podcasts" onclick="onLibPillClick('podcasts')">Podcasts</button>
+        <button class="lib-pill" data-tab="breathwork" onclick="onLibPillClick('breathwork')">Breathwork</button>
+        <button class="lib-pill" data-tab="meditations" onclick="onLibPillClick('meditations')">Meditations</button>
       </div>
+
+      <!-- Topic filter -->
+      <select class="lib-filter-select" id="lib-filter-select" onchange="onLibFilterChange(this.value)">
+        <option value="">All topics</option>
+        <option value="Anxiety &amp; Stress">Anxiety &amp; Stress</option>
+        <option value="Sleep">Sleep</option>
+        <option value="Focus &amp; Performance">Focus &amp; Performance</option>
+        <option value="Spirituality &amp; Consciousness">Spirituality &amp; Consciousness</option>
+        <option value="Science &amp; Research">Science &amp; Research</option>
+        <option value="Ancient Traditions">Ancient Traditions</option>
+        <option value="Cold Exposure">Cold Exposure</option>
+        <option value="Beginners">Beginners</option>
+      </select>
 
       <!-- Content panels -->
       <div class="lib-panel active" data-libpanel="books"       id="lib-panel-books"></div>
@@ -7039,6 +7194,45 @@ var _introPlayedThisSession = false;
     ]
   };
 
+  /* Notable episodes per podcast (keyed by slug(podcast.name)) */
+  const _PODCAST_EPISODES = {
+    'huberman-lab': [
+      { title: "How to Breathe Correctly for Optimal Health", desc: "CO₂ tolerance, nasal breathing, box breathing protocols, and the physiological sigh.", ep: "Ep. 54", duration: "2h 14m" },
+      { title: "NSDR, Yoga Nidra & Deep Rest", desc: "Using non-sleep deep rest for recovery, neuroplasticity, and sleep debt.", ep: "Ep. 87", duration: "1h 48m" },
+      { title: "The Physiological Sigh — Real-Time Stress Relief", desc: "Double-inhale cyclic sighing as the fastest voluntary stress reduction tool.", ep: "Ep. 22", duration: "1h 12m" },
+    ],
+    'tara-brach-podcast': [
+      { title: "Radical Acceptance: Embracing Your Life with the Heart of a Buddha", desc: "Core teaching on the foundational practice of meeting experience with openness.", ep: "Featured talk", duration: "54m" },
+      { title: "RAIN: A Practice of Radical Compassion", desc: "A four-step mindfulness process — Recognise, Allow, Investigate, Nurture.", ep: "Guided practice", duration: "48m" },
+      { title: "Awakening Through the Body", desc: "Somatic awareness and body-based mindfulness as a path to presence.", ep: "Dharma talk", duration: "62m" },
+    ],
+    'jack-kornfield-dharma-talks': [
+      { title: "The Wise Heart", desc: "Opening to the innate goodness and wisdom of the human heart.", ep: "Dharma talk", duration: "58m" },
+      { title: "Loving-Kindness Meditation", desc: "A guided Metta practice for cultivating compassion toward self and others.", ep: "Guided sit", duration: "40m" },
+      { title: "Mindfulness of Breathing — Classic Practice", desc: "Traditional Anapanasati instruction rooted in the Pali Canon.", ep: "Teaching", duration: "47m" },
+    ],
+    'wim-hof-on-joe-rogan-tim-ferriss': [
+      { title: "Wim Hof — Joe Rogan Experience #712", desc: "The original long-form conversation that introduced Wim Hof to a mass audience.", ep: "JRE #712", duration: "1h 50m" },
+      { title: "Wim Hof — Joe Rogan Experience #865", desc: "Follow-up with Radboud study findings and live breathing demonstration.", ep: "JRE #865", duration: "1h 22m" },
+      { title: "Wim Hof — Tim Ferriss Show", desc: "Practical protocols and the science behind cold exposure and breathwork.", ep: "TFS", duration: "1h 10m" },
+    ],
+    'james-nestor-interviews': [
+      { title: "The Mouth-Breathing Experiment — Stanford Study", desc: "Nestor describes the 10-day nasal-plugged experiment that launched the book.", ep: "Various", duration: "45m" },
+      { title: "Ancient Breathing Secrets — On Rogan & Ferriss", desc: "How yogic pranayama and Buteyko arrived at the same conclusions via different paths.", ep: "Various", duration: "60m" },
+    ],
+    'the-science-of-breathing-youtube': [
+      { title: "Breathing for Health & Performance — Full Video", desc: "Comprehensive overview of breathing physiology, CO₂ tolerance, and practical protocols.", ep: "YouTube", duration: "2h 05m" },
+    ],
+    'wim-hof-guided-sessions-youtube': [
+      { title: "Guided Wim Hof Breathing Round 1", desc: "30 power breaths, retention, and recovery — the complete first round.", ep: "Beginner", duration: "11m" },
+      { title: "Guided Wim Hof Breathing — Full Session (3 Rounds)", desc: "Three complete rounds with guidance, culminating in cold exposure prep.", ep: "Full session", duration: "28m" },
+    ],
+    'heartmath-demonstrations-youtube': [
+      { title: "Heart Rate Variability Coherence Explained", desc: "What HRV coherence is and why the 5-second breathing cycle achieves it.", ep: "Educational", duration: "18m" },
+      { title: "Quick Coherence Technique — Guided Practice", desc: "A 5-minute guided practice for achieving heart-brain coherence.", ep: "Guided", duration: "8m" },
+    ],
+  };
+
   /* Map of practice names → ids for inline linking from AI responses */
   const PRACTICE_NAME_MAP = (() => {
     const map = [];
@@ -8419,6 +8613,7 @@ var _introPlayedThisSession = false;
 
   /* ─── Top-level render ─── */
   function renderLibrary() {
+    renderLibFeatured();
     renderLibraryFilters();
     renderLibraryAllPanels();
     updateLibrarySearchUi();
@@ -8429,6 +8624,47 @@ var _introPlayedThisSession = false;
     if (topicSel) topicSel.value = libUiState.activeFilters.size === 1 ? [...libUiState.activeFilters][0] : '';
     const typeSel = document.getElementById('lib-type-select');
     if (typeSel) typeSel.value = libUiState.tab;
+    _syncLibPills();
+  }
+
+  function _syncLibPills() {
+    const tab = libUiState.tab;
+    document.querySelectorAll('#lib-pills-row .lib-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+  }
+
+  function onLibPillClick(tab) {
+    onLibTypeChange(tab);
+  }
+
+  function renderLibFeatured() {
+    const scroll = document.getElementById('lib-featured-scroll');
+    if (!scroll) return;
+    const items = [
+      {
+        type: 'Meditation', title: 'Mindfulness of Breath', sub: 'Beginner · 10–60 min',
+        thumbClass: 'cover-violet', icon: '🧘',
+        onclick: `showKnowledgePracticeDetail('meditation','mindfulness-of-breath')`
+      },
+      {
+        type: 'Breathwork', title: 'Box Breathing', sub: 'Beginner · 5–10 min',
+        thumbClass: 'cover-sky', icon: '⬡',
+        onclick: `showKnowledgePracticeDetail('technique','box-breathing')`
+      },
+      {
+        type: 'Book', title: 'Breath', sub: 'James Nestor · 2020',
+        thumbClass: 'cover-teal', icon: '🌬️',
+        onclick: `openLibraryEntry('book','breath-the-new-science-of-a-lost-art')`
+      }
+    ];
+    scroll.innerHTML = items.map(item => `
+      <button class="lib-feat-card" onclick="${item.onclick}">
+        <div class="lib-feat-thumb ${item.thumbClass}">${item.icon}</div>
+        <div class="lib-feat-type">${item.type}</div>
+        <div class="lib-feat-title">${escapeHtml(item.title)}</div>
+        <div class="lib-feat-sub">${escapeHtml(item.sub)}</div>
+      </button>`).join('');
   }
 
   function onLibFilterChange(val) {
@@ -8607,78 +8843,104 @@ var _introPlayedThisSession = false;
     });
   }
 
+  const _TECH_HUES  = ['teal','sky','indigo','violet','gold','emerald','rose','amber','teal','sky','indigo','violet'];
+  const _MEDIT_HUES = ['violet','indigo','sky','teal','violet','indigo','sky','teal'];
+
   function renderBooksPanel(books) {
     if (!books.length) return '';
-    return `<div class="books-grid">${books.map(b => `
-      <button class="book-card" onclick="openLibraryEntry('book', '${slug(b.title)}')">
-        <div class="book-cover cover-${b.cover && b.cover.hue ? b.cover.hue : 'teal'}" id="bcover-${slug(b.title)}">
-          <div class="book-cover-icon">${b.cover && b.cover.icon ? b.cover.icon : '📖'}</div>
+    return `<div class="lib-cards-list">${books.map(b => {
+      const hue  = (b.cover && b.cover.hue) ? b.cover.hue : 'teal';
+      const icon = (b.cover && b.cover.icon) ? b.cover.icon : '📖';
+      const pills = (b.themes || []).slice(0, 2).map(t => `<span class="lib-card-pill">${escapeHtml(t)}</span>`).join('');
+      return `<button class="lib-card" onclick="openLibraryEntry('book','${slug(b.title)}')">
+        <div class="lib-card-thumb cover-${hue}" id="bcover-${slug(b.title)}">${icon}</div>
+        <div class="lib-card-body">
+          <div class="lib-card-type">Book</div>
+          <div class="lib-card-title">${escapeHtml(b.title)}</div>
+          <div class="lib-card-sub">${escapeHtml(b.author)} · ${b.year}</div>
+          <div class="lib-card-pills">${pills}</div>
         </div>
-        <div class="book-card-body">
-          <div class="book-card-title">${escapeHtml(b.title)}</div>
-          <div class="book-card-author">${escapeHtml(b.author)}</div>
-          <div class="book-card-year">${b.year}</div>
-          <div class="book-card-summary">${escapeHtml(b.summary)}</div>
-        </div>
-      </button>`).join('')}</div>`;
+        <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>`;
+    }).join('')}</div>`;
   }
 
   function renderPeoplePanel(people) {
     if (!people.length) return '';
-    return `<div class="people-grid">${people.map(p => `
-      <button class="person-card" onclick="openLibraryEntry('person', '${slug(p.name)}')">
-        <div class="person-avatar av-${p.photo && p.photo.hue ? p.photo.hue : 'teal'}" id="pavatar-${slug(p.name)}">${initialsFromName(p.name)}</div>
-        <div class="person-name">${escapeHtml(p.name)}</div>
-        <div class="person-discipline">${escapeHtml(p.role)}</div>
-      </button>`).join('')}</div>`;
+    return `<div class="lib-cards-list">${people.map(p => {
+      const hue   = (p.photo && p.photo.hue) ? p.photo.hue : 'teal';
+      const pills = (p.themes || []).slice(0, 2).map(t => `<span class="lib-card-pill">${escapeHtml(t)}</span>`).join('');
+      return `<button class="lib-card" onclick="openLibraryEntry('person','${slug(p.name)}')">
+        <div class="lib-card-thumb lib-card-thumb--circle cover-${hue}" id="pavatar-${slug(p.name)}">
+          <span class="lib-card-initials">${initialsFromName(p.name)}</span>
+        </div>
+        <div class="lib-card-body">
+          <div class="lib-card-type">Person</div>
+          <div class="lib-card-title">${escapeHtml(p.name)}</div>
+          <div class="lib-card-sub">${escapeHtml(p.role)}</div>
+          <div class="lib-card-pills">${pills}</div>
+        </div>
+        <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>`;
+    }).join('')}</div>`;
   }
 
   function renderPodcastsPanel(podcasts) {
     if (!podcasts.length) return '';
-    return `<div class="podcasts-grid">${podcasts.map(p => `
-      <div class="podcast-card" id="pcast-${slug(p.name)}">
-        <img class="podcast-artwork" id="part-${slug(p.name)}" src="" alt="">
-        <div class="podcast-head">
-          <span class="podcast-name">${escapeHtml(p.name)}</span>
-          <span class="podcast-host">${escapeHtml(p.host)}</span>
+    return `<div class="lib-cards-list">${podcasts.map((p, i) => {
+      const hue  = _TECH_HUES[i % _TECH_HUES.length];
+      const pills = (p.themes || []).slice(0, 2).map(t => `<span class="lib-card-pill">${escapeHtml(t)}</span>`).join('');
+      return `<button class="lib-card" id="pcast-${slug(p.name)}" onclick="showPodcastDetail('${slug(p.name)}')">
+        <div class="lib-card-thumb cover-${hue}">
+          <img class="lib-card-thumb-img" id="part-${slug(p.name)}" src="" alt="">
         </div>
-        <div class="podcast-focus">${escapeHtml(p.focus)}</div>
-        <div class="podcast-foot">
-          <div class="podcast-tags">
-            ${(p.themes || []).map(t => `<span class="podcast-tag">${escapeHtml(t)}</span>`).join('')}
-          </div>
-          ${p.url ? `<a class="podcast-link" href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer">
-            Listen
-            <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
-          </a>` : ''}
+        <div class="lib-card-body">
+          <div class="lib-card-type">Podcast</div>
+          <div class="lib-card-title">${escapeHtml(p.name)}</div>
+          <div class="lib-card-sub">${escapeHtml(p.host)}</div>
+          <div class="lib-card-pills">${pills}</div>
         </div>
-      </div>`).join('')}</div>`;
+        <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>`;
+    }).join('')}</div>`;
   }
 
   function renderBreathworkPanel() {
-    return `<div class="practice-list">${TECHNIQUES.map(t => `
-      <button class="practice-list-card" onclick="showKnowledgePracticeDetail('technique','${escapeJs(t.id)}')">
-        <div class="practice-list-card-title">${escapeHtml(t.title)}</div>
-        <div class="practice-list-card-desc">${escapeHtml(t.desc)}</div>
-        <div class="practice-list-pills">
-          <span class="practice-list-pill">${escapeHtml(t.bestFor)}</span>
-          <span class="practice-list-pill">${escapeHtml(t.difficulty)}</span>
-          <span class="practice-list-pill">${escapeHtml(t.duration)}</span>
+    return `<div class="lib-cards-list">${TECHNIQUES.map((t, i) => {
+      const hue  = _TECH_HUES[i % _TECH_HUES.length];
+      return `<button class="lib-card" onclick="showKnowledgePracticeDetail('technique','${escapeJs(t.id)}')">
+        <div class="lib-card-thumb cover-${hue}"></div>
+        <div class="lib-card-body">
+          <div class="lib-card-type">Breathwork</div>
+          <div class="lib-card-title">${escapeHtml(t.title)}</div>
+          <div class="lib-card-sub">${escapeHtml(t.bestFor)}</div>
+          <div class="lib-card-pills">
+            <span class="lib-card-pill">${escapeHtml(t.difficulty)}</span>
+            <span class="lib-card-pill">${escapeHtml(t.duration)}</span>
+          </div>
         </div>
-      </button>`).join('')}</div>`;
+        <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>`;
+    }).join('')}</div>`;
   }
 
   function renderMeditationsPanel() {
-    return `<div class="practice-list">${MEDITATIONS.map(m => `
-      <button class="practice-list-card" onclick="showKnowledgePracticeDetail('meditation','${escapeJs(m.id)}')">
-        <div class="practice-list-card-title">${escapeHtml(m.title)}</div>
-        <div class="practice-list-card-desc">${escapeHtml(m.desc)}</div>
-        <div class="practice-list-pills">
-          <span class="practice-list-pill">${escapeHtml(m.bestFor)}</span>
-          <span class="practice-list-pill">${escapeHtml(m.difficulty)}</span>
-          <span class="practice-list-pill">${escapeHtml(m.duration)}</span>
+    return `<div class="lib-cards-list">${MEDITATIONS.map((m, i) => {
+      const hue  = _MEDIT_HUES[i % _MEDIT_HUES.length];
+      return `<button class="lib-card" onclick="showKnowledgePracticeDetail('meditation','${escapeJs(m.id)}')">
+        <div class="lib-card-thumb cover-${hue}"></div>
+        <div class="lib-card-body">
+          <div class="lib-card-type">Meditation</div>
+          <div class="lib-card-title">${escapeHtml(m.title)}</div>
+          <div class="lib-card-sub">${escapeHtml(m.bestFor)}</div>
+          <div class="lib-card-pills">
+            <span class="lib-card-pill">${escapeHtml(m.difficulty)}</span>
+            <span class="lib-card-pill">${escapeHtml(m.duration)}</span>
+          </div>
         </div>
-      </button>`).join('')}</div>`;
+        <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>`;
+    }).join('')}</div>`;
   }
 
   /* ─── Filter + search engine ─── */
@@ -8758,6 +9020,7 @@ var _introPlayedThisSession = false;
     libUiState.tab = tab;
     const typeSel = document.getElementById('lib-type-select');
     if (typeSel) typeSel.value = tab;
+    _syncLibPills();
     renderLibraryAllPanels();
   }
 
@@ -8930,6 +9193,64 @@ var _introPlayedThisSession = false;
     document.getElementById('library-detail').classList.remove('active');
     switchLibraryTab(prevTab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ─── Podcast detail ─── */
+  function showPodcastDetail(slugId) {
+    const podcast = LIBRARY.podcasts.find(p => slug(p.name) === slugId);
+    if (!podcast) return;
+    libUiState.detail = { kind: 'podcast', id: slugId, sourceTab: 'podcasts' };
+    document.getElementById('library-list').style.display = 'none';
+    const det = document.getElementById('library-detail');
+    const episodes = _PODCAST_EPISODES[slugId] || [];
+    det.innerHTML = `
+      <button class="back-btn" onclick="hideLibraryDetail()">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back to library
+      </button>
+
+      <div class="podcast-detail-head">
+        <div class="podcast-detail-art" id="pcast-detail-art">
+          <img id="pcast-detail-img" src="" alt="">
+        </div>
+        <div>
+          <div class="podcast-detail-name">${escapeHtml(podcast.name)}</div>
+          <div class="podcast-detail-host">${escapeHtml(podcast.host)}</div>
+          <div class="podcast-detail-themes">
+            ${(podcast.themes || []).map(t => `<span class="podcast-detail-theme">${escapeHtml(t)}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="podcast-detail-desc">${escapeHtml(podcast.focus)}</div>
+
+      ${podcast.url ? `
+        <div style="margin-bottom: 24px;">
+          <a class="action-btn primary" href="${escapeHtml(podcast.url)}" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            Listen
+          </a>
+        </div>` : ''}
+
+      ${episodes.length ? `
+        <div class="podcast-detail-section-title">Notable Episodes</div>
+        <div class="podcast-episode-list">
+          ${episodes.map(ep => `
+            <div class="podcast-episode">
+              <div class="podcast-episode-title">${escapeHtml(ep.title)}</div>
+              <div class="podcast-episode-desc">${escapeHtml(ep.desc)}</div>
+              <div class="podcast-episode-meta">${escapeHtml(ep.ep)}${ep.duration ? ' · ' + escapeHtml(ep.duration) : ''}</div>
+            </div>`).join('')}
+        </div>` : ''}
+    `;
+    det.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    fetchPodcastArtwork(podcast.name).then(imgUrl => {
+      if (!imgUrl) return;
+      const artEl = document.getElementById('pcast-detail-art');
+      const imgEl = document.getElementById('pcast-detail-img');
+      if (artEl && imgEl) { imgEl.onload = () => artEl.classList.add('has-art'); imgEl.src = imgUrl; }
+    });
   }
 
   /* ─── Knowledge practice detail (Overview / History / Science) ─── */
