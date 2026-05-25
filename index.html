@@ -3446,6 +3446,7 @@
       box-shadow: 0 4px 14px rgba(0,0,0,0.35);
       flex-shrink: 0;
     }
+    .person-avatar.has-photo { color: transparent !important; text-shadow: none; background-size: cover; background-position: center top; }
     .person-avatar.av-teal    { background: linear-gradient(135deg, #1a9e8e, #0e6c61); }
     .person-avatar.av-sky     { background: linear-gradient(135deg, #38bdf8, #1e4f78); }
     .person-avatar.av-gold    { background: linear-gradient(135deg, #c9a230, #826416); }
@@ -3483,7 +3484,19 @@
       flex-direction: column;
       gap: 6px;
       transition: all 0.18s ease;
+      position: relative;
     }
+    .podcast-artwork {
+      display: none;
+      position: absolute;
+      top: 12px; right: 14px;
+      width: 52px; height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .podcast-card.has-artwork .podcast-artwork { display: block; }
+    .podcast-card.has-artwork { padding-right: 80px; }
     .podcast-card:hover {
       border-color: rgba(201, 169, 110, 0.3);
       transform: translateY(-1px);
@@ -7763,7 +7776,9 @@ var _introPlayedThisSession = false;
     document.getElementById('lib-panel-books').innerHTML      = renderBooksPanel(books);
     applyBookCovers(books);
     document.getElementById('lib-panel-people').innerHTML     = renderPeoplePanel(people);
+    applyPersonPhotos(people);
     document.getElementById('lib-panel-podcasts').innerHTML   = renderPodcastsPanel(podcasts);
+    applyPodcastArtwork(podcasts);
     document.getElementById('lib-panel-breathwork').innerHTML = renderBreathworkPanel();
     document.getElementById('lib-panel-meditations').innerHTML= renderMeditationsPanel();
 
@@ -7828,6 +7843,76 @@ var _introPlayedThisSession = false;
     _applyCoverToEl(document.getElementById('bcover-detail'), imgUrl);
   }
 
+  /* ─── Wikipedia person photos ─── */
+  const _personPhotoCache = {};
+
+  async function fetchPersonPhoto(name) {
+    if (name in _personPhotoCache) return _personPhotoCache[name];
+    try {
+      const url = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name);
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const imgUrl = data?.thumbnail?.source ?? null;
+      _personPhotoCache[name] = imgUrl;
+      return imgUrl;
+    } catch (_) { _personPhotoCache[name] = null; return null; }
+  }
+
+  function _applyPhotoToAvatar(el, imgUrl) {
+    if (!el || !imgUrl) return;
+    const img = new Image();
+    img.onload = () => {
+      el.style.backgroundImage = 'url(' + imgUrl + ')';
+      el.classList.add('has-photo');
+    };
+    img.src = imgUrl;
+  }
+
+  function applyPersonPhotos(people) {
+    people.forEach(async (p) => {
+      const imgUrl = await fetchPersonPhoto(p.name);
+      _applyPhotoToAvatar(document.getElementById('pavatar-' + slug(p.name)), imgUrl);
+    });
+  }
+
+  async function applyDetailPersonPhoto(person) {
+    const imgUrl = await fetchPersonPhoto(person.name);
+    _applyPhotoToAvatar(document.getElementById('pavatar-detail'), imgUrl);
+  }
+
+  /* ─── iTunes podcast artwork ─── */
+  const _podcastArtCache = {};
+
+  async function fetchPodcastArtwork(name) {
+    if (name in _podcastArtCache) return _podcastArtCache[name];
+    try {
+      const url = 'https://itunes.apple.com/search?term=' + encodeURIComponent(name) + '&media=podcast&limit=1';
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const imgUrl = data?.results?.[0]?.artworkUrl600 ?? null;
+      _podcastArtCache[name] = imgUrl;
+      return imgUrl;
+    } catch (_) { _podcastArtCache[name] = null; return null; }
+  }
+
+  function _applyArtworkToCard(cardEl, imgEl, imgUrl) {
+    if (!cardEl || !imgEl || !imgUrl) return;
+    imgEl.onload = () => { cardEl.classList.add('has-artwork'); };
+    imgEl.onerror = () => {};
+    imgEl.src = imgUrl;
+  }
+
+  function applyPodcastArtwork(podcasts) {
+    podcasts.forEach(async (p) => {
+      const imgUrl = await fetchPodcastArtwork(p.name);
+      const cardEl = document.getElementById('pcast-' + slug(p.name));
+      const imgEl  = document.getElementById('part-' + slug(p.name));
+      _applyArtworkToCard(cardEl, imgEl, imgUrl);
+    });
+  }
+
   function renderBooksPanel(books) {
     if (!books.length) return '';
     return `<div class="books-grid">${books.map(b => `
@@ -7850,7 +7935,7 @@ var _introPlayedThisSession = false;
     if (!people.length) return '';
     return `<div class="people-grid">${people.map(p => `
       <button class="person-card" onclick="openLibraryEntry('person', '${slug(p.name)}')">
-        <div class="person-avatar av-${p.photo && p.photo.hue ? p.photo.hue : 'teal'}">${initialsFromName(p.name)}</div>
+        <div class="person-avatar av-${p.photo && p.photo.hue ? p.photo.hue : 'teal'}" id="pavatar-${slug(p.name)}">${initialsFromName(p.name)}</div>
         <div class="person-name">${escapeHtml(p.name)}</div>
         <div class="person-discipline">${escapeHtml(p.role)}</div>
       </button>`).join('')}</div>`;
@@ -7859,7 +7944,8 @@ var _introPlayedThisSession = false;
   function renderPodcastsPanel(podcasts) {
     if (!podcasts.length) return '';
     return `<div class="podcasts-grid">${podcasts.map(p => `
-      <div class="podcast-card">
+      <div class="podcast-card" id="pcast-${slug(p.name)}">
+        <img class="podcast-artwork" id="part-${slug(p.name)}" src="" alt="">
         <div class="podcast-head">
           <span class="podcast-name">${escapeHtml(p.name)}</span>
           <span class="podcast-host">${escapeHtml(p.host)}</span>
@@ -8095,7 +8181,7 @@ var _introPlayedThisSession = false;
       </button>
 
       <div class="person-detail-head">
-        <div class="person-avatar av-${person.photo && person.photo.hue ? person.photo.hue : 'teal'}">${initialsFromName(person.name)}</div>
+        <div class="person-avatar av-${person.photo && person.photo.hue ? person.photo.hue : 'teal'}" id="pavatar-detail">${initialsFromName(person.name)}</div>
         <div class="person-detail-info">
           <h1>${escapeHtml(person.name)}</h1>
           <div class="person-detail-role">${escapeHtml(person.role)}</div>
@@ -8141,6 +8227,7 @@ var _introPlayedThisSession = false;
         </div>` : ''}
     `;
     detail.classList.add('active');
+    applyDetailPersonPhoto(person);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
