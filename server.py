@@ -32,7 +32,7 @@ import bcrypt
 import anthropic
 from dotenv import load_dotenv
 
-load_dotenv()  # ANTHROPIC_API_KEY, FLASK_SECRET_KEY, optional PORT/FLASK_DEBUG
+load_dotenv(override=False)  # ANTHROPIC_API_KEY, FLASK_SECRET_KEY, optional PORT/FLASK_DEBUG
 
 # ─────────────────────────── App + config ───────────────────────────
 
