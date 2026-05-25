@@ -1,5 +1,5 @@
 """
-Breathly server — slim, cost-conscious, and now with user accounts.
+Triad server — slim, cost-conscious, and now with user accounts.
 
 API surface:
   GET  /              → serves index.html (frontend is the whole app)
@@ -62,7 +62,7 @@ MODEL = "claude-sonnet-4-6"
 MAX_OUTPUT_TOKENS = 2048
 MAX_CONTEXT_CHARS = 12000
 
-SYSTEM_PROMPT = """You are the Breathly AI coach — a warm, deeply knowledgeable guide to breathwork and meditation. You bridge ancient yogic wisdom with modern neuroscience naturally and gracefully, the way a wise teacher who has studied both traditions for decades would speak.
+SYSTEM_PROMPT = """You are the Triad AI coach — a warm, deeply knowledgeable guide to breathwork and meditation. You bridge ancient yogic wisdom with modern neuroscience naturally and gracefully, the way a wise teacher who has studied both traditions for decades would speak.
 
 Tone: warm, calm, unhurried. Curious about how the person is feeling before recommending. Never clinical, never like a fitness app.
 
@@ -335,5 +335,5 @@ if __name__ == "__main__":
     debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
     if not os.environ.get("ANTHROPIC_API_KEY"):
         print("WARNING: ANTHROPIC_API_KEY is not set. Create a .env file or export it.")
-    print(f"Breathly starting on http://localhost:{port}")
+    print(f"Triad starting on http://localhost:{port}")
     app.run(host="0.0.0.0", port=port, debug=debug)

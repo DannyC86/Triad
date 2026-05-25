@@ -6,7 +6,7 @@
   <title>Triad — Mind. Body. Spirit. Aligned.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
-  <script>(function(){var t=localStorage.getItem('breathly:theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
+  <script>(function(){var t=localStorage.getItem('triad:theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
   <style>
     /* ─── Design tokens ─── */
     :root {
@@ -4423,7 +4423,7 @@
     <div class="modal-body privacy-body">
       <h3>Privacy Policy</h3>
       <p><strong>Last updated:</strong> 24 May 2026</p>
-      <p>Breathly ("we", "us", "our") is operated by an individual developer based in the United Kingdom. This policy explains how we handle your information when you use the Breathly web application ("the App").</p>
+      <p>Triad ("we", "us", "our") is operated by an individual developer based in the United Kingdom. This policy explains how we handle your information when you use the Triad web application ("the App").</p>
 
       <h4>1. Who we are</h4>
       <p>Data controller: Daniel Clark, United Kingdom. Contact: <a href="mailto:daniel.clark@live.co.uk">daniel.clark@live.co.uk</a></p>
@@ -4466,7 +4466,7 @@
       <p>We may update this policy from time to time. The "last updated" date at the top will reflect any changes. Continued use of the App constitutes acceptance of the updated policy.</p>
 
       <h3 style="margin-top:28px">Terms of Use</h3>
-      <p>Breathly is provided for informational and general wellness purposes only. It is not a medical device and does not provide medical advice. Always consult a qualified healthcare professional before beginning any new breathwork or meditation practice, particularly if you have a cardiovascular, respiratory, or mental health condition.</p>
+      <p>Triad is provided for informational and general wellness purposes only. It is not a medical device and does not provide medical advice. Always consult a qualified healthcare professional before beginning any new breathwork or meditation practice, particularly if you have a cardiovascular, respiratory, or mental health condition.</p>
       <p>By using the App you agree not to use it for any unlawful purpose. The App is provided "as is" without warranty of any kind.</p>
     </div>
   </div>
@@ -6796,7 +6796,7 @@
   };
 
   /* ────── Persistent gamification store (localStorage) ────── */
-  const STORE_KEY = 'breathly:v1';
+  const STORE_KEY = 'triad:v1';
 
   /* ─── Practice grouping for tiered achievements ─── */
   // Pranayama: the classical yogic breathing practices
@@ -7028,11 +7028,7 @@
   }
 
   function collapseP(text, uid) {
-    if (!text || text.length < 200) return `<p>${escapeHtml(text)}</p>`;
-    return `<div class="collapse-block">
-      <p class="collapse-text collapsed" id="cp-${uid}">${escapeHtml(text)}</p>
-      <button class="read-more-btn" onclick="(function(b){var p=b.previousElementSibling;p.classList.toggle('collapsed');b.textContent=p.classList.contains('collapsed')?'Read more':'Read less';})(this)">Read more</button>
-    </div>`;
+    return `<p>${escapeHtml(text)}</p>`;
   }
 
   // Router: rich tabbed detail when we have full data for the practice; simple detail otherwise.
@@ -8344,6 +8340,7 @@ Build my personalised plan.`;
   /* ════════════════ ASK MODAL ════════════════ */
 
   function openAskModal() {
+    if (!requirePro()) return;
     if (!state.askContext) return;
     const { kind, item } = state.askContext;
     document.getElementById('askModalTitle').textContent = item.title;
@@ -9296,7 +9293,7 @@ Build my personalised plan.`;
     const html = document.documentElement;
     const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
-    localStorage.setItem('breathly:theme', next);
+    localStorage.setItem('triad:theme', next);
     updateThemeToggle();
   }
 
@@ -9491,7 +9488,7 @@ Build my personalised plan.`;
 
   /* ════════════════ WAITLIST (Pro upgrade placeholder) ════════════════ */
 
-  const WAITLIST_KEY = 'breathly:waitlist';
+  const WAITLIST_KEY = 'triad:waitlist';
 
   function openWaitlistModal() {
     // Reset state in case it was previously shown
@@ -9746,25 +9743,25 @@ Build my personalised plan.`;
     return _origRenderProfile.apply(this, arguments);
   };
 
-  /* ─── Wrap AI-call sites with requireAuth gating ─── */
+  /* ─── Wrap AI-call sites with requirePro gating ─── */
   // Plan generation (submit button on first plan)
   const _origSubmitPlan = submitPlan;
   submitPlan = async function() {
-    if (!requireAuth('Log in or sign up to generate your personalised plan.')) return;
+    if (!requirePro()) return;
     return _origSubmitPlan.apply(this, arguments);
   };
 
   // Plan chat follow-ups
   const _origSendPlanMessage = sendPlanMessage;
   sendPlanMessage = async function() {
-    if (!requireAuth('Log in or sign up to chat with the coach.')) return;
+    if (!requirePro()) return;
     return _origSendPlanMessage.apply(this, arguments);
   };
 
   // "Ask about this technique" modal
   const _origSendAskMessage = sendAskMessage;
   sendAskMessage = async function() {
-    if (!requireAuth('Log in or sign up to ask the coach about this practice.')) return;
+    if (!requirePro()) return;
     return _origSendAskMessage.apply(this, arguments);
   };
 
