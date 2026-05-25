@@ -180,6 +180,25 @@ def config():
     return jsonify({"googleBooksKey": os.getenv("GOOGLE_BOOKS_API_KEY", "")})
 
 
+@app.route("/book-cover")
+def book_cover():
+    import urllib.request, urllib.parse, json as _json
+    title  = request.args.get("title", "")
+    author = request.args.get("author", "")
+    key    = os.getenv("GOOGLE_BOOKS_API_KEY", "")
+    query  = urllib.parse.quote(f"intitle:{title}+inauthor:{author}")
+    url    = f"https://www.googleapis.com/books/v1/volumes?maxResults=1&q={query}&key={key}"
+    try:
+        with urllib.request.urlopen(url, timeout=5) as r:
+            data = _json.loads(r.read())
+        links = data.get("items", [{}])[0].get("volumeInfo", {}).get("imageLinks", {})
+        img = links.get("thumbnail") or links.get("smallThumbnail") or ""
+        img = img.replace("http://", "https://")
+        return jsonify({"coverUrl": img})
+    except Exception:
+        return jsonify({"coverUrl": ""})
+
+
 # ─────────────────────────── Routes — auth ───────────────────────────
 
 def _valid_email(s: str) -> bool:

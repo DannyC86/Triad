@@ -8388,24 +8388,11 @@ var _introPlayedThisSession = false;
     const key = title + '||' + author;
     if (key in _bookCoverCache) return _bookCoverCache[key];
     try {
-      const keySuffix = window._gbKey ? '&key=' + window._gbKey : '';
-      const base = 'https://www.googleapis.com/books/v1/volumes?maxResults=1&q=';
-      const q1 = 'intitle:' + encodeURIComponent(title) + '+inauthor:' + encodeURIComponent(author);
-      const res = await fetch(base + q1 + keySuffix);
+      const url = '/book-cover?title=' + encodeURIComponent(title) + '&author=' + encodeURIComponent(author);
+      const res = await fetch(url);
       if (!res.ok) throw new Error();
       const data = await res.json();
-      let links = data?.items?.[0]?.volumeInfo?.imageLinks;
-      console.log('BookCover:', title, links);
-      if (!links) {
-        const q2 = 'intitle:' + encodeURIComponent(title);
-        const res2 = await fetch(base + q2 + keySuffix);
-        if (res2.ok) {
-          const data2 = await res2.json();
-          links = data2?.items?.[0]?.volumeInfo?.imageLinks;
-        }
-      }
-      const thumb = links?.thumbnail || links?.smallThumbnail || null;
-      const imgUrl = thumb ? thumb.replace('http://', 'https://') : null;
+      const imgUrl = data.coverUrl || null;
       _bookCoverCache[key] = imgUrl;
       return imgUrl;
     } catch (_) {
@@ -10535,9 +10522,6 @@ Build my personalised plan.`;
 
   // Sync theme toggle UI with saved preference
   updateThemeToggle();
-
-  // Fetch public config (API keys, etc.)
-  fetch('/config').then(r => r.json()).then(d => { window._gbKey = d.googleBooksKey; }).catch(() => {});
 
   // Paint guest state immediately, then hydrate from /auth/me asynchronously
   updateAuthUi();
