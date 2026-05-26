@@ -1828,9 +1828,6 @@
     .profile--guest #profile-account-header { display: none !important; }
     /* Hide pro-tier achievements row in guest mode */
     .profile--guest #achievements-section .achievement-tier ~ .achievement-tier { display: none !important; }
-    /* Lock overlay on guest achievements */
-    .profile--guest .achievement-item { opacity: 0.55; pointer-events: none; position: relative; }
-    .profile--guest .achievement-item::after { content: '🔒'; position: absolute; top: 4px; right: 4px; font-size: 0.7rem; opacity: 0.7; }
     /* Guest CTA button */
     .profile-guest-cta { display: block; width: 100%; padding: 14px 20px; background: var(--gold); color: #1a1a2e; border: none; border-radius: 12px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; text-align: center; margin-bottom: 20px; transition: background 0.18s, transform 0.12s; }
     .profile-guest-cta:hover { background: #d4b07a; transform: translateY(-1px); }
@@ -7547,39 +7544,78 @@ var _introPlayedThisSession = false;
   function _bestStreak(s)       { return Math.max(s.streak?.longest || 0, s.streak?.current || 0); }
   function _distinctPracticeCount(s) { return _completedPracticeIds(s).size; }
 
-  /* ─── Achievements (15: 5 free + 10 pro) ─── */
-  // Each has: id, name, icon, tier ('free'|'pro'), test(s), hint, progress(s) → {current, target, label}
+  /* ─── Achievements (21: 11 guest + 10 pro) ─── */
+  // Each has: id, name, icon, tier ('guest'|'pro'), test(s), hint, progress(s) → {current, target, label}
   const ACHIEVEMENTS = [
-    /* ── Free tier (5) ── */
+    /* ── Guest tier (11) ── */
     {
-      id: 'first-breath', tier: 'free', name: 'First Breath', icon: '🌬️',
-      hint: 'Complete your first session.',
-      test:     s => s.sessions.length >= 1,
-      progress: s => ({ current: s.sessions.length, target: 1, label: 'session' })
+      id: 'first-breath', tier: 'guest', name: 'First Breath', icon: '🌬️',
+      hint: 'Complete your first breathwork session.',
+      test:     s => s.sessions.filter(x => x.kind === 'technique').length >= 1,
+      progress: s => ({ current: s.sessions.filter(x => x.kind === 'technique').length, target: 1, label: 'breathwork session' })
     },
     {
-      id: 'seven-day', tier: 'free', name: '7-Day Streak', icon: '🔥',
-      hint: 'Practise seven days in a row.',
-      test:     s => (s.streak?.current || 0) >= 7,
-      progress: s => ({ current: s.streak?.current || 0, target: 7, label: 'days in a row' })
+      id: 'first-stillness', tier: 'guest', name: 'First Stillness', icon: '🧘',
+      hint: 'Complete your first meditation session.',
+      test:     s => s.sessions.filter(x => x.kind === 'meditation').length >= 1,
+      progress: s => ({ current: s.sessions.filter(x => x.kind === 'meditation').length, target: 1, label: 'meditation session' })
     },
     {
-      id: 'explorer', tier: 'free', name: 'Explorer', icon: '🧭',
-      hint: 'Try five different practices.',
-      test:     s => _distinctPracticeCount(s) >= 5,
-      progress: s => ({ current: _distinctPracticeCount(s), target: 5, label: 'different practices' })
+      id: 'first-page', tier: 'guest', name: 'First Page', icon: '📖',
+      hint: 'Open a book in the Knowledge hub.',
+      test:     s => (s.openedBook || 0) >= 1,
+      progress: s => ({ current: Math.min(s.openedBook || 0, 1), target: 1, label: 'book opened' })
     },
     {
-      id: 'scholar', tier: 'free', name: 'Scholar', icon: '📚',
-      hint: 'Mark three books as read.',
-      test:     s => _booksRead(s) >= 3,
-      progress: s => ({ current: _booksRead(s), target: 3, label: 'books read' })
+      id: 'first-teacher', tier: 'guest', name: 'First Teacher', icon: '👤',
+      hint: 'Open a person profile in Knowledge.',
+      test:     s => (s.openedPerson || 0) >= 1,
+      progress: s => ({ current: Math.min(s.openedPerson || 0, 1), target: 1, label: 'teacher opened' })
     },
     {
-      id: 'the-practice', tier: 'free', name: 'The Practice', icon: '☸️',
-      hint: 'Reach 30 completed sessions.',
-      test:     s => s.sessions.length >= 30,
-      progress: s => ({ current: s.sessions.length, target: 30, label: 'sessions' })
+      id: 'first-listen', tier: 'guest', name: 'First Listen', icon: '🎙️',
+      hint: 'Open a podcast in Knowledge.',
+      test:     s => (s.openedPodcast || 0) >= 1,
+      progress: s => ({ current: Math.min(s.openedPodcast || 0, 1), target: 1, label: 'podcast opened' })
+    },
+    {
+      id: 'going-deeper', tier: 'guest', name: 'Going Deeper', icon: '🔬',
+      hint: 'Explore breathwork in the Knowledge hub.',
+      test:     s => (s.visitedBreathworkHub || 0) >= 1,
+      progress: s => ({ current: Math.min(s.visitedBreathworkHub || 0, 1), target: 1, label: 'breathwork hub visit' })
+    },
+    {
+      id: 'into-stillness', tier: 'guest', name: 'Into Stillness', icon: '🌊',
+      hint: 'Explore meditations in the Knowledge hub.',
+      test:     s => (s.visitedMeditationsHub || 0) >= 1,
+      progress: s => ({ current: Math.min(s.visitedMeditationsHub || 0, 1), target: 1, label: 'meditations hub visit' })
+    },
+    {
+      id: 'joined-triad', tier: 'guest', name: 'Joined Triad', icon: '✨',
+      hint: 'Create a Triad account.',
+      test:     s => (s.hasAccount || 0) >= 1,
+      progress: s => ({ current: Math.min(s.hasAccount || 0, 1), target: 1, label: 'account created' })
+    },
+    {
+      id: 'committed-breather', tier: 'guest', name: 'Committed Breather', icon: '💨',
+      hint: 'Complete 5 breathwork sessions.',
+      test:     s => s.sessions.filter(x => x.kind === 'technique').length >= 5,
+      progress: s => ({ current: s.sessions.filter(x => x.kind === 'technique').length, target: 5, label: 'breathwork sessions' })
+    },
+    {
+      id: 'committed-stillness', tier: 'guest', name: 'Committed to Stillness', icon: '🌿',
+      hint: 'Complete 5 meditation sessions.',
+      test:     s => s.sessions.filter(x => x.kind === 'meditation').length >= 5,
+      progress: s => ({ current: s.sessions.filter(x => x.kind === 'meditation').length, target: 5, label: 'meditation sessions' })
+    },
+    {
+      id: 'collector', tier: 'guest', name: 'Collector', icon: '🏛️',
+      hint: 'Unlock all other guest achievements.',
+      test:     s => ['first-breath','first-stillness','first-page','first-teacher','first-listen','going-deeper','into-stillness','joined-triad','committed-breather','committed-stillness'].every(id => !!s.achievements[id]),
+      progress: s => {
+        const ids = ['first-breath','first-stillness','first-page','first-teacher','first-listen','going-deeper','into-stillness','joined-triad','committed-breather','committed-stillness'];
+        return { current: ids.filter(id => !!s.achievements[id]).length, target: 10, label: 'guest achievements' };
+      }
     },
 
     /* ── Pro tier (10) ── */
@@ -7662,7 +7698,13 @@ var _introPlayedThisSession = false;
       readingList: {},                       // {bookTitle: 'reading' | 'read'}
       planAdditions: [],
       plansGenerated: 0,                     // count of plans ever generated
-      tier: 'free'                           // 'free' | 'pro' — gates display of pro achievements
+      tier: 'free',                          // 'free' | 'pro' — gates display of pro achievements
+      openedBook: 0,
+      openedPerson: 0,
+      openedPodcast: 0,
+      visitedBreathworkHub: 0,
+      visitedMeditationsHub: 0,
+      hasAccount: 0
     };
   }
 
@@ -7721,6 +7763,16 @@ var _introPlayedThisSession = false;
     // Per-section render hooks
     if (target === 'home')    renderHomeSummary();
     if (target === 'profile') renderProfile();
+
+    // Achievement triggers for Knowledge hub visits
+    if (target === 'techniques') {
+      store.visitedBreathworkHub = (store.visitedBreathworkHub || 0) + 1;
+      saveStore(store); checkAchievements();
+    }
+    if (target === 'meditate') {
+      store.visitedMeditationsHub = (store.visitedMeditationsHub || 0) + 1;
+      saveStore(store); checkAchievements();
+    }
 
     // Hide FAB unless on a detail view
     updateFab();
@@ -8746,10 +8798,14 @@ var _introPlayedThisSession = false;
     // keepDetail prevents navigate() from clearing the detail we're about to set
     navigate('library', { keepDetail: true });
     if (kind === 'person') {
+      store.openedPerson = (store.openedPerson || 0) + 1;
+      saveStore(store); checkAchievements();
       const item = LIBRARY.people.find(p => slug(p.name) === slugId);
       if (item) { showPersonDetail(item); return; }
       switchLibraryTab('people');
     } else if (kind === 'book') {
+      store.openedBook = (store.openedBook || 0) + 1;
+      saveStore(store); checkAchievements();
       const item = LIBRARY.books.find(b => slug(b.title) === slugId);
       if (item) { showBookDetail(item); return; }
       switchLibraryTab('books');
@@ -9462,6 +9518,8 @@ var _introPlayedThisSession = false;
   function showPodcastDetail(slugId) {
     const podcast = LIBRARY.podcasts.find(p => slug(p.name) === slugId);
     if (!podcast) return;
+    store.openedPodcast = (store.openedPodcast || 0) + 1;
+    saveStore(store); checkAchievements();
     libUiState.detail = { kind: 'podcast', id: slugId, sourceTab: 'podcasts' };
     document.getElementById('library-list').style.display = 'none';
     const det = document.getElementById('library-detail');
@@ -10535,9 +10593,8 @@ Build my personalised plan.`;
         </div>
       </div>` : '';
 
-    /* ─── Achievements (Free + Pro tiers, padlock on locked pro) ─── */
-    const visibleAchievements = ACHIEVEMENTS.filter(a => store.tier === 'pro' ? true : true); // show all, gating is visual
-    const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'free' || store.tier === 'pro');
+    /* ─── Achievements (Guest + Pro tiers, padlock on locked pro) ─── */
+    const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'guest' || store.tier === 'pro');
     const unlockedCount = ACHIEVEMENTS.filter(trulyUnlocked).length;
     document.getElementById('achievement-count').textContent =
       `${unlockedCount} of ${ACHIEVEMENTS.length} unlocked`;
@@ -10554,15 +10611,15 @@ Build my personalised plan.`;
         </div>`;
     }).join('')}</div>`;
 
-    const freeList = ACHIEVEMENTS.filter(a => a.tier === 'free');
-    const proList  = ACHIEVEMENTS.filter(a => a.tier === 'pro');
+    const guestList = ACHIEVEMENTS.filter(a => a.tier === 'guest');
+    const proList   = ACHIEVEMENTS.filter(a => a.tier === 'pro');
     document.getElementById('achievements-section').innerHTML = `
       <div class="achievement-tier">
         <div class="tier-head">
-          <span class="tier-name">Free tier</span>
-          <span class="tier-count">${freeList.filter(trulyUnlocked).length} / ${freeList.length}</span>
+          <span class="tier-name">Guest achievements</span>
+          <span class="tier-count">${guestList.filter(trulyUnlocked).length} / ${guestList.length}</span>
         </div>
-        ${renderRow(freeList)}
+        ${renderRow(guestList)}
       </div>
       <div class="achievement-tier">
         <div class="tier-head">
@@ -11059,6 +11116,8 @@ Build my personalised plan.`;
       auth.loggedIn = true;
       auth.email    = data.user.email;
       auth.tier     = data.user.tier || 'free';
+      store.hasAccount = 1;
+      saveStore(store); checkAchievements();
       closeAuthModal();
       updateAuthUi();
       // Refresh profile if user is currently viewing it
