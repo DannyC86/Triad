@@ -1223,6 +1223,10 @@
     .session-tech-name { font-size: 0.95rem; font-weight: 500; color: rgba(245,240,232,0.8); letter-spacing: 0.02em; }
     .session-close-btn { background: transparent; border: none; cursor: pointer; color: rgba(245,240,232,0.5); padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.18s; }
     .session-close-btn:hover { color: rgba(245,240,232,0.9); }
+    .sess-header-right { display: flex; align-items: center; gap: 4px; }
+    .sess-audio-btn { background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.4; transition: opacity 0.18s; line-height: 1; }
+    .sess-audio-btn:hover { opacity: 0.7; }
+    .sess-audio-btn.active { opacity: 1; }
     .session-canvas-wrap { position: relative; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; }
     #sessOrb { transition: r 0.15s ease; }
     /* Phase stack — replaces single label */
@@ -5071,9 +5075,14 @@ var _introPlayedThisSession = false;
   <div class="session-view" id="sessionView">
     <div class="session-header">
       <span class="session-tech-name" id="sessionTechName"></span>
-      <button class="session-close-btn" onclick="sessionConfirmClose()" aria-label="End session">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="22" height="22"><path d="M6 6L18 18M18 6L6 18"/></svg>
-      </button>
+      <div class="sess-header-right">
+        <button class="sess-audio-btn" id="sessAudioBtn" onclick="sessionToggleAudio()" aria-label="Toggle audio guidance" title="Toggle audio guidance">
+          <span id="sessAudioIcon">🔇</span>
+        </button>
+        <button class="session-close-btn" onclick="sessionConfirmClose()" aria-label="End session">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="22" height="22"><path d="M6 6L18 18M18 6L6 18"/></svg>
+        </button>
+      </div>
     </div>
     <div class="session-canvas-wrap">
       <svg id="sessionSvg" viewBox="0 0 220 220" width="220" height="220" style="overflow:visible">
@@ -8445,6 +8454,49 @@ var _introPlayedThisSession = false;
 
   /* ════════════════ SESSION ENGINE ════════════════ */
 
+  /* ─── Audio guidance ─── */
+  let _audioEnabled = localStorage.getItem('triad:audio') === '1';
+
+  // To upgrade to ElevenLabs: replace speakPhase() body with:
+  // fetch ElevenLabs /v1/text-to-speech/{voice_id} with text
+  // play returned audio blob
+  // All other code remains identical
+  function speakPhase(text) {
+    if (!_audioEnabled) return;
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.75;
+      u.pitch = 0.9;
+      u.volume = 0.8;
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.lang === 'en-GB' && v.name.includes('Female'))
+        || voices.find(v => v.lang === 'en-GB')
+        || voices.find(v => v.lang.startsWith('en'));
+      if (preferred) u.voice = preferred;
+      window.speechSynthesis.speak(u);
+    }
+  }
+
+  let _holdCountInterval = null;
+
+  function _sessClearHoldCount() {
+    if (_holdCountInterval !== null) { clearInterval(_holdCountInterval); _holdCountInterval = null; }
+  }
+
+  function _sessStartHoldCount(durSec) {
+    _sessClearHoldCount();
+    if (!_audioEnabled || durSec <= 3) return;
+    let count = durSec;
+    speakPhase(String(count));
+    count--;
+    _holdCountInterval = setInterval(() => {
+      if (count <= 0) { _sessClearHoldCount(); return; }
+      speakPhase(String(count));
+      count--;
+    }, 1000);
+  }
+
   const RHYTHMS = {
     'box-breathing': { phases: [
       { type: 'IN',   dur: 4, label: 'Inhale' },
@@ -8618,9 +8670,13 @@ var _introPlayedThisSession = false;
         _sess.currentLoop++;
         _sessUpdateCycleCount();
       }
+      _sessClearHoldCount();
       _sess.phaseIdx = nextIdx;
       _sess.phaseStart = now;
       _sessUpdatePhaseLabel();
+      const _newPhase = _sess.phases[nextIdx];
+      speakPhase(_newPhase.label);
+      if (_newPhase.type === 'HOLD') _sessStartHoldCount(_newPhase.dur);
     }
     _sess.raf = requestAnimationFrame(_sessTick);
   }
@@ -8630,10 +8686,13 @@ var _introPlayedThisSession = false;
     _sess.paused = false;
     _sess.countdown = false;
     if (_sess.raf) { cancelAnimationFrame(_sess.raf); _sess.raf = null; }
+    _sessClearHoldCount();
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   }
 
   function _sessComplete() {
     _sessStop();
+    speakPhase('Session complete. Well done.');
     const totalMs = performance.now() - _sess.sessionStart;
     const totalMin = Math.round(totalMs / 60000);
     const totalSec = Math.round(totalMs / 1000);
@@ -8678,6 +8737,11 @@ var _introPlayedThisSession = false;
     pauseBtn.textContent = 'Pause';
     pauseBtn.classList.remove('paused');
 
+    const audioBtn = document.getElementById('sessAudioBtn');
+    const audioIcon = document.getElementById('sessAudioIcon');
+    if (audioBtn) audioBtn.classList.toggle('active', _audioEnabled);
+    if (audioIcon) audioIcon.textContent = _audioEnabled ? '🔊' : '🔇';
+
     _sessRenderPath();
     _sessRenderPhaseStack();
     _sessUpdateCycleCount();
@@ -8706,6 +8770,7 @@ var _introPlayedThisSession = false;
     function tick() {
       if (!_sess.countdown) return;
       digitEl.textContent = n;
+      speakPhase(String(n));
       digitEl.classList.remove('animating');
       void digitEl.offsetWidth;
       digitEl.classList.add('animating');
@@ -8715,6 +8780,7 @@ var _introPlayedThisSession = false;
       } else {
         setTimeout(() => {
           if (!_sess.countdown) return;
+          speakPhase('Begin');
           cd.style.transition = 'opacity 0.35s ease';
           cd.style.opacity = '0';
           setTimeout(() => {
@@ -8740,6 +8806,13 @@ var _introPlayedThisSession = false;
     _sessUpdateCycleCount();
     _sessUpdatePhaseLabel();
     _sessPlaceOrb(0);
+
+    // Announce first phase after "Begin" finishes speaking (~450ms gap)
+    const _p0 = _sess.phases[0];
+    setTimeout(() => {
+      speakPhase(_p0.label);
+      if (_p0.type === 'HOLD') _sessStartHoldCount(_p0.dur);
+    }, 450);
 
     // Show edit button for 3s then fade out
     const editBtn = document.getElementById('sessEditBtn');
@@ -8842,9 +8915,21 @@ var _introPlayedThisSession = false;
       _sess.pausedElapsed = _sess.phaseStart !== null ? performance.now() - _sess.phaseStart : 0;
       _sess.paused = true;
       if (_sess.raf) { cancelAnimationFrame(_sess.raf); _sess.raf = null; }
+      _sessClearHoldCount();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       btn.textContent = 'Resume';
       btn.classList.add('paused');
     }
+  }
+
+  function sessionToggleAudio() {
+    _audioEnabled = !_audioEnabled;
+    localStorage.setItem('triad:audio', _audioEnabled ? '1' : '0');
+    const btn = document.getElementById('sessAudioBtn');
+    const icon = document.getElementById('sessAudioIcon');
+    if (btn) btn.classList.toggle('active', _audioEnabled);
+    if (icon) icon.textContent = _audioEnabled ? '🔊' : '🔇';
+    if (!_audioEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
   }
 
   function sessionReturn() {
