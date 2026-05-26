@@ -8207,6 +8207,7 @@ var _introPlayedThisSession = false;
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    track('page_view', { section: target });
   }
 
   /* ════════════════ TECHNIQUES + MEDITATIONS ════════════════ */
@@ -9068,6 +9069,7 @@ var _introPlayedThisSession = false;
 
     document.getElementById('sessionOverlay').classList.add('active');
     _sessStartCountdown();
+    track('session_started', { practice_id: practiceId });
   }
 
   function _sessRenderPhaseStack() {
@@ -9296,6 +9298,7 @@ var _introPlayedThisSession = false;
 
   // Navigate into the new library tabbed/detail view. Called from related cards on technique/meditation pages.
   function openLibraryEntry(kind, slugId) {
+    track('library_item_opened', { type: kind, id: slugId });
     // keepDetail prevents navigate() from clearing the detail we're about to set
     navigate('library', { keepDetail: true });
     if (kind === 'person') {
@@ -9340,6 +9343,7 @@ var _introPlayedThisSession = false;
     detail.classList.add('active');
     updateFab();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    track('technique_opened', { practice_id: item.id, title: item.title });
   }
 
   function hideTechniqueDetail() {
@@ -9365,6 +9369,7 @@ var _introPlayedThisSession = false;
     detail.classList.add('active');
     updateFab();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    track('meditation_opened', { practice_id: item.id, title: item.title });
   }
 
   function hideMeditationDetail() {
@@ -9436,6 +9441,7 @@ var _introPlayedThisSession = false;
   }
 
   function onLibPillClick(tab) {
+    track('filter_used', { filter: tab });
     onLibTypeChange(tab);
   }
 
@@ -9859,12 +9865,17 @@ var _introPlayedThisSession = false;
     _resetLibPages();
     renderLibrary();
   }
+  let _libSearchDebounce;
   function onLibSearch() {
     const input = document.getElementById('lib-search-input');
     libUiState.search = input.value;
     updateLibrarySearchUi();
     _resetLibPages();
     renderLibraryAllPanels();
+    clearTimeout(_libSearchDebounce);
+    _libSearchDebounce = setTimeout(() => {
+      if (libUiState.search.trim()) track('search_performed', { query: libUiState.search.trim() });
+    }, 500);
   }
   function clearLibSearch() {
     const input = document.getElementById('lib-search-input');
@@ -9895,27 +9906,30 @@ var _introPlayedThisSession = false;
     _syncLibPills();
     _resetLibPages();
     renderLibraryAllPanels();
+    track('knowledge_tab_viewed', { tab });
   }
 
   /* ─── Book detail ─── */
   /* ─── Buy options renderer ─── */
   function renderBuyOptions(book) {
+    const bookId = slug(book.title);
     if (book.buyOptions && book.buyOptions.length) {
       const opts = book.buyOptions.map((opt, i) => {
         const isBundle = !!opt.includes;
         const bundleId = `bundle-covers-${slug(book.title)}-${i}`;
+        const linkType = i === 0 ? 'primary' : 'bundle_' + i;
         return `<div class="buy-option">
           ${isBundle ? `<div class="bundle-covers" id="${escapeHtml(bundleId)}">
             ${opt.includes.split(', ').map(() => `<div class="bundle-cover-slot"></div>`).join('')}
           </div>` : ''}
-          <a class="buy-btn ${i === 0 ? 'buy-btn-primary' : 'buy-btn-outline'}" href="${escapeHtml(opt.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(opt.label)}</a>
+          <a class="buy-btn ${i === 0 ? 'buy-btn-primary' : 'buy-btn-outline'}" href="${escapeHtml(opt.url)}" target="_blank" rel="noopener noreferrer" onclick="track('affiliate_click',{book_id:'${bookId}',link_type:'${linkType}'})">${escapeHtml(opt.label)}</a>
           ${opt.includes ? `<div class="buy-includes">Includes: ${escapeHtml(opt.includes)}</div>` : ''}
         </div>`;
       }).join('');
       return `<div class="book-buy-section"><h3 class="detail-section-heading">Get This Book</h3><div class="buy-options">${opts}</div></div>`;
     }
     if (book.amazonUrl) {
-      return `<div class="book-buy-section"><h3 class="detail-section-heading">Get This Book</h3><div class="buy-options"><div class="buy-option"><a class="buy-btn buy-btn-primary" href="${escapeHtml(book.amazonUrl)}" target="_blank" rel="noopener noreferrer">Buy on Amazon</a></div></div></div>`;
+      return `<div class="book-buy-section"><h3 class="detail-section-heading">Get This Book</h3><div class="buy-options"><div class="buy-option"><a class="buy-btn buy-btn-primary" href="${escapeHtml(book.amazonUrl)}" target="_blank" rel="noopener noreferrer" onclick="track('affiliate_click',{book_id:'${bookId}',link_type:'primary'})">Buy on Amazon</a></div></div></div>`;
     }
     return '';
   }
@@ -9953,7 +9967,7 @@ var _introPlayedThisSession = false;
           <span class="special-buy-badge">Special Buy</span>
         </div>
         <div class="singing-bowl-desc">A beginner-friendly meditation bowl with cushion, mallet and case. Used for centuries to deepen meditation practice.</div>
-        <a class="buy-btn buy-btn-primary" href="https://amzn.to/430VnM6" target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
+        <a class="buy-btn buy-btn-primary" href="https://amzn.to/430VnM6" target="_blank" rel="noopener noreferrer" onclick="track('affiliate_click',{book_id:'singing-bowl',link_type:'primary'})">Buy on Amazon</a>
       </div>
     </div>`;
   }
@@ -10159,6 +10173,7 @@ var _introPlayedThisSession = false;
     _setBackLabel('Back to Podcasts');
     store.openedPodcast = (store.openedPodcast || 0) + 1;
     saveStore(store); checkAchievements();
+    track('podcast_opened', { podcast_id: slugId, title: podcast.name });
     libUiState.detail = { kind: 'podcast', id: slugId, sourceTab: 'podcasts' };
     document.getElementById('library-list').style.display = 'none';
     const det = document.getElementById('library-detail');
@@ -10352,6 +10367,7 @@ Include any safety notes briefly where relevant. End with one or two sentences o
         start_date: store.plan.startDate
       }
     });
+    track('plan_created', {});
 
     // Switch to result view
     document.getElementById('plan-form-wrap').style.display = 'none';
@@ -10857,6 +10873,7 @@ Build my personalised plan.`;
         completed_at: now
       }
     });
+    track('session_completed', { kind, practice_id: practiceId });
     showToast({ icon: '🙏', label: 'Session saved', autohide: 2200 });
     checkAchievements();
 
@@ -10948,6 +10965,7 @@ Build my personalised plan.`;
           type: 'achievement',
           data: { achievement_id: a.id, unlocked_at: store.achievements[a.id] }
         });
+        track('achievement_unlocked', { achievement_id: a.id });
         showToast({
           icon: a.icon,
           kicker: 'Achievement unlocked',
@@ -12206,6 +12224,7 @@ Build my personalised plan.`;
       auth.tier     = data.user.tier || 'free';
       store.hasAccount = 1;
       saveStore(store); checkAchievements();
+      track(_authTab === 'signup' ? 'account_created' : 'login', {});
       closeAuthModal();
       updateAuthUi();
       // Refresh profile if user is currently viewing it
@@ -12353,6 +12372,20 @@ Build my personalised plan.`;
     } catch (e) { /* ignore — pass response through unchanged */ }
     return res;
   };
+
+  /* ════════════════ TRACKING ════════════════ */
+
+  const _appSessionId = Math.random().toString(36).slice(2);
+
+  function track(eventType, eventData = {}) {
+    if (!auth.loggedIn) return;
+    fetch('/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ event_type: eventType, event_data: eventData, session_id: _appSessionId })
+    }).catch(() => {});
+  }
 
   /* ════════════════ SYNC ENGINE ════════════════ */
 

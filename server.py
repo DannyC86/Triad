@@ -28,6 +28,7 @@ Auth model:
 """
 
 import os
+import json
 import sqlite3
 import secrets
 from datetime import datetime
@@ -167,6 +168,19 @@ def init_db():
             updated_at    TEXT    NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
+
+        CREATE TABLE IF NOT EXISTS user_events (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id    INTEGER NOT NULL,
+            email      TEXT    NOT NULL,
+            event_type TEXT    NOT NULL,
+            event_data TEXT,
+            session_id TEXT,
+            created_at TEXT    NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_user_events_user ON user_events(user_id);
+        CREATE INDEX IF NOT EXISTS idx_user_events_type ON user_events(event_type);
         """
     )
     conn.commit()
@@ -696,6 +710,142 @@ def admin_users():
     db = get_db()
     users = db.execute('SELECT id, email, tier, created_at FROM users ORDER BY created_at DESC').fetchall()
     return {'users': [dict(u) for u in users]}
+
+
+@app.route("/admin/events")
+def admin_events():
+    password = request.args.get('key', '')
+    if password != os.getenv('ADMIN_KEY', ''):
+        return {'error': 'unauthorised'}, 401
+    db = get_db()
+    email_filter = request.args.get('email', '')
+    event_filter = request.args.get('event', '')
+    limit = min(int(request.args.get('limit', 100) or 100), 1000)
+
+    conditions, params = [], []
+    if email_filter:
+        conditions.append('email = ?')
+        params.append(email_filter)
+    if event_filter:
+        conditions.append('event_type = ?')
+        params.append(event_filter)
+    where = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
+
+    total = db.execute(f'SELECT COUNT(*) FROM user_events {where}', params).fetchone()[0]
+    params.append(limit)
+    events = db.execute(
+        f'SELECT email, event_type, event_data, session_id, created_at FROM user_events {where} ORDER BY created_at DESC LIMIT ?',
+        params
+    ).fetchall()
+    return {'total': total, 'events': [dict(e) for e in events]}
+
+
+@app.route("/admin/summary")
+def admin_summary():
+    password = request.args.get('key', '')
+    if password != os.getenv('ADMIN_KEY', ''):
+        return {'error': 'unauthorised'}, 401
+    db = get_db()
+    today = datetime.utcnow().date().isoformat()
+
+    total_users           = db.execute('SELECT COUNT(*) FROM users').fetchone()[0]
+    total_events          = db.execute('SELECT COUNT(*) FROM user_events').fetchone()[0]
+    events_today          = db.execute('SELECT COUNT(*) FROM user_events WHERE created_at >= ?', (today,)).fetchone()[0]
+    sessions_completed    = db.execute("SELECT COUNT(*) FROM user_events WHERE event_type='session_completed'").fetchone()[0]
+    achievements_unlocked = db.execute("SELECT COUNT(*) FROM user_events WHERE event_type='achievement_unlocked'").fetchone()[0]
+    plans_created         = db.execute("SELECT COUNT(*) FROM user_events WHERE event_type='plan_created'").fetchone()[0]
+    searches_performed    = db.execute("SELECT COUNT(*) FROM user_events WHERE event_type='search_performed'").fetchone()[0]
+
+    # Aggregate practice counts from JSON event_data
+    session_rows = db.execute("SELECT event_data FROM user_events WHERE event_type='session_completed'").fetchall()
+    tech_counts, medit_counts = {}, {}
+    for row in session_rows:
+        try:
+            d = json.loads(row['event_data'] or '{}')
+            pid = d.get('practice_id', '')
+            if d.get('kind') == 'technique':
+                tech_counts[pid] = tech_counts.get(pid, 0) + 1
+            elif d.get('kind') == 'meditation':
+                medit_counts[pid] = medit_counts.get(pid, 0) + 1
+        except Exception:
+            pass
+    top_techniques  = sorted([{'practice_id': k, 'count': v} for k, v in tech_counts.items()],  key=lambda x: -x['count'])[:10]
+    top_meditations = sorted([{'practice_id': k, 'count': v} for k, v in medit_counts.items()], key=lambda x: -x['count'])[:10]
+
+    book_rows = db.execute("SELECT event_data FROM user_events WHERE event_type='library_item_opened'").fetchall()
+    book_counts = {}
+    for row in book_rows:
+        try:
+            d = json.loads(row['event_data'] or '{}')
+            if d.get('type') == 'book':
+                bid = d.get('id', '')
+                book_counts[bid] = book_counts.get(bid, 0) + 1
+        except Exception:
+            pass
+    top_books = sorted([{'book_id': k, 'count': v} for k, v in book_counts.items()], key=lambda x: -x['count'])[:10]
+
+    aff_rows = db.execute("SELECT event_data FROM user_events WHERE event_type='affiliate_click'").fetchall()
+    aff_counts = {}
+    for row in aff_rows:
+        try:
+            d = json.loads(row['event_data'] or '{}')
+            key = (d.get('book_id', ''), d.get('link_type', ''))
+            aff_counts[key] = aff_counts.get(key, 0) + 1
+        except Exception:
+            pass
+    top_affiliate_clicks = sorted(
+        [{'book_id': k[0], 'link_type': k[1], 'count': v} for k, v in aff_counts.items()],
+        key=lambda x: -x['count']
+    )[:10]
+
+    most_active_users = db.execute(
+        'SELECT email, COUNT(*) as event_count FROM user_events GROUP BY user_id ORDER BY event_count DESC LIMIT 10'
+    ).fetchall()
+
+    daily_active_users_7days = db.execute(
+        """SELECT date(created_at) as date, COUNT(DISTINCT user_id) as count
+           FROM user_events WHERE created_at >= date('now','-6 days')
+           GROUP BY date(created_at) ORDER BY date"""
+    ).fetchall()
+
+    return {
+        'total_users':              total_users,
+        'total_events':             total_events,
+        'events_today':             events_today,
+        'top_techniques':           top_techniques,
+        'top_meditations':          top_meditations,
+        'top_books':                top_books,
+        'top_affiliate_clicks':     top_affiliate_clicks,
+        'most_active_users':        [dict(u) for u in most_active_users],
+        'sessions_completed':       sessions_completed,
+        'achievements_unlocked':    achievements_unlocked,
+        'plans_created':            plans_created,
+        'searches_performed':       searches_performed,
+        'daily_active_users_7days': [dict(d) for d in daily_active_users_7days],
+    }
+
+
+@app.route("/track", methods=["POST"])
+@login_required
+def track_event():
+    try:
+        data = request.get_json(silent=True) or {}
+        event_type = str(data.get('event_type', ''))
+        event_data = data.get('event_data', {})
+        session_id = str(data.get('session_id', ''))
+        if not event_type:
+            return {'success': True}
+        db = get_db()
+        db.execute(
+            'INSERT INTO user_events (user_id, email, event_type, event_data, session_id, created_at) VALUES (?,?,?,?,?,?)',
+            (current_user.id, current_user.email, event_type,
+             json.dumps(event_data) if event_data else None,
+             session_id, datetime.utcnow().isoformat())
+        )
+        db.commit()
+    except Exception:
+        pass
+    return {'success': True}
 
 
 # ─────────────────────────── Routes — AI ───────────────────────────
