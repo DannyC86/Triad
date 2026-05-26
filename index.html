@@ -1913,6 +1913,29 @@
     .acc-settings-link { padding: 12px 0 4px; }
     .acc-settings-link a { font-size: 0.85rem; color: var(--text-muted); cursor: pointer; text-decoration: none; border-bottom: 1px solid var(--border-soft); padding-bottom: 2px; transition: color 0.18s; }
     .acc-settings-link a:hover { color: var(--text); }
+    .acc-settings-link--danger a { color: #c0392b; border-bottom-color: rgba(192, 57, 43, 0.25); }
+    .acc-settings-link--danger a:hover { color: #e74c3c; }
+
+    /* Offline indicator pill */
+    #offline-pill {
+      position: fixed;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20,20,30,0.88);
+      color: rgba(255,255,255,0.82);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      padding: 7px 16px;
+      border-radius: 999px;
+      z-index: 500;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s;
+      white-space: nowrap;
+    }
+    #offline-pill.visible { opacity: 1; }
     /* profile-plan inside accordion: remove its own outer card styling */
     #acc-plan .profile-plan { background: none; border: none; padding: 0; margin-bottom: 14px; }
 
@@ -5118,6 +5141,9 @@ var _introPlayedThisSession = false;
           <div class="acc-settings-link">
             <a onclick="openPrivacyModal()">Privacy &amp; Legal</a>
           </div>
+          <div class="acc-settings-link acc-settings-link--danger" data-auth-required>
+            <a onclick="openDeleteAccountModal()">Delete My Account &amp; Data</a>
+          </div>
         </div>
       </div>
     </div>
@@ -5469,6 +5495,24 @@ var _introPlayedThisSession = false;
   </div>
 </div>
 
+<!-- ═════════ Delete account modal ═════════ -->
+<div class="modal-backdrop" id="deleteAccountModal" onclick="if(event.target===this) closeDeleteAccountModal()">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <span class="modal-title">Delete account?</span>
+      </div>
+    </div>
+    <div class="modal-body" style="padding: 20px 18px 24px;">
+      <p style="color: var(--text-soft); font-size: 0.95rem; line-height: 1.65; margin: 0 0 22px;">This will permanently delete your account and all data. This cannot be undone.</p>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="action-btn" style="width:100%; justify-content:center; background:#c0392b; border-color:#c0392b; color:#fff;" onclick="confirmDeleteAccount()">Delete everything</button>
+        <button class="action-btn secondary" style="width:100%; justify-content:center;" onclick="closeDeleteAccountModal()">Keep my account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═════════ Paywall modal ═════════ -->
 <div class="modal-backdrop" id="paywallModal" onclick="if(event.target===this) closePaywallModal()">
   <div class="modal" style="max-width: 420px;">
@@ -5524,6 +5568,9 @@ var _introPlayedThisSession = false;
 
 <!-- ═════════ Usage toast region (bottom-right) ═════════ -->
 <div class="usage-toast-region" id="usage-toast-region"></div>
+
+<!-- ═════════ Offline indicator ═════════ -->
+<div id="offline-pill">Offline — your progress is saved locally</div>
 
 <!-- ═════════ Top Header ═════════ -->
 <header class="top-header" id="top-header">
@@ -10188,6 +10235,13 @@ Include any safety notes briefly where relevant. End with one or two sentences o
     store.plan = { startDate: now, totalDays: 30, generatedAt: now };
     store.plansGenerated = (store.plansGenerated || 0) + 1;
     saveStore(store);
+    queueSync({
+      type: 'plan',
+      data: {
+        plan_data: JSON.stringify(store.plan),
+        start_date: store.plan.startDate
+      }
+    });
 
     // Switch to result view
     document.getElementById('plan-form-wrap').style.display = 'none';
@@ -10683,6 +10737,16 @@ Build my personalised plan.`;
     });
     updateStreakOnComplete();
     saveStore(store);
+    queueSync({
+      type: 'session',
+      data: {
+        kind,
+        practice_id: practiceId,
+        practice_title: item.title,
+        duration_minutes: durationMinutes(item),
+        completed_at: now
+      }
+    });
     showToast({ icon: '🙏', label: 'Session saved', autohide: 2200 });
     checkAchievements();
 
@@ -10770,6 +10834,10 @@ Build my personalised plan.`;
         // The UI shows them locked with a padlock until tier flips.
         if (a.tier === 'pro' && store.tier !== 'pro') return;
         store.achievements[a.id] = new Date().toISOString();
+        queueSync({
+          type: 'achievement',
+          data: { achievement_id: a.id, unlocked_at: store.achievements[a.id] }
+        });
         showToast({
           icon: a.icon,
           kicker: 'Achievement unlocked',
@@ -11601,6 +11669,14 @@ Build my personalised plan.`;
     const current = store.readingList[title];
     store.readingList[title] = current === 'read' ? 'unread' : 'read';
     saveStore(store);
+    queueSync({
+      type: 'reading',
+      data: {
+        book_id: slug(title),
+        marked_read: store.readingList[title] === 'read' ? 1 : 0,
+        added_at: new Date().toISOString()
+      }
+    });
     checkAchievements();
     renderProfile();
   }
@@ -11663,6 +11739,10 @@ Build my personalised plan.`;
     html.setAttribute('data-theme', next);
     localStorage.setItem('triad:theme', next);
     updateThemeToggle();
+    queueSync({
+      type: 'preferences',
+      data: { theme: next, sound_enabled: _audioEnabled ? 1 : 0 }
+    });
   }
 
   function updateThemeToggle() {
@@ -11789,6 +11869,7 @@ Build my personalised plan.`;
     }
     auth.ready = true;
     updateAuthUi();
+    if (auth.loggedIn) syncFromServer().then(() => flushSyncQueue());
   }
 
   /* ─── Profile-icon click router ─── */
@@ -12162,6 +12243,174 @@ Build my personalised plan.`;
     } catch (e) { /* ignore — pass response through unchanged */ }
     return res;
   };
+
+  /* ════════════════ SYNC ENGINE ════════════════ */
+
+  let _isOnline = navigator.onLine;
+  window.addEventListener('online',  () => { _isOnline = true;  _setOfflinePill(false); flushSyncQueue(); });
+  window.addEventListener('offline', () => { _isOnline = false; _setOfflinePill(true); });
+
+  function _setOfflinePill(show) {
+    document.getElementById('offline-pill')?.classList.toggle('visible', show);
+  }
+
+  let _syncQueue = JSON.parse(localStorage.getItem('triad:syncQueue') || '[]');
+
+  function queueSync(action) {
+    _syncQueue.push({ ...action, queuedAt: new Date().toISOString() });
+    localStorage.setItem('triad:syncQueue', JSON.stringify(_syncQueue));
+    if (_isOnline) flushSyncQueue();
+  }
+
+  async function flushSyncQueue() {
+    if (!_syncQueue.length || !auth.loggedIn) return;
+    const queue = [..._syncQueue];
+    _syncQueue = [];
+    localStorage.setItem('triad:syncQueue', '[]');
+    for (const action of queue) {
+      try {
+        await sendToServer(action);
+      } catch {
+        _syncQueue.push(action);
+      }
+    }
+    localStorage.setItem('triad:syncQueue', JSON.stringify(_syncQueue));
+  }
+
+  async function sendToServer(action) {
+    const endpoints = {
+      session:     '/user/session',
+      achievement: '/user/achievement',
+      reading:     '/user/reading',
+      plan:        '/user/plan',
+      preferences: '/user/preferences'
+    };
+    const url = endpoints[action.type];
+    if (!url) return;
+    const res = await fetch(url, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(action.data)
+    });
+    if (!res.ok) throw new Error('Server error ' + res.status);
+  }
+
+  async function syncFromServer() {
+    if (!auth.loggedIn || !_isOnline) return;
+    try {
+      const res = await fetch('/user/data', { credentials: 'same-origin' });
+      if (!res.ok) return;
+      const data = await res.json();
+      mergeServerData(data);
+    } catch { /* silent fail — continue with local data */ }
+  }
+
+  function mergeServerData(serverData) {
+    // Sessions — merge, deduplicate by ts + practiceId
+    if (serverData.sessions && serverData.sessions.length) {
+      const existing = new Set(
+        (store.sessions || []).map(s => s.ts + '|' + s.practiceId)
+      );
+      const newSessions = serverData.sessions
+        .filter(s => !existing.has(s.completed_at + '|' + s.practice_id))
+        .map(s => ({
+          id: 's_' + Math.random().toString(36).substr(2, 9),
+          kind: s.kind,
+          practiceId: s.practice_id,
+          practiceTitle: s.practice_title,
+          durationMin: s.duration_minutes,
+          ts: s.completed_at
+        }));
+      store.sessions = [...(store.sessions || []), ...newSessions];
+    }
+
+    // Achievements — store.achievements is {id: timestamp}
+    if (serverData.achievements && serverData.achievements.length) {
+      store.achievements = store.achievements || {};
+      serverData.achievements.forEach(a => {
+        if (!store.achievements[a.achievement_id]) {
+          store.achievements[a.achievement_id] = a.unlocked_at;
+        }
+      });
+    }
+
+    // Streaks — take the higher values
+    if (serverData.streaks && serverData.streaks.user_id) {
+      store.streak = store.streak || {};
+      store.streak.current = Math.max(
+        store.streak.current || 0, serverData.streaks.current_streak || 0
+      );
+      store.streak.longest = Math.max(
+        store.streak.longest || 0, serverData.streaks.longest_streak || 0
+      );
+      if (serverData.streaks.last_session_date) {
+        store.streak.lastDate = serverData.streaks.last_session_date;
+      }
+    }
+
+    // Reading list — store.readingList is {bookTitle: 'read'|'unread'}
+    if (serverData.reading_list && serverData.reading_list.length) {
+      store.readingList = store.readingList || {};
+      serverData.reading_list.forEach(r => {
+        const book = LIBRARY.books.find(b => slug(b.title) === r.book_id);
+        if (book && !store.readingList[book.title]) {
+          store.readingList[book.title] = r.marked_read ? 'read' : 'unread';
+        }
+      });
+    }
+
+    // Plan — server wins if local is absent or server is newer
+    if (serverData.plan && serverData.plan.plan_data) {
+      try {
+        const serverPlan = JSON.parse(serverData.plan.plan_data);
+        if (!store.plan || serverData.plan.updated_at > (store.planUpdatedAt || '')) {
+          store.plan = serverPlan;
+          store.planUpdatedAt = serverData.plan.updated_at;
+        }
+      } catch { /* ignore malformed */ }
+    }
+
+    // Preferences — server wins
+    if (serverData.preferences && serverData.preferences.updated_at) {
+      if (serverData.preferences.theme) {
+        const theme = serverData.preferences.theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('triad:theme', theme);
+        updateThemeToggle();
+      }
+      if (serverData.preferences.sound_enabled !== undefined) {
+        _audioEnabled = !!serverData.preferences.sound_enabled;
+      }
+    }
+
+    saveStore(store);
+  }
+
+  /* ─── Delete account ─── */
+  function openDeleteAccountModal()  { document.getElementById('deleteAccountModal').classList.add('active'); }
+  function closeDeleteAccountModal() { document.getElementById('deleteAccountModal').classList.remove('active'); }
+
+  async function confirmDeleteAccount() {
+    closeDeleteAccountModal();
+    try {
+      await fetch('/user/data', { method: 'DELETE', credentials: 'same-origin' });
+      await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    } catch { /* continue regardless */ }
+    // Wipe all local state
+    localStorage.removeItem(STORE_KEY);
+    localStorage.removeItem('triad:syncQueue');
+    localStorage.removeItem('triad:theme');
+    localStorage.removeItem('triad:audio');
+    auth.loggedIn = false;
+    auth.email = null;
+    auth.tier = 'free';
+    store = initStore();
+    saveStore(store);
+    updateAuthUi();
+    navigate('home');
+    showToast({ icon: '👋', label: 'Account deleted', autohide: 3000 });
+  }
 
   /* ════════════════ INIT ════════════════ */
 
