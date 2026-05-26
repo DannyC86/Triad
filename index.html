@@ -1256,6 +1256,9 @@
     }
     .sess-countdown-digit { font-family: 'Cormorant Garamond', serif; font-size: 6rem; font-weight: 300; color: #C9A96E; }
     .sess-countdown-digit.animating { animation: sessCountAnim 0.95s ease-out forwards; }
+    /* Quit modal must sit above session overlay (z-index 300) */
+    #quitSessionModal { z-index: 400; }
+    #quitSessionModal .action-btn { min-height: 44px; }
     /* Completion screen */
     .session-complete {
       display: none; flex-direction: column; align-items: center; justify-content: center;
