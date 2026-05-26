@@ -477,6 +477,37 @@
     .detail-view { display: none; }
     .detail-view.active { display: block; animation: section-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
 
+    /* ─── Sticky back bar (shown on all detail pages) ─── */
+    .sticky-back-bar {
+      position: fixed;
+      top: 52px;
+      left: 0;
+      right: 0;
+      height: 44px;
+      z-index: 40;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.18s;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+    .sticky-back-bar.visible { display: flex; }
+    .sticky-back-bar:hover { color: var(--text); }
+    .sticky-back-bar svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* Push technique/meditation detail content below sticky back bar */
+    #techniques-detail.active, #meditate-detail.active { padding-top: 44px; }
+
     .back-btn {
       background: transparent;
       border: none;
@@ -2539,10 +2570,10 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 14px 28px;
+      padding: 12px 24px;
       border-radius: 999px;
       font-family: inherit;
-      font-size: 1rem;
+      font-size: 0.94rem;
       font-weight: 600;
       letter-spacing: 0.02em;
       cursor: pointer;
@@ -5246,6 +5277,24 @@ var _introPlayedThisSession = false;
   </div>
 </div>
 
+<!-- ═════════ Quit session modal ═════════ -->
+<div class="modal-backdrop" id="quitSessionModal" onclick="if(event.target===this) closeQuitModal()">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <span class="modal-title">End your session?</span>
+      </div>
+    </div>
+    <div class="modal-body" style="padding: 20px 18px 24px;">
+      <p style="color: var(--text-soft); font-size: 0.95rem; line-height: 1.65; margin: 0 0 22px;">You're partway through. Take a breath — are you sure you want to stop?</p>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="action-btn primary" style="width: 100%; justify-content: center;" onclick="closeQuitModal()">Continue Breathing</button>
+        <button class="action-btn secondary" style="width: 100%; justify-content: center;" onclick="closeQuitModal(); sessionCancel();">End Session</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═════════ Paywall modal ═════════ -->
 <div class="modal-backdrop" id="paywallModal" onclick="if(event.target===this) closePaywallModal()">
   <div class="modal" style="max-width: 420px;">
@@ -5322,6 +5371,12 @@ var _introPlayedThisSession = false;
     </button>
   </div>
 </header>
+
+<!-- ═════════ Sticky back bar ═════════ -->
+<button class="sticky-back-bar" id="sticky-back-bar" onclick="_navBack()" aria-label="Go back">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  Back
+</button>
 
 <!-- ═════════ Bottom Nav ═════════ -->
 <nav class="nav">
@@ -7513,6 +7568,38 @@ var _introPlayedThisSession = false;
     planLoading: false
   };
 
+  /* ────── Navigation stack ────── */
+  let _navStack = [];
+
+  function _navPush(backFn) {
+    _navStack.push(backFn);
+    _updateStickyBack();
+  }
+
+  function _navBack() {
+    const fn = _navStack.pop();
+    _updateStickyBack();
+    if (fn) fn();
+  }
+
+  function _navClear() {
+    _navStack = [];
+    hideStickyBack();
+  }
+
+  function _updateStickyBack() {
+    if (_navStack.length) showStickyBack();
+    else hideStickyBack();
+  }
+
+  function showStickyBack() {
+    document.getElementById('sticky-back-bar')?.classList.add('visible');
+  }
+
+  function hideStickyBack() {
+    document.getElementById('sticky-back-bar')?.classList.remove('visible');
+  }
+
   /* ────── Persistent gamification store (localStorage) ────── */
   const STORE_KEY = 'triad:v1';
 
@@ -7744,6 +7831,7 @@ var _introPlayedThisSession = false;
   function navigate(target, opts = {}) {
     if (!['home', 'techniques', 'meditate', 'library', 'plan', 'profile'].includes(target)) return;
     _introPlayedThisSession = true;
+    if (!opts.keepDetail) _navClear();
 
     // Hide all sections, deactivate nav
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -8683,9 +8771,18 @@ var _introPlayedThisSession = false;
 
   function sessionConfirmClose() {
     if (_sess.running || _sess.paused || _sess.countdown) {
-      if (!confirm('End this session early?')) return;
+      openQuitModal();
+      return;
     }
     sessionCancel();
+  }
+
+  function openQuitModal() {
+    document.getElementById('quitSessionModal').classList.add('active');
+  }
+
+  function closeQuitModal() {
+    document.getElementById('quitSessionModal').classList.remove('active');
   }
 
   function sessionEditCycles() {
@@ -8829,6 +8926,7 @@ var _introPlayedThisSession = false;
   function showTechniqueDetail(id) {
     const item = TECHNIQUES.find(t => t.id === id);
     if (!item) return;
+    _navPush(hideTechniqueDetail);
     state.techniqueId = id;
     state.askContext = { kind: 'technique', id, item };
     document.getElementById('techniques-list').style.display = 'none';
@@ -8840,6 +8938,7 @@ var _introPlayedThisSession = false;
   }
 
   function hideTechniqueDetail() {
+    _navClear();
     state.techniqueId = null;
     if (state.askContext?.kind === 'technique') state.askContext = null;
     document.getElementById('techniques-list').style.display = '';
@@ -8850,6 +8949,7 @@ var _introPlayedThisSession = false;
   function showMeditationDetail(id) {
     const item = MEDITATIONS.find(m => m.id === id);
     if (!item) return;
+    _navPush(hideMeditationDetail);
     state.meditationId = id;
     state.askContext = { kind: 'meditation', id, item };
     document.getElementById('meditate-list').style.display = 'none';
@@ -8861,6 +8961,7 @@ var _introPlayedThisSession = false;
   }
 
   function hideMeditationDetail() {
+    _navClear();
     state.meditationId = null;
     if (state.askContext?.kind === 'meditation') state.askContext = null;
     document.getElementById('meditate-list').style.display = '';
@@ -9318,6 +9419,7 @@ var _introPlayedThisSession = false;
   /* ─── Book detail ─── */
   function showBookDetail(book) {
     if (!book) return;
+    _navPush(hideLibraryDetail);
     libUiState.detail = { kind: 'book', id: slug(book.title) };
     document.getElementById('library-list').style.display = 'none';
     const detail = document.getElementById('library-detail');
@@ -9406,6 +9508,7 @@ var _introPlayedThisSession = false;
   /* ─── Person detail ─── */
   function showPersonDetail(person) {
     if (!person) return;
+    _navPush(hideLibraryDetail);
     libUiState.detail = { kind: 'person', id: slug(person.name) };
     document.getElementById('library-list').style.display = 'none';
     const detail = document.getElementById('library-detail');
@@ -9506,6 +9609,7 @@ var _introPlayedThisSession = false;
   }
 
   function hideLibraryDetail() {
+    _navClear();
     const prevTab = (libUiState.detail && libUiState.detail.sourceTab) || libUiState.tab;
     libUiState.detail = null;
     document.getElementById('library-list').style.display = '';
@@ -9518,6 +9622,7 @@ var _introPlayedThisSession = false;
   function showPodcastDetail(slugId) {
     const podcast = LIBRARY.podcasts.find(p => slug(p.name) === slugId);
     if (!podcast) return;
+    _navPush(hideLibraryDetail);
     store.openedPodcast = (store.openedPodcast || 0) + 1;
     saveStore(store); checkAchievements();
     libUiState.detail = { kind: 'podcast', id: slugId, sourceTab: 'podcasts' };
@@ -9575,6 +9680,7 @@ var _introPlayedThisSession = false;
     const item    = kind === 'meditation' ? MEDITATIONS.find(m => m.id === id) : TECHNIQUES.find(t => t.id === id);
     const details = kind === 'meditation' ? MEDITATION_DETAILS[id] : TECHNIQUE_DETAILS[id];
     if (!item || !details) return;
+    _navPush(hideLibraryDetail);
     const sourceTab = kind === 'meditation' ? 'meditations' : 'breathwork';
     libUiState.detail = { kind: 'practice', id, sourceTab };
     document.getElementById('library-list').style.display = 'none';
