@@ -1618,6 +1618,43 @@
     .achievement--mystery.revealed .achievement-name,
     .achievement--mystery.revealed .achievement-state { opacity: 1; }
 
+    /* Unlocked achievement tap-to-reveal hint */
+    .achievement.unlocked { cursor: pointer; }
+    .achievement-tooltip {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      background: var(--navy-card);
+      border: 1px solid rgba(201, 169, 110, 0.4);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      color: var(--text);
+      text-align: center;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    }
+    .achievement.unlocked.tooltip-open .achievement-tooltip { opacity: 1; }
+
+    /* Guest flat achievements block */
+    .guest-achievements-block { margin-bottom: 24px; }
+    .guest-achievements-head {
+      font-size: 0.6rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    #guest-achievements-grid .achievements-row { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 480px) { #guest-achievements-grid .achievements-row { grid-template-columns: repeat(4, 1fr); } }
+
     /* Tier toggle button */
     .tier-toggle {
       display: flex;
@@ -1869,7 +1906,7 @@
     .acc-chevron { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; transition: transform 0.25s ease; }
     .acc-btn.open .acc-chevron { transform: rotate(180deg); }
     .accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.38s ease; }
-    .accordion-body.open { max-height: 5000px; }
+    .accordion-body.open { max-height: 5000px; overflow: visible; }
     .acc-inner { padding: 14px 2px 8px; }
     .acc-badge { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--text-muted) 14%, transparent); color: var(--text-muted); flex-shrink: 0; }
     .acc-badge--active { background: color-mix(in srgb, var(--gold) 18%, transparent); color: var(--gold); }
@@ -1936,8 +1973,8 @@
     .profile--guest [data-guest-only] { display: block !important; }
     .profile--guest [data-auth-required] { display: none !important; }
     .profile--guest #profile-account-header { display: none !important; }
-    /* Hide pro-tier achievements row in guest mode */
-    .profile--guest #achievements-section .achievement-tier ~ .achievement-tier { display: none !important; }
+    /* Hide achievements accordion for guests — replaced by flat guest block */
+    .profile--guest #achievements-accordion-wrap { display: none !important; }
     /* Guest CTA button */
     .profile-guest-cta { display: block; width: 100%; padding: 14px 20px; background: var(--gold); color: #1a1a2e; border: none; border-radius: 12px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; text-align: center; margin-bottom: 20px; transition: background 0.18s, transform 0.12s; }
     .profile-guest-cta:hover { background: #d4b07a; transform: translateY(-1px); }
@@ -4959,6 +4996,12 @@ var _introPlayedThisSession = false;
     <!-- Guest CTA -->
     <button class="profile-guest-cta" data-guest-only onclick="openAuthModal('signup')">Log In / Sign Up</button>
 
+    <!-- Guest flat achievements (no accordion — replaces accordion for guest view) -->
+    <div class="guest-achievements-block" data-guest-only>
+      <div class="guest-achievements-head">Achievements</div>
+      <div id="guest-achievements-grid"></div>
+    </div>
+
     <!-- 3. FAVOURITE PRACTICE (logged-in, always visible) -->
     <div id="profile-favourite-block" data-auth-required></div>
 
@@ -4997,8 +5040,8 @@ var _introPlayedThisSession = false;
       </div>
     </div>
 
-    <!-- 6. ACHIEVEMENTS accordion (no data-auth-required — guests can see free tier) -->
-    <div class="acc-wrap">
+    <!-- 6. ACHIEVEMENTS accordion (logged-in only; guests see flat block above) -->
+    <div class="acc-wrap" id="achievements-accordion-wrap">
       <button class="acc-btn" onclick="toggleAccordion('acc-achievements')">
         <span>Achievements</span>
         <span class="acc-badge" id="achievement-count">0/15</span>
@@ -11036,10 +11079,11 @@ Build my personalised plan.`;
       const unlocked = trulyUnlocked(a);
       if (unlocked) {
         return `
-          <div class="achievement unlocked" title="${escapeHtml(a.hint)}">
+          <div class="achievement unlocked" onclick="toggleUnlockedAchievement(this)">
             <span class="achievement-icon">${a.icon}</span>
             <div class="achievement-name">${escapeHtml(a.name)}</div>
             <div class="achievement-state">Unlocked</div>
+            <div class="achievement-tooltip">${escapeHtml(a.icon)} ${escapeHtml(a.name)} — ${escapeHtml(a.hint)}</div>
           </div>`;
       }
       return `
@@ -11068,6 +11112,10 @@ Build my personalised plan.`;
         ${renderRow(proList)}
       </div>
     `;
+
+    // Populate the guest flat achievements grid (visible without accordion for guest users)
+    const guestGrid = document.getElementById('guest-achievements-grid');
+    if (guestGrid) guestGrid.innerHTML = renderRow(guestList);
 
     /* ─── Completion grids ─── */
     const completed = _completedPracticeIds(store);
@@ -12148,9 +12196,19 @@ Build my personalised plan.`;
     if (!wasRevealed) el.classList.add('revealed');
   }
 
+  /* ─── Unlocked achievement tap-to-show hint ─── */
+  function toggleUnlockedAchievement(el) {
+    const wasOpen = el.classList.contains('tooltip-open');
+    document.querySelectorAll('.achievement.unlocked.tooltip-open').forEach(a => a.classList.remove('tooltip-open'));
+    if (!wasOpen) el.classList.add('tooltip-open');
+  }
+
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.achievement--mystery')) {
       document.querySelectorAll('.achievement--mystery.revealed').forEach(el => el.classList.remove('revealed'));
+    }
+    if (!e.target.closest('.achievement.unlocked')) {
+      document.querySelectorAll('.achievement.unlocked.tooltip-open').forEach(el => el.classList.remove('tooltip-open'));
     }
   });
 </script>
