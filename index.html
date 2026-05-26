@@ -508,22 +508,6 @@
     /* Push technique/meditation detail content below sticky back bar */
     #techniques-detail.active, #meditate-detail.active { padding-top: 44px; }
 
-    .back-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      cursor: pointer;
-      padding: 4px 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 18px;
-      transition: color 0.2s ease;
-    }
-    .back-btn:hover { color: var(--accent, var(--teal)); }
-    .back-btn svg { width: 14px; height: 14px; fill: currentColor; }
-
     .detail-title {
       font-size: 1.7rem;
       font-weight: 400;
@@ -4183,33 +4167,6 @@
       text-shadow: 0 1px 6px rgba(0,0,0,0.4);
     }
     /* Floating back button inside hero */
-    .detail-back-floating {
-      position: absolute;
-      top: 16px; left: 16px;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0,0,0,0.38);
-      color: rgba(255,255,255,0.92);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 999px;
-      padding: 7px 14px 7px 10px;
-      font-family: inherit;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.18s;
-    }
-    .detail-back-floating:hover { background: rgba(0,0,0,0.58); }
-    .detail-back-floating svg {
-      width: 16px; height: 16px;
-      stroke: currentColor; fill: none;
-      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-    }
-
     /* Desktop hero: taller, rounded */
     @media (min-width: 768px) {
       .detail-hero {
@@ -5387,7 +5344,7 @@ var _introPlayedThisSession = false;
 <!-- ═════════ Sticky back bar ═════════ -->
 <button class="sticky-back-bar" id="sticky-back-bar" onclick="_navBack()" aria-label="Go back">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-  Back
+  <span id="sticky-back-label">Back</span>
 </button>
 
 <!-- ═════════ Bottom Nav ═════════ -->
@@ -7612,6 +7569,14 @@ var _introPlayedThisSession = false;
     document.getElementById('sticky-back-bar')?.classList.remove('visible');
   }
 
+  let _backLabel = 'Back';
+
+  function _setBackLabel(label) {
+    _backLabel = label;
+    const el = document.getElementById('sticky-back-label');
+    if (el) el.textContent = label;
+  }
+
   /* ────── Persistent gamification store (localStorage) ────── */
   const STORE_KEY = 'triad:v1';
 
@@ -7919,10 +7884,6 @@ var _introPlayedThisSession = false;
   function renderSimpleDetail(item, containerId, kind) {
     const container = document.getElementById(containerId);
     container.innerHTML = `
-      <button class="back-btn" onclick="${kind === 'technique' ? 'hideTechniqueDetail()' : 'hideMeditationDetail()'}">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back to ${kind === 'technique' ? 'techniques' : 'meditations'}
-      </button>
       <h1 class="detail-title">${escapeHtml(item.title)}</h1>
       <p class="detail-desc">${escapeHtml(item.desc)}</p>
       <div class="detail-meta">
@@ -7976,15 +7937,7 @@ var _introPlayedThisSession = false;
     const d = (kind === 'meditation' ? MEDITATION_DETAILS : TECHNIQUE_DETAILS)[item.id];
     const container = document.getElementById(containerId);
     const itemIdJs = item.id.replace(/'/g, "\\'");
-    const backFn = kind === 'meditation' ? 'hideMeditationDetail()' : 'hideTechniqueDetail()';
-    const backLabel = kind === 'meditation' ? 'Back to meditations' : 'Back to techniques';
-
     container.innerHTML = `
-      <button class="back-btn" onclick="${backFn}">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        ${backLabel}
-      </button>
-
       <h1 class="detail-title">${escapeHtml(item.title)}</h1>
       <p class="detail-desc">${escapeHtml(item.desc)}</p>
       <div class="detail-meta">
@@ -9015,6 +8968,7 @@ var _introPlayedThisSession = false;
     const item = TECHNIQUES.find(t => t.id === id);
     if (!item) return;
     _navPush(hideTechniqueDetail);
+    _setBackLabel('Back to Breathwork');
     state.techniqueId = id;
     state.askContext = { kind: 'technique', id, item };
     document.getElementById('techniques-list').style.display = 'none';
@@ -9038,6 +8992,7 @@ var _introPlayedThisSession = false;
     const item = MEDITATIONS.find(m => m.id === id);
     if (!item) return;
     _navPush(hideMeditationDetail);
+    _setBackLabel('Back to Meditations');
     state.meditationId = id;
     state.askContext = { kind: 'meditation', id, item };
     document.getElementById('meditate-list').style.display = 'none';
@@ -9508,6 +9463,7 @@ var _introPlayedThisSession = false;
   function showBookDetail(book) {
     if (!book) return;
     _navPush(hideLibraryDetail);
+    _setBackLabel('Back to Books');
     libUiState.detail = { kind: 'book', id: slug(book.title) };
     document.getElementById('library-list').style.display = 'none';
     const detail = document.getElementById('library-detail');
@@ -9528,9 +9484,6 @@ var _introPlayedThisSession = false;
     detail.innerHTML = `
       <div class="detail-hero cover-${hue}">
         <img class="detail-hero-full" id="detail-hero-full" alt="${escapeHtml(book.title)}" loading="lazy">
-        <button class="detail-back-floating" onclick="hideLibraryDetail()">
-          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back
-        </button>
         <div class="detail-hero-overlay">
           <h2 class="detail-hero-title">${escapeHtml(book.title.split(':')[0])}</h2>
           <p class="detail-hero-sub">${escapeHtml(book.author)} · ${book.year}</p>
@@ -9597,6 +9550,7 @@ var _introPlayedThisSession = false;
   function showPersonDetail(person) {
     if (!person) return;
     _navPush(hideLibraryDetail);
+    _setBackLabel('Back to People');
     libUiState.detail = { kind: 'person', id: slug(person.name) };
     document.getElementById('library-list').style.display = 'none';
     const detail = document.getElementById('library-detail');
@@ -9644,9 +9598,6 @@ var _introPlayedThisSession = false;
     detail.innerHTML = `
       <div class="detail-hero cover-${hue}">
         <img class="detail-hero-full" id="detail-hero-full" alt="${escapeHtml(person.name)}" loading="lazy">
-        <button class="detail-back-floating" onclick="hideLibraryDetail()">
-          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back
-        </button>
         <div class="detail-hero-overlay">
           <h2 class="detail-hero-title">${escapeHtml(person.name)}</h2>
           <p class="detail-hero-sub">${escapeHtml(person.role)}</p>
@@ -9711,6 +9662,7 @@ var _introPlayedThisSession = false;
     const podcast = LIBRARY.podcasts.find(p => slug(p.name) === slugId);
     if (!podcast) return;
     _navPush(hideLibraryDetail);
+    _setBackLabel('Back to Podcasts');
     store.openedPodcast = (store.openedPodcast || 0) + 1;
     saveStore(store); checkAchievements();
     libUiState.detail = { kind: 'podcast', id: slugId, sourceTab: 'podcasts' };
@@ -9720,9 +9672,6 @@ var _introPlayedThisSession = false;
     det.innerHTML = `
       <div class="detail-hero cover-teal">
         <img class="detail-hero-full" id="detail-hero-full" alt="${escapeHtml(podcast.name)}" loading="lazy">
-        <button class="detail-back-floating" onclick="hideLibraryDetail()">
-          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back
-        </button>
         <div class="detail-hero-overlay">
           <h2 class="detail-hero-title">${escapeHtml(podcast.name)}</h2>
           <p class="detail-hero-sub">${escapeHtml(podcast.host)}</p>
@@ -9769,6 +9718,7 @@ var _introPlayedThisSession = false;
     const details = kind === 'meditation' ? MEDITATION_DETAILS[id] : TECHNIQUE_DETAILS[id];
     if (!item || !details) return;
     _navPush(hideLibraryDetail);
+    _setBackLabel(kind === 'meditation' ? 'Back to Meditations' : 'Back to Breathwork');
     const sourceTab = kind === 'meditation' ? 'meditations' : 'breathwork';
     libUiState.detail = { kind: 'practice', id, sourceTab };
     document.getElementById('library-list').style.display = 'none';
@@ -9781,11 +9731,6 @@ var _introPlayedThisSession = false;
   function renderKnowledgePracticeDetail(item, d) {
     const ov = d.overview, hi = d.history, sc = d.science;
     return `
-      <button class="back-btn" onclick="hideLibraryDetail()">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back to library
-      </button>
-
       <div class="know-detail-head">
         <div class="know-detail-title">${escapeHtml(item.title)}</div>
         <div class="know-detail-desc">${escapeHtml(item.desc)}</div>
