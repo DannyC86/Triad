@@ -4371,6 +4371,29 @@
     }
     .detail-cta-btn:hover { background: #b8944e; transform: translateY(-1px); }
 
+    /* ─── Book buy options ─── */
+    .book-buy-section { margin-top: 32px; }
+    .buy-options { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .buy-option { display: flex; flex-direction: column; gap: 4px; }
+    .buy-btn { display: block; width: 100%; padding: 14px 20px; border-radius: 12px; font-family: inherit; font-size: 0.95rem; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; transition: background 0.18s, transform 0.12s; box-sizing: border-box; }
+    .buy-btn-primary { background: var(--gold); color: #1a1a2e; border: 2px solid transparent; }
+    .buy-btn-primary:hover { background: #d4b07a; transform: translateY(-1px); }
+    .buy-btn-outline { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
+    .buy-btn-outline:hover { background: rgba(201, 169, 110, 0.08); transform: translateY(-1px); }
+    .buy-includes { font-size: 0.74rem; color: var(--text-muted); font-style: italic; padding-left: 2px; line-height: 1.4; }
+    .bundle-covers { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 72px; height: 72px; border-radius: 8px; overflow: hidden; margin-bottom: 6px; background: var(--border-soft); }
+    .bundle-cover-slot { background: var(--navy-card); background-size: cover; background-position: center top; }
+
+    /* ─── Singing bowl / enhance section ─── */
+    .singing-bowl-section { margin-top: 36px; border-top: 1px solid var(--border); padding-top: 24px; padding-bottom: 24px; }
+    .singing-bowl-kicker { font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .singing-bowl-card { background: var(--navy-card); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 16px; }
+    .singing-bowl-name { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .singing-bowl-price-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .singing-bowl-price { font-size: 0.9rem; font-weight: 600; color: var(--gold); }
+    .special-buy-badge { display: inline-block; background: var(--gold); color: #1a1a2e; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+    .singing-bowl-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
+
     /* ═══════════════ Responsive tweaks ═══════════════ */
     @media (max-width: 600px) {
       .detail-hero {
@@ -6960,7 +6983,12 @@ var _introPlayedThisSession = false;
           "Hold It",
           "Fast, Slow, and Not at All"
         ],
-        amazonUrl: "https://www.amazon.com/dp/0735213615"
+        amazonUrl: "https://amzn.to/4frIxOz",
+        buyOptions: [
+          { label: "Buy on Amazon — £8.00", url: "https://amzn.to/4frIxOz", includes: null },
+          { label: "2-Book Bundle with Deep — £21.99", url: "https://amzn.to/4uQZsip", includes: "Breath, Deep" },
+          { label: "4-Book Gift Set — £42.99", url: "https://amzn.to/4fIHQQI", includes: "Breath, Just Breathe, The Oxygen Advantage, What Doesn't Kill Us" }
+        ]
       },
       {
         title: "The Oxygen Advantage",
@@ -6981,7 +7009,12 @@ var _introPlayedThisSession = false;
           "Bring Your Best Game",
           "Increase Oxygen, Improve Recovery"
         ],
-        amazonUrl: "https://www.amazon.com/dp/0062349465"
+        amazonUrl: "https://amzn.to/4dHdL1l",
+        buyOptions: [
+          { label: "Buy on Amazon — £8.00", url: "https://amzn.to/4dHdL1l", includes: null },
+          { label: "2-Book Bundle with Just Breathe — £16.99", url: "https://amzn.to/4f4gxAf", includes: "The Oxygen Advantage, Just Breathe" },
+          { label: "4-Book Gift Set — £42.99", url: "https://amzn.to/4fIHQQI", includes: "Breath, Just Breathe, The Oxygen Advantage, What Doesn't Kill Us" }
+        ]
       },
       {
         title: "Light on Pranayama",
@@ -7004,7 +7037,7 @@ var _introPlayedThisSession = false;
           "Nadi Shodhana Pranayama",
           "Bhastrika and Kapalabhati"
         ],
-        amazonUrl: "https://www.amazon.com/dp/0824505433"
+        amazonUrl: "https://amzn.to/4nNjSWy"
       },
       {
         title: "Science of Breath",
@@ -7024,7 +7057,7 @@ var _introPlayedThisSession = false;
           "Pranayama: The Yoga of Breath",
           "Breath, Mind, and Meditation"
         ],
-        amazonUrl: "https://www.amazon.com/dp/0893891517"
+        amazonUrl: "https://amzn.to/4wSGrgJ"
       },
       {
         title: "The Healing Power of the Breath",
@@ -7045,7 +7078,7 @@ var _introPlayedThisSession = false;
           "Breathing for Trauma and PTSD",
           "Breathing for Heart and Body"
         ],
-        amazonUrl: "https://www.amazon.com/dp/1590309022"
+        amazonUrl: "https://amzn.to/4uEoXmW"
       },
       {
         title: "Just Breathe",
@@ -7065,7 +7098,12 @@ var _introPlayedThisSession = false;
           "Breath Mastery in Daily Life",
           "Designing Your Own Practice"
         ],
-        amazonUrl: "https://www.amazon.com/dp/1501134833"
+        amazonUrl: "https://amzn.to/4wVRhmk",
+        buyOptions: [
+          { label: "Buy on Amazon — £8.33", url: "https://amzn.to/4wVRhmk", includes: null },
+          { label: "2-Book Bundle with The Oxygen Advantage — £16.99", url: "https://amzn.to/4f4gxAf", includes: "Just Breathe, The Oxygen Advantage" },
+          { label: "4-Book Gift Set — £42.99", url: "https://amzn.to/4fIHQQI", includes: "Breath, Just Breathe, The Oxygen Advantage, What Doesn't Kill Us" }
+        ]
       },
       {
         title: "The Wim Hof Method",
@@ -7086,7 +7124,7 @@ var _introPlayedThisSession = false;
           "The Practice",
           "A Way of Life"
         ],
-        amazonUrl: "https://www.amazon.com/dp/1683644093"
+        amazonUrl: "https://amzn.to/49q4Ksh"
       },
       {
         title: "Autobiography of a Yogi",
@@ -7107,7 +7145,12 @@ var _introPlayedThisSession = false;
           "Kriya Yoga: The Yoga Science",
           "An Experience in Cosmic Consciousness"
         ],
-        amazonUrl: "https://www.amazon.com/dp/1565892127"
+        amazonUrl: "https://amzn.to/42Z35GB",
+        buyOptions: [
+          { label: "Paperback — £8.99", url: "https://amzn.to/42Z35GB", includes: null },
+          { label: "Hardback — £11.99", url: "https://amzn.to/4dG8tTW", includes: null },
+          { label: "Deluxe Hardbound Edition — £13.99", url: "https://amzn.to/4dxiiVn", includes: null }
+        ]
       },
       {
         title: "Why Zebras Don't Get Ulcers",
@@ -7138,7 +7181,7 @@ var _introPlayedThisSession = false;
           "The View From the Bottom",
           "Managing Stress"
         ],
-        amazonUrl: "https://www.amazon.com/dp/0805073698"
+        amazonUrl: "https://amzn.to/4dGaZti"
       },
       {
         title: "The Miracle of Mindfulness",
@@ -7158,7 +7201,7 @@ var _introPlayedThisSession = false;
           "Selected Passages from Buddhist Sutras",
           "Thirty-Two Exercises of Mindfulness"
         ],
-        amazonUrl: "https://www.amazon.com/dp/080701239X"
+        amazonUrl: "https://amzn.to/4dMFsGk"
       },
       {
         title: "Breath as Prayer",
@@ -7179,7 +7222,7 @@ var _introPlayedThisSession = false;
           "Breath Prayer for Grief",
           "Living the Practice"
         ],
-        amazonUrl: "https://www.amazon.com/dp/1546002359"
+        amazonUrl: "https://amzn.to/4uDpPIk"
       },
       {
         title: "The Breathing Book",
@@ -7199,7 +7242,7 @@ var _introPlayedThisSession = false;
           "Breath and Emotion",
           "Breath and Meditation"
         ],
-        amazonUrl: "https://www.amazon.com/dp/0805042970"
+        amazonUrl: "https://amzn.to/3PYWA3D"
       },
       {
         title: "Stealing Fire",
@@ -7220,7 +7263,7 @@ var _introPlayedThisSession = false;
           "Catch a Fire",
           "The Pinnacle"
         ],
-        amazonUrl: "https://www.amazon.com/dp/0062429663"
+        amazonUrl: "https://amzn.to/4dtfKYo"
       },
       {
         title: "The Biology of Belief",
@@ -7240,7 +7283,41 @@ var _introPlayedThisSession = false;
           "Growth and Protection",
           "Conscious Parenting"
         ],
-        amazonUrl: "https://www.amazon.com/dp/1401923127"
+        amazonUrl: "https://amzn.to/4tSqV1D"
+      },
+      {
+        id: 'deep',
+        title: "Deep",
+        author: "James Nestor",
+        year: 2014,
+        cover: { hue: "sky", icon: "🌊" },
+        themes: ["Science & Research", "Ancient Traditions", "Focus & Performance"],
+        summary: "James Nestor dives into the world of freediving — a discipline that pushes the human body to extraordinary limits. Part adventure narrative, part scientific investigation, Deep explores what happens to the body and mind under extreme pressure, and what freedivers and marine mammals reveal about human potential, consciousness, and our forgotten connection to the ocean.",
+        whyMatters: "Nestor shows that breath is not just a daily function but a gateway to altered states, peak performance and a deeper understanding of what the human body is capable of. Deep complements Breath perfectly — together they form a complete picture of Nestor's investigation into human respiratory potential.",
+        keyThemes: ["Freediving and breath-hold physiology", "Marine mammals and human evolution", "Altered states through breath", "The limits of human endurance", "Ocean science and consciousness"],
+        chapters: ["The Descent", "Spearfishing", "Dolphins", "Whales", "The Deep Frontier"],
+        amazonUrl: "https://amzn.to/3RLP4tj",
+        buyOptions: [
+          { label: "Buy on Amazon — £10.95", url: "https://amzn.to/3RLP4tj", includes: null },
+          { label: "2-Book Bundle with Breath — £21.99", url: "https://amzn.to/4uQZsip", includes: "Breath, Deep" }
+        ]
+      },
+      {
+        id: 'what-doesnt-kill-us',
+        title: "What Doesn't Kill Us",
+        author: "Scott Carney",
+        year: 2017,
+        cover: { hue: "amber", icon: "🧊" },
+        themes: ["Science & Research", "Ancient Traditions", "Focus & Performance", "Cold Exposure"],
+        summary: "Investigative journalist Scott Carney set out to debunk Wim Hof and ended up training with him in the Polish mountains. What Doesn't Kill Us is the story of how Carney — a sceptic — discovered that the human body has dormant evolutionary abilities that can be unlocked through cold exposure, controlled breathing and deliberate stress. Part memoir, part science, it is one of the most compelling accounts of breathwork in practice.",
+        whyMatters: "Carney provides the sceptic's journey into breathwork — rigorous, honest, and ultimately converted. His account of training with Wim Hof bridges the gap between ancient practice and modern science, and gives Triad users the science-backed story behind the Wim Hof technique.",
+        keyThemes: ["Wim Hof Method in practice", "Cold exposure science", "Evolutionary biology and breath", "The nervous system and environmental stress", "Breathwork as medicine"],
+        chapters: ["The Iceman", "Ascending Kilimanjaro", "The Polish Mountains", "The Science of Cold", "What the Body Remembers"],
+        amazonUrl: "https://amzn.to/4u1CSSB",
+        buyOptions: [
+          { label: "Buy on Amazon — £9.36", url: "https://amzn.to/4u1CSSB", includes: null },
+          { label: "4-Book Gift Set — £42.99", url: "https://amzn.to/4fIHQQI", includes: "Breath, Just Breathe, The Oxygen Advantage, What Doesn't Kill Us" }
+        ]
       }
     ],
 
@@ -9158,6 +9235,7 @@ var _introPlayedThisSession = false;
     document.getElementById('meditate-list').style.display = 'none';
     const detail = document.getElementById('meditate-detail');
     renderDetail(item, 'meditate-detail', 'meditation');
+    detail.innerHTML += renderSingingBowlSection();
     detail.classList.add('active');
     updateFab();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -9620,6 +9698,66 @@ var _introPlayedThisSession = false;
   }
 
   /* ─── Book detail ─── */
+  /* ─── Buy options renderer ─── */
+  function renderBuyOptions(book) {
+    if (book.buyOptions && book.buyOptions.length) {
+      const opts = book.buyOptions.map((opt, i) => {
+        const isBundle = !!opt.includes;
+        const bundleId = `bundle-covers-${slug(book.title)}-${i}`;
+        return `<div class="buy-option">
+          ${isBundle ? `<div class="bundle-covers" id="${escapeHtml(bundleId)}">
+            ${opt.includes.split(', ').map(() => `<div class="bundle-cover-slot"></div>`).join('')}
+          </div>` : ''}
+          <a class="buy-btn ${i === 0 ? 'buy-btn-primary' : 'buy-btn-outline'}" href="${escapeHtml(opt.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(opt.label)}</a>
+          ${opt.includes ? `<div class="buy-includes">Includes: ${escapeHtml(opt.includes)}</div>` : ''}
+        </div>`;
+      }).join('');
+      return `<div class="book-buy-section"><h3 class="detail-section-heading">Get This Book</h3><div class="buy-options">${opts}</div></div>`;
+    }
+    if (book.amazonUrl) {
+      return `<div class="book-buy-section"><h3 class="detail-section-heading">Get This Book</h3><div class="buy-options"><div class="buy-option"><a class="buy-btn buy-btn-primary" href="${escapeHtml(book.amazonUrl)}" target="_blank" rel="noopener noreferrer">Buy on Amazon</a></div></div></div>`;
+    }
+    return '';
+  }
+
+  async function populateBundleCovers(book) {
+    if (!book.buyOptions) return;
+    book.buyOptions.forEach((opt, i) => {
+      if (!opt.includes) return;
+      const el = document.getElementById(`bundle-covers-${slug(book.title)}-${i}`);
+      if (!el) return;
+      const titles = opt.includes.split(', ');
+      titles.forEach(async (title, j) => {
+        const b = LIBRARY.books.find(x => x.title === title);
+        if (!b) return;
+        const url = await fetchBookCover(title, b.author);
+        const slots = el.querySelectorAll('.bundle-cover-slot');
+        if (slots[j] && url) {
+          slots[j].style.backgroundImage = `url(${url})`;
+          slots[j].style.backgroundSize = 'cover';
+          slots[j].style.backgroundPosition = 'center top';
+          slots[j].classList.add('has-cover');
+        }
+      });
+    });
+  }
+
+  /* ─── Singing bowl section (appended to meditation detail pages) ─── */
+  function renderSingingBowlSection() {
+    return `<div class="singing-bowl-section">
+      <div class="singing-bowl-kicker">Enhance Your Practice</div>
+      <div class="singing-bowl-card">
+        <div class="singing-bowl-name">Silent Mind Tibetan Singing Bowl Set</div>
+        <div class="singing-bowl-price-row">
+          <span class="singing-bowl-price">£28.00</span>
+          <span class="special-buy-badge">Special Buy</span>
+        </div>
+        <div class="singing-bowl-desc">A beginner-friendly meditation bowl with cushion, mallet and case. Used for centuries to deepen meditation practice.</div>
+        <a class="buy-btn buy-btn-primary" href="https://amzn.to/430VnM6" target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
+      </div>
+    </div>`;
+  }
+
   function showBookDetail(book) {
     if (!book) return;
     _navPush(hideLibraryDetail);
@@ -9693,17 +9831,13 @@ var _introPlayedThisSession = false;
             </div>
           </div>` : ''}
 
-        ${book.amazonUrl ? `
-          <div class="detail-cta-footer">
-            <hr class="detail-hr">
-            <div class="detail-cta-label">External Resource</div>
-            <a class="detail-cta-btn" href="${escapeHtml(book.amazonUrl)}" target="_blank" rel="noopener noreferrer">Get the Book →</a>
-          </div>` : ''}
+        ${renderBuyOptions(book)}
       </div>
     `;
     detail.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     fetchBookCover(book.title, book.author).then(url => _applyHeroImage(document.getElementById('detail-hero-full'), url));
+    populateBundleCovers(book);
   }
 
   /* ─── Person detail ─── */
