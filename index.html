@@ -3660,6 +3660,42 @@
     .lib-panel { display: none; animation: fade-in 0.3s ease; }
     .lib-panel.active { display: block; }
 
+    /* ─── Library pagination ─── */
+    .lib-pagination {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin-top: 20px; flex-wrap: wrap;
+    }
+    .lib-page-num {
+      min-width: 34px; height: 34px; padding: 0 8px;
+      border: 1px solid var(--border); border-radius: 20px;
+      background: transparent; color: var(--text-muted);
+      font-size: 0.82rem; font-family: inherit; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .lib-page-num:hover:not(.active) { border-color: var(--gold); color: var(--text); }
+    .lib-page-num.active { background: var(--gold); color: #1a1a2e; border-color: var(--gold); font-weight: 600; }
+    .lib-page-ellipsis { color: var(--text-dim); font-size: 0.82rem; padding: 0 2px; user-select: none; line-height: 34px; }
+    .lib-page-nav {
+      width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+      background: transparent; border: none; cursor: pointer; color: var(--gold);
+      border-radius: 20px; transition: opacity 0.2s; padding: 0;
+    }
+    .lib-page-nav svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .lib-page-nav.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+    .lib-page-size-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-top: 12px; margin-bottom: 8px;
+    }
+    .lib-page-size-label { font-size: 0.74rem; color: var(--text-muted); }
+    .lib-page-size-btn {
+      padding: 5px 14px; border-radius: 20px; font-size: 0.78rem;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); font-family: inherit; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .lib-page-size-btn.active { border-color: var(--gold); color: var(--gold); }
+    .lib-page-size-btn:hover:not(.active) { border-color: rgba(201,169,110,0.4); color: var(--text); }
+
     /* ─── Breathwork / Meditations practice list ─── */
     .practice-list { display: flex; flex-direction: column; gap: 8px; }
     .practice-list-card {
@@ -9361,7 +9397,9 @@ var _introPlayedThisSession = false;
     tab: 'all',                // 'all' | 'books' | 'people' | 'podcasts' | 'breathwork' | 'meditations'
     search: '',
     activeFilters: new Set(),  // theme strings from LIBRARY_THEMES
-    detail: null               // { kind, id, sourceTab } when a detail view is open
+    detail: null,              // { kind, id, sourceTab } when a detail view is open
+    page: { books: 1, people: 1, podcasts: 1, breathwork: 1, meditations: 1 },
+    pageSize: 10
   };
 
   function initialsFromName(name) {
@@ -9433,6 +9471,7 @@ var _introPlayedThisSession = false;
   function onLibFilterChange(val) {
     libUiState.activeFilters.clear();
     if (val) libUiState.activeFilters.add(val);
+    _resetLibPages();
     renderLibraryAllPanels();
   }
 
@@ -9609,9 +9648,63 @@ var _introPlayedThisSession = false;
   const _TECH_HUES  = ['teal','sky','indigo','violet','gold','emerald','rose','amber','teal','sky','indigo','violet'];
   const _MEDIT_HUES = ['violet','indigo','sky','teal','violet','indigo','sky','teal'];
 
+  /* ─── Pagination helpers ─── */
+  function _resetLibPages() {
+    Object.keys(libUiState.page).forEach(k => libUiState.page[k] = 1);
+  }
+
+  function _getPageNumbers(current, total) {
+    if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+    if (current <= 3) return [1, 2, 3, '…', total];
+    if (current >= total - 2) return [1, '…', total - 2, total - 1, total];
+    return [1, '…', current, '…', total];
+  }
+
+  function _renderPagination(panel, currentPage, totalItems) {
+    const { pageSize } = libUiState;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    if (totalPages <= 1) return '';
+    const pages = _getPageNumbers(currentPage, totalPages);
+    const prevDis = currentPage === 1;
+    const nextDis = currentPage === totalPages;
+    const pageHtml = pages.map(p => {
+      if (p === '…') return '<span class="lib-page-ellipsis">···</span>';
+      const act = p === currentPage;
+      return `<button class="lib-page-num${act ? ' active' : ''}" onclick="setLibPage('${panel}',${p})">${p}</button>`;
+    }).join('');
+    return `<div class="lib-pagination">
+      <button class="lib-page-nav${prevDis ? ' disabled' : ''}"${prevDis ? ' disabled' : ''} onclick="setLibPage('${panel}',${currentPage - 1})"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg></button>
+      ${pageHtml}
+      <button class="lib-page-nav${nextDis ? ' disabled' : ''}"${nextDis ? ' disabled' : ''} onclick="setLibPage('${panel}',${currentPage + 1})"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+    <div class="lib-page-size-row">
+      <span class="lib-page-size-label">Show per page:</span>
+      <button class="lib-page-size-btn${pageSize === 10 ? ' active' : ''}" onclick="setLibPageSize(10)">10</button>
+      <button class="lib-page-size-btn${pageSize === 25 ? ' active' : ''}" onclick="setLibPageSize(25)">25</button>
+    </div>`;
+  }
+
+  function setLibPage(panel, page) {
+    const pg = parseInt(page, 10);
+    if (!pg || pg < 1) return;
+    libUiState.page[panel] = pg;
+    renderLibraryAllPanels();
+    const el = document.getElementById('lib-panel-' + panel);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setLibPageSize(size) {
+    libUiState.pageSize = size;
+    _resetLibPages();
+    renderLibraryAllPanels();
+  }
+
   function renderBooksPanel(books) {
     if (!books.length) return '';
-    return `<div class="lib-cards-list">${books.map(b => {
+    const { pageSize, page } = libUiState;
+    const start = (page.books - 1) * pageSize;
+    const visible = books.slice(start, start + pageSize);
+    return `<div class="lib-cards-list">${visible.map(b => {
       const hue  = (b.cover && b.cover.hue) ? b.cover.hue : 'teal';
       const icon = (b.cover && b.cover.icon) ? b.cover.icon : '📖';
       const pills = (b.themes || []).slice(0, 2).map(t => `<span class="lib-card-pill">${escapeHtml(t)}</span>`).join('');
@@ -9625,12 +9718,15 @@ var _introPlayedThisSession = false;
         </div>
         <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>`;
-    }).join('')}</div>`;
+    }).join('')}</div>` + _renderPagination('books', page.books, books.length);
   }
 
   function renderPeoplePanel(people) {
     if (!people.length) return '';
-    return `<div class="lib-cards-list">${people.map(p => {
+    const { pageSize, page } = libUiState;
+    const start = (page.people - 1) * pageSize;
+    const visible = people.slice(start, start + pageSize);
+    return `<div class="lib-cards-list">${visible.map(p => {
       const hue   = (p.photo && p.photo.hue) ? p.photo.hue : 'teal';
       const pills = (p.themes || []).slice(0, 2).map(t => `<span class="lib-card-pill">${escapeHtml(t)}</span>`).join('');
       return `<button class="lib-card" onclick="openLibraryEntry('person','${slug(p.name)}')">
@@ -9645,13 +9741,16 @@ var _introPlayedThisSession = false;
         </div>
         <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>`;
-    }).join('')}</div>`;
+    }).join('')}</div>` + _renderPagination('people', page.people, people.length);
   }
 
   function renderPodcastsPanel(podcasts) {
     if (!podcasts.length) return '';
-    return `<div class="lib-cards-list">${podcasts.map((p, i) => {
-      const hue  = _TECH_HUES[i % _TECH_HUES.length];
+    const { pageSize, page } = libUiState;
+    const start = (page.podcasts - 1) * pageSize;
+    const visible = podcasts.slice(start, start + pageSize);
+    return `<div class="lib-cards-list">${visible.map((p, i) => {
+      const hue  = _TECH_HUES[(start + i) % _TECH_HUES.length];
       const pills = (p.themes || []).slice(0, 2).map(t => `<span class="lib-card-pill">${escapeHtml(t)}</span>`).join('');
       return `<button class="lib-card" id="pcast-${slug(p.name)}" onclick="showPodcastDetail('${slug(p.name)}')">
         <div class="lib-card-thumb cover-${hue}">
@@ -9665,12 +9764,15 @@ var _introPlayedThisSession = false;
         </div>
         <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>`;
-    }).join('')}</div>`;
+    }).join('')}</div>` + _renderPagination('podcasts', page.podcasts, podcasts.length);
   }
 
   function renderBreathworkPanel() {
-    return `<div class="lib-cards-list">${TECHNIQUES.map((t, i) => {
-      const hue  = _TECH_HUES[i % _TECH_HUES.length];
+    const { pageSize, page } = libUiState;
+    const start = (page.breathwork - 1) * pageSize;
+    const visible = TECHNIQUES.slice(start, start + pageSize);
+    return `<div class="lib-cards-list">${visible.map((t, i) => {
+      const hue  = _TECH_HUES[(start + i) % _TECH_HUES.length];
       return `<button class="lib-card" onclick="showKnowledgePracticeDetail('technique','${escapeJs(t.id)}')">
         <div class="lib-card-thumb cover-${hue}"></div>
         <div class="lib-card-body">
@@ -9684,12 +9786,15 @@ var _introPlayedThisSession = false;
         </div>
         <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>`;
-    }).join('')}</div>`;
+    }).join('')}</div>` + _renderPagination('breathwork', page.breathwork, TECHNIQUES.length);
   }
 
   function renderMeditationsPanel() {
-    return `<div class="lib-cards-list">${MEDITATIONS.map((m, i) => {
-      const hue  = _MEDIT_HUES[i % _MEDIT_HUES.length];
+    const { pageSize, page } = libUiState;
+    const start = (page.meditations - 1) * pageSize;
+    const visible = MEDITATIONS.slice(start, start + pageSize);
+    return `<div class="lib-cards-list">${visible.map((m, i) => {
+      const hue  = _MEDIT_HUES[(start + i) % _MEDIT_HUES.length];
       return `<button class="lib-card" onclick="showKnowledgePracticeDetail('meditation','${escapeJs(m.id)}')">
         <div class="lib-card-thumb cover-${hue}"></div>
         <div class="lib-card-body">
@@ -9703,7 +9808,7 @@ var _introPlayedThisSession = false;
         </div>
         <svg class="lib-card-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>`;
-    }).join('')}</div>`;
+    }).join('')}</div>` + _renderPagination('meditations', page.meditations, MEDITATIONS.length);
   }
 
   /* ─── Filter + search engine ─── */
@@ -9746,16 +9851,19 @@ var _introPlayedThisSession = false;
   function toggleLibFilter(theme) {
     if (libUiState.activeFilters.has(theme)) libUiState.activeFilters.delete(theme);
     else libUiState.activeFilters.add(theme);
+    _resetLibPages();
     renderLibrary();
   }
   function clearLibFilters() {
     libUiState.activeFilters.clear();
+    _resetLibPages();
     renderLibrary();
   }
   function onLibSearch() {
     const input = document.getElementById('lib-search-input');
     libUiState.search = input.value;
     updateLibrarySearchUi();
+    _resetLibPages();
     renderLibraryAllPanels();
   }
   function clearLibSearch() {
@@ -9764,6 +9872,7 @@ var _introPlayedThisSession = false;
     libUiState.search = '';
     input.focus();
     updateLibrarySearchUi();
+    _resetLibPages();
     renderLibraryAllPanels();
   }
   function updateLibrarySearchUi() {
@@ -9784,6 +9893,7 @@ var _introPlayedThisSession = false;
     const typeSel = document.getElementById('lib-type-select');
     if (typeSel) typeSel.value = tab;
     _syncLibPills();
+    _resetLibPages();
     renderLibraryAllPanels();
   }
 
