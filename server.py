@@ -29,6 +29,8 @@ Auth model:
 
 import os
 import json
+import re
+import random
 import sqlite3
 import secrets
 from datetime import datetime
@@ -43,6 +45,19 @@ import anthropic
 from dotenv import load_dotenv
 
 load_dotenv(override=False)  # ANTHROPIC_API_KEY, FLASK_SECRET_KEY, optional PORT/FLASK_DEBUG
+
+# ─────────────────────────── Whimsical name generator ───────────────────────────
+
+WHIMSICAL_ADJECTIVES = [
+    'Silent','Still','Ancient','Lunar','Solar','Golden','Misty','Deep',
+    'Wild','Sacred','Serene','Radiant','Hollow','Gentle','Swift','Vital',
+    'Open','Clear','Calm','Bright'
+]
+WHIMSICAL_NOUNS = [
+    'Lotus','Flame','Sage','Breath','Wave','Peak','Root','River','Stone',
+    'Wind','Path','Dawn','Tide','Grove','Spark','Veil','Shore','Ember',
+    'Leaf','Stream'
+]
 
 # ─────────────────────────── App + config ───────────────────────────
 
@@ -181,6 +196,29 @@ def init_db():
         );
         CREATE INDEX IF NOT EXISTS idx_user_events_user ON user_events(user_id);
         CREATE INDEX IF NOT EXISTS idx_user_events_type ON user_events(event_type);
+
+        CREATE TABLE IF NOT EXISTS user_profiles (
+            id               INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id          INTEGER NOT NULL UNIQUE,
+            triad_name       TEXT    UNIQUE,
+            first_name       TEXT,
+            surname          TEXT,
+            date_of_birth    TEXT,
+            bio              TEXT,
+            profile_complete INTEGER DEFAULT 0,
+            created_at       TEXT    NOT NULL,
+            updated_at       TEXT    NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+        CREATE INDEX IF NOT EXISTS idx_user_profiles_triad_name ON user_profiles(triad_name);
+
+        CREATE TABLE IF NOT EXISTS feedback (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id    INTEGER,
+            email      TEXT,
+            message    TEXT    NOT NULL,
+            created_at TEXT    NOT NULL
+        );
         """
     )
     conn.commit()
@@ -689,6 +727,8 @@ def user_delete_data():
             "user_reading_list",
             "user_plan",
             "user_preferences",
+            "user_profiles",
+            "feedback",
         ):
             conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (uid,))
         conn.commit()
@@ -846,6 +886,154 @@ def track_event():
     except Exception:
         pass
     return {'success': True}
+
+
+# ─────────────────────────── Routes — user profile ───────────────────────────
+
+@app.route("/user/profile", methods=["GET"])
+@login_required
+def user_get_profile():
+    uid = int(current_user.id)
+    try:
+        conn = get_db()
+        row = conn.execute("SELECT * FROM user_profiles WHERE user_id = ?", (uid,)).fetchone()
+        conn.close()
+        return jsonify({"profile": row_to_dict(row) or {}})
+    except Exception as e:
+        print(f"[user/profile GET] error: {e}")
+        return jsonify({"error": "Failed to load profile"}), 500
+
+
+@app.route("/user/profile", methods=["POST"])
+@login_required
+def user_save_profile():
+    uid = int(current_user.id)
+    now = datetime.utcnow().isoformat() + "Z"
+    data = request.get_json(silent=True) or {}
+
+    triad_name    = (data.get("triad_name") or "").strip()
+    first_name    = (data.get("first_name") or "").strip()
+    surname       = (data.get("surname") or "").strip()
+    date_of_birth = (data.get("date_of_birth") or "").strip()
+    bio           = (data.get("bio") or "").strip()
+
+    if triad_name:
+        if not re.match(r'^[a-zA-Z0-9 ]{3,30}$', triad_name):
+            return jsonify({"error": "Triad name must be 3–30 alphanumeric characters (spaces allowed)."}), 400
+
+    try:
+        conn = get_db()
+
+        if triad_name:
+            existing = conn.execute(
+                "SELECT user_id FROM user_profiles WHERE triad_name = ? AND user_id != ?",
+                (triad_name, uid)
+            ).fetchone()
+            if existing:
+                conn.close()
+                return jsonify({"error": "name_taken"}), 409
+
+        profile_complete = 1 if first_name else 0
+
+        conn.execute(
+            """INSERT INTO user_profiles
+               (user_id, triad_name, first_name, surname, date_of_birth, bio, profile_complete, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(user_id) DO UPDATE SET
+                 triad_name=COALESCE(NULLIF(excluded.triad_name,''), triad_name),
+                 first_name=excluded.first_name,
+                 surname=excluded.surname,
+                 date_of_birth=excluded.date_of_birth,
+                 bio=excluded.bio,
+                 profile_complete=excluded.profile_complete,
+                 updated_at=excluded.updated_at""",
+            (uid, triad_name or None, first_name, surname, date_of_birth, bio, profile_complete, now, now),
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM user_profiles WHERE user_id = ?", (uid,)).fetchone()
+        conn.close()
+        return jsonify({"success": True, "profile": row_to_dict(row)})
+    except Exception as e:
+        print(f"[user/profile POST] error: {e}")
+        return jsonify({"error": "Failed to save profile"}), 500
+
+
+# ─────────────────────────── Routes — triad name ───────────────────────────
+
+@app.route("/triad-name/check")
+def triad_name_check():
+    name = (request.args.get("name") or "").strip()
+    if not name:
+        return jsonify({"available": False})
+    conn = get_db()
+    existing = conn.execute(
+        "SELECT id FROM user_profiles WHERE triad_name = ?", (name,)
+    ).fetchone()
+    conn.close()
+    return jsonify({"available": existing is None})
+
+
+@app.route("/triad-name/generate")
+def triad_name_generate():
+    conn = get_db()
+    taken = {
+        row[0]
+        for row in conn.execute(
+            "SELECT triad_name FROM user_profiles WHERE triad_name IS NOT NULL"
+        ).fetchall()
+    }
+    conn.close()
+
+    combos = [f"{adj}{noun}" for adj in WHIMSICAL_ADJECTIVES for noun in WHIMSICAL_NOUNS]
+    random.shuffle(combos)
+    for name in combos:
+        if name not in taken:
+            return jsonify({"name": name})
+
+    # Fallback: all 400 combinations somehow taken
+    import time
+    return jsonify({"name": f"Triad{int(time.time())}"})
+
+
+# ─────────────────────────── Routes — feedback ───────────────────────────
+
+@app.route("/feedback", methods=["POST"])
+@login_required
+def submit_feedback():
+    uid = int(current_user.id)
+    now = datetime.utcnow().isoformat() + "Z"
+    data = request.get_json(silent=True) or {}
+
+    message = (data.get("message") or "").strip()
+    if not message:
+        return jsonify({"error": "Message is required"}), 400
+    if len(message) > 500:
+        return jsonify({"error": "Message too long (max 500 characters)"}), 400
+
+    try:
+        conn = get_db()
+        conn.execute(
+            "INSERT INTO feedback (user_id, email, message, created_at) VALUES (?, ?, ?, ?)",
+            (uid, current_user.email, message, now),
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"[feedback] error: {e}")
+        return jsonify({"error": "Failed to submit feedback"}), 500
+
+
+@app.route("/admin/feedback")
+def admin_feedback():
+    password = request.args.get('key', '')
+    if password != os.getenv('ADMIN_KEY', ''):
+        return {'error': 'unauthorised'}, 401
+    db = get_db()
+    rows = db.execute(
+        "SELECT id, user_id, email, message, created_at FROM feedback ORDER BY created_at DESC"
+    ).fetchall()
+    return {'feedback': [dict(r) for r in rows]}
 
 
 # ─────────────────────────── Routes — AI ───────────────────────────

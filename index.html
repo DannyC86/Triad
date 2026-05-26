@@ -4740,6 +4740,329 @@
       .tab { font-size: 0.78rem; padding: 11px 10px; }
       .action-btn { padding: 10px 16px; font-size: 0.82rem; }
     }
+
+    /* ═══ PROFILE OVERHAUL — hero, snapshot, achievements, triad lab ═══ */
+
+    /* Gear icon */
+    .gear-btn {
+      width: 36px; height: 36px;
+      background: none;
+      border: 1px solid var(--border-soft);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.18s, border-color 0.18s;
+      flex-shrink: 0;
+    }
+    .gear-btn:hover { color: var(--text); border-color: var(--text-soft); }
+    .gear-btn svg { width: 16px; height: 16px; }
+    .gear-btn.hidden { display: none !important; }
+
+    /* Settings drawer */
+    .settings-drawer-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 300;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .settings-drawer-backdrop.open { opacity: 1; pointer-events: all; }
+    .settings-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: min(320px, 88vw);
+      background: var(--bg);
+      z-index: 301;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+      padding: 24px 20px;
+      display: flex; flex-direction: column; gap: 0;
+      overflow-y: auto;
+      box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+    }
+    .settings-drawer.open { transform: translateX(0); }
+    .settings-drawer-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .settings-drawer-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem; color: var(--text);
+    }
+    .settings-drawer-close {
+      background: none; border: none;
+      color: var(--text-muted); cursor: pointer;
+      font-size: 1.1rem; line-height: 1; padding: 4px 6px; border-radius: 6px;
+    }
+    .settings-drawer-close:hover { color: var(--text); }
+    .settings-drawer-section { padding: 16px 0; border-bottom: 1px solid var(--border-soft); }
+    .settings-drawer-section:last-child { border-bottom: none; }
+    .settings-drawer-label {
+      font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-muted); font-weight: 600; margin-bottom: 10px;
+    }
+    .settings-drawer-link {
+      display: block; color: var(--text-soft); font-size: 0.88rem;
+      cursor: pointer; padding: 6px 0; text-decoration: none; font-family: inherit;
+      background: none; border: none; text-align: left; width: 100%;
+      transition: color 0.16s;
+    }
+    .settings-drawer-link:hover { color: var(--text); }
+    .settings-drawer-link.danger { color: #b84040; }
+    .settings-drawer-link.danger:hover { color: #e53e3e; }
+
+    /* Profile hero */
+    .profile-hero { margin-bottom: 20px; }
+    .profile-hero-welcome {
+      background: var(--navy-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      text-align: center;
+    }
+    .profile-hero-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem; font-weight: 500; color: var(--gold);
+      margin-bottom: 3px;
+    }
+    .profile-hero-sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px; }
+    .profile-hero-continue {
+      display: block; width: 100%;
+      padding: 13px; background: var(--gold); color: #1a1a2e;
+      border: none; border-radius: 12px; font-family: inherit;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      transition: background 0.18s;
+    }
+    .profile-hero-continue:hover { background: #d4b07a; }
+
+    /* Triad name onboarding card */
+    .triad-onboard-card {
+      background: var(--navy-card);
+      border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+      border-radius: var(--radius); padding: 22px 18px;
+    }
+    .triad-onboard-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; color: var(--text); margin-bottom: 4px;
+    }
+    .triad-onboard-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px; }
+    .triad-name-suggestion {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--navy-deep);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;
+    }
+    .triad-suggestion-text {
+      flex: 1; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.02em; color: var(--gold);
+    }
+    .triad-refresh-btn {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; font-size: 1.15rem; padding: 2px 4px;
+      border-radius: 6px; transition: color 0.18s; line-height: 1;
+    }
+    .triad-refresh-btn:hover { color: var(--text); }
+    .triad-onboard-actions { display: flex; flex-direction: column; gap: 8px; }
+    .triad-claim-btn {
+      background: var(--gold); color: #1a1a2e; border: none;
+      border-radius: 10px; padding: 11px; font-family: inherit;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      transition: background 0.18s;
+    }
+    .triad-claim-btn:hover { background: #d4b07a; }
+    .triad-later-btn {
+      background: none; border: none; color: var(--text-muted);
+      font-family: inherit; font-size: 0.8rem; cursor: pointer;
+      text-align: center; text-decoration: underline; padding: 4px;
+    }
+    .triad-later-btn:hover { color: var(--text); }
+
+    /* Snapshot stats row */
+    .profile-snapshot-row {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 20px;
+    }
+    .snap-card {
+      background: var(--navy-card); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm); padding: 14px 10px; text-align: center;
+    }
+    .snap-icon { font-size: 1.2rem; margin-bottom: 4px; line-height: 1; }
+    .snap-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 500; color: var(--text);
+      line-height: 1; margin-bottom: 3px;
+    }
+    .snap-label {
+      font-size: 0.64rem; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .snap-milestone-icon { font-size: 1rem; margin-bottom: 3px; line-height: 1; }
+    .snap-milestone-icon.mystery { filter: blur(3px); }
+    .snap-milestone-hint {
+      font-size: 0.68rem; color: var(--text-soft); line-height: 1.35; margin-bottom: 6px;
+    }
+    .snap-milestone-bar { height: 3px; background: var(--border-soft); border-radius: 2px; overflow: hidden; }
+    .snap-milestone-fill { height: 100%; background: var(--gold); border-radius: 2px; }
+
+    /* Achievement preview */
+    .ach-preview-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 10px;
+    }
+    .ach-preview-card {
+      background: var(--navy-card); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm); padding: 13px 12px;
+    }
+    .ach-preview-kicker {
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-muted); margin-bottom: 6px;
+    }
+    .ach-preview-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; line-height: 1; }
+    .ach-preview-icon.mystery { filter: blur(4px); }
+    .ach-preview-name { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+    .ach-preview-name.mystery { filter: blur(3px); color: var(--text-muted); }
+    .ach-preview-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; }
+    .ach-preview-bar { height: 3px; background: var(--border-soft); border-radius: 2px; margin-top: 7px; overflow: hidden; }
+    .ach-preview-fill { height: 100%; background: var(--gold); }
+    .btn-view-all-ach {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 12px 16px;
+      background: var(--navy-card); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm); color: var(--text); font-family: inherit;
+      font-size: 0.88rem; font-weight: 500; cursor: pointer; margin-bottom: 20px;
+      transition: background 0.18s;
+    }
+    .btn-view-all-ach:hover { background: var(--navy-light); }
+
+    /* Full achievements page */
+    .ach-page-head {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 22px; padding-top: 4px;
+    }
+    .ach-page-back {
+      background: none; border: 1px solid var(--border-soft);
+      border-radius: 8px; padding: 7px 13px;
+      color: var(--text-soft); font-family: inherit; font-size: 0.82rem; cursor: pointer;
+      transition: border-color 0.16s, color 0.16s;
+    }
+    .ach-page-back:hover { color: var(--text); border-color: var(--text-muted); }
+    .ach-page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; color: var(--text);
+    }
+    .ach-page-section-head {
+      font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-muted); font-weight: 600; margin: 18px 0 11px;
+    }
+    .ach-page-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; margin-bottom: 6px;
+    }
+    @media (min-width: 480px) { .ach-page-grid { grid-template-columns: repeat(3, 1fr); } }
+    .ach-full-card {
+      background: var(--navy-card); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm); padding: 14px 13px;
+      animation: achFadeIn 0.4s ease both;
+    }
+    @keyframes achFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .ach-full-card.unlocked { border-color: color-mix(in srgb, var(--gold) 35%, transparent); }
+    .ach-full-card-icon { font-size: 1.7rem; display: block; margin-bottom: 6px; line-height: 1; }
+    .ach-full-card-icon.locked { filter: grayscale(1) opacity(0.35); font-style: normal; }
+    .ach-full-card-name { font-size: 0.84rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .ach-full-card-name.locked { color: var(--text-muted); }
+    .ach-full-card-sub { font-size: 0.7rem; color: var(--text-muted); line-height: 1.35; }
+    .ach-full-card.unlocked .ach-full-card-sub { color: var(--c-plan); }
+    .ach-full-card-bar { height: 3px; background: var(--border-soft); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+    .ach-full-card-fill { height: 100%; background: var(--gold); opacity: 0.6; }
+
+    /* Active missions section */
+    .missions-prompt-card {
+      background: var(--navy-card); border: 1px solid var(--border-soft);
+      border-radius: var(--radius); padding: 20px; text-align: center;
+      margin-bottom: 20px;
+    }
+    .missions-prompt-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .missions-prompt-desc {
+      font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 14px;
+    }
+    .missions-prompt-btn {
+      display: inline-block; padding: 10px 20px;
+      background: var(--navy); color: var(--bg);
+      border: none; border-radius: 10px; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      transition: opacity 0.18s;
+    }
+    .missions-prompt-btn:hover { opacity: 0.8; }
+
+    /* Account & Settings accordion sub-sections */
+    .acc-sub-head {
+      font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-muted); font-weight: 600;
+      margin: 18px 0 10px; padding-top: 14px;
+      border-top: 1px solid var(--border-soft);
+    }
+    .acc-sub-head:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+    .acc-navigate-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 13px 16px;
+      background: var(--bg); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm); color: var(--text); font-family: inherit;
+      font-size: 0.9rem; font-weight: 500; cursor: pointer; margin-bottom: 12px;
+      transition: background 0.18s;
+    }
+    .acc-navigate-btn:hover { background: var(--navy-light); }
+
+    /* Triad Lab */
+    .triad-lab {
+      border-top: 2px solid var(--border-soft);
+      margin-top: 28px; padding-top: 24px; margin-bottom: 20px;
+    }
+    .triad-lab-kicker {
+      font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--gold); font-weight: 700; margin-bottom: 4px;
+    }
+    .triad-lab-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; color: var(--text); margin-bottom: 4px;
+    }
+    .triad-lab-subtitle { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 18px; }
+    .triad-lab-grid {
+      display: grid; grid-template-columns: 1fr;
+      gap: 10px; margin-bottom: 22px;
+    }
+    @media (min-width: 500px) { .triad-lab-grid { grid-template-columns: repeat(3, 1fr); } }
+    .triad-lab-card {
+      background: var(--navy-card); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm); padding: 16px;
+    }
+    .triad-lab-card-title { font-size: 0.92rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .triad-lab-card-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 10px; }
+    .triad-lab-status {
+      display: inline-block; font-size: 0.6rem; text-transform: uppercase;
+      letter-spacing: 0.1em; font-weight: 700; padding: 3px 8px;
+      border-radius: 4px; background: var(--navy-deep); color: var(--text-muted);
+      border: 1px solid var(--border-soft);
+    }
+    .triad-lab-status.beta { background: color-mix(in srgb, var(--gold) 12%, transparent); color: var(--gold); border-color: color-mix(in srgb, var(--gold) 30%, transparent); }
+    .triad-lab-feedback { margin-top: 4px; }
+    .triad-lab-feedback textarea {
+      width: 100%; min-height: 90px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-family: inherit;
+      font-size: 0.88rem; padding: 12px; resize: vertical;
+      transition: border-color 0.2s; margin-bottom: 8px;
+    }
+    .triad-lab-feedback textarea:focus { outline: none; border-color: var(--gold); }
+    .triad-lab-feedback-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .triad-lab-char { font-size: 0.7rem; color: var(--text-muted); }
+    .triad-lab-send {
+      background: var(--navy); color: var(--bg); border: none;
+      border-radius: 10px; padding: 10px 20px; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: opacity 0.18s;
+    }
+    .triad-lab-send:hover { opacity: 0.8; }
+    .triad-lab-send:disabled { opacity: 0.45; cursor: default; }
   </style>
 </head>
 <body>
@@ -5041,151 +5364,179 @@ var _introPlayedThisSession = false;
 
   <!-- ═════════ PROFILE ═════════ -->
   <section id="profile" class="section">
-    <div class="section-head">
-      <div>
-        <div class="section-kicker">You</div>
-        <h1 class="section-title">Profile <span class="accent">·</span></h1>
+
+    <!-- Main profile view -->
+    <div id="profile-main-view">
+
+      <!-- Account header (JS-rendered by renderProfileAccountHeader) -->
+      <div id="profile-account-header"></div>
+
+      <!-- Guest CTA -->
+      <button class="profile-guest-cta" data-guest-only onclick="openAuthModal('signup')">Log In / Sign Up</button>
+
+      <!-- SECTION 1: Hero area — welcome banner / triad name onboarding -->
+      <div id="profile-hero" class="profile-hero" data-auth-required></div>
+
+      <!-- SECTION 2: Snapshot stats — 3 cards -->
+      <div id="profile-snapshot" class="profile-snapshot-row" data-auth-required></div>
+
+      <!-- SECTION 3: Achievement preview + View All button -->
+      <div id="profile-achievement-preview" data-auth-required></div>
+
+      <!-- Guest flat achievements (visible for guest users only) -->
+      <div class="guest-achievements-block" data-guest-only>
+        <div class="guest-achievements-head">Achievements</div>
+        <div id="guest-achievements-grid"></div>
       </div>
-      <p class="section-lede">Your practice so far — streak, sessions, achievements, and what you're reading. Everything is stored locally on this device.</p>
-    </div>
 
-    <!-- 2. NAME BAR -->
-    <div id="profile-account-header"></div>
+      <!-- SECTION 4: Active missions (or prompt card) -->
+      <div id="profile-missions-section" data-auth-required></div>
 
-    <!-- Guest CTA -->
-    <button class="profile-guest-cta" data-guest-only onclick="openAuthModal('signup')">Log In / Sign Up</button>
+      <!-- SECTION 5: Account & Settings — single collapsed accordion -->
+      <div class="acc-wrap" data-auth-required>
+        <button class="acc-btn" onclick="toggleAccordion('acc-account')">
+          <span>Account &amp; Settings</span>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="accordion-body" id="acc-account">
+          <div class="acc-inner">
 
-    <!-- Guest flat achievements (no accordion — replaces accordion for guest view) -->
-    <div class="guest-achievements-block" data-guest-only>
-      <div class="guest-achievements-head">Achievements</div>
-      <div id="guest-achievements-grid"></div>
-    </div>
+            <!-- Favourite practice -->
+            <div id="profile-favourite-block"></div>
 
-    <!-- 3. FAVOURITE PRACTICE (logged-in, always visible) -->
-    <div id="profile-favourite-block" data-auth-required></div>
+            <!-- My Plan -->
+            <div class="acc-sub-head">My Plan</div>
+            <div class="profile-plan" id="profile-plan-block"></div>
+            <button class="acc-navigate-btn" onclick="navigate('plan')">
+              <span>Open My Plan</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
 
-    <!-- 4. MY PLAN accordion -->
-    <div class="acc-wrap" data-auth-required>
-      <button class="acc-btn acc-btn--gold" onclick="toggleAccordion('acc-plan')">
-        <span>My Plan</span>
-        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="accordion-body" id="acc-plan">
-        <div class="acc-inner">
-          <div class="profile-plan" id="profile-plan-block"></div>
-          <button class="action-btn primary" onclick="navigate('plan')" style="width:100%; justify-content:center;">
-            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
-            Open My Plan
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. ACCOUNT DATA accordion -->
-    <div class="acc-wrap" data-auth-required>
-      <button class="acc-btn" onclick="toggleAccordion('acc-data')">
-        <span>Account Data</span>
-        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="accordion-body" id="acc-data">
-        <div class="acc-inner">
-          <div class="profile-stats" id="profile-stats-grid"></div>
-          <div class="profile-block-head" style="margin-top:18px">
-            <div class="profile-block-title">Recent sessions</div>
-            <div class="profile-block-count" id="sessions-count">0 sessions</div>
-          </div>
-          <div id="sessions-list-wrap"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 6. ACHIEVEMENTS accordion (logged-in only; guests see flat block above) -->
-    <div class="acc-wrap" id="achievements-accordion-wrap">
-      <button class="acc-btn" onclick="toggleAccordion('acc-achievements')">
-        <span>Achievements</span>
-        <span class="acc-badge" id="achievement-count">0/15</span>
-        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="accordion-body" id="acc-achievements">
-        <div class="acc-inner">
-          <div id="profile-next-achievement"></div>
-          <div id="achievements-section"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 7. PRO BANNER (always visible, not collapsible) -->
-    <div id="profile-pro-banner" data-auth-required></div>
-
-    <!-- 8. EXPLORED accordion -->
-    <div class="acc-wrap" data-auth-required>
-      <button class="acc-btn" onclick="toggleAccordion('acc-explored')">
-        <span>Explored</span>
-        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="accordion-body" id="acc-explored">
-        <div class="acc-inner">
-          <div class="profile-block-head">
-            <div class="profile-block-title">Reading list</div>
-            <div class="profile-block-count" id="reading-count">0 read</div>
-          </div>
-          <div id="reading-list-wrap"></div>
-          <div class="profile-block-head" style="margin-top:20px">
-            <div class="profile-block-title">Techniques</div>
-            <div class="profile-block-count" id="tech-explore-count">0 of 10</div>
-          </div>
-          <div class="completion-grid" id="tech-completion-grid"></div>
-          <div class="profile-block-head" style="margin-top:20px">
-            <div class="profile-block-title">Meditations</div>
-            <div class="profile-block-count" id="med-explore-count">0 of 6</div>
-          </div>
-          <div class="completion-grid" id="med-completion-grid"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 9. MISSIONS accordion -->
-    <div class="acc-wrap" data-auth-required>
-      <button class="acc-btn" onclick="toggleAccordion('acc-missions')">
-        <span>Missions</span>
-        <span class="acc-badge acc-badge--active" id="missions-active-count" style="display:none">0</span>
-        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="accordion-body" id="acc-missions">
-        <div class="acc-inner">
-          <div id="profile-missions-block"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 10. APP SETTINGS accordion -->
-    <div class="acc-wrap" data-auth-required>
-      <button class="acc-btn" onclick="toggleAccordion('acc-settings')">
-        <span>App Settings</span>
-        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="accordion-body" id="acc-settings">
-        <div class="acc-inner">
-          <div class="theme-toggle-row">
-            <span class="theme-toggle-label">Theme</span>
-            <div class="theme-switch" onclick="toggleTheme()" role="switch" tabindex="0"
-                 onkeydown="if(event.key==='Enter'||event.key===' ')toggleTheme()">
-              <span class="theme-switch-opt active" id="theme-opt-light">Light</span>
-              <span class="theme-switch-opt"        id="theme-opt-dark">Dark</span>
+            <!-- Account Data -->
+            <div class="acc-sub-head">Account Data</div>
+            <div class="profile-stats" id="profile-stats-grid"></div>
+            <div class="profile-block-head" style="margin-top:18px">
+              <div class="profile-block-title">Recent sessions</div>
+              <div class="profile-block-count" id="sessions-count">0 sessions</div>
             </div>
-          </div>
-          <div class="acc-settings-link">
-            <a onclick="openPrivacyModal()">Privacy &amp; Legal</a>
-          </div>
-          <div class="acc-settings-link acc-settings-link--danger" data-auth-required>
-            <a onclick="openDeleteAccountModal()">Delete My Account &amp; Data</a>
+            <div id="sessions-list-wrap"></div>
+
+            <!-- Explored -->
+            <div class="acc-sub-head">Explored</div>
+            <div class="profile-block-head">
+              <div class="profile-block-title">Reading list</div>
+              <div class="profile-block-count" id="reading-count">0 read</div>
+            </div>
+            <div id="reading-list-wrap"></div>
+            <div class="profile-block-head" style="margin-top:20px">
+              <div class="profile-block-title">Techniques</div>
+              <div class="profile-block-count" id="tech-explore-count">0 of 10</div>
+            </div>
+            <div class="completion-grid" id="tech-completion-grid"></div>
+            <div class="profile-block-head" style="margin-top:20px">
+              <div class="profile-block-title">Meditations</div>
+              <div class="profile-block-count" id="med-explore-count">0 of 6</div>
+            </div>
+            <div class="completion-grid" id="med-completion-grid"></div>
+
+            <!-- Missions -->
+            <div class="acc-sub-head" id="acc-account-missions">Missions</div>
+            <span class="acc-badge acc-badge--active" id="missions-active-count" style="display:none">0</span>
+            <div id="profile-missions-block"></div>
+
+            <!-- App Settings -->
+            <div class="acc-sub-head">App Settings</div>
+            <div class="theme-toggle-row">
+              <span class="theme-toggle-label">Theme</span>
+              <div class="theme-switch" onclick="toggleTheme()" role="switch" tabindex="0"
+                   onkeydown="if(event.key==='Enter'||event.key===' ')toggleTheme()">
+                <span class="theme-switch-opt active" id="theme-opt-light">Light</span>
+                <span class="theme-switch-opt" id="theme-opt-dark">Dark</span>
+              </div>
+            </div>
+            <div class="acc-settings-link" style="margin-top:12px">
+              <a onclick="openPrivacyModal()">Privacy &amp; Legal</a>
+            </div>
+            <div class="acc-settings-link acc-settings-link--danger" style="margin-top:6px">
+              <a onclick="openDeleteAccountModal()">Delete My Account &amp; Data</a>
+            </div>
+
           </div>
         </div>
       </div>
+
+      <!-- Pro banner -->
+      <div id="profile-pro-banner" data-auth-required></div>
+
+      <!-- SECTION 6: Triad Lab -->
+      <div class="triad-lab" data-auth-required>
+        <div class="triad-lab-kicker">⚗️ TRIAD LAB — Beta Features</div>
+        <div class="triad-lab-title">Shape what comes next.</div>
+        <div class="triad-lab-subtitle">Your practice helps us build the right things.</div>
+        <div class="triad-lab-grid">
+          <div class="triad-lab-card">
+            <div class="triad-lab-card-title">Missions</div>
+            <div class="triad-lab-card-desc">21-day habit programmes to build lasting practice.</div>
+            <span class="triad-lab-status beta">In Beta</span>
+          </div>
+          <div class="triad-lab-card">
+            <div class="triad-lab-card-title">My Plan</div>
+            <div class="triad-lab-card-desc">AI-powered personal practice plans tailored to you.</div>
+            <span class="triad-lab-status">Coming Soon</span>
+          </div>
+          <div class="triad-lab-card">
+            <div class="triad-lab-card-title">AI Coach</div>
+            <div class="triad-lab-card-desc">Your personal breathwork and meditation coach.</div>
+            <span class="triad-lab-status">Coming Soon</span>
+          </div>
+        </div>
+        <div class="triad-lab-feedback">
+          <textarea id="feedback-message" placeholder="What would you like to see in Triad?" maxlength="500"
+                    oninput="updateFeedbackCharCount()"></textarea>
+          <div class="triad-lab-feedback-row">
+            <span class="triad-lab-char" id="feedback-char-count">0/500</span>
+            <button class="triad-lab-send" id="feedback-send-btn" onclick="submitFeedback()">Send Feedback</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /profile-main-view -->
+
+    <!-- Full achievements page (hidden by default) -->
+    <div id="profile-achievements-page" style="display:none"></div>
+
+    <!-- Legacy hidden elements — kept in DOM for JS compatibility -->
+    <div id="achievements-accordion-wrap" style="display:none">
+      <span id="achievement-count">0/15</span>
+      <div id="profile-next-achievement"></div>
+      <div id="achievements-section"></div>
     </div>
 
   </section>
 
+</div>
+
+<!-- ═════════ Settings drawer ═════════ -->
+<div class="settings-drawer-backdrop" id="settingsDrawerBackdrop" onclick="closeSettingsDrawer()"></div>
+<div class="settings-drawer" id="settingsDrawer" role="dialog" aria-label="Settings">
+  <div class="settings-drawer-head">
+    <span class="settings-drawer-title">Settings</span>
+    <button class="settings-drawer-close" onclick="closeSettingsDrawer()" aria-label="Close">✕</button>
+  </div>
+  <div class="settings-drawer-section">
+    <div class="settings-drawer-label">Theme</div>
+    <div class="theme-switch" onclick="toggleTheme()" role="switch" tabindex="0"
+         onkeydown="if(event.key==='Enter'||event.key===' ')toggleTheme()">
+      <span class="theme-switch-opt active" id="settings-theme-opt-light">Light</span>
+      <span class="theme-switch-opt" id="settings-theme-opt-dark">Dark</span>
+    </div>
+  </div>
+  <div class="settings-drawer-section">
+    <button class="settings-drawer-link" onclick="closeSettingsDrawer(); openPrivacyModal()">Privacy &amp; Legal</button>
+  </div>
+  <div class="settings-drawer-section" id="settings-drawer-delete-wrap">
+    <button class="settings-drawer-link danger" onclick="closeSettingsDrawer(); openDeleteAccountModal()">Delete My Account &amp; Data</button>
+  </div>
 </div>
 
 <!-- ═════════ Diagnostic overlay ═════════ -->
@@ -5623,6 +5974,9 @@ var _introPlayedThisSession = false;
     <span class="top-header-wordmark">TRIAD</span>
   </button>
   <div class="top-header-right">
+    <button class="gear-btn hidden" id="gearBtn" onclick="openSettingsDrawer()" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
     <button class="top-header-avatar" id="profileIconBtn" onclick="handleProfileIconClick()" aria-label="Profile">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
     </button>
@@ -11372,6 +11726,408 @@ Build my personalised plan.`;
 
     renderProBanner();
     if (auth.loggedIn) renderMissions();
+
+    // New profile sections
+    renderProfileHero();
+    renderSnapshotStats();
+    renderAchievementPreview();
+    renderActiveMissionsSection();
+
+    // Always restore main view (hide achievements page if open)
+    const achPage = document.getElementById('profile-achievements-page');
+    const mainView = document.getElementById('profile-main-view');
+    if (achPage) achPage.style.display = 'none';
+    if (mainView) mainView.style.display = '';
+  }
+
+  /* ════════════════ PROFILE OVERHAUL — NEW FUNCTIONS ════════════════ */
+
+  /* ── Triad profile state ── */
+  let _triadProfile = null;
+  let _triadNameSuggestion = null;
+  let _triadOnboardDismissed = false;
+
+  async function loadTriadProfile() {
+    if (!auth.loggedIn) return;
+    try {
+      const res = await fetch('/user/profile', { credentials: 'same-origin' });
+      if (!res.ok) return;
+      const data = await res.json();
+      _triadProfile = data.profile || {};
+    } catch(e) {}
+  }
+
+  async function fetchTriadNameSuggestion() {
+    try {
+      const res = await fetch('/triad-name/generate', { credentials: 'same-origin' });
+      const data = await res.json();
+      _triadNameSuggestion = data.name || '';
+      const el = document.getElementById('triad-suggestion-text');
+      if (el) el.textContent = _triadNameSuggestion;
+    } catch(e) {}
+  }
+
+  async function refreshTriadSuggestion() {
+    const el = document.getElementById('triad-suggestion-text');
+    if (el) el.textContent = '…';
+    await fetchTriadNameSuggestion();
+  }
+
+  async function claimTriadName(name) {
+    if (!name || name === '…') return;
+    try {
+      const res = await fetch('/user/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ triad_name: name })
+      });
+      const data = await res.json();
+      if (data.error === 'name_taken') {
+        showToast({ icon: '⚠️', label: 'That name is already taken', autohide: 2500 });
+        _triadNameSuggestion = null;
+        await fetchTriadNameSuggestion();
+        return;
+      }
+      if (data.success) {
+        _triadProfile = data.profile;
+        showToast({ icon: '✨', kicker: 'Welcome', label: `You are ${escapeHtml(name)}`, autohide: 3000 });
+        renderProfileHero();
+      }
+    } catch(e) {
+      showToast({ icon: '⚠️', label: 'Failed to save name', autohide: 2500 });
+    }
+  }
+
+  function claimCurrentTriadName() {
+    claimTriadName(_triadNameSuggestion);
+  }
+
+  function dismissTriadOnboarding() {
+    _triadOnboardDismissed = true;
+    renderProfileHero();
+  }
+
+  /* ── Hero area ── */
+  function renderProfileHero() {
+    const el = document.getElementById('profile-hero');
+    if (!el) return;
+    if (!auth.loggedIn) { el.innerHTML = ''; return; }
+
+    const triadName = _triadProfile && _triadProfile.triad_name;
+
+    if (triadName) {
+      el.innerHTML = `
+        <div class="profile-hero-welcome">
+          <div class="profile-hero-name">Welcome back, ${escapeHtml(triadName)}</div>
+          <div class="profile-hero-sub">${escapeHtml(auth.email || '')}</div>
+          <button class="profile-hero-continue" onclick="navigate('home')">Continue Your Daily Practice</button>
+        </div>`;
+    } else if (!_triadOnboardDismissed) {
+      const suggestion = _triadNameSuggestion || '…';
+      el.innerHTML = `
+        <div class="triad-onboard-card">
+          <div class="triad-onboard-title">You've arrived.</div>
+          <div class="triad-onboard-sub">Give yourself a Triad Name.</div>
+          <div class="triad-name-suggestion">
+            <span class="triad-suggestion-text" id="triad-suggestion-text">${escapeHtml(suggestion)}</span>
+            <button class="triad-refresh-btn" onclick="refreshTriadSuggestion()" title="Generate another">↻</button>
+          </div>
+          <div class="triad-onboard-actions">
+            <button class="triad-claim-btn" onclick="claimCurrentTriadName()">Claim this name</button>
+            <button class="triad-later-btn" onclick="dismissTriadOnboarding()">I'll do this later</button>
+          </div>
+        </div>`;
+      if (!_triadNameSuggestion) fetchTriadNameSuggestion();
+    } else {
+      el.innerHTML = `
+        <div class="profile-hero-welcome">
+          <div class="profile-hero-sub">${escapeHtml(auth.email || '')}</div>
+          <button class="profile-hero-continue" onclick="navigate('home')">Continue Your Daily Practice</button>
+        </div>`;
+    }
+  }
+
+  /* ── Snapshot stats (3 cards) ── */
+  function renderSnapshotStats() {
+    const el = document.getElementById('profile-snapshot');
+    if (!el) return;
+
+    const streak = effectiveStreak();
+    const totalSessions = store.sessions.length;
+
+    const candidates = ACHIEVEMENTS
+      .filter(a => !store.achievements[a.id])
+      .filter(a => !(a.tier === 'pro' && store.tier !== 'pro'))
+      .map(a => {
+        const p = a.progress ? a.progress(store) : null;
+        if (!p) return null;
+        const remaining = Math.max(0, p.target - p.current);
+        const pct = Math.min(100, Math.round((p.current / p.target) * 100));
+        return { a, p, remaining, pct };
+      })
+      .filter(x => x && x.remaining > 0)
+      .sort((x, y) => x.remaining - y.remaining);
+
+    const ms = candidates[0];
+    const isClose = ms && ms.remaining <= 3;
+
+    const milestoneCard = ms ? `
+      <div class="snap-card">
+        <div class="snap-milestone-icon ${isClose ? '' : 'mystery'}">${ms.a.icon}</div>
+        <div class="snap-milestone-hint">${ms.remaining} more ${ms.p.label} to unlock${isClose ? ' ' + escapeHtml(ms.a.name) : ' a surprise'}</div>
+        <div class="snap-milestone-bar"><div class="snap-milestone-fill" style="width:${ms.pct}%"></div></div>
+        <div class="snap-label">next milestone</div>
+      </div>` : `
+      <div class="snap-card">
+        <div class="snap-icon">🏛️</div>
+        <div class="snap-value">✓</div>
+        <div class="snap-label">all unlocked</div>
+      </div>`;
+
+    el.innerHTML = `
+      <div class="snap-card">
+        <div class="snap-icon">🔥</div>
+        <div class="snap-value">${streak}</div>
+        <div class="snap-label">day streak</div>
+      </div>
+      <div class="snap-card">
+        <div class="snap-icon">✓</div>
+        <div class="snap-value">${totalSessions}</div>
+        <div class="snap-label">sessions complete</div>
+      </div>
+      ${milestoneCard}`;
+  }
+
+  /* ── Achievement preview (2 cards + View All button) ── */
+  function renderAchievementPreview() {
+    const el = document.getElementById('profile-achievement-preview');
+    if (!el) return;
+
+    const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'guest' || store.tier === 'pro');
+    const unlockedList = ACHIEVEMENTS.filter(trulyUnlocked);
+    const unlockedCount = unlockedList.length;
+
+    const lastUnlocked = unlockedList
+      .map(a => ({ a, ts: store.achievements[a.id] || '' }))
+      .sort((x, y) => y.ts.localeCompare(x.ts))[0];
+
+    const candidates = ACHIEVEMENTS
+      .filter(a => !trulyUnlocked(a))
+      .filter(a => !(a.tier === 'pro' && store.tier !== 'pro'))
+      .map(a => {
+        const p = a.progress ? a.progress(store) : null;
+        if (!p) return null;
+        const remaining = Math.max(0, p.target - p.current);
+        const pct = Math.min(100, Math.round((p.current / p.target) * 100));
+        return { a, p, remaining, pct };
+      })
+      .filter(x => x && x.remaining > 0)
+      .sort((x, y) => x.remaining - y.remaining);
+    const next = candidates[0];
+
+    const lastCard = lastUnlocked ? `
+      <div class="ach-preview-card">
+        <div class="ach-preview-kicker">Just unlocked</div>
+        <span class="ach-preview-icon">${lastUnlocked.a.icon}</span>
+        <div class="ach-preview-name">${escapeHtml(lastUnlocked.a.name)}</div>
+      </div>` : `
+      <div class="ach-preview-card">
+        <div class="ach-preview-kicker">Achievements</div>
+        <span class="ach-preview-icon">✨</span>
+        <div class="ach-preview-name">None yet</div>
+        <div class="ach-preview-sub">Complete a session to start</div>
+      </div>`;
+
+    const nextCard = next ? `
+      <div class="ach-preview-card">
+        <div class="ach-preview-kicker">Next achievement</div>
+        <span class="ach-preview-icon mystery">${next.a.icon}</span>
+        <div class="ach-preview-name mystery">${escapeHtml(next.a.name)}</div>
+        <div class="ach-preview-sub">${next.remaining} more ${next.p.label}</div>
+        <div class="ach-preview-bar"><div class="ach-preview-fill" style="width:${next.pct}%"></div></div>
+      </div>` : `
+      <div class="ach-preview-card">
+        <div class="ach-preview-kicker">Next achievement</div>
+        <span class="ach-preview-icon">🏛️</span>
+        <div class="ach-preview-name">All unlocked!</div>
+      </div>`;
+
+    el.innerHTML = `
+      <div class="ach-preview-row">${lastCard}${nextCard}</div>
+      <button class="btn-view-all-ach" onclick="showAchievementsPage()">
+        <span>View All Achievements <span style="color:var(--text-muted);font-weight:400">(${unlockedCount}/${ACHIEVEMENTS.length})</span></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9 18l6-6-6-6"/></svg>
+      </button>`;
+  }
+
+  /* ── Full achievements page ── */
+  function showAchievementsPage() {
+    const main = document.getElementById('profile-main-view');
+    const page = document.getElementById('profile-achievements-page');
+    if (!main || !page) return;
+    main.style.display = 'none';
+    page.style.display = '';
+    renderAchievementsPage();
+    document.getElementById('profile')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function hideAchievementsPage() {
+    const main = document.getElementById('profile-main-view');
+    const page = document.getElementById('profile-achievements-page');
+    if (main) main.style.display = '';
+    if (page) page.style.display = 'none';
+  }
+
+  function renderAchievementsPage() {
+    const el = document.getElementById('profile-achievements-page');
+    if (!el) return;
+
+    const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'guest' || store.tier === 'pro');
+    const unlocked = ACHIEVEMENTS.filter(trulyUnlocked);
+    const locked   = ACHIEVEMENTS.filter(a => !trulyUnlocked(a));
+
+    const cardHtml = (a, idx) => {
+      const isUnlocked = trulyUnlocked(a);
+      const p = a.progress ? a.progress(store) : null;
+      const pct = p ? Math.min(100, Math.round((p.current / p.target) * 100)) : 0;
+      if (isUnlocked) {
+        return `
+          <div class="ach-full-card unlocked" style="animation-delay:${idx * 55}ms">
+            <span class="ach-full-card-icon">${a.icon}</span>
+            <div class="ach-full-card-name">${escapeHtml(a.name)}</div>
+            <div class="ach-full-card-sub">Unlocked — ${escapeHtml(a.hint)}</div>
+          </div>`;
+      }
+      return `
+        <div class="ach-full-card" style="animation-delay:${idx * 55}ms">
+          <span class="ach-full-card-icon locked">🔒</span>
+          <div class="ach-full-card-name locked">${escapeHtml(a.name)}</div>
+          <div class="ach-full-card-sub">${p ? `${p.current} of ${p.target} ${p.label}` : escapeHtml(a.hint)}</div>
+          ${p ? `<div class="ach-full-card-bar"><div class="ach-full-card-fill" style="width:${pct}%"></div></div>` : ''}
+        </div>`;
+    };
+
+    el.innerHTML = `
+      <div class="ach-page-head">
+        <button class="ach-page-back" onclick="hideAchievementsPage()">← Back</button>
+        <div class="ach-page-title">Your Achievements</div>
+      </div>
+      ${unlocked.length ? `
+        <div class="ach-page-section-head">Unlocked (${unlocked.length})</div>
+        <div class="ach-page-grid">${unlocked.map((a, i) => cardHtml(a, i)).join('')}</div>` : ''}
+      <div class="ach-page-section-head">Locked (${locked.length})</div>
+      <div class="ach-page-grid">${locked.map((a, i) => cardHtml(a, i + unlocked.length)).join('')}</div>`;
+  }
+
+  /* ── Active missions section ── */
+  function renderActiveMissionsSection() {
+    const el = document.getElementById('profile-missions-section');
+    if (!el || !auth.loggedIn) { if (el) el.innerHTML = ''; return; }
+
+    const activeMissions = MISSIONS.filter(m => _getMissionState(m.missionId).status === 'ACTIVE');
+
+    if (activeMissions.length === 0) {
+      el.innerHTML = `
+        <div class="missions-prompt-card">
+          <div class="missions-prompt-title">Ready to begin your first mission?</div>
+          <div class="missions-prompt-desc">21-day habit programmes that build a lasting daily practice — one session at a time.</div>
+          <button class="missions-prompt-btn" onclick="openMissionsAccordion()">Explore Missions</button>
+        </div>`;
+      return;
+    }
+
+    el.innerHTML = `<div style="margin-bottom:8px;font-size:0.64rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:600">Active Missions</div>` +
+      activeMissions.map(mission => {
+        const ms   = _getMissionState(mission.missionId);
+        const day  = _missionDayNumber(mission.missionId);
+        const pct  = Math.min(100, Math.round((day / mission.durationDays) * 100));
+        const done = _missionActiveTodayComplete(mission.missionId);
+        return `
+          <div class="mission-card">
+            <div class="mission-card-header">
+              <div class="mission-card-titles">
+                <div class="mission-title">${escapeHtml(mission.title)}</div>
+                <div class="mission-subtitle">${escapeHtml(mission.subtitle)}</div>
+              </div>
+              <span class="mission-status-badge mission-status--active">Day ${day} of ${mission.durationDays}</span>
+            </div>
+            <div class="mission-progress-bar"><div class="mission-progress-fill" style="width:${pct}%"></div></div>
+            <div class="mission-today">
+              <span class="mission-today-label">Today's drill</span>
+              <span class="mission-today-state">${done ? '✓ Done' : '○ Pending'}</span>
+            </div>
+            <button class="mission-cta${done ? ' mission-cta--done' : ''}"
+                    onclick="runMissionDrill('${mission.missionId}')"
+                    ${done ? 'disabled' : ''}>
+              ${done ? 'Done for today' : "Complete Today's Session"}
+            </button>
+          </div>`;
+      }).join('');
+  }
+
+  function openMissionsAccordion() {
+    const accBody = document.getElementById('acc-account');
+    if (accBody && !accBody.classList.contains('open')) toggleAccordion('acc-account');
+    setTimeout(() => {
+      const target = document.getElementById('acc-account-missions');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 320);
+  }
+
+  /* ── Feedback ── */
+  function updateFeedbackCharCount() {
+    const ta = document.getElementById('feedback-message');
+    const ct = document.getElementById('feedback-char-count');
+    if (!ta || !ct) return;
+    const len = ta.value.length;
+    ct.textContent = `${len}/500`;
+    ct.style.color = len > 460 ? 'var(--c-profile)' : '';
+  }
+
+  async function submitFeedback() {
+    const ta  = document.getElementById('feedback-message');
+    const btn = document.getElementById('feedback-send-btn');
+    if (!ta) return;
+    const msg = ta.value.trim();
+    if (!msg) return;
+    if (msg.length > 500) {
+      showToast({ icon: '⚠️', label: 'Message too long (max 500 characters)', autohide: 2500 });
+      return;
+    }
+    if (btn) btn.disabled = true;
+    try {
+      const res = await fetch('/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ message: msg })
+      });
+      const data = await res.json();
+      if (data.success) {
+        ta.value = '';
+        updateFeedbackCharCount();
+        showToast({ icon: '🙏', kicker: 'Thank you', label: 'Feedback sent', autohide: 3000 });
+      } else {
+        showToast({ icon: '⚠️', label: data.error || 'Failed to send', autohide: 2500 });
+      }
+    } catch(e) {
+      showToast({ icon: '⚠️', label: 'Failed to send', autohide: 2500 });
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  /* ── Settings drawer ── */
+  function openSettingsDrawer() {
+    document.getElementById('settingsDrawer')?.classList.add('open');
+    document.getElementById('settingsDrawerBackdrop')?.classList.add('open');
+    updateThemeToggle();
+  }
+
+  function closeSettingsDrawer() {
+    document.getElementById('settingsDrawer')?.classList.remove('open');
+    document.getElementById('settingsDrawerBackdrop')?.classList.remove('open');
   }
 
   /* ════════════════ MISSION ENGINE ════════════════ */
@@ -11562,7 +12318,7 @@ Build my personalised plan.`;
     }
     store.missions[_diagMissionId] = ms;
     saveStore(store);
-    setTimeout(() => { closeDiagnostic(); renderMissions(); }, 2000);
+    setTimeout(() => { closeDiagnostic(); renderMissions(); renderActiveMissionsSection(); }, 2000);
   }
 
   function _diagResultMessage(score) {
@@ -11642,7 +12398,7 @@ Build my personalised plan.`;
       store.missions[missionId] = ms;
       saveStore(store);
       _scheduleMissionNotifications(missionId);
-      renderMissions();
+      renderMissions(); renderActiveMissionsSection();
     });
   }
 
@@ -11655,7 +12411,7 @@ Build my personalised plan.`;
     ms.notificationsEnabled = false;
     store.missions[missionId] = ms;
     saveStore(store);
-    renderMissions();
+    renderMissions(); renderActiveMissionsSection();
   }
 
   function _scheduleMissionNotifications(missionId) {
@@ -11790,7 +12546,7 @@ Build my personalised plan.`;
     if (_missionNotifTimers[missionId]) { clearInterval(_missionNotifTimers[missionId]); delete _missionNotifTimers[missionId]; }
     store.missions[missionId] = _initMissionState(missionId);
     saveStore(store);
-    renderMissions();
+    renderMissions(); renderActiveMissionsSection();
   }
 
   function toggleRead(title) {
@@ -11877,6 +12633,8 @@ Build my personalised plan.`;
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     document.getElementById('theme-opt-light')?.classList.toggle('active', !isDark);
     document.getElementById('theme-opt-dark')?.classList.toggle('active',  isDark);
+    document.getElementById('settings-theme-opt-light')?.classList.toggle('active', !isDark);
+    document.getElementById('settings-theme-opt-dark')?.classList.toggle('active',  isDark);
   }
 
   function openPaywallModal()  { document.getElementById('paywallModal').classList.add('active'); }
@@ -11997,7 +12755,14 @@ Build my personalised plan.`;
     }
     auth.ready = true;
     updateAuthUi();
-    if (auth.loggedIn) syncFromServer().then(() => flushSyncQueue());
+    if (auth.loggedIn) {
+      syncFromServer().then(() => flushSyncQueue());
+      loadTriadProfile().then(() => {
+        if (document.getElementById('profile')?.classList.contains('active')) {
+          renderProfileHero();
+        }
+      });
+    }
   }
 
   /* ─── Profile-icon click router ─── */
@@ -12227,7 +12992,10 @@ Build my personalised plan.`;
       track(_authTab === 'signup' ? 'account_created' : 'login', {});
       closeAuthModal();
       updateAuthUi();
-      // Refresh profile if user is currently viewing it
+      loadTriadProfile().then(() => {
+        if (state && state.section === 'profile') renderProfile();
+      });
+      // Refresh profile if user is currently viewing it (immediate, before profile loads)
       if (state && state.section === 'profile') renderProfile();
       showToast({
         icon: _authTab === 'signup' ? '🌱' : '👋',
@@ -12276,6 +13044,10 @@ Build my personalised plan.`;
     // Keep profile section in sync with auth state regardless of navigation
     document.getElementById('profile')?.classList.toggle('profile--guest', !auth.loggedIn);
     renderProfileAccountHeader();
+    // Show gear icon only when logged in
+    document.getElementById('gearBtn')?.classList.toggle('hidden', !auth.loggedIn);
+    // Hide delete row in drawer for guests
+    document.getElementById('settings-drawer-delete-wrap')?.style.setProperty('display', auth.loggedIn ? '' : 'none');
   }
 
   /* ─── Guard helper used by the AI call sites ─── */
