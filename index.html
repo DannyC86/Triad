@@ -4367,16 +4367,6 @@
       border-radius: 2px 2px 0 0;
     }
 
-    .auth-reason {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      background: color-mix(in srgb, var(--c-profile) 8%, transparent);
-      border: 1px solid rgba(253, 164, 175, 0.22);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      margin-bottom: 14px;
-    }
 
     .auth-form {
       display: flex;
@@ -5192,7 +5182,6 @@ var _introPlayedThisSession = false;
         <button class="auth-tab active" data-tab="login"  onclick="switchAuthTab('login')">Log in</button>
         <button class="auth-tab"        data-tab="signup" onclick="switchAuthTab('signup')">Sign up</button>
       </div>
-      <p class="auth-reason" id="auth-reason" hidden></p>
       <form class="auth-form" onsubmit="submitAuth(event)" novalidate>
         <label class="auth-field">
           <span class="auth-field-label">Email</span>
