@@ -738,6 +738,16 @@
       border-color: rgba(90,138,138,0.5);
       box-shadow: 0 0 0 3px rgba(90,138,138,0.08);
     }
+    #plan-goal-other {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    [data-theme="dark"] #plan-goal-other {
+      background: var(--card-bg, #1a2235);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
 
     .chip-group {
       display: flex;
@@ -5441,7 +5451,7 @@ var _introPlayedThisSession = false;
       <!-- SECTION 5: Account & Settings — single collapsed accordion -->
       <div class="acc-wrap" data-auth-required>
         <button class="acc-btn" onclick="toggleAccordion('acc-account')">
-          <span>Account &amp; Settings</span>
+          <span id="acc-account-title">My Stats</span>
           <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="accordion-body" id="acc-account">
@@ -5450,31 +5460,28 @@ var _introPlayedThisSession = false;
             <!-- Favourite practice -->
             <div id="profile-favourite-block"></div>
 
-            <!-- My Plan -->
-            <div class="acc-sub-head">My Plan</div>
-            <div class="profile-plan" id="profile-plan-block"></div>
-            <button class="acc-navigate-btn" onclick="navigate('plan')">
-              <span>Open My Plan</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
+            <!-- My Plan (hidden — surfaced in Triad Lab; JS targets retained) -->
+            <div style="display:none">
+              <div class="profile-plan" id="profile-plan-block"></div>
+            </div>
 
             <!-- Account Data -->
             <div class="acc-sub-head">Account Data</div>
             <div class="profile-stats" id="profile-stats-grid"></div>
-            <div class="profile-block-head" style="margin-top:18px">
-              <div class="profile-block-title">Recent sessions</div>
-              <div class="profile-block-count" id="sessions-count">0 sessions</div>
+            <!-- Recent sessions hidden — JS targets retained -->
+            <div style="display:none">
+              <span id="sessions-count">0 sessions</span>
+              <div id="sessions-list-wrap"></div>
             </div>
-            <div id="sessions-list-wrap"></div>
 
             <!-- Explored -->
             <div class="acc-sub-head">Explored</div>
-            <div class="profile-block-head">
-              <div class="profile-block-title">Reading list</div>
-              <div class="profile-block-count" id="reading-count">0 read</div>
+            <!-- Reading list hidden — JS targets retained -->
+            <div style="display:none">
+              <span id="reading-count">0 read</span>
+              <div id="reading-list-wrap"></div>
             </div>
-            <div id="reading-list-wrap"></div>
-            <div class="profile-block-head" style="margin-top:20px">
+            <div class="profile-block-head">
               <div class="profile-block-title">Techniques</div>
               <div class="profile-block-count" id="tech-explore-count">0 of 10</div>
             </div>
@@ -5490,29 +5497,12 @@ var _introPlayedThisSession = false;
             <span class="acc-badge acc-badge--active" id="missions-active-count" style="display:none">0</span>
             <div id="profile-missions-block"></div>
 
-            <!-- App Settings -->
-            <div class="acc-sub-head">App Settings</div>
-            <div class="theme-toggle-row">
-              <span class="theme-toggle-label">Theme</span>
-              <div class="theme-switch" onclick="toggleTheme()" role="switch" tabindex="0"
-                   onkeydown="if(event.key==='Enter'||event.key===' ')toggleTheme()">
-                <span class="theme-switch-opt active" id="theme-opt-light">Light</span>
-                <span class="theme-switch-opt" id="theme-opt-dark">Dark</span>
-              </div>
-            </div>
-            <div class="acc-settings-link" style="margin-top:12px">
-              <a onclick="openPrivacyModal()">Privacy &amp; Legal</a>
-            </div>
-            <div class="acc-settings-link acc-settings-link--danger" style="margin-top:6px">
-              <a onclick="openDeleteAccountModal()">Delete My Account &amp; Data</a>
-            </div>
-
           </div>
         </div>
       </div>
 
-      <!-- Pro banner -->
-      <div id="profile-pro-banner" data-auth-required></div>
+      <!-- Pro banner removed — element kept hidden for legacy JS calls -->
+      <div id="profile-pro-banner" style="display:none"></div>
 
       <!-- SECTION 6: Triad Lab -->
       <div class="triad-lab" data-auth-required>
@@ -5902,9 +5892,6 @@ var _introPlayedThisSession = false;
         <button type="button" class="auth-submit" id="reset-submit" onclick="submitResetPassword()">Set new password</button>
       </div>
 
-      <p class="auth-signup-tagline" id="auth-signup-tagline" hidden>
-        Free forever · Pro features coming soon
-      </p>
       <p class="auth-skip-wrap">
         <a class="auth-skip" onclick="closeAuthModal()">Continue browsing free →</a>
       </p>
@@ -5912,13 +5899,13 @@ var _introPlayedThisSession = false;
   </div>
 </div>
 
-<!-- ═════════ Pro waitlist modal ═════════ -->
+<!-- ═════════ Waitlist modal ═════════ -->
 <div class="modal-backdrop" id="waitlistModal" onclick="if(event.target===this) closeWaitlistModal()">
   <div class="modal" style="max-width: 460px;">
     <div class="modal-head">
       <div class="modal-title-wrap">
-        <span class="modal-kicker" style="color: var(--gold)">✦ Triad Pro</span>
-        <span class="modal-title" id="waitlistModalTitle">Pro coming soon</span>
+        <span class="modal-kicker">Triad</span>
+        <span class="modal-title" id="waitlistModalTitle">Coming soon</span>
       </div>
       <button class="modal-close" onclick="closeWaitlistModal()" title="Close">
         <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
@@ -5984,7 +5971,7 @@ var _introPlayedThisSession = false;
   <div class="modal" style="max-width: 420px;">
     <div class="modal-head">
       <div class="modal-title-wrap">
-        <span class="modal-kicker" style="color: var(--gold)">✦ Triad Pro</span>
+        <span class="modal-kicker">Triad</span>
         <span class="modal-title">Unlock the full experience</span>
       </div>
       <button class="modal-close" onclick="closePaywallModal()" title="Close">
@@ -6095,7 +6082,7 @@ var _introPlayedThisSession = false;
 </nav>
 
 <script>
-  const APP_VERSION = 'v2.0';
+  const APP_VERSION = 'v2.1';
 
   /* ════════════════ DATA ════════════════ */
 
@@ -8364,13 +8351,10 @@ var _introPlayedThisSession = false;
     if (btn) btn.classList.toggle('open', opening);
   }
 
-  /* ── Pro banner render ── */
+  /* ── Pro banner render (Pro promotion removed; kept as no-op for legacy callers) ── */
   function renderProBanner() {
     const el = document.getElementById('profile-pro-banner');
-    if (!el) return;
-    el.innerHTML = store.tier === 'pro'
-      ? `<div class="pro-badge" style="margin:4px 0 12px"><span class="pro-badge-title">✦ Triad Pro</span><span class="pro-badge-sub">All features unlocked</span></div>`
-      : `<button class="upgrade-btn" style="margin:4px 0 12px" onclick="openWaitlistModal()"><span class="upgrade-btn-title">✦ Upgrade to Triad Pro</span><span class="upgrade-btn-price">£4.99 / month</span></button>`;
+    if (el) el.innerHTML = '';
   }
 
   /* ────── Persistent gamification store (localStorage) ────── */
@@ -11576,14 +11560,29 @@ Build my personalised plan.`;
 
     body.innerHTML = rows.join('');
     refreshStreakBadge();
+    renderHomeAuthFooter();
+  }
+
+  function renderHomeAuthFooter() {
     const authFooter = document.getElementById('home-auth-footer');
-    if (authFooter) {
-      if (auth.loggedIn) {
-        authFooter.innerHTML = `<span class="home-auth-link" onclick="navigate('profile')" role="button" tabindex="0">Welcome back &middot; <span style="text-decoration:underline">View Profile</span></span>`;
-      } else {
-        authFooter.innerHTML = `<span class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</span>`;
-      }
+    if (!authFooter) return;
+    if (auth.loggedIn) {
+      const name = (typeof _triadProfile !== 'undefined' && _triadProfile && _triadProfile.triad_name)
+        ? _triadProfile.triad_name
+        : (auth.email || '');
+      authFooter.innerHTML = `<span class="home-auth-link" onclick="navigate('profile')" role="button" tabindex="0">Welcome back, ${escapeHtml(name)} &middot; <span style="text-decoration:underline">View Profile</span></span>`;
+    } else {
+      authFooter.innerHTML = `<span class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</span>`;
     }
+  }
+
+  function updateAccountSectionTitle() {
+    const el = document.getElementById('acc-account-title');
+    if (!el) return;
+    const name = (typeof _triadProfile !== 'undefined' && _triadProfile && _triadProfile.triad_name)
+      ? _triadProfile.triad_name
+      : null;
+    el.textContent = name ? `${name} Stats` : 'My Stats';
   }
 
   function refreshStreakBadge() {
@@ -11891,6 +11890,7 @@ Build my personalised plan.`;
 
   /* ── Hero area ── */
   function renderProfileHero() {
+    updateAccountSectionTitle();
     const el = document.getElementById('profile-hero');
     if (!el) return;
     if (!auth.loggedIn) { el.innerHTML = ''; return; }
@@ -12842,6 +12842,8 @@ Build my personalised plan.`;
         if (document.getElementById('profile')?.classList.contains('active')) {
           renderProfileHero();
         }
+        renderHomeAuthFooter();
+        updateAccountSectionTitle();
       });
     }
   }
@@ -13241,6 +13243,13 @@ Build my personalised plan.`;
     document.getElementById('gearBtn')?.classList.toggle('hidden', !auth.loggedIn);
     // Hide delete row in drawer for guests
     document.getElementById('settings-drawer-delete-wrap')?.style.setProperty('display', auth.loggedIn ? '' : 'none');
+    // Explicitly enforce guest-only CTA visibility (FIX 3)
+    document.querySelectorAll('.profile-guest-cta').forEach(el => {
+      el.style.display = auth.loggedIn ? 'none' : '';
+    });
+    // Update homepage auth footer + account-section title with latest auth/triad state
+    renderHomeAuthFooter();
+    updateAccountSectionTitle();
   }
 
   /* ─── Guard helper used by the AI call sites ─── */
@@ -13256,7 +13265,7 @@ Build my personalised plan.`;
     if (!el) return;
     if (auth.loggedIn) {
       const initial = ((auth.email || 'U')[0] || 'U').toUpperCase();
-      const tierLabel = auth.tier === 'pro' ? '✦ Triad Pro' : 'Free account';
+      const tierLabel = auth.tier === 'pro' ? 'Pro' : 'Free account';
       el.innerHTML = `
         <div class="profile-account">
           <div class="account-info">
@@ -13554,12 +13563,17 @@ Build my personalised plan.`;
     document.getElementById('authModal').classList.add('active');
   })();
 
-  // Intro animation — mark played this session and remove overlay after animation completes
+  // Intro animation — mark played this session, block home clicks until it completes
   (function(){
     var intro = document.getElementById('intro-screen');
     if (!intro) return;
     _introPlayedThisSession = true;
-    setTimeout(function(){ if (intro.parentNode) intro.remove(); }, 7100);
+    var homeContainer = document.querySelector('#home .home-container');
+    if (homeContainer) homeContainer.style.pointerEvents = 'none';
+    setTimeout(function(){
+      if (intro.parentNode) intro.remove();
+      if (homeContainer) homeContainer.style.pointerEvents = '';
+    }, 7100);
   })();
 
   /* ─── Mystery achievement tap-to-reveal ─── */
