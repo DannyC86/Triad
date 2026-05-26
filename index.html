@@ -4647,6 +4647,17 @@
     }
     .auth-skip:hover { color: var(--text); border-bottom-color: var(--text-dim); }
 
+    .app-version {
+      display: block;
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      opacity: 0.5;
+      letter-spacing: 0.08em;
+      margin-top: 6px;
+      pointer-events: none;
+    }
+
     .auth-forgot-wrap {
       text-align: right;
       margin: -4px 0 2px;
@@ -5211,6 +5222,7 @@ var _introPlayedThisSession = false;
       <div class="home-auth-footer" id="home-auth-footer">
         <span class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</span>
       </div>
+      <span class="app-version" id="app-version"></span>
     </div>
     <!-- Hidden element kept for renderHomeSummary() JS compatibility -->
     <div id="home-summary-body" style="display:none"></div>
@@ -6083,6 +6095,8 @@ var _introPlayedThisSession = false;
 </nav>
 
 <script>
+  const APP_VERSION = 'v2.0';
+
   /* ════════════════ DATA ════════════════ */
 
   const TECHNIQUES = [
@@ -13519,6 +13533,10 @@ Build my personalised plan.`;
 
   // Sync theme toggle UI with saved preference
   updateThemeToggle();
+
+  // Render version number
+  const _vEl = document.getElementById('app-version');
+  if (_vEl) _vEl.textContent = APP_VERSION;
 
   // Paint guest state immediately, then hydrate from /auth/me asynchronously
   updateAuthUi();
