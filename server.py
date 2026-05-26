@@ -104,7 +104,7 @@ Safety: always note appropriate cautions for Wim Hof, extended kumbhaka, and Kap
 
 # ─────────────────────────── Database ───────────────────────────
 
-DB_PATH = Path(__file__).parent / "users.db"
+DB_PATH = Path(os.getenv("DATABASE_PATH", "/data/users.db"))
 
 
 def get_db():

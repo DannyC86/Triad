@@ -14,3 +14,9 @@ Breathly is a breathwork and meditation web app.
 - Frontend: index.html (single page app)
 - All content is static in index.html — zero API calls for browsing
 - Only two API call sites: My Plan generation and Ask technique questions
+
+## .env variables
+- `FLASK_SECRET_KEY` — required in production for persistent sessions
+- `ANTHROPIC_API_KEY` — required for AI features
+- `ADMIN_KEY` — required for admin endpoints
+- `DATABASE_PATH=users.db` — local dev only; on Railway the DB lives at /data/users.db (persistent volume)
