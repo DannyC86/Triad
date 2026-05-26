@@ -1843,6 +1843,58 @@
     }
     .profile-legal-link a:hover { color: var(--text-muted); border-bottom-color: var(--text-dim); }
 
+    /* ── Mission cards ── */
+    #profile-missions-block { margin-bottom: 28px; }
+    .mission-card { background: var(--navy-card); border: 1px solid var(--border-soft); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+    .mission-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .mission-card-titles { flex: 1; min-width: 0; }
+    .mission-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .mission-subtitle { font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+    .mission-status-badge { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+    .mission-status--new  { background: color-mix(in srgb, var(--text-muted) 12%, transparent); color: var(--text-muted); }
+    .mission-status--active { background: color-mix(in srgb, var(--gold) 16%, transparent); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+    .mission-status--done { background: color-mix(in srgb, #10b981 12%, transparent); color: #10b981; }
+    .mission-progress-bar { height: 5px; background: var(--navy-deep); border-radius: 3px; overflow: hidden; margin-bottom: 14px; }
+    .mission-progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #e2a840); border-radius: 3px; transition: width 0.5s ease; }
+    .mission-desc { font-size: 0.88rem; color: var(--text-soft); line-height: 1.65; margin-bottom: 14px; }
+    .mission-cta { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--gold); color: #1a1a2e; font-family: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: opacity 0.18s; margin-bottom: 12px; }
+    .mission-cta:hover { opacity: 0.88; }
+    .mission-cta--done { background: var(--navy-deep); color: var(--text-muted); cursor: default; }
+    .mission-cta--assess { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+    .mission-cta--restart { background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-weight: 500; }
+    .mission-today { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .mission-today-label { font-size: 0.82rem; color: var(--text-muted); }
+    .mission-today-state { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .mission-notif-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--border-soft); margin-top: 4px; }
+    .mission-notif-label { font-size: 0.82rem; color: var(--text-muted); }
+    .mission-notif-toggle { font-size: 0.78rem; font-weight: 600; padding: 4px 14px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.18s; }
+    .mission-notif-toggle.on { background: color-mix(in srgb, var(--gold) 16%, transparent); color: var(--gold); border-color: color-mix(in srgb, var(--gold) 40%, transparent); }
+    .mission-notif-note { font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
+    .mission-complete-msg { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+    .mission-scores { display: flex; gap: 12px; margin-bottom: 14px; }
+    .mission-score-item { flex: 1; background: var(--navy-deep); border-radius: 8px; padding: 10px; text-align: center; }
+    .mission-score-label { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .mission-score-val { display: block; font-size: 1.2rem; font-weight: 700; color: var(--gold); }
+    /* ── Diagnostic overlay ── */
+    .diag-overlay { position: fixed; inset: 0; z-index: 350; background: rgba(10,15,30,0.96); display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .diag-panel { background: var(--navy-mid, #111827); border: 1px solid rgba(201,169,110,0.25); border-radius: 20px; padding: 28px 24px 32px; width: 100%; max-width: 480px; position: relative; }
+    .diag-close { position: absolute; top: 16px; right: 16px; background: transparent; border: none; color: rgba(245,240,232,0.5); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; }
+    .diag-close:hover { color: rgba(245,240,232,0.9); }
+    .diag-kicker { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: #C9A96E; margin-bottom: 6px; }
+    .diag-mission-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 400; color: #F5F0E8; margin-bottom: 14px; line-height: 1.2; }
+    .diag-instructions { font-size: 0.88rem; color: rgba(245,240,232,0.65); line-height: 1.7; margin-bottom: 24px; }
+    .diag-timer-display { font-family: 'Cormorant Garamond', serif; font-size: 5rem; font-weight: 300; color: #C9A96E; text-align: center; line-height: 1; }
+    .diag-timer-unit { font-size: 0.78rem; color: rgba(245,240,232,0.4); text-align: center; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 24px; margin-top: 4px; }
+    .diag-survey-countdown { font-family: 'Cormorant Garamond', serif; font-size: 4rem; font-weight: 300; color: #C9A96E; text-align: center; line-height: 1; }
+    .diag-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.18s; margin-top: 8px; }
+    .diag-btn--primary { background: #C9A96E; color: #0A0F1E; }
+    .diag-btn--primary:hover { opacity: 0.88; }
+    .diag-btn--stop { background: rgba(201,169,110,0.15); border: 1px solid rgba(201,169,110,0.4); color: #C9A96E; }
+    .diag-btn--stop:hover { background: rgba(201,169,110,0.25); }
+    .diag-slider-label { display: block; font-size: 0.88rem; color: rgba(245,240,232,0.7); margin-bottom: 10px; text-align: center; }
+    .diag-slider { width: 100%; accent-color: #C9A96E; margin-bottom: 16px; }
+    .diag-result { margin-top: 18px; padding: 14px 16px; background: rgba(201,169,110,0.1); border: 1px solid rgba(201,169,110,0.25); border-radius: 10px; font-size: 0.9rem; color: #C9A96E; text-align: center; line-height: 1.5; }
+
     /* ── Profile guest / logged-in visibility ── */
     [data-guest-only] { display: none; }
     .profile--guest [data-guest-only] { display: block !important; }
@@ -4918,6 +4970,9 @@ var _introPlayedThisSession = false;
       </div>
     </div>
 
+    <!-- Missions -->
+    <div id="profile-missions-block" data-auth-required></div>
+
     <!-- Appearance settings -->
     <div class="profile-block" data-auth-required style="margin-top: 24px;">
       <div class="profile-block-head">
@@ -4944,6 +4999,42 @@ var _introPlayedThisSession = false;
     </div>
   </section>
 
+</div>
+
+<!-- ═════════ Diagnostic overlay ═════════ -->
+<div id="diagnosticOverlay" class="diag-overlay" style="display:none">
+  <div class="diag-panel">
+    <button class="diag-close" onclick="closeDiagnostic()" aria-label="Close diagnostic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M6 6L18 18M18 6L6 18"/></svg>
+    </button>
+    <div class="diag-kicker">Baseline Assessment</div>
+    <div class="diag-mission-title"></div>
+    <p class="diag-instructions"></p>
+
+    <!-- TIMED_HOLD UI -->
+    <div class="diag-timed">
+      <div class="diag-timer-display">0</div>
+      <div class="diag-timer-unit">seconds</div>
+      <button id="diag-start-btn" class="diag-btn diag-btn--primary" onclick="diagStartTimer()">Start Timer</button>
+      <button id="diag-stop-btn" class="diag-btn diag-btn--stop" onclick="diagStopTimer()" style="display:none">Stop &amp; Save Score</button>
+    </div>
+
+    <!-- SURVEY UI -->
+    <div class="diag-survey" style="display:none">
+      <div class="diag-survey-countdown-wrap">
+        <div class="diag-survey-countdown">30</div>
+        <div class="diag-timer-unit">seconds remaining</div>
+      </div>
+      <div class="diag-slider-wrap" style="display:none">
+        <label class="diag-slider-label">Tension level: <span id="diag-slider-val">5</span> / 10</label>
+        <input type="range" class="diag-slider" min="1" max="10" value="5"
+               oninput="document.getElementById('diag-slider-val').textContent=this.value">
+      </div>
+      <button class="diag-btn diag-btn--primary diag-save-survey" onclick="diagSaveSurvey()" style="display:none">Save Score</button>
+    </div>
+
+    <div class="diag-result" style="display:none"></div>
+  </div>
 </div>
 
 <!-- ═════════ Toast region ═════════ -->
@@ -7757,7 +7848,8 @@ var _introPlayedThisSession = false;
       openedPodcast: 0,
       visitedBreathworkHub: 0,
       visitedMeditationsHub: 0,
-      hasAccount: 0
+      hasAccount: 0,
+      missions: {}
     };
   }
 
@@ -10826,6 +10918,422 @@ Build my personalised plan.`;
           </button>
         </div>`;
     }).join('')}</div>`;
+
+    if (auth.loggedIn) renderMissions();
+  }
+
+  /* ════════════════ MISSION ENGINE ════════════════ */
+
+  const MISSIONS = [
+    {
+      missionId: "4a7b9c1d-e2f3-4a5b-6c7d-8e9f0a1b2c3d",
+      title: "The Nasal Gateway",
+      subtitle: "Mouth Breathing Reset",
+      description: "Permanently re-route your default breathing pathway from your mouth to your nose to optimise sleep, stamina, and respiratory chemistry.",
+      durationDays: 21,
+      diagnosticConfig: {
+        type: "TIMED_HOLD",
+        durationSeconds: 60,
+        instructions: "Sit comfortably. Take a normal breath in, a normal breath out, and pinch your nose closed. Start the timer. Hold your breath until you experience the very first clear physical urge to breathe. Release your nose and save your score."
+      },
+      activeSessionId: "buteyko-method",
+      passiveTriggers: [{
+        templateText: "Airway Check: Are your lips sealed right now? Put your tongue flat against the roof of your mouth.",
+        defaultIntervalMinutes: 120
+      }]
+    },
+    {
+      missionId: "8f3e2d1c-b4a5-6e7f-8a9b-0c1d2e3f4a5b",
+      title: "The Screen Apnea Circuit",
+      subtitle: "Desk Breathing Reset",
+      description: "Intercept and eliminate subconscious breath-holding or shallow breathing patterns during deep computer desk work.",
+      durationDays: 21,
+      diagnosticConfig: {
+        type: "SURVEY",
+        durationSeconds: 30,
+        instructions: "Sit at your workstation in your typical typing position. Breathe normally for 30 seconds. On a scale of 1-10, rate the level of physical tension in your chest and throat."
+      },
+      activeSessionId: "physiological-sigh",
+      passiveTriggers: [{
+        templateText: "Desk Check: Drop your shoulders, unclamp your teeth, and take a smooth, full diaphragmatic breath.",
+        defaultIntervalMinutes: 60
+      }]
+    }
+  ];
+
+  /* ── Mission store helpers ── */
+
+  function _initMissionState(missionId) {
+    return {
+      missionId,
+      status: 'NOT_STARTED',
+      startDate: null,
+      baselineDiagnosticValue: null,
+      endDiagnosticValue: null,
+      dailyLogs: [],
+      notificationsEnabled: false
+    };
+  }
+
+  function _getMissionState(missionId) {
+    if (!store.missions) store.missions = {};
+    if (!store.missions[missionId]) store.missions[missionId] = _initMissionState(missionId);
+    return store.missions[missionId];
+  }
+
+  function _missionDayNumber(missionId) {
+    const ms = _getMissionState(missionId);
+    if (!ms.startDate) return 0;
+    const start = new Date(ms.startDate + 'T00:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    return Math.max(1, Math.floor((today - start) / 86400000) + 1);
+  }
+
+  function _missionActiveTodayComplete(missionId) {
+    const today = new Date().toISOString().slice(0, 10);
+    const ms = _getMissionState(missionId);
+    const log = ms.dailyLogs.find(l => l.date === today);
+    if (log) return log.activeCompleted;
+    const mission = MISSIONS.find(m => m.missionId === missionId);
+    if (!mission) return false;
+    return store.sessions.some(s => s.ts.startsWith(today) && s.practiceId === mission.activeSessionId);
+  }
+
+  /* ── Module A — Diagnostic Runner ── */
+
+  let _diagState = null;
+  let _diagInterval = null;
+  let _diagPhase = null; // 'mission-start' | 'mission-end'
+  let _diagMissionId = null;
+
+  function openDiagnostic(missionId, phase) {
+    const mission = MISSIONS.find(m => m.missionId === missionId);
+    if (!mission) return;
+    _diagMissionId = missionId;
+    _diagPhase = phase;
+    const cfg = mission.diagnosticConfig;
+    const ov = document.getElementById('diagnosticOverlay');
+    if (!ov) return;
+    ov.querySelector('.diag-mission-title').textContent = mission.title;
+    ov.querySelector('.diag-instructions').textContent = cfg.instructions;
+    _diagState = { elapsed: 0, surveyCountdown: cfg.durationSeconds, surveyValue: 5, running: false, done: false };
+    if (cfg.type === 'TIMED_HOLD') {
+      ov.querySelector('.diag-timed').style.display = '';
+      ov.querySelector('.diag-survey').style.display = 'none';
+      ov.querySelector('.diag-timer-display').textContent = '0';
+      ov.querySelector('.diag-result').style.display = 'none';
+    } else {
+      ov.querySelector('.diag-timed').style.display = 'none';
+      ov.querySelector('.diag-survey').style.display = '';
+      ov.querySelector('.diag-survey-countdown').textContent = cfg.durationSeconds;
+      ov.querySelector('.diag-slider-wrap').style.display = 'none';
+      ov.querySelector('.diag-save-survey').style.display = 'none';
+      ov.querySelector('.diag-result').style.display = 'none';
+      _diagStartSurveyCountdown(cfg.durationSeconds);
+    }
+    ov.style.display = 'flex';
+  }
+
+  function closeDiagnostic() {
+    if (_diagInterval) { clearInterval(_diagInterval); _diagInterval = null; }
+    const ov = document.getElementById('diagnosticOverlay');
+    if (ov) ov.style.display = 'none';
+    _diagState = null;
+  }
+
+  function diagStartTimer() {
+    if (!_diagState || _diagState.running || _diagState.done) return;
+    _diagState.running = true;
+    _diagState.elapsed = 0;
+    document.getElementById('diag-start-btn').style.display = 'none';
+    document.getElementById('diag-stop-btn').style.display = '';
+    _diagInterval = setInterval(() => {
+      _diagState.elapsed++;
+      document.getElementById('diagnosticOverlay').querySelector('.diag-timer-display').textContent = _diagState.elapsed;
+    }, 1000);
+  }
+
+  function diagStopTimer() {
+    if (!_diagState || !_diagState.running) return;
+    clearInterval(_diagInterval); _diagInterval = null;
+    _diagState.running = false;
+    _diagState.done = true;
+    const score = _diagState.elapsed;
+    _saveDiagnosticScore(score);
+    document.getElementById('diag-stop-btn').style.display = 'none';
+    const ov = document.getElementById('diagnosticOverlay');
+    const resultEl = ov.querySelector('.diag-result');
+    resultEl.style.display = '';
+    resultEl.textContent = _diagResultMessage(score);
+  }
+
+  function _diagStartSurveyCountdown(seconds) {
+    if (_diagInterval) clearInterval(_diagInterval);
+    let remaining = seconds;
+    _diagInterval = setInterval(() => {
+      remaining--;
+      const ov = document.getElementById('diagnosticOverlay');
+      if (!ov) { clearInterval(_diagInterval); return; }
+      ov.querySelector('.diag-survey-countdown').textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(_diagInterval); _diagInterval = null;
+        ov.querySelector('.diag-survey-countdown-wrap').style.display = 'none';
+        ov.querySelector('.diag-slider-wrap').style.display = '';
+        ov.querySelector('.diag-save-survey').style.display = '';
+      }
+    }, 1000);
+  }
+
+  function diagSaveSurvey() {
+    const ov = document.getElementById('diagnosticOverlay');
+    if (!ov) return;
+    const slider = ov.querySelector('.diag-slider');
+    const score = parseInt(slider.value, 10);
+    _saveDiagnosticScore(score);
+    ov.querySelector('.diag-slider-wrap').style.display = 'none';
+    ov.querySelector('.diag-save-survey').style.display = 'none';
+    const resultEl = ov.querySelector('.diag-result');
+    resultEl.style.display = '';
+    resultEl.textContent = _diagResultMessage(score);
+  }
+
+  function _saveDiagnosticScore(score) {
+    const ms = _getMissionState(_diagMissionId);
+    const mission = MISSIONS.find(m => m.missionId === _diagMissionId);
+    if (_diagPhase === 'mission-start') {
+      ms.baselineDiagnosticValue = score;
+      ms.status = 'ACTIVE';
+      ms.startDate = new Date().toISOString().slice(0, 10);
+    } else {
+      ms.endDiagnosticValue = score;
+      ms.status = 'COMPLETED';
+    }
+    store.missions[_diagMissionId] = ms;
+    saveStore(store);
+    setTimeout(() => { closeDiagnostic(); renderMissions(); }, 2000);
+  }
+
+  function _diagResultMessage(score) {
+    const mission = MISSIONS.find(m => m.missionId === _diagMissionId);
+    if (!mission) return '';
+    if (mission.diagnosticConfig.type === 'TIMED_HOLD') {
+      if (score < 10) return `Score: ${score}s — Baseline saved. Let\'s build from here.`;
+      if (score < 25) return `Score: ${score}s — Good starting point. 21 days will transform this.`;
+      return `Score: ${score}s — Strong baseline. Track your progress over 21 days.`;
+    } else {
+      if (score >= 7) return `Score: ${score}/10 — High tension noted. This mission is for you.`;
+      if (score >= 4) return `Score: ${score}/10 — Moderate tension. Let\'s clear it.`;
+      return `Score: ${score}/10 — Good baseline. 21 days to lock it in.`;
+    }
+  }
+
+  /* ── Module B — Drill runner + session complete detection ── */
+
+  let _pendingMissionDrill = null;
+
+  function runMissionDrill(missionId) {
+    _pendingMissionDrill = { missionId };
+    const mission = MISSIONS.find(m => m.missionId === missionId);
+    if (mission) openSession(mission.activeSessionId);
+  }
+
+  function _initMissionSessionObserver() {
+    const el = document.getElementById('sessionComplete');
+    if (!el) return;
+    new MutationObserver(mutations => {
+      for (const m of mutations) {
+        if (m.attributeName === 'class' && el.classList.contains('active') && _pendingMissionDrill) {
+          const { missionId } = _pendingMissionDrill;
+          _pendingMissionDrill = null;
+          const today = new Date().toISOString().slice(0, 10);
+          const ms = _getMissionState(missionId);
+          if (ms.status !== 'ACTIVE') return;
+          let log = ms.dailyLogs.find(l => l.date === today);
+          if (!log) {
+            log = { day: _missionDayNumber(missionId), date: today, activeCompleted: false, passiveComplianceCount: 0 };
+            ms.dailyLogs.push(log);
+          }
+          log.activeCompleted = true;
+          store.missions[missionId] = ms;
+          saveStore(store);
+        }
+      }
+    }).observe(el, { attributes: true });
+  }
+
+  /* ── Module C — Notification Scheduler ── */
+
+  const _missionNotifTimers = {};
+
+  function toggleMissionNotifications(missionId) {
+    const ms = _getMissionState(missionId);
+    if (ms.notificationsEnabled) {
+      _disableMissionNotifications(missionId);
+    } else {
+      _enableMissionNotifications(missionId);
+    }
+  }
+
+  function _enableMissionNotifications(missionId) {
+    if (!('Notification' in window)) {
+      showToast({ icon: 'ℹ️', label: 'Notifications not supported in this browser. Try desktop Chrome or Android Chrome.', autohide: 4000 });
+      return;
+    }
+    if (Notification.permission === 'denied') {
+      showToast({ icon: '🔕', label: 'Notifications are blocked. Please allow them in your browser settings.', autohide: 4000 });
+      return;
+    }
+    Notification.requestPermission().then(permission => {
+      if (permission !== 'granted') return;
+      const ms = _getMissionState(missionId);
+      ms.notificationsEnabled = true;
+      store.missions[missionId] = ms;
+      saveStore(store);
+      _scheduleMissionNotifications(missionId);
+      renderMissions();
+    });
+  }
+
+  function _disableMissionNotifications(missionId) {
+    if (_missionNotifTimers[missionId]) {
+      clearInterval(_missionNotifTimers[missionId]);
+      delete _missionNotifTimers[missionId];
+    }
+    const ms = _getMissionState(missionId);
+    ms.notificationsEnabled = false;
+    store.missions[missionId] = ms;
+    saveStore(store);
+    renderMissions();
+  }
+
+  function _scheduleMissionNotifications(missionId) {
+    const mission = MISSIONS.find(m => m.missionId === missionId);
+    if (!mission?.passiveTriggers?.length) return;
+    const trigger = mission.passiveTriggers[0];
+    const intervalMs = trigger.defaultIntervalMinutes * 60 * 1000;
+    if (_missionNotifTimers[missionId]) clearInterval(_missionNotifTimers[missionId]);
+    _missionNotifTimers[missionId] = setInterval(() => {
+      const hour = new Date().getHours();
+      if (hour < 9 || hour >= 21) return;
+      const n = new Notification('Triad · ' + mission.title, {
+        body: trigger.templateText,
+        tag: 'triad-mission-' + missionId,
+        icon: '/favicon.ico'
+      });
+      n.onclick = () => {
+        window.focus();
+        _incrementPassiveCompliance(missionId);
+        n.close();
+      };
+    }, intervalMs);
+  }
+
+  function _incrementPassiveCompliance(missionId) {
+    const today = new Date().toISOString().slice(0, 10);
+    const ms = _getMissionState(missionId);
+    let log = ms.dailyLogs.find(l => l.date === today);
+    if (!log) {
+      log = { day: _missionDayNumber(missionId), date: today, activeCompleted: false, passiveComplianceCount: 0 };
+      ms.dailyLogs.push(log);
+    }
+    log.passiveComplianceCount++;
+    store.missions[missionId] = ms;
+    saveStore(store);
+  }
+
+  function _restoreMissionNotifications() {
+    MISSIONS.forEach(mission => {
+      const ms = _getMissionState(mission.missionId);
+      if (ms.notificationsEnabled && ms.status === 'ACTIVE' && Notification.permission === 'granted') {
+        _scheduleMissionNotifications(mission.missionId);
+      }
+    });
+  }
+
+  /* ── Mission profile render ── */
+
+  function renderMissions() {
+    const el = document.getElementById('profile-missions-block');
+    if (!el) return;
+    if (!auth.loggedIn) { el.innerHTML = ''; return; }
+
+    el.innerHTML = MISSIONS.map(mission => {
+      const ms = _getMissionState(mission.missionId);
+      const day = ms.status === 'ACTIVE' ? _missionDayNumber(mission.missionId) : 0;
+      const pct = ms.status === 'ACTIVE'
+        ? Math.min(100, Math.round((day / mission.durationDays) * 100))
+        : ms.status === 'COMPLETED' ? 100 : 0;
+      const todayDone = ms.status === 'ACTIVE' && _missionActiveTodayComplete(mission.missionId);
+      const isFinalDay = ms.status === 'ACTIVE' && day >= mission.durationDays;
+      const statusLabel = ms.status === 'NOT_STARTED' ? 'Not Started'
+        : ms.status === 'ACTIVE' ? `Day ${day} of ${mission.durationDays}`
+        : 'Completed';
+      const statusClass = ms.status === 'NOT_STARTED' ? 'mission-status--new'
+        : ms.status === 'ACTIVE' ? 'mission-status--active'
+        : 'mission-status--done';
+
+      let bodyHtml = '';
+
+      if (ms.status === 'NOT_STARTED') {
+        bodyHtml = `
+          <p class="mission-desc">${escapeHtml(mission.description)}</p>
+          <button class="mission-cta" onclick="openDiagnostic('${mission.missionId}','mission-start')">Start Mission</button>`;
+
+      } else if (ms.status === 'ACTIVE') {
+        bodyHtml = `
+          <div class="mission-today">
+            <span class="mission-today-label">Today's drill</span>
+            <span class="mission-today-state">${todayDone ? '✓ Done' : '○ Pending'}</span>
+          </div>
+          ${isFinalDay
+            ? `<button class="mission-cta mission-cta--assess" onclick="openDiagnostic('${mission.missionId}','mission-end')">Final Assessment</button>`
+            : `<button class="mission-cta${todayDone ? ' mission-cta--done' : ''}" onclick="runMissionDrill('${mission.missionId}')" ${todayDone ? 'disabled' : ''}>Complete Today's Session</button>`
+          }
+          <div class="mission-notif-row">
+            <span class="mission-notif-label">Reminders</span>
+            <button class="mission-notif-toggle ${ms.notificationsEnabled ? 'on' : ''}" onclick="toggleMissionNotifications('${mission.missionId}')">
+              ${ms.notificationsEnabled ? 'On' : 'Off'}
+            </button>
+          </div>
+          ${!('Notification' in window) ? '<p class="mission-notif-note">Notifications work best on desktop or Android Chrome. iOS support coming soon.</p>' : ''}`;
+
+      } else {
+        const baseLabel = mission.diagnosticConfig.type === 'TIMED_HOLD' ? 'seconds' : '/10';
+        const improvement = ms.endDiagnosticValue !== null && ms.baselineDiagnosticValue !== null
+          ? ms.endDiagnosticValue - ms.baselineDiagnosticValue : null;
+        const improvStr = improvement !== null
+          ? (improvement > 0 ? `+${improvement}` : `${improvement}`) + ' ' + baseLabel : '';
+        bodyHtml = `
+          <div class="mission-complete-msg">🎯 Mission complete — 21 days done.</div>
+          ${ms.baselineDiagnosticValue !== null ? `
+          <div class="mission-scores">
+            <div class="mission-score-item"><span class="mission-score-label">Baseline</span><span class="mission-score-val">${ms.baselineDiagnosticValue}${baseLabel === 'seconds' ? 's' : '/10'}</span></div>
+            <div class="mission-score-item"><span class="mission-score-label">Final</span><span class="mission-score-val">${ms.endDiagnosticValue !== null ? ms.endDiagnosticValue + (baseLabel === 'seconds' ? 's' : '/10') : '—'}</span></div>
+            ${improvStr ? `<div class="mission-score-item"><span class="mission-score-label">Change</span><span class="mission-score-val">${improvStr}</span></div>` : ''}
+          </div>` : ''}
+          <button class="mission-cta mission-cta--restart" onclick="_missionRestart('${mission.missionId}')">Restart Mission</button>`;
+      }
+
+      return `
+        <div class="mission-card">
+          <div class="mission-card-header">
+            <div class="mission-card-titles">
+              <div class="mission-title">${escapeHtml(mission.title)}</div>
+              <div class="mission-subtitle">${escapeHtml(mission.subtitle)}</div>
+            </div>
+            <span class="mission-status-badge ${statusClass}">${statusLabel}</span>
+          </div>
+          <div class="mission-progress-bar"><div class="mission-progress-fill" style="width:${pct}%"></div></div>
+          ${bodyHtml}
+        </div>`;
+    }).join('');
+  }
+
+  function _missionRestart(missionId) {
+    if (_missionNotifTimers[missionId]) { clearInterval(_missionNotifTimers[missionId]); delete _missionNotifTimers[missionId]; }
+    store.missions[missionId] = _initMissionState(missionId);
+    saveStore(store);
+    renderMissions();
   }
 
   function toggleRead(title) {
@@ -11397,6 +11905,8 @@ Build my personalised plan.`;
   renderCardGrid(MEDITATIONS, 'meditate-grid', 'showMeditationDetail');
   renderLibrary();
   initPlanForm();
+  _initMissionSessionObserver();
+  _restoreMissionNotifications();
   renderHomeSummary();           // initial summary tile + streak badge
   setTimeout(cycleBreathLabel, 2000);
 
