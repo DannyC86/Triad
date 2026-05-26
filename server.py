@@ -686,6 +686,18 @@ def user_delete_data():
         return jsonify({"error": "Failed to erase user data"}), 500
 
 
+# ─────────────────────────── Routes — Admin ───────────────────────────
+
+@app.route("/admin/users")
+def admin_users():
+    password = request.args.get('key', '')
+    if password != os.getenv('ADMIN_KEY', ''):
+        return {'error': 'unauthorised'}, 401
+    db = get_db()
+    users = db.execute('SELECT id, email, tier, created_at FROM users ORDER BY created_at DESC').fetchall()
+    return {'users': [dict(u) for u in users]}
+
+
 # ─────────────────────────── Routes — AI ───────────────────────────
 
 @app.route("/ask", methods=["POST"])
