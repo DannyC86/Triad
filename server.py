@@ -33,7 +33,7 @@ import re
 import random
 import sqlite3
 import secrets
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from flask import Flask, request, jsonify, send_from_directory
@@ -79,6 +79,7 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
     # SESSION_COOKIE_SECURE=True,  # enable when serving behind HTTPS
+    PERMANENT_SESSION_LIFETIME=timedelta(days=30),
 )
 
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
@@ -218,6 +219,16 @@ def init_db():
             email      TEXT,
             message    TEXT    NOT NULL,
             created_at TEXT    NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS forgot_tokens (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id    INTEGER NOT NULL,
+            token      TEXT    NOT NULL UNIQUE,
+            expires_at TEXT    NOT NULL,
+            used       INTEGER DEFAULT 0,
+            created_at TEXT    NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
         );
         """
     )
@@ -399,6 +410,58 @@ def auth_me():
     if not current_user.is_authenticated:
         return jsonify({"user": None})
     return jsonify({"user": current_user.to_dict()})
+
+
+@app.route("/auth/forgot-password", methods=["POST"])
+def auth_forgot_password():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    if not email:
+        return jsonify({"success": True})
+    conn = get_db()
+    row = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
+    if not row:
+        conn.close()
+        return jsonify({"success": True})
+    token = secrets.token_urlsafe(32)
+    now = datetime.utcnow()
+    expires_at = (now + timedelta(hours=1)).isoformat() + "Z"
+    conn.execute(
+        "INSERT INTO forgot_tokens (user_id, token, expires_at, used, created_at) VALUES (?, ?, ?, 0, ?)",
+        (row["id"], token, expires_at, now.isoformat() + "Z"),
+    )
+    conn.commit()
+    conn.close()
+    reset_url = f"/reset-password?token={token}"
+    return jsonify({"success": True, "reset_url": reset_url})
+
+
+@app.route("/auth/reset-password", methods=["POST"])
+def auth_reset_password():
+    data = request.get_json(silent=True) or {}
+    token = (data.get("token") or "").strip()
+    new_password = data.get("password") or ""
+    if not token or not new_password:
+        return jsonify({"error": "token and password required"}), 400
+    conn = get_db()
+    row = conn.execute(
+        "SELECT id, user_id, expires_at, used FROM forgot_tokens WHERE token = ?", (token,)
+    ).fetchone()
+    if not row:
+        conn.close()
+        return jsonify({"error": "Invalid or expired reset link."}), 400
+    if row["used"]:
+        conn.close()
+        return jsonify({"error": "This reset link has already been used."}), 400
+    if datetime.utcnow().isoformat() > row["expires_at"].rstrip("Z"):
+        conn.close()
+        return jsonify({"error": "This reset link has expired."}), 400
+    hashed = hash_password(new_password)
+    conn.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hashed, row["user_id"]))
+    conn.execute("UPDATE forgot_tokens SET used = 1 WHERE id = ?", (row["id"],))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
 
 
 # ─────────────────────────── User-data helpers ───────────────────────────
@@ -729,6 +792,7 @@ def user_delete_data():
             "user_preferences",
             "user_profiles",
             "feedback",
+            "forgot_tokens",
         ):
             conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (uid,))
         conn.commit()
@@ -1034,6 +1098,25 @@ def admin_feedback():
         "SELECT id, user_id, email, message, created_at FROM feedback ORDER BY created_at DESC"
     ).fetchall()
     return {'feedback': [dict(r) for r in rows]}
+
+
+@app.route("/admin/reset-password")
+def admin_reset_password():
+    key = request.args.get('key', '')
+    if key != os.getenv('ADMIN_KEY', ''):
+        return {'error': 'unauthorised'}, 401
+    email = request.args.get('email', '')
+    new_password = request.args.get('password', '')
+    if not email or not new_password:
+        return {'error': 'email and password required'}, 400
+    db = get_db()
+    user = db.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone()
+    if not user:
+        return {'error': 'user not found'}, 404
+    hashed = hash_password(new_password)
+    db.execute('UPDATE users SET password_hash = ? WHERE email = ?', (hashed, email))
+    db.commit()
+    return {'success': True, 'message': f'Password reset for {email}'}
 
 
 # ─────────────────────────── Routes — AI ───────────────────────────

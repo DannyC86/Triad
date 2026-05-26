@@ -4647,6 +4647,40 @@
     }
     .auth-skip:hover { color: var(--text); border-bottom-color: var(--text-dim); }
 
+    .auth-forgot-wrap {
+      text-align: right;
+      margin: -4px 0 2px;
+    }
+    .auth-forgot-link {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: none;
+      border-bottom: 1px dashed transparent;
+      transition: all 0.18s ease;
+    }
+    .auth-forgot-link:hover { color: var(--text); border-bottom-color: var(--text-dim); }
+    .auth-forgot-instructions {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 0 0 14px;
+      line-height: 1.5;
+    }
+    .auth-forgot-success {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.9rem;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .auth-back-wrap {
+      text-align: center;
+      margin-top: 12px;
+    }
+
     /* Profile section: account header */
     .profile-account {
       display: flex;
@@ -5820,9 +5854,42 @@ var _introPlayedThisSession = false;
           <span class="auth-field-label">Password</span>
           <input type="password" id="auth-password" autocomplete="current-password" placeholder="At least 8 characters" required minlength="8" />
         </label>
+        <p id="auth-forgot-wrap" class="auth-forgot-wrap">
+          <a class="auth-forgot-link" onclick="showForgotForm()">Forgot password?</a>
+        </p>
         <div class="auth-error" id="auth-error" hidden></div>
         <button type="submit" class="auth-submit" id="auth-submit">Log in</button>
       </form>
+
+      <!-- Forgot password inline panel -->
+      <div id="auth-forgot-view" hidden>
+        <p class="auth-forgot-instructions">Enter your email and we'll create a reset link.</p>
+        <label class="auth-field">
+          <span class="auth-field-label">Email</span>
+          <input type="email" id="forgot-email" autocomplete="email" placeholder="you@example.com" />
+        </label>
+        <div id="forgot-error" class="auth-error" hidden></div>
+        <div id="forgot-success" class="auth-forgot-success" hidden></div>
+        <button type="button" class="auth-submit" id="forgot-submit" onclick="submitForgotPassword()">Send reset link</button>
+        <p class="auth-back-wrap"><a class="auth-forgot-link" onclick="hideForgotForm()">← Back to log in</a></p>
+      </div>
+
+      <!-- Reset password panel (shown when ?token=xxx in URL) -->
+      <div id="auth-reset-view" hidden>
+        <p class="auth-forgot-instructions">Enter a new password for your account.</p>
+        <label class="auth-field">
+          <span class="auth-field-label">New password</span>
+          <input type="password" id="reset-new-password" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" />
+        </label>
+        <label class="auth-field">
+          <span class="auth-field-label">Confirm password</span>
+          <input type="password" id="reset-confirm-password" autocomplete="new-password" placeholder="Repeat password" minlength="8" />
+        </label>
+        <div id="reset-error" class="auth-error" hidden></div>
+        <div id="reset-success" class="auth-forgot-success" hidden></div>
+        <button type="button" class="auth-submit" id="reset-submit" onclick="submitResetPassword()">Set new password</button>
+      </div>
+
       <p class="auth-signup-tagline" id="auth-signup-tagline" hidden>
         Free forever · Pro features coming soon
       </p>
@@ -12826,6 +12893,118 @@ Build my personalised plan.`;
     // Show the "Free forever · Pro coming soon" tagline only on the Sign up tab
     const tagline = document.getElementById('auth-signup-tagline');
     if (tagline) tagline.hidden = _authTab !== 'signup';
+    // Show "Forgot password?" only on login tab
+    const forgotWrap = document.getElementById('auth-forgot-wrap');
+    if (forgotWrap) forgotWrap.hidden = _authTab !== 'login';
+  }
+
+  /* ════════════════ FORGOT / RESET PASSWORD ════════════════ */
+
+  function showForgotForm() {
+    document.getElementById('auth-forgot-view').hidden = false;
+    document.querySelector('.auth-form').hidden = true;
+    document.querySelector('.auth-tabs').hidden = true;
+    const wrap = document.getElementById('auth-forgot-wrap');
+    if (wrap) wrap.hidden = true;
+    const titleEl = document.getElementById('authModalTitle');
+    if (titleEl) titleEl.textContent = 'Reset password';
+    // Pre-fill email from login field
+    setTimeout(() => {
+      const inp = document.getElementById('forgot-email');
+      if (inp) { inp.value = document.getElementById('auth-email')?.value || ''; inp.focus(); }
+    }, 50);
+  }
+
+  function hideForgotForm() {
+    document.getElementById('auth-forgot-view').hidden = true;
+    const errEl = document.getElementById('forgot-error');
+    if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
+    const successEl = document.getElementById('forgot-success');
+    if (successEl) { successEl.hidden = true; successEl.innerHTML = ''; }
+    const btn = document.getElementById('forgot-submit');
+    if (btn) { btn.hidden = false; btn.disabled = false; btn.textContent = 'Send reset link'; }
+    document.querySelector('.auth-form').hidden = false;
+    document.querySelector('.auth-tabs').hidden = false;
+    switchAuthTab('login');
+  }
+
+  async function submitForgotPassword() {
+    const email = (document.getElementById('forgot-email')?.value || '').trim();
+    const errEl = document.getElementById('forgot-error');
+    const successEl = document.getElementById('forgot-success');
+    const btn = document.getElementById('forgot-submit');
+    errEl.hidden = true; errEl.textContent = '';
+    successEl.hidden = true; successEl.innerHTML = '';
+    if (!email) { errEl.textContent = 'Please enter your email address.'; errEl.hidden = false; return; }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const res = await fetch('/auth/forgot-password', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (data.reset_url) {
+          successEl.innerHTML = 'Reset link ready: <a href="' + escapeHtml(data.reset_url) + '" style="color:var(--accent)">Click here to set a new password</a>';
+        } else {
+          successEl.textContent = 'If that email is registered, check your inbox for instructions.';
+        }
+        successEl.hidden = false;
+        btn.hidden = true;
+      } else {
+        errEl.textContent = data.error || 'Something went wrong.';
+        errEl.hidden = false;
+        btn.disabled = false; btn.textContent = 'Send reset link';
+      }
+    } catch (e) {
+      errEl.textContent = 'Network error — please try again.';
+      errEl.hidden = false;
+      btn.disabled = false; btn.textContent = 'Send reset link';
+    }
+  }
+
+  async function submitResetPassword() {
+    const newPw = document.getElementById('reset-new-password')?.value || '';
+    const confirmPw = document.getElementById('reset-confirm-password')?.value || '';
+    const errEl = document.getElementById('reset-error');
+    const successEl = document.getElementById('reset-success');
+    const btn = document.getElementById('reset-submit');
+    errEl.hidden = true; errEl.textContent = '';
+    successEl.hidden = true; successEl.textContent = '';
+    if (newPw.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.hidden = false; return; }
+    if (newPw !== confirmPw) { errEl.textContent = 'Passwords do not match.'; errEl.hidden = false; return; }
+    const token = new URLSearchParams(window.location.search).get('token');
+    if (!token) { errEl.textContent = 'Invalid reset link.'; errEl.hidden = false; return; }
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      const res = await fetch('/auth/reset-password', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password: newPw })
+      });
+      const data = await res.json();
+      if (data.success) {
+        successEl.textContent = 'Password updated. You can now log in with your new password.';
+        successEl.hidden = false;
+        btn.hidden = true;
+        document.getElementById('reset-new-password').value = '';
+        document.getElementById('reset-confirm-password').value = '';
+        history.replaceState({}, '', window.location.pathname);
+        setTimeout(() => {
+          document.getElementById('auth-reset-view').hidden = true;
+          document.querySelector('.auth-form').hidden = false;
+          document.querySelector('.auth-tabs').hidden = false;
+          switchAuthTab('login');
+        }, 2500);
+      } else {
+        errEl.textContent = data.error || 'Something went wrong.';
+        errEl.hidden = false;
+        btn.disabled = false; btn.textContent = 'Set new password';
+      }
+    } catch (e) {
+      errEl.textContent = 'Network error — please try again.';
+      errEl.hidden = false;
+      btn.disabled = false; btn.textContent = 'Set new password';
+    }
   }
 
   /* ════════════════ WAITLIST (Pro upgrade placeholder) ════════════════ */
@@ -13344,6 +13523,18 @@ Build my personalised plan.`;
   // Paint guest state immediately, then hydrate from /auth/me asynchronously
   updateAuthUi();
   fetchAuthState();
+
+  // Open auth modal in reset-password mode if ?token= is present in URL
+  (function checkResetToken() {
+    const token = new URLSearchParams(window.location.search).get('token');
+    if (!token) return;
+    document.getElementById('auth-reset-view').hidden = false;
+    document.querySelector('.auth-form').hidden = true;
+    document.querySelector('.auth-tabs').hidden = true;
+    const titleEl = document.getElementById('authModalTitle');
+    if (titleEl) titleEl.textContent = 'Set new password';
+    document.getElementById('authModal').classList.add('active');
+  })();
 
   // Intro animation — mark played this session and remove overlay after animation completes
   (function(){
