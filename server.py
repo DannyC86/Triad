@@ -9,6 +9,15 @@ API surface:
   POST /auth/logout   → clears session
   GET  /auth/me       → returns the current user or { user: None }
 
+  GET    /user/data         → all user data in one call (login_required)
+  POST   /user/sync         → bulk upsert full localStorage store (login_required)
+  POST   /user/session      → log a single completed session (login_required)
+  POST   /user/achievement  → unlock a single achievement (login_required)
+  POST   /user/reading      → add/update a reading list entry (login_required)
+  POST   /user/plan         → save/update the user's plan (login_required)
+  POST   /user/preferences  → save user preferences (login_required)
+  DELETE /user/data         → GDPR right to erasure (login_required)
+
 Storage:
   users.db (SQLite) — gitignored. Schema in init_db().
 
@@ -99,6 +108,65 @@ def init_db():
             created_at    TEXT    NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+        CREATE TABLE IF NOT EXISTS user_sessions (
+            id               INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id          INTEGER NOT NULL,
+            kind             TEXT    NOT NULL,
+            practice_id      TEXT    NOT NULL,
+            practice_title   TEXT    NOT NULL,
+            duration_minutes INTEGER DEFAULT 5,
+            completed_at     TEXT    NOT NULL,
+            synced_at        TEXT    NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS user_achievements (
+            id             INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id        INTEGER NOT NULL,
+            achievement_id TEXT    NOT NULL,
+            unlocked_at    TEXT    NOT NULL,
+            UNIQUE(user_id, achievement_id),
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS user_streaks (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id           INTEGER NOT NULL UNIQUE,
+            current_streak    INTEGER DEFAULT 0,
+            longest_streak    INTEGER DEFAULT 0,
+            last_session_date TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS user_reading_list (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id     INTEGER NOT NULL,
+            book_id     TEXT    NOT NULL,
+            marked_read INTEGER DEFAULT 0,
+            added_at    TEXT    NOT NULL,
+            UNIQUE(user_id, book_id),
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS user_plan (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id    INTEGER NOT NULL UNIQUE,
+            plan_data  TEXT    NOT NULL,
+            start_date TEXT,
+            created_at TEXT    NOT NULL,
+            updated_at TEXT    NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS user_preferences (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id       INTEGER NOT NULL UNIQUE,
+            theme         TEXT    DEFAULT 'light',
+            sound_enabled INTEGER DEFAULT 0,
+            updated_at    TEXT    NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
         """
     )
     conn.commit()
@@ -279,6 +347,343 @@ def auth_me():
     if not current_user.is_authenticated:
         return jsonify({"user": None})
     return jsonify({"user": current_user.to_dict()})
+
+
+# ─────────────────────────── User-data helpers ───────────────────────────
+
+def row_to_dict(row):
+    """Convert a sqlite3.Row to a plain dict for JSON serialisation."""
+    return dict(row) if row else None
+
+
+# ─────────────────────────── Routes — user data ───────────────────────────
+
+@app.route("/user/data", methods=["GET"])
+@login_required
+def user_get_data():
+    uid = int(current_user.id)
+    try:
+        conn = get_db()
+
+        sessions = [row_to_dict(r) for r in conn.execute(
+            "SELECT * FROM user_sessions WHERE user_id = ? ORDER BY completed_at DESC", (uid,)
+        ).fetchall()]
+
+        achievements = [row_to_dict(r) for r in conn.execute(
+            "SELECT * FROM user_achievements WHERE user_id = ?", (uid,)
+        ).fetchall()]
+
+        streaks = row_to_dict(conn.execute(
+            "SELECT * FROM user_streaks WHERE user_id = ?", (uid,)
+        ).fetchone())
+
+        reading_list = [row_to_dict(r) for r in conn.execute(
+            "SELECT * FROM user_reading_list WHERE user_id = ?", (uid,)
+        ).fetchall()]
+
+        plan = row_to_dict(conn.execute(
+            "SELECT * FROM user_plan WHERE user_id = ?", (uid,)
+        ).fetchone())
+
+        preferences = row_to_dict(conn.execute(
+            "SELECT * FROM user_preferences WHERE user_id = ?", (uid,)
+        ).fetchone())
+
+        conn.close()
+        return jsonify({
+            "sessions":     sessions,
+            "achievements": achievements,
+            "streaks":      streaks or {},
+            "reading_list": reading_list,
+            "plan":         plan,
+            "preferences":  preferences or {},
+        })
+    except Exception as e:
+        print(f"[user/data GET] error: {e}")
+        return jsonify({"error": "Failed to load user data"}), 500
+
+
+@app.route("/user/sync", methods=["POST"])
+@login_required
+def user_sync():
+    uid = int(current_user.id)
+    now = datetime.utcnow().isoformat() + "Z"
+    data = request.get_json(silent=True) or {}
+
+    try:
+        conn = get_db()
+
+        # Sessions — insert new only (dedup by user_id + practice_id + completed_at)
+        for s in (data.get("sessions") or []):
+            existing = conn.execute(
+                "SELECT id FROM user_sessions WHERE user_id=? AND practice_id=? AND completed_at=?",
+                (uid, s.get("practice_id", ""), s.get("completed_at", "")),
+            ).fetchone()
+            if not existing:
+                conn.execute(
+                    """INSERT INTO user_sessions
+                       (user_id, kind, practice_id, practice_title, duration_minutes, completed_at, synced_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                    (uid,
+                     s.get("kind", "technique"),
+                     s.get("practice_id", ""),
+                     s.get("practice_title", ""),
+                     int(s.get("duration_minutes") or 5),
+                     s.get("completed_at", now),
+                     now),
+                )
+
+        # Achievements — INSERT OR IGNORE (UNIQUE constraint)
+        for a in (data.get("achievements") or []):
+            conn.execute(
+                """INSERT OR IGNORE INTO user_achievements (user_id, achievement_id, unlocked_at)
+                   VALUES (?, ?, ?)""",
+                (uid, a.get("achievement_id", ""), a.get("unlocked_at", now)),
+            )
+
+        # Streaks — upsert single row
+        sk = data.get("streaks") or {}
+        if sk:
+            conn.execute(
+                """INSERT INTO user_streaks (user_id, current_streak, longest_streak, last_session_date)
+                   VALUES (?, ?, ?, ?)
+                   ON CONFLICT(user_id) DO UPDATE SET
+                     current_streak=excluded.current_streak,
+                     longest_streak=excluded.longest_streak,
+                     last_session_date=excluded.last_session_date""",
+                (uid,
+                 int(sk.get("current_streak") or 0),
+                 int(sk.get("longest_streak") or 0),
+                 sk.get("last_session_date")),
+            )
+
+        # Reading list — upsert by book_id
+        for r in (data.get("reading_list") or []):
+            conn.execute(
+                """INSERT INTO user_reading_list (user_id, book_id, marked_read, added_at)
+                   VALUES (?, ?, ?, ?)
+                   ON CONFLICT(user_id, book_id) DO UPDATE SET
+                     marked_read=excluded.marked_read,
+                     added_at=excluded.added_at""",
+                (uid,
+                 r.get("book_id", ""),
+                 1 if r.get("marked_read") else 0,
+                 r.get("added_at", now)),
+            )
+
+        # Plan — upsert single row
+        pl = data.get("plan") or {}
+        if pl:
+            plan_json = pl.get("plan_data") or ""
+            conn.execute(
+                """INSERT INTO user_plan (user_id, plan_data, start_date, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?)
+                   ON CONFLICT(user_id) DO UPDATE SET
+                     plan_data=excluded.plan_data,
+                     start_date=excluded.start_date,
+                     updated_at=excluded.updated_at""",
+                (uid, plan_json, pl.get("start_date"), now, now),
+            )
+
+        # Preferences — upsert single row
+        pr = data.get("preferences") or {}
+        if pr:
+            conn.execute(
+                """INSERT INTO user_preferences (user_id, theme, sound_enabled, updated_at)
+                   VALUES (?, ?, ?, ?)
+                   ON CONFLICT(user_id) DO UPDATE SET
+                     theme=excluded.theme,
+                     sound_enabled=excluded.sound_enabled,
+                     updated_at=excluded.updated_at""",
+                (uid,
+                 pr.get("theme", "light"),
+                 1 if pr.get("sound_enabled") else 0,
+                 now),
+            )
+
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "synced_at": now})
+    except Exception as e:
+        print(f"[user/sync] error: {e}")
+        return jsonify({"error": "Sync failed"}), 500
+
+
+@app.route("/user/session", methods=["POST"])
+@login_required
+def user_log_session():
+    uid = int(current_user.id)
+    now = datetime.utcnow().isoformat() + "Z"
+    data = request.get_json(silent=True) or {}
+
+    kind            = data.get("kind", "technique")
+    practice_id     = data.get("practice_id", "")
+    practice_title  = data.get("practice_title", "")
+    duration        = int(data.get("duration_minutes") or 5)
+    completed_at    = data.get("completed_at") or now
+
+    if not practice_id:
+        return jsonify({"error": "practice_id is required"}), 400
+
+    try:
+        conn = get_db()
+        cur = conn.execute(
+            """INSERT INTO user_sessions
+               (user_id, kind, practice_id, practice_title, duration_minutes, completed_at, synced_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (uid, kind, practice_id, practice_title, duration, completed_at, now),
+        )
+        conn.commit()
+        row_id = cur.lastrowid
+        conn.close()
+        return jsonify({"id": row_id, "success": True})
+    except Exception as e:
+        print(f"[user/session] error: {e}")
+        return jsonify({"error": "Failed to log session"}), 500
+
+
+@app.route("/user/achievement", methods=["POST"])
+@login_required
+def user_unlock_achievement():
+    uid = int(current_user.id)
+    now = datetime.utcnow().isoformat() + "Z"
+    data = request.get_json(silent=True) or {}
+
+    achievement_id = data.get("achievement_id", "")
+    unlocked_at    = data.get("unlocked_at") or now
+
+    if not achievement_id:
+        return jsonify({"error": "achievement_id is required"}), 400
+
+    try:
+        conn = get_db()
+        conn.execute(
+            "INSERT OR IGNORE INTO user_achievements (user_id, achievement_id, unlocked_at) VALUES (?, ?, ?)",
+            (uid, achievement_id, unlocked_at),
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"[user/achievement] error: {e}")
+        return jsonify({"error": "Failed to unlock achievement"}), 500
+
+
+@app.route("/user/reading", methods=["POST"])
+@login_required
+def user_update_reading():
+    uid = int(current_user.id)
+    now = datetime.utcnow().isoformat() + "Z"
+    data = request.get_json(silent=True) or {}
+
+    book_id     = data.get("book_id", "")
+    marked_read = 1 if data.get("marked_read") else 0
+    added_at    = data.get("added_at") or now
+
+    if not book_id:
+        return jsonify({"error": "book_id is required"}), 400
+
+    try:
+        conn = get_db()
+        conn.execute(
+            """INSERT INTO user_reading_list (user_id, book_id, marked_read, added_at)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(user_id, book_id) DO UPDATE SET
+                 marked_read=excluded.marked_read,
+                 added_at=excluded.added_at""",
+            (uid, book_id, marked_read, added_at),
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"[user/reading] error: {e}")
+        return jsonify({"error": "Failed to update reading list"}), 500
+
+
+@app.route("/user/plan", methods=["POST"])
+@login_required
+def user_save_plan():
+    uid = int(current_user.id)
+    now = datetime.utcnow().isoformat() + "Z"
+    data = request.get_json(silent=True) or {}
+
+    plan_data  = data.get("plan_data") or ""
+    start_date = data.get("start_date")
+
+    if not plan_data:
+        return jsonify({"error": "plan_data is required"}), 400
+
+    try:
+        conn = get_db()
+        conn.execute(
+            """INSERT INTO user_plan (user_id, plan_data, start_date, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(user_id) DO UPDATE SET
+                 plan_data=excluded.plan_data,
+                 start_date=excluded.start_date,
+                 updated_at=excluded.updated_at""",
+            (uid, plan_data, start_date, now, now),
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"[user/plan] error: {e}")
+        return jsonify({"error": "Failed to save plan"}), 500
+
+
+@app.route("/user/preferences", methods=["POST"])
+@login_required
+def user_save_preferences():
+    uid = int(current_user.id)
+    now = datetime.utcnow().isoformat() + "Z"
+    data = request.get_json(silent=True) or {}
+
+    theme         = data.get("theme", "light")
+    sound_enabled = 1 if data.get("sound_enabled") else 0
+
+    try:
+        conn = get_db()
+        conn.execute(
+            """INSERT INTO user_preferences (user_id, theme, sound_enabled, updated_at)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(user_id) DO UPDATE SET
+                 theme=excluded.theme,
+                 sound_enabled=excluded.sound_enabled,
+                 updated_at=excluded.updated_at""",
+            (uid, theme, sound_enabled, now),
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"[user/preferences] error: {e}")
+        return jsonify({"error": "Failed to save preferences"}), 500
+
+
+@app.route("/user/data", methods=["DELETE"])
+@login_required
+def user_delete_data():
+    uid = int(current_user.id)
+    try:
+        conn = get_db()
+        for table in (
+            "user_sessions",
+            "user_achievements",
+            "user_streaks",
+            "user_reading_list",
+            "user_plan",
+            "user_preferences",
+        ):
+            conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (uid,))
+        conn.commit()
+        conn.close()
+        print(f"[user/data DELETE] erased all data for user_id={uid}")
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"[user/data DELETE] error: {e}")
+        return jsonify({"error": "Failed to erase user data"}), 500
 
 
 # ─────────────────────────── Routes — AI ───────────────────────────
