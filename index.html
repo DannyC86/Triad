@@ -473,6 +473,51 @@
     .pill.diff-Intermediate{ border-color: rgba(180,140,60,0.35); color: #7a6030; }
     .pill.diff-Advanced    { border-color: rgba(160,50,50,0.3);  color: #8a3030; }
 
+    /* ─── Level badges + locked cards (Mind & Body matrix) ─── */
+    .card-level-badge {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.6rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(26,26,46,0.045);
+      border: 1px solid var(--border);
+      margin-bottom: 2px;
+    }
+    .card-level-badge.lv-2 {
+      color: #6b5a2a;
+      background: rgba(180,140,60,0.08);
+      border-color: rgba(180,140,60,0.28);
+    }
+    .card-level-badge.lv-3 {
+      color: #7a3030;
+      background: rgba(160,50,50,0.07);
+      border-color: rgba(160,50,50,0.28);
+    }
+    .card-lock-icon {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .card.locked {
+      opacity: 0.55;
+      filter: grayscale(35%);
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+    .card.locked::before { opacity: 0.2; }
+
     /* ─── Detail view ─── */
     .detail-view { display: none; }
     .detail-view.active { display: block; animation: section-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
@@ -10470,14 +10515,57 @@ var _introPlayedThisSession = false;
     return '';
   }
 
+  /* Mind & Body progression matrix — 3-phase, 5 Level-1 items unlocked per tab. */
+  const _LEVEL_BY_ID = {
+    // Breathwork — Level 1 (unlocked)
+    'resonant-breathing': 1, 'diaphragmatic-breathing': 1, 'box-breathing': 1, 'extended-exhale': 1, '4-7-8-breathing': 1,
+    // Breathwork — Level 2 (locked)
+    'physiological-sigh': 2, 'nadi-shodhana': 2, 'sama-vritti': 2, 'bhramari': 2, 'ujjayi': 2, 'buteyko-method': 2, 'kapalabhati': 2,
+    // Breathwork — Level 3 (locked)
+    'wim-hof-method': 3, 'tummo': 3, 'kumbhaka': 3, 'uddiyana-bandha': 3, 'advanced-buteyko': 3, 'holotropic-breathwork': 3,
+    // Meditation — Level 1 (unlocked)
+    'mindfulness-of-breath': 1, 'gratitude-meditation': 1, 'yoga-nidra': 1, 'soundscape-meditation': 1, 'box-visualization': 1,
+    // Meditation — Level 2 (locked)
+    'body-scan': 2, 'loving-kindness': 2, 'mantra-japa': 2, 'visualization': 2, 'trataka': 2, 'chakra-visualization': 2, 'gap-watching': 2,
+    // Meditation — Level 3 (locked)
+    'open-awareness': 3, 'self-inquiry': 3, 'void-meditation': 3
+  };
+  const _CARD_ORDER = [
+    // Body (Breathwork) — L1, L2, L3
+    'resonant-breathing', 'diaphragmatic-breathing', 'box-breathing', 'extended-exhale', '4-7-8-breathing',
+    'physiological-sigh', 'nadi-shodhana', 'sama-vritti', 'bhramari', 'ujjayi', 'buteyko-method', 'kapalabhati',
+    'wim-hof-method', 'tummo', 'kumbhaka', 'uddiyana-bandha', 'advanced-buteyko', 'holotropic-breathwork',
+    // Mind (Meditation) — L1, L2, L3
+    'mindfulness-of-breath', 'gratitude-meditation', 'yoga-nidra', 'soundscape-meditation', 'box-visualization',
+    'body-scan', 'loving-kindness', 'mantra-japa', 'visualization', 'trataka', 'chakra-visualization', 'gap-watching',
+    'open-awareness', 'self-inquiry', 'void-meditation'
+  ];
+  const _CARD_ORDER_INDEX = new Map(_CARD_ORDER.map((id, i) => [id, i]));
+  const _LOCK_ICON_SVG = '<svg class="card-lock-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  function _practiceLevel(id) { return _LEVEL_BY_ID[id] || 1; }
+  function _practiceLocked(id) { return _practiceLevel(id) > 1; }
+
   function renderCardGrid(items, gridId, openFn) {
     const grid = document.getElementById(gridId);
-    grid.innerHTML = items.map(item => `
-      <button class="card" onclick="${openFn}('${item.id}')">
+    const sorted = [...items].sort((a, b) => {
+      const ai = _CARD_ORDER_INDEX.has(a.id) ? _CARD_ORDER_INDEX.get(a.id) : 999;
+      const bi = _CARD_ORDER_INDEX.has(b.id) ? _CARD_ORDER_INDEX.get(b.id) : 999;
+      return ai - bi;
+    });
+    grid.innerHTML = sorted.map(item => {
+      const level  = _practiceLevel(item.id);
+      const locked = level > 1;
+      const click  = locked ? '' : ` onclick="${openFn}('${item.id}')"`;
+      const aria   = locked ? ' aria-disabled="true" tabindex="-1"' : '';
+      const badge  = `<div class="card-level-badge lv-${level}">${locked ? _LOCK_ICON_SVG : ''}<span>Level ${level}</span></div>`;
+      return `
+      <button class="card${locked ? ' locked' : ''}"${aria}${click}>
+        ${badge}
         <div class="card-title">${escapeHtml(item.title)}</div>
         <div class="card-desc">${escapeHtml(item.desc)}</div>
       </button>
-    `).join('');
+    `;
+    }).join('');
   }
 
   function collapseP(text, uid) {
