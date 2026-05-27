@@ -5044,6 +5044,18 @@
     }
     .snap-milestone-bar { height: 3px; background: var(--border-soft); border-radius: 2px; overflow: hidden; }
     .snap-milestone-fill { height: 100%; background: var(--gold); border-radius: 2px; }
+    .snap-card.pillar-milestone { text-align: left; padding-left: 12px; }
+    .snap-milestone-kicker {
+      font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-muted); margin-bottom: 5px; font-weight: 600;
+    }
+    .snap-split { font-size: 0.62rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+    .tm-btn-level {
+      margin-left: auto;
+      background: rgba(255,255,255,0.22);
+      border-radius: 20px; padding: 2px 9px;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em;
+    }
 
     /* Achievement preview */
     .ach-preview-row {
@@ -5521,7 +5533,7 @@ var _introPlayedThisSession = false;
       <div id="profile-hero" class="profile-hero" data-auth-required></div>
 
       <!-- Triad Mastery button -->
-      <button class="triad-mastery-btn" data-auth-required onclick="showTriadMastery()">
+      <button id="triad-mastery-btn" class="triad-mastery-btn" data-auth-required onclick="showTriadMastery()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
           <path d="M12 3L2 20h20L12 3z"/>
           <path d="M12 9l-4 8h8l-4-8z"/>
@@ -13126,7 +13138,7 @@ Build my personalised plan.`;
           setTimeout(() => _masteryVertexFlash(p), 60);
         }
         if (newRank !== _prevRanks[p] && newLevel > 0) {
-          showToast({ icon: '🏔️', kicker: p.charAt(0).toUpperCase() + p.slice(1), label: `New Rank: ${newRank}`, autohide: 3500 });
+          showToast({ icon: '🏔️', kicker: p.charAt(0).toUpperCase() + p.slice(1), label: `Rank Up — ${newRank}`, autohide: 4000 });
         }
       }
     });
@@ -13644,6 +13656,7 @@ Build my personalised plan.`;
 
     // New profile sections
     renderProfileHero();
+    renderTriadMasteryBtn();
     renderSnapshotStats();
     renderAchievementPreview();
     renderActiveMissionsSection();
@@ -13773,35 +13786,68 @@ Build my personalised plan.`;
 
     const streak = effectiveStreak();
     const totalSessions = store.sessions.length;
+    const breathCount   = store.sessions.filter(s => s.kind === 'technique').length;
+    const meditCount    = store.sessions.filter(s => s.kind === 'meditation').length;
 
-    const candidates = ACHIEVEMENTS
-      .filter(a => !store.achievements[a.id])
-      .filter(a => !(a.tier === 'pro' && store.tier !== 'pro'))
-      .map(a => {
-        const p = a.progress ? a.progress(store) : null;
-        if (!p) return null;
-        const remaining = Math.max(0, p.target - p.current);
-        const pct = Math.min(100, Math.round((p.current / p.target) * 100));
-        return { a, p, remaining, pct };
-      })
-      .filter(x => x && x.remaining > 0)
-      .sort((x, y) => x.remaining - y.remaining);
-
-    const ms = candidates[0];
-    const isClose = ms && ms.remaining <= 3;
-
-    const milestoneCard = ms ? `
+    const sessionsCard = `
       <div class="snap-card">
-        <div class="snap-milestone-icon ${isClose ? '' : 'mystery'}">${ms.a.icon}</div>
-        <div class="snap-milestone-hint">${ms.remaining} more ${ms.p.label} to unlock${isClose ? ' ' + escapeHtml(ms.a.name) : ' a surprise'}</div>
-        <div class="snap-milestone-bar"><div class="snap-milestone-fill" style="width:${ms.pct}%"></div></div>
-        <div class="snap-label">next milestone</div>
-      </div>` : `
-      <div class="snap-card">
-        <div class="snap-icon">🏛️</div>
-        <div class="snap-value">✓</div>
-        <div class="snap-label">all unlocked</div>
+        <div class="snap-icon">✓</div>
+        <div class="snap-value">${totalSessions}</div>
+        <div class="snap-label">sessions complete</div>
+        ${totalSessions > 0 ? `<div class="snap-split">${breathCount} breath · ${meditCount} meditation</div>` : ''}
       </div>`;
+
+    const _MC = { body: '#C9A96E', mind: '#4ECDC4', spirit: '#9B8EC4' };
+    const niBody = nextLevelInfo('body');
+    const niMind = nextLevelInfo('mind');
+
+    let milestoneCard;
+    if (!niBody && !niMind) {
+      milestoneCard = `
+        <div class="snap-card">
+          <div class="snap-icon">🏆</div>
+          <div class="snap-value" style="font-size:1rem;line-height:1.4">Grandmaster</div>
+          <div class="snap-label">all pillars mastered</div>
+        </div>`;
+    } else if (totalSessions === 0) {
+      milestoneCard = `
+        <div class="snap-card">
+          <div class="snap-icon">🌱</div>
+          <div class="snap-milestone-hint" style="margin-top:6px">Start your first session to begin your journey</div>
+        </div>`;
+    } else {
+      let best = null;
+      if (niBody && niBody.sessionsNeeded !== null) best = { pillar: 'body', ni: niBody };
+      if (niMind && niMind.sessionsNeeded !== null) {
+        if (!best || niMind.sessionsNeeded < best.ni.sessionsNeeded) best = { pillar: 'mind', ni: niMind };
+      }
+      if (!best) {
+        milestoneCard = `
+          <div class="snap-card">
+            <div class="snap-icon">🔮</div>
+            <div class="snap-milestone-hint" style="margin-top:6px">Keep practising to master the pillars</div>
+          </div>`;
+      } else {
+        const bPillar = best.pillar;
+        const bLevel  = best.ni.nextLevel - 1;
+        const bPts    = calcPillarPoints(bPillar);
+        const fromPts = pointsForLevel(bLevel);
+        const toPts   = pointsForLevel(best.ni.nextLevel);
+        const range   = toPts - fromPts;
+        const pct     = range > 0 ? Math.min(100, Math.round(((bPts - fromPts) / range) * 100)) : 0;
+        const colour  = _MC[bPillar];
+        const curRank = getRank(bPillar, bLevel);
+        const rankLabel = best.ni.nextRank !== curRank ? best.ni.nextRank : `Level ${best.ni.nextLevel}`;
+        const n = best.ni.sessionsNeeded;
+        const hint = n === 1 ? `1 more session to ${rankLabel}` : `${n} more sessions to ${rankLabel}`;
+        milestoneCard = `
+          <div class="snap-card pillar-milestone" style="border-left: 3px solid ${colour}">
+            <div class="snap-milestone-kicker">Next Milestone</div>
+            <div class="snap-milestone-hint">${hint}</div>
+            <div class="snap-milestone-bar"><div class="snap-milestone-fill" style="width:${pct}%"></div></div>
+          </div>`;
+      }
+    }
 
     el.innerHTML = `
       <div class="snap-card">
@@ -13809,12 +13855,24 @@ Build my personalised plan.`;
         <div class="snap-value">${streak}</div>
         <div class="snap-label">day streak</div>
       </div>
-      <div class="snap-card">
-        <div class="snap-icon">✓</div>
-        <div class="snap-value">${totalSessions}</div>
-        <div class="snap-label">sessions complete</div>
-      </div>
+      ${sessionsCard}
       ${milestoneCard}`;
+  }
+
+  function renderTriadMasteryBtn() {
+    const btn = document.getElementById('triad-mastery-btn');
+    if (!btn) return;
+    const total = store.mastery?.total || 0;
+    const pill = total > 0
+      ? `<span class="tm-btn-level">Lv.${total}</span>`
+      : `<span class="tm-btn-level">Begin</span>`;
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+        <path d="M12 3L2 20h20L12 3z"/>
+        <path d="M12 9l-4 8h8l-4-8z"/>
+      </svg>
+      Triad Mastery
+      ${pill}`;
   }
 
   /* ── Achievement preview (2 cards + View All button) ── */
