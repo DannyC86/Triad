@@ -16411,17 +16411,10 @@ Build my personalised plan.`;
   };
 
   function isOnboarded() {
+    // Default false. Only the breath-session completion (markOnboarded) writes 'true'.
     try {
-      const flag = localStorage.getItem(ONBOARD_KEY);
-      if (flag === 'true')  return true;
-      if (flag === 'false') return false;
-      // No flag set — grandfather any existing user
-      if (localStorage.getItem(STORE_KEY_LS)) {
-        localStorage.setItem(ONBOARD_KEY, 'true');
-        return true;
-      }
-      return false;
-    } catch (e) { return true; } // if storage fails, never block
+      return localStorage.getItem(ONBOARD_KEY) === 'true';
+    } catch (e) { return true; } // if storage itself fails, never block the app
   }
   function markOnboarded() {
     try {
