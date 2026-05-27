@@ -256,12 +256,19 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
-      padding: 8px 24px 0;
+      justify-content: center;
+      gap: 18px;
+      padding: 8px 24px;
+      width: 100%;
       max-width: 380px;
       text-align: center;
+      flex: 1;                       /* claim the central vertical space */
     }
     .first-breath-gate[hidden] { display: none; }
+    /* The 3-card home menu is `display: flex` via .home-cards, which beats the
+       UA [hidden]{display:none} in the cascade. Restore the hide behavior with
+       a specific attribute selector. */
+    .home-cards[hidden] { display: none !important; }
     .first-breath-gate-eyebrow {
       font-size: 0.66rem;
       letter-spacing: 0.22em;
