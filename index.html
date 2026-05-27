@@ -4948,7 +4948,7 @@
     .triad-mastery-btn:active { transform: translateY(0); opacity: 1; }
 
     /* Triad Mastery page */
-    .triad-mastery-page { padding: 4px 0 24px; }
+    .triad-mastery-page { padding: 4px 0 32px; }
     .triad-mastery-back {
       display: inline-flex; align-items: center; gap: 6px;
       background: none; border: none; color: var(--text-soft);
@@ -4956,44 +4956,66 @@
       cursor: pointer; padding: 8px 0 20px;
     }
     .triad-mastery-back:hover { color: var(--text); }
-    .triad-mastery-header { text-align: center; margin-bottom: 24px; }
+    .triad-mastery-header { text-align: center; margin-bottom: 20px; }
     .triad-mastery-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.75rem; font-weight: 400; color: var(--text);
     }
-    .triad-mastery-subtitle {
-      font-size: 0.83rem; color: var(--text-soft); margin-top: 5px;
+    .triad-mastery-subtitle { font-size: 0.83rem; color: var(--text-soft); margin-top: 5px; }
+
+    /* SVG wrap */
+    .mt-svg-wrap {
+      display: flex; justify-content: center;
+      margin-bottom: 16px; padding: 0 4px;
     }
-    .triad-mastery-symbol-wrap {
-      display: flex; justify-content: center; margin-bottom: 28px;
-      animation: triad-mastery-pulse 3s ease-in-out infinite;
+
+    /* Central total level */
+    .mt-total-wrap { text-align: center; margin-bottom: 24px; }
+    .mt-total-label {
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-muted); margin-bottom: 4px;
     }
-    @keyframes triad-mastery-pulse {
-      0%, 100% { opacity: 0.8; transform: scale(1); }
-      50%       { opacity: 1;   transform: scale(1.05); }
+    .mt-total-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 500; color: var(--gold); line-height: 1;
     }
-    .triad-mastery-cards {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 10px; margin-bottom: 16px;
+
+    /* Progress bars */
+    .mt-bars { display: flex; flex-direction: column; gap: 16px; }
+    .mt-bar-row {}
+    .mt-bar-head {
+      display: flex; align-items: baseline; gap: 6px; margin-bottom: 5px;
     }
-    .mastery-pillar-card {
-      background: var(--navy-card, #ffffff);
-      border: 1px solid var(--border-soft);
-      border-radius: var(--radius); padding: 16px 10px; text-align: center;
+    .mt-bar-pillar { font-size: 0.78rem; font-weight: 700; text-transform: capitalize; }
+    .mt-bar-level  { font-size: 0.78rem; color: var(--text); font-weight: 600; }
+    .mt-bar-rank   { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-left: auto; }
+    .mt-bar-track  {
+      height: 6px; background: var(--border-soft);
+      border-radius: 4px; overflow: hidden;
     }
-    .mastery-pillar-icon { font-size: 1.4rem; margin-bottom: 5px; line-height: 1; }
-    .mastery-pillar-label {
-      font-size: 0.75rem; font-weight: 600; color: var(--text);
-      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+    .mt-bar-fill   { height: 100%; border-radius: 4px; width: 0%; }
+    .mt-bar-next   { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Vertex flash animation */
+    @keyframes mt-vertex-flash {
+      0%   { transform: scale(1);   opacity: 1; }
+      35%  { transform: scale(2.8); opacity: 0.6; }
+      100% { transform: scale(1);   opacity: 1; }
     }
-    .mastery-pillar-level { font-size: 0.7rem; color: var(--text-muted); line-height: 1.3; }
-    .triad-mastery-total {
-      text-align: center; font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem; color: var(--text); padding: 10px; margin-bottom: 10px;
+    .mastery-vertex-flash {
+      animation: mt-vertex-flash 0.9s ease-out;
+      transform-box: fill-box;
+      transform-origin: center;
     }
-    .triad-mastery-message {
-      text-align: center; font-size: 0.78rem; color: var(--text-soft);
-      line-height: 1.55; padding: 0 12px;
+
+    /* Central dot pulse */
+    @keyframes mt-dot-pulse {
+      0%, 100% { transform: scale(1);   opacity: 0.9; }
+      50%       { transform: scale(1.25); opacity: 1; }
+    }
+    .mastery-center-pulse {
+      transform-box: fill-box; transform-origin: center;
+      animation: mt-dot-pulse 2s ease-in-out infinite;
     }
 
     /* Snapshot stats row */
@@ -13092,7 +13114,22 @@ Build my personalised plan.`;
     track('session_completed', { kind, practice_id: practiceId });
     showToast({ icon: '🙏', label: 'Session saved', autohide: 2200 });
     checkAchievements();
+    const _prevRanks  = { body: store.mastery?.body?.rank || 'Unranked', mind: store.mastery?.mind?.rank || 'Unranked', spirit: store.mastery?.spirit?.rank || 'Unranked' };
+    const _prevLevels = { body: store.mastery?.body?.level || 0, mind: store.mastery?.mind?.level || 0, spirit: store.mastery?.spirit?.level || 0 };
     updateMastery();
+    ['body', 'mind', 'spirit'].forEach(p => {
+      const newRank  = store.mastery[p].rank;
+      const newLevel = store.mastery[p].level;
+      if (newLevel > _prevLevels[p]) {
+        if (document.getElementById('mastery-triangle-svg')) {
+          renderTriadMastery();
+          setTimeout(() => _masteryVertexFlash(p), 60);
+        }
+        if (newRank !== _prevRanks[p] && newLevel > 0) {
+          showToast({ icon: '🏔️', kicker: p.charAt(0).toUpperCase() + p.slice(1), label: `New Rank: ${newRank}`, autohide: 3500 });
+        }
+      }
+    });
 
     // Re-render the detail page so the "Completed today" state appears
     if (kind === 'technique' && state.techniqueId === practiceId) {
@@ -13867,6 +13904,7 @@ Build my personalised plan.`;
     if (!main || !page) return;
     main.style.display = 'none';
     page.style.display = '';
+    updateMastery();
     renderTriadMastery();
     document.getElementById('profile')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -13878,52 +13916,214 @@ Build my personalised plan.`;
     if (page) page.style.display = 'none';
   }
 
+  /* ── Mastery triangle helpers ── */
+
+  const MT_COLOURS = { body: '#C9A96E', mind: '#4ECDC4', spirit: '#9B8EC4' };
+  // Triangle vertices: Spirit(top)=150,30  Mind(bottom-left)=30,270  Body(bottom-right)=270,270
+  // Centroid: 150, 190   |   Perimeter ≈ 776 (use 780 for dasharray)
+
+  function _mtBodyPts(t)   { return `270,270 ${(270-240*t).toFixed(1)},270 ${(270-120*t).toFixed(1)},${(270-240*t).toFixed(1)}`; }
+  function _mtMindPts(t)   { return `30,270 ${(30+120*t).toFixed(1)},${(270-240*t).toFixed(1)} ${(30+240*t).toFixed(1)},270`; }
+  function _mtSpiritPts(t) { return `150,30 ${(150-120*t).toFixed(1)},${(30+240*t).toFixed(1)} ${(150+120*t).toFixed(1)},${(30+240*t).toFixed(1)}`; }
+
+  function _masteryAnimateFills() {
+    const m      = store.mastery;
+    const tBody   = (m.body.level   || 0) / 33;
+    const tMind   = (m.mind.level   || 0) / 33;
+    const tSpirit = (m.spirit.level || 0) / 33;
+    const start   = performance.now();
+    const dur     = 1500;
+    function ease(x) { return 1 - Math.pow(1 - x, 3); }
+    function tick(now) {
+      const el = document.getElementById('mt-fill-body');
+      if (!el) return;
+      const dt = now - start;
+      const pS = ease(Math.min(Math.max((dt - 300)  / dur, 0), 1));
+      const pM = ease(Math.min(Math.max((dt - 600)  / dur, 0), 1));
+      const pB = ease(Math.min(Math.max((dt - 900)  / dur, 0), 1));
+      document.getElementById('mt-fill-spirit')?.setAttribute('points', _mtSpiritPts(pS * tSpirit));
+      document.getElementById('mt-fill-mind')  ?.setAttribute('points', _mtMindPts(pM   * tMind));
+      document.getElementById('mt-fill-body')  ?.setAttribute('points', _mtBodyPts(pB   * tBody));
+      if (pB < 1 || pM < 1 || pS < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function _masteryVertexFlash(pillar) {
+    const map = { body: 'mt-vc-body', mind: 'mt-vc-mind', spirit: 'mt-vc-spirit' };
+    const el = document.getElementById(map[pillar]);
+    if (!el) return;
+    el.classList.remove('mastery-vertex-flash');
+    void el.offsetWidth; // reflow to restart animation
+    el.classList.add('mastery-vertex-flash');
+    setTimeout(() => el.classList.remove('mastery-vertex-flash'), 950);
+  }
+
+  function _masteryBarHtml(pillar, level, rank, ni) {
+    const col  = MT_COLOURS[pillar];
+    const pct  = ((level / 33) * 100).toFixed(1);
+    const name = pillar.charAt(0).toUpperCase() + pillar.slice(1);
+    let nextTxt;
+    if (level >= 33) {
+      nextTxt = 'Maximum level reached';
+    } else if (ni && ni.sessionsNeeded != null) {
+      nextTxt = `${ni.sessionsNeeded} session${ni.sessionsNeeded === 1 ? '' : 's'} to Level ${ni.nextLevel}`;
+    } else {
+      nextTxt = 'Complete sessions to earn XP';
+    }
+    return `
+      <div class="mt-bar-row">
+        <div class="mt-bar-head">
+          <span class="mt-bar-pillar" style="color:${col}">${name}</span>
+          <span class="mt-bar-level">Lv ${level > 0 ? level : '—'}</span>
+          <span class="mt-bar-rank">${rank}</span>
+        </div>
+        <div class="mt-bar-track">
+          <div class="mt-bar-fill" style="width:0%;background:${col}" data-target="${pct}%"></div>
+        </div>
+        <div class="mt-bar-next">${nextTxt}</div>
+      </div>`;
+  }
+
   function renderTriadMastery() {
     const el = document.getElementById('profile-triad-mastery-page');
     if (!el) return;
+
+    const m       = store.mastery;
+    const bodyL   = m.body.level   || 0;
+    const mindL   = m.mind.level   || 0;
+    const spiritL = m.spirit.level || 0;
+    const totalL  = m.total || 0;
+    const bodyR   = m.body.rank   || 'Unranked';
+    const mindR   = m.mind.rank   || 'Unranked';
+    const spiritR = m.spirit.rank || 'Unranked';
+
+    const niBody  = nextLevelInfo('body');
+    const niMind  = nextLevelInfo('mind');
+    const niSpirit = null; // Spirit sessions not yet built
+
+    const lvTxt = n => n > 0 ? `Lv&nbsp;${n}` : '—';
+
     el.innerHTML = `
       <div class="triad-mastery-page">
         <button class="triad-mastery-back" onclick="hideTriadMastery()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
           Back to Profile
         </button>
+
         <div class="triad-mastery-header">
           <div class="triad-mastery-title">Triad Mastery</div>
           <div class="triad-mastery-subtitle">Your journey across Mind, Body and Spirit</div>
         </div>
-        <div class="triad-mastery-symbol-wrap">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="200" height="200" aria-hidden="true">
-            <g fill="none" stroke="var(--gold)" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="100,18 186,165 14,165" stroke-width="1.6" opacity="0.9"/>
-              <polygon points="100,58 156,150 44,150" stroke-width="1.2" opacity="0.65"/>
-              <circle cx="100" cy="100" r="20" stroke-width="1" stroke-dasharray="5 4" opacity="0.5"/>
-              <line x1="100" y1="18" x2="100" y2="58" stroke-width="1" opacity="0.45"/>
-              <line x1="186" y1="165" x2="156" y2="150" stroke-width="1" opacity="0.45"/>
-              <line x1="14" y1="165" x2="44" y2="150" stroke-width="1" opacity="0.45"/>
-              <circle cx="100" cy="100" r="4" fill="var(--gold)" opacity="0.7"/>
-            </g>
+
+        <div class="mt-svg-wrap">
+          <svg id="mastery-triangle-svg"
+               viewBox="-5 -38 310 388"
+               xmlns="http://www.w3.org/2000/svg"
+               style="width:100%;max-width:320px;display:block;margin:0 auto;overflow:visible"
+               aria-label="Triad Mastery triangle">
+
+            <!-- Outer circle -->
+            <circle cx="150" cy="190" r="135"
+                    fill="none" stroke="var(--border)" stroke-width="1" opacity="0.7"/>
+
+            <!-- Background triangle (stroke draws in) -->
+            <polygon id="mt-bg-tri"
+                     points="150,30 30,270 270,270"
+                     fill="none" stroke="var(--border)" stroke-width="1.5"
+                     stroke-dasharray="780" stroke-dashoffset="780"/>
+
+            <!-- Pillar fill slices (animated from vertex) -->
+            <polygon id="mt-fill-spirit" points="150,30 150,30 150,30"
+                     fill="${MT_COLOURS.spirit}" opacity="0.28"/>
+            <polygon id="mt-fill-mind"   points="30,270 30,270 30,270"
+                     fill="${MT_COLOURS.mind}"   opacity="0.28"/>
+            <polygon id="mt-fill-body"   points="270,270 270,270 270,270"
+                     fill="${MT_COLOURS.body}"   opacity="0.28"/>
+
+            <!-- Vertex accent circles -->
+            <circle id="mt-vc-spirit" cx="150" cy="30"  r="8" fill="${MT_COLOURS.spirit}"/>
+            <circle id="mt-vc-mind"   cx="30"  cy="270" r="8" fill="${MT_COLOURS.mind}"/>
+            <circle id="mt-vc-body"   cx="270" cy="270" r="8" fill="${MT_COLOURS.body}"/>
+
+            <!-- Central golden spark -->
+            <circle id="mt-center-dot" cx="150" cy="190" r="10"
+                    fill="${MT_COLOURS.body}" class="mastery-center-pulse" opacity="0"/>
+
+            <!-- SPIRIT labels (top, middle) -->
+            <text x="150" y="16"  text-anchor="middle" font-size="10" letter-spacing="1.8"
+                  font-family="DM Sans,sans-serif" font-weight="600"
+                  fill="var(--text-muted)">SPIRIT</text>
+            <text x="150" y="3"   text-anchor="middle" font-size="15"
+                  font-family="DM Sans,sans-serif" font-weight="700"
+                  fill="var(--text)">${lvTxt(spiritL)}</text>
+            <text x="150" y="-10" text-anchor="middle" font-size="10"
+                  font-family="DM Sans,sans-serif" font-style="italic"
+                  fill="${MT_COLOURS.spirit}">${spiritR}</text>
+
+            <!-- MIND labels (bottom-left, start) -->
+            <text x="14" y="288" text-anchor="start" font-size="10" letter-spacing="1.8"
+                  font-family="DM Sans,sans-serif" font-weight="600"
+                  fill="var(--text-muted)">MIND</text>
+            <text x="14" y="303" text-anchor="start" font-size="15"
+                  font-family="DM Sans,sans-serif" font-weight="700"
+                  fill="var(--text)">${lvTxt(mindL)}</text>
+            <text x="14" y="317" text-anchor="start" font-size="10"
+                  font-family="DM Sans,sans-serif" font-style="italic"
+                  fill="${MT_COLOURS.mind}">${mindR}</text>
+
+            <!-- BODY labels (bottom-right, end) -->
+            <text x="286" y="288" text-anchor="end" font-size="10" letter-spacing="1.8"
+                  font-family="DM Sans,sans-serif" font-weight="600"
+                  fill="var(--text-muted)">BODY</text>
+            <text x="286" y="303" text-anchor="end" font-size="15"
+                  font-family="DM Sans,sans-serif" font-weight="700"
+                  fill="var(--text)">${lvTxt(bodyL)}</text>
+            <text x="286" y="317" text-anchor="end" font-size="10"
+                  font-family="DM Sans,sans-serif" font-style="italic"
+                  fill="${MT_COLOURS.body}">${bodyR}</text>
           </svg>
         </div>
-        <div class="triad-mastery-cards">
-          <div class="mastery-pillar-card">
-            <div class="mastery-pillar-icon">🧠</div>
-            <div class="mastery-pillar-label">Mind</div>
-            <div class="mastery-pillar-level">Level<br>Coming Soon</div>
-          </div>
-          <div class="mastery-pillar-card">
-            <div class="mastery-pillar-icon">💪</div>
-            <div class="mastery-pillar-label">Body</div>
-            <div class="mastery-pillar-level">Level<br>Coming Soon</div>
-          </div>
-          <div class="mastery-pillar-card">
-            <div class="mastery-pillar-icon">✨</div>
-            <div class="mastery-pillar-label">Spirit</div>
-            <div class="mastery-pillar-level">Level<br>Coming Soon</div>
-          </div>
+
+        <!-- Total level -->
+        <div class="mt-total-wrap">
+          <div class="mt-total-label">Total Level</div>
+          <div class="mt-total-number">${totalL > 0 ? totalL : '—'}</div>
         </div>
-        <div class="triad-mastery-total">Total Level: —</div>
-        <div class="triad-mastery-message">Progression system launching in the next update.<br>Your practice is being tracked.</div>
+
+        <!-- Progress bars -->
+        <div class="mt-bars">
+          ${_masteryBarHtml('body',   bodyL,   bodyR,   niBody)}
+          ${_masteryBarHtml('mind',   mindL,   mindR,   niMind)}
+          ${_masteryBarHtml('spirit', spiritL, spiritR, niSpirit)}
+        </div>
       </div>`;
+
+    // Kick off animations after DOM paint
+    requestAnimationFrame(() => {
+      // Outline draw-in
+      const bgTri = document.getElementById('mt-bg-tri');
+      if (bgTri) {
+        bgTri.style.transition = 'stroke-dashoffset 0.8s ease-out 0.05s';
+        bgTri.style.strokeDashoffset = '0';
+      }
+      // Fill slices
+      _masteryAnimateFills();
+      // Center dot
+      const dot = document.getElementById('mt-center-dot');
+      if (dot) {
+        dot.style.transition = 'opacity 0.6s ease-out 1.4s';
+        dot.style.opacity = '1';
+      }
+      // Progress bars
+      el.querySelectorAll('.mt-bar-fill').forEach(b => {
+        b.style.transition = 'width 1s ease-out 0.6s';
+        b.style.width = b.dataset.target;
+      });
+    });
   }
 
   function renderAchievementsPage() {
