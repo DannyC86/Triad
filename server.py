@@ -783,6 +783,7 @@ def user_delete_data():
     uid = int(current_user.id)
     try:
         conn = get_db()
+        # Child rows first — every table that FKs to users(id).
         for table in (
             "user_sessions",
             "user_achievements",
@@ -791,13 +792,21 @@ def user_delete_data():
             "user_plan",
             "user_preferences",
             "user_profiles",
+            "user_events",
             "feedback",
             "forgot_tokens",
         ):
             conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (uid,))
+        # Finally the parent row — removes email + password_hash so no PII remains.
+        conn.execute("DELETE FROM users WHERE id = ?", (uid,))
         conn.commit()
         conn.close()
-        print(f"[user/data DELETE] erased all data for user_id={uid}")
+        # Drop the Flask-Login session so the now-orphan cookie can't be reused.
+        try:
+            logout_user()
+        except Exception:
+            pass
+        print(f"[user/data DELETE] erased all data + account for user_id={uid}")
         return jsonify({"success": True})
     except Exception as e:
         print(f"[user/data DELETE] error: {e}")
