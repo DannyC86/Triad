@@ -472,6 +472,138 @@
     .pill.diff-Beginner    { border-color: rgba(52,140,90,0.3);  color: #2d7a50; }
     .pill.diff-Intermediate{ border-color: rgba(180,140,60,0.35); color: #7a6030; }
     .pill.diff-Advanced    { border-color: rgba(160,50,50,0.3);  color: #8a3030; }
+    .pill.diff-Expert      { border-color: rgba(107,31,58,0.45); color: #6b1f3a; background: rgba(107,31,58,0.06); }
+
+    /* ─── Learn tab content (overview, benefits, when, science) ─── */
+    .learn-prose {
+      color: var(--text);
+      font-size: 0.96rem;
+      line-height: 1.6;
+      max-width: 640px;
+      margin: 6px 0 14px;
+    }
+    .learn-list {
+      list-style: disc;
+      padding-left: 22px;
+      margin: 6px 0 14px;
+    }
+    .learn-list li {
+      color: var(--text);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      margin-bottom: 6px;
+    }
+    .learn-figures {
+      list-style: none;
+      padding-left: 0;
+      margin: 6px 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .learn-figures li {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      padding: 10px 14px;
+      background: rgba(26,26,46,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .learn-figure-name {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .learn-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 6px 0 14px;
+    }
+    .learn-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent, var(--teal)) 8%, transparent);
+      color: color-mix(in srgb, var(--accent, var(--teal)) 80%, var(--text));
+      border: 1px solid color-mix(in srgb, var(--accent, var(--teal)) 25%, transparent);
+    }
+
+    /* ─── Enhance Your Practice (product card in Explore tab) ─── */
+    .practice-product {
+      margin-top: 24px;
+    }
+    .practice-product-kicker {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .practice-product-card {
+      position: relative;
+      background: var(--navy-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px 20px;
+      box-shadow: 0 1px 4px rgba(26,26,46,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .practice-product-badge {
+      align-self: flex-start;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      color: var(--accent, var(--teal));
+      background: color-mix(in srgb, var(--accent, var(--teal)) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent, var(--teal)) 30%, transparent);
+      margin-bottom: 4px;
+    }
+    .practice-product-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.005em;
+      margin: 0;
+    }
+    .practice-product-price {
+      font-size: 0.95rem;
+      color: var(--text);
+      font-weight: 600;
+      margin: 0;
+    }
+    .practice-product-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0 0 6px;
+    }
+    .practice-product-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--accent, var(--teal));
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      transition: filter 0.18s ease, transform 0.18s ease;
+    }
+    .practice-product-btn:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
 
     /* ─── Level badges + locked cards (Mind & Body matrix) ─── */
     .card-level-badge {
@@ -6465,16 +6597,16 @@ var _introPlayedThisSession = false;
     {
       id: "diaphragmatic-breathing",
       title: "Diaphragmatic Breathing",
-      desc: "The foundation of all breathwork. Natural belly breathing that activates the parasympathetic nervous system.",
-      bestFor: "Foundation",
-      difficulty: "Beginner",
-      duration: "5–15 minutes",
+      desc: "Deep belly breathing designed to maximise oxygen exchange and lower cortisol.",
+      bestFor: "Recovery",
+      difficulty: "Intermediate",
+      duration: "8–15 minutes",
       steps: [
-        "Place one hand on your chest, one on your belly.",
-        "Inhale slowly through the nose — only the lower hand should rise.",
-        "The chest remains relatively still throughout.",
-        "Exhale gently and passively — slightly longer than the inhale.",
-        "Repeat with a soft, effortless rhythm."
+        "Lie flat on your back with your knees slightly bent, or sit comfortably upright.",
+        "Place one hand on your upper chest and the other on your abdomen just below the rib cage.",
+        "Inhale slowly through your nose, ensuring the hand on your stomach rises while the hand on your chest remains still.",
+        "Tighten your stomach muscles and let them fall inward as you exhale through pursed lips.",
+        "Repeat, letting the diaphragm drive the entire breath movement."
       ],
       benefits: [
         "Activates the parasympathetic nervous system via vagal stimulation.",
@@ -6487,16 +6619,16 @@ var _introPlayedThisSession = false;
     {
       id: "extended-exhale",
       title: "Extended Exhale",
-      desc: "Lengthening the exhale activates the vagus nerve and calms the nervous system rapidly.",
-      bestFor: "Calm",
-      difficulty: "Beginner",
-      duration: "5–10 minutes",
+      desc: "A down-regulation protocol stretching the exhalation phase to trigger instant calm.",
+      bestFor: "Down-regulation",
+      difficulty: "Expert",
+      duration: "10–20 minutes",
       steps: [
-        "Inhale through the nose for a count of 4.",
-        "Exhale slowly through the nose or mouth for a count of 6–8.",
-        "Keep the exhale smooth and controlled — no forcing.",
-        "Let each breath feel natural and unhurried.",
-        "Continue for 5–10 minutes or until fully calm."
+        "Sit comfortably upright with your back supported and drop your shoulders.",
+        "Inhale deeply through your nose for a brief count of 4 seconds.",
+        "Exhale slowly and completely through your mouth for an extended count of 8 seconds.",
+        "Keep the exhalation stream steady, smooth, and fully unhurried.",
+        "At the bottom of the breath, pause for 1 second before starting the next inhale."
       ],
       benefits: [
         "Activates the vagus nerve via the extended exhale phase.",
@@ -6509,16 +6641,16 @@ var _introPlayedThisSession = false;
     {
       id: "resonant-breathing",
       title: "Resonant Breathing",
-      desc: "Breathing at 5–6 breaths per minute — the resonant frequency that maximises heart rate variability.",
-      bestFor: "HRV / Balance",
+      desc: "Equal-duration pacing to sync heart rate variability with respiratory patterns.",
+      bestFor: "Balance",
       difficulty: "Beginner",
-      duration: "10–20 minutes",
+      duration: "5–20 minutes",
       steps: [
-        "Inhale through the nose for 5 seconds.",
-        "Exhale through the nose for 5 seconds.",
-        "Maintain this even 5-second rhythm throughout.",
-        "Keep the breath smooth, neither forced nor shallow.",
-        "Practise for at least 10 minutes for full HRV effect."
+        "Adopt a comfortable, supported seated posture with your spine straight.",
+        "Inhale smoothly through your nose for exactly 5 seconds.",
+        "Transition without holding and exhale smoothly through your nose for exactly 5 seconds.",
+        "Maintain this continuous, circular rhythm without pausing at the top or bottom.",
+        "Focus entirely on the steady, rhythmic flow of air moving across your throat."
       ],
       benefits: [
         "Maximises heart rate variability (HRV).",
@@ -6777,16 +6909,16 @@ var _introPlayedThisSession = false;
     {
       id: "gratitude-meditation",
       title: "Gratitude Meditation",
-      desc: "Systematic cultivation of appreciation. Rewires neural pathways toward positive states.",
-      bestFor: "Joy / Wellbeing",
+      desc: "Active cognitive reframing targeting positive states and neurochemical rewires.",
+      bestFor: "Heart",
       difficulty: "Beginner",
-      duration: "10–20 minutes",
+      duration: "10–15 minutes",
       steps: [
-        "Sit comfortably, eyes closed, a few settling breaths.",
-        "Bring to mind one thing you are genuinely grateful for.",
-        "Allow the feeling of appreciation to expand — notice where you feel it in the body.",
-        "Slowly move through 5–10 sources of gratitude, spending time with each.",
-        "End by offering gratitude outward — to people, to life itself."
+        "Sit comfortably upright, close your eyes, and settle your breathing.",
+        "Bring to mind a specific person who has made a meaningful difference in your life.",
+        "Silently visualise their face, holding onto the physical feeling of appreciation that arises.",
+        "Transition your focus to a small, simple daily convenience or positive condition in your current environment.",
+        "Sit directly within the physical sensations of that warmth and abundance without overanalysing it."
       ],
       benefits: [
         "Increases dopamine and serotonin through positive emotional focus.",
@@ -6799,16 +6931,16 @@ var _introPlayedThisSession = false;
     {
       id: "box-visualization",
       title: "Box Visualization",
-      desc: "Box breathing rhythm paired with guided mental imagery for focus and calm.",
-      bestFor: "Focus / Calm",
+      desc: "A high-focus mental projection tracking a geometric anchor to lock down wandering thoughts.",
+      bestFor: "Clarity",
       difficulty: "Beginner",
-      duration: "10–20 minutes",
+      duration: "5–15 minutes",
       steps: [
-        "Begin with 4 rounds of box breathing to settle the mind.",
-        "On each count, visualise tracing one side of a glowing square.",
-        "Fill each side with a quality: calm, focus, strength, ease.",
-        "Continue for 5–10 minutes, deepening the visual clarity.",
-        "End by resting in the completed image."
+        "Sit with a straight, alert posture and gently close your eyes.",
+        "Visualise a clean, glowing line drawing a path from left to right in your mind's eye.",
+        "Track the line travelling down to form the right side of a box, keeping your focus tight on its path.",
+        "Visualise the line drawing the bottom edge from right to left, matching your pacing.",
+        "Follow the line as it runs back up to the starting corner, sealing a perfect square."
       ],
       benefits: [
         "Combines breathwork and visualisation for compound calming effect.",
@@ -6821,16 +6953,16 @@ var _introPlayedThisSession = false;
     {
       id: "soundscape-meditation",
       title: "Soundscape Meditation",
-      desc: "Using ambient sound as the anchor for awareness. Particularly effective for restless minds.",
-      bestFor: "Presence",
+      desc: "Using external auditory frequencies to anchor presence and clear background noise.",
+      bestFor: "Awareness",
       difficulty: "Beginner",
-      duration: "10–30 minutes",
+      duration: "10–20 minutes",
       steps: [
-        "Sit or lie comfortably with chosen ambient audio or natural sound.",
-        "Let the ears be fully open — receive all sounds without labelling.",
-        "When the mind wanders, use sound as the returning anchor.",
-        "Notice near sounds and far sounds; the silence between them.",
-        "Allow sound to wash through awareness without resistance."
+        "Put on high-quality headphones and close your eyes in a resting seat.",
+        "Let your ears reach out to find the furthest, most distant layer of background sound.",
+        "Drop any desire to name or judge what is causing the sound; receive it as raw vibration.",
+        "Shift your focus to the closest layer of sound — your own breath or the quiet inside the room.",
+        "Expand your hearing to track all sounds simultaneously, letting them arise and fall like waves."
       ],
       benefits: [
         "Accessible anchor for those who struggle with breath focus.",
@@ -7683,6 +7815,14 @@ var _introPlayedThisSession = false;
         people: ["Dr. Stephen Porges", "B.K.S. Iyengar", "Patrick McKeown"],
         books: ["Breath: The New Science of a Lost Art", "The Breathing Book", "Science of Breath"],
         techniques: ["4-7-8-breathing", "box-breathing", "extended-exhale"]
+      },
+      product: {
+        title: "Weighted Calming Vest",
+        price: "£45.00",
+        badge: "Special buy",
+        desc: "Provides proprioceptive grounding to enhance deep diaphragmatic engagement.",
+        url: "https://www.amazon.co.uk/s?k=weighted+calming+vest",
+        ctaLabel: "Buy on Amazon"
       }
     },
 
@@ -7740,6 +7880,14 @@ var _introPlayedThisSession = false;
         people: ["Andrew Huberman", "Dr. Stephen Porges"],
         books: ["The Healing Power of the Breath", "Breath: The New Science of a Lost Art"],
         techniques: ["4-7-8-breathing", "physiological-sigh", "resonant-breathing"]
+      },
+      product: {
+        title: "Premium Flaxseed Eye Pillow",
+        price: "£16.50",
+        badge: "Relaxation pick",
+        desc: "Weighted lavender eye pillow to boost the vagal response during down-regulation.",
+        url: "https://www.amazon.co.uk/s?k=lavender+eye+pillow",
+        ctaLabel: "Buy on Amazon"
       }
     },
 
@@ -7797,6 +7945,14 @@ var _introPlayedThisSession = false;
         people: ["Stephen Elliott", "HeartMath Institute", "Dr. Stephen Porges"],
         books: ["Coherent Breathing", "The Healing Power of the Breath", "Breath: The New Science of a Lost Art"],
         techniques: ["box-breathing", "extended-exhale", "sama-vritti"]
+      },
+      product: {
+        title: "Pulse Oximeter & HRV Tracker",
+        price: "£34.99",
+        badge: "Coherence pick",
+        desc: "Track real-time heart rate variability improvements during resonant breathing.",
+        url: "https://www.amazon.co.uk/s?k=pulse+oximeter+hrv+tracker",
+        ctaLabel: "Buy on Amazon"
       }
     },
 
@@ -8154,6 +8310,14 @@ var _introPlayedThisSession = false;
         people:     ["Jack Kornfield", "Andrew Huberman"],
         books:      ["The Miracle of Mindfulness", "Breath: The New Science of a Lost Art"],
         techniques: ["ujjayi", "nadi-shodhana", "4-7-8-breathing"]
+      },
+      product: {
+        title: "Silent Mind Tibetan Singing Bowl Set",
+        price: "£28.00",
+        badge: "Special buy",
+        desc: "A beginner-friendly meditation bowl with cushion, mallet and case. Used for centuries to deepen meditation practice.",
+        url: "https://www.amazon.co.uk/s?k=tibetan+singing+bowl+set",
+        ctaLabel: "Buy on Amazon"
       }
     },
 
@@ -8535,6 +8699,14 @@ var _introPlayedThisSession = false;
         people: ["Sharon Salzberg", "Jon Kabat-Zinn"],
         books: ["The Gratitude Diaries", "Loving-Kindness", "The Miracle of Mindfulness"],
         techniques: ["4-7-8-breathing", "extended-exhale", "resonant-breathing"]
+      },
+      product: {
+        title: "Hardcover Linen Gratitude Journal",
+        price: "£14.99",
+        badge: "Focus pick",
+        desc: "Thick lay-flat premium paper designed to structurally track daily reflections post-session.",
+        url: "https://www.amazon.co.uk/s?k=gratitude+journal+hardcover",
+        ctaLabel: "Buy on Amazon"
       }
     },
 
@@ -8592,6 +8764,14 @@ var _introPlayedThisSession = false;
         people: ["Mark Divine", "Andrew Huberman"],
         books: ["The Way of the SEAL", "Stealing Fire"],
         techniques: ["box-breathing", "visualization", "4-7-8-breathing"]
+      },
+      product: {
+        title: "Premium Matte Black Zafu Cushion",
+        price: "£32.00",
+        badge: "Design pick",
+        desc: "High-density buckwheat hull cushion providing absolute structural support for visual concentration.",
+        url: "https://www.amazon.co.uk/s?k=zafu+meditation+cushion+buckwheat",
+        ctaLabel: "Buy on Amazon"
       }
     },
 
@@ -8649,6 +8829,14 @@ var _introPlayedThisSession = false;
         people: ["Russill Paul", "Thich Nhat Hanh"],
         books: ["The Yoga of Sound", "The Miracle of Mindfulness"],
         techniques: ["bhramari", "mantra-japa", "open-awareness"]
+      },
+      product: {
+        title: "Noise-Isolating Studio Headphones",
+        price: "£89.00",
+        badge: "Gear selection",
+        desc: "Ultra-accurate acoustic reproduction profile to resolve precise layers of soundscape tracks.",
+        url: "https://www.amazon.co.uk/s?k=studio+headphones+noise+isolating",
+        ctaLabel: "Buy on Amazon"
       }
     },
 
@@ -10518,11 +10706,11 @@ var _introPlayedThisSession = false;
   /* Mind & Body progression matrix — 3-phase, 5 Level-1 items unlocked per tab. */
   const _LEVEL_BY_ID = {
     // Breathwork — Level 1 (unlocked)
-    'resonant-breathing': 1, 'diaphragmatic-breathing': 1, 'box-breathing': 1, 'extended-exhale': 1, '4-7-8-breathing': 1,
+    'resonant-breathing': 1, 'box-breathing': 1, '4-7-8-breathing': 1, 'sama-vritti': 1, 'bhramari': 1,
     // Breathwork — Level 2 (locked)
-    'physiological-sigh': 2, 'nadi-shodhana': 2, 'sama-vritti': 2, 'bhramari': 2, 'ujjayi': 2, 'buteyko-method': 2, 'kapalabhati': 2,
+    'diaphragmatic-breathing': 2, 'physiological-sigh': 2, 'nadi-shodhana': 2, 'ujjayi': 2, 'buteyko-method': 2, 'kapalabhati': 2,
     // Breathwork — Level 3 (locked)
-    'wim-hof-method': 3, 'tummo': 3, 'kumbhaka': 3, 'uddiyana-bandha': 3, 'advanced-buteyko': 3, 'holotropic-breathwork': 3,
+    'extended-exhale': 3, 'wim-hof-method': 3, 'tummo': 3, 'kumbhaka': 3, 'uddiyana-bandha': 3, 'advanced-buteyko': 3, 'holotropic-breathwork': 3,
     // Meditation — Level 1 (unlocked)
     'mindfulness-of-breath': 1, 'gratitude-meditation': 1, 'yoga-nidra': 1, 'soundscape-meditation': 1, 'box-visualization': 1,
     // Meditation — Level 2 (locked)
@@ -10532,9 +10720,9 @@ var _introPlayedThisSession = false;
   };
   const _CARD_ORDER = [
     // Body (Breathwork) — L1, L2, L3
-    'resonant-breathing', 'diaphragmatic-breathing', 'box-breathing', 'extended-exhale', '4-7-8-breathing',
-    'physiological-sigh', 'nadi-shodhana', 'sama-vritti', 'bhramari', 'ujjayi', 'buteyko-method', 'kapalabhati',
-    'wim-hof-method', 'tummo', 'kumbhaka', 'uddiyana-bandha', 'advanced-buteyko', 'holotropic-breathwork',
+    'resonant-breathing', 'box-breathing', '4-7-8-breathing', 'sama-vritti', 'bhramari',
+    'diaphragmatic-breathing', 'physiological-sigh', 'nadi-shodhana', 'ujjayi', 'buteyko-method', 'kapalabhati',
+    'extended-exhale', 'wim-hof-method', 'tummo', 'kumbhaka', 'uddiyana-bandha', 'advanced-buteyko', 'holotropic-breathwork',
     // Mind (Meditation) — L1, L2, L3
     'mindfulness-of-breath', 'gratitude-meditation', 'yoga-nidra', 'soundscape-meditation', 'box-visualization',
     'body-scan', 'loving-kindness', 'mantra-japa', 'visualization', 'trataka', 'chakra-visualization', 'gap-watching',
@@ -10684,27 +10872,68 @@ var _introPlayedThisSession = false;
       <div class="tab-panel" data-panel="learn">
         <h3>${kind === 'meditation' ? 'Meditation animation' : 'Breathing animation'}</h3>
         <div class="learn-animation">
-          ${renderAnimation(d.learn.animation)}
-          <div class="learn-anim-caption">${escapeHtml(animationCaption(d.learn.animation, item))}</div>
+          ${renderAnimation(d.learn?.animation || 'default')}
+          <div class="learn-anim-caption">${escapeHtml(animationCaption(d.learn?.animation || 'default', item))}</div>
         </div>
 
-        <h3>Verified demonstration</h3>
-        <div class="yt-demo-card">
-          <div class="yt-demo-top">
-            <div class="yt-demo-icon">
-              <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+        ${d.learn?.video ? `
+          <h3>Verified demonstration</h3>
+          <div class="yt-demo-card">
+            <div class="yt-demo-top">
+              <div class="yt-demo-icon">
+                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+              <div class="yt-demo-body">
+                <span class="yt-demo-label">Verified demonstration</span>
+                <span class="yt-demo-title">${escapeHtml(d.learn.video.title)}</span>
+                <span class="yt-demo-teacher">${escapeHtml(d.learn.video.teacher)}</span>
+              </div>
             </div>
-            <div class="yt-demo-body">
-              <span class="yt-demo-label">Verified demonstration</span>
-              <span class="yt-demo-title">${escapeHtml(d.learn.video.title)}</span>
-              <span class="yt-demo-teacher">${escapeHtml(d.learn.video.teacher)}</span>
-            </div>
+            <a class="yt-demo-btn" href="https://www.youtube.com/watch?v=${encodeURIComponent(d.learn.video.youtubeId)}" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Watch on YouTube
+            </a>
           </div>
-          <a class="yt-demo-btn" href="https://www.youtube.com/watch?v=${encodeURIComponent(d.learn.video.youtubeId)}" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Watch on YouTube
-          </a>
-        </div>
+        ` : ''}
+
+        ${d.overview?.what ? `<h3>Overview</h3><p class="learn-prose">${escapeHtml(d.overview.what)}</p>` : ''}
+
+        ${d.overview?.keyBenefits?.length ? `
+          <h3>Key benefits</h3>
+          <ul class="learn-list">${d.overview.keyBenefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
+        ` : ''}
+
+        ${d.overview?.whenToUse?.length ? `
+          <h3>When to use it</h3>
+          <ul class="learn-list">${d.overview.whenToUse.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul>
+        ` : ''}
+
+        ${d.overview?.whoFor ? `<h3>Who it's for</h3><p class="learn-prose">${escapeHtml(d.overview.whoFor)}</p>` : ''}
+
+        ${d.history?.evolution ? `<h3>How it evolved</h3><p class="learn-prose">${escapeHtml(d.history.evolution)}</p>` : ''}
+
+        ${d.history?.figures?.length ? `
+          <h3>Key figures</h3>
+          <ul class="learn-figures">${d.history.figures.map(f => `<li><span class="learn-figure-name">${escapeHtml(f.name)}</span> — ${escapeHtml(f.credit)}</li>`).join('')}</ul>
+        ` : ''}
+
+        ${d.history?.ancient ? `<h3>Connection to ancient practice</h3><p class="learn-prose">${escapeHtml(d.history.ancient)}</p>` : ''}
+
+        ${(d.science?.physiology || d.science?.neuroscience) ? `
+          <h3>What's happening in the body</h3>
+          ${d.science.physiology ? `<p class="learn-prose">${escapeHtml(d.science.physiology)}</p>` : ''}
+          ${d.science.neuroscience ? `<p class="learn-prose">${escapeHtml(d.science.neuroscience)}</p>` : ''}
+        ` : ''}
+
+        ${d.science?.tags?.length ? `
+          <h3>Key mechanisms</h3>
+          <div class="learn-tags">${d.science.tags.map(t => `<span class="learn-tag">${escapeHtml(t)}</span>`).join('')}</div>
+        ` : ''}
+
+        ${d.science?.research?.length ? `
+          <h3>Research findings</h3>
+          <ul class="learn-list">${d.science.research.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+        ` : ''}
       </div>
 
       <!-- Tab 3: EXPLORE -->
@@ -10718,6 +10947,21 @@ var _introPlayedThisSession = false;
             Ask an Expert
           </button>
         </div>
+
+        ${d.product ? `
+          <div class="practice-product">
+            <p class="practice-product-kicker">Enhance your practice</p>
+            <div class="practice-product-card">
+              ${d.product.badge ? `<span class="practice-product-badge">${escapeHtml(d.product.badge)}</span>` : ''}
+              <h4 class="practice-product-title">${escapeHtml(d.product.title)}</h4>
+              <p class="practice-product-price">${escapeHtml(d.product.price)}</p>
+              <p class="practice-product-desc">${escapeHtml(d.product.desc)}</p>
+              <a class="practice-product-btn" href="${escapeHtml(d.product.url)}" target="_blank" rel="noopener noreferrer" onclick="track('practice_product_click',{practice_id:'${itemIdJs}',product:'${escapeJs(d.product.title)}'})">
+                ${escapeHtml(d.product.ctaLabel || 'Buy on Amazon')}
+              </a>
+            </div>
+          </div>
+        ` : ''}
       </div>
     `;
   }
@@ -11703,7 +11947,6 @@ var _introPlayedThisSession = false;
     document.getElementById('meditate-list').style.display = 'none';
     const detail = document.getElementById('meditate-detail');
     renderDetail(item, 'meditate-detail', 'meditation');
-    detail.innerHTML += renderSingingBowlSection();
     detail.classList.add('active');
     updateFab();
     window.scrollTo({ top: 0, behavior: 'smooth' });
