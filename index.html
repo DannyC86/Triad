@@ -270,9 +270,10 @@
        a specific attribute selector. */
     .home-cards[hidden] { display: none !important; }
     /* While the First Breath gate is showing, strip the screen to its essentials:
-       no auth footer, no profile icon in the top-right. */
+       no auth footer, no profile icon, no bottom navigation. */
     body.first-breath-mode .home-auth-footer,
-    body.first-breath-mode .top-header-avatar { display: none !important; }
+    body.first-breath-mode .top-header-avatar,
+    body.first-breath-mode .nav { display: none !important; }
     .first-breath-gate-eyebrow {
       font-size: 0.66rem;
       letter-spacing: 0.22em;
@@ -1460,8 +1461,9 @@
       border-top: 1px solid var(--border);
       border-radius: 20px 20px 0 0;
       overflow: hidden;
-      min-height: 72px;
-      padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+      min-height: 52px;                                   /* match top-header on desktop;
+                                                            grows on iOS for safe area */
+      padding: 0 8px env(safe-area-inset-bottom);
     }
     .nav-inner {
       max-width: 540px;
@@ -1476,23 +1478,24 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3px;
-      padding: 8px 4px;
-      min-height: 44px;
+      gap: 1px;
+      padding: 2px 4px;
+      min-height: 0;
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 0.65rem;
+      font-size: 0.58rem;
       letter-spacing: 0.06em;
       cursor: pointer;
       transition: color 0.2s ease;
       font-family: inherit;
       font-weight: 400;
       border-radius: var(--radius-sm);
+      line-height: 1;
     }
     .nav-btn svg {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       stroke: currentColor;
       fill: none;
       stroke-width: 1.5;
@@ -1515,10 +1518,10 @@
     /* Mind / Body / Spirit icons larger than Home / Profile */
     .nav-btn[data-section="meditate"]   svg,
     .nav-btn[data-section="techniques"] svg,
-    .nav-btn[data-section="library"]    svg { width: 28px; height: 28px; }
+    .nav-btn[data-section="library"]    svg { width: 24px; height: 24px; }
     .nav-btn[data-section="meditate"]   span,
     .nav-btn[data-section="techniques"] span,
-    .nav-btn[data-section="library"]    span { font-size: 0.68rem; font-weight: 500; }
+    .nav-btn[data-section="library"]    span { font-size: 0.6rem; font-weight: 500; }
 
     /* ─── Top header bar ─── */
     .top-header {
