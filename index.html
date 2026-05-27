@@ -269,6 +269,10 @@
        UA [hidden]{display:none} in the cascade. Restore the hide behavior with
        a specific attribute selector. */
     .home-cards[hidden] { display: none !important; }
+    /* While the First Breath gate is showing, strip the screen to its essentials:
+       no auth footer, no profile icon in the top-right. */
+    body.first-breath-mode .home-auth-footer,
+    body.first-breath-mode .top-header-avatar { display: none !important; }
     .first-breath-gate-eyebrow {
       font-size: 0.66rem;
       letter-spacing: 0.22em;
@@ -5771,10 +5775,8 @@ var _introPlayedThisSession = false;
       <!-- First Breath gate (shown only for brand-new users; replaces the 3-card menu) -->
       <div class="first-breath-gate" id="first-breath-gate" hidden>
         <div class="first-breath-gate-eyebrow">Welcome</div>
-        <h2 class="first-breath-gate-title">Begin with one breath.</h2>
-        <p class="first-breath-gate-body">Before the menu opens, take a moment of presence. Three breaths along the Triad.</p>
         <button class="first-breath-gate-btn" id="first-breath-gate-btn" type="button">Take your first Breath</button>
-        <div class="first-breath-gate-note">About 40 seconds</div>
+        <div class="first-breath-gate-note">Takes about 40 seconds</div>
       </div>
 
       <div class="home-auth-footer" id="home-auth-footer">
@@ -16438,12 +16440,14 @@ Build my personalised plan.`;
     const c = document.querySelector('.home-cards');
     if (g) g.hidden = false;
     if (c) c.hidden = true;
+    document.body.classList.add('first-breath-mode');
   }
   function hideGate() {
     const g = $('first-breath-gate');
     const c = document.querySelector('.home-cards');
     if (g) g.hidden = true;
     if (c) c.hidden = false;
+    document.body.classList.remove('first-breath-mode');
   }
 
   function setStage(stage) {
