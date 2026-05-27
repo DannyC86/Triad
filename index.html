@@ -250,6 +250,262 @@
     @keyframes intro-fade-out { from { opacity: 1; } to { opacity: 0; } }
     @media (prefers-reduced-motion: reduce) { #intro-screen { display: none; } }
 
+    /* ─── FIRST BREATH ONBOARDING ─── */
+    /* The gate inside the home screen (shown for brand-new users only) */
+    .first-breath-gate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 24px 0;
+      max-width: 380px;
+      text-align: center;
+    }
+    .first-breath-gate[hidden] { display: none; }
+    .first-breath-gate-eyebrow {
+      font-size: 0.66rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .first-breath-gate-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.9rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+      color: var(--text);
+      margin: 0;
+    }
+    .first-breath-gate-body {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+      max-width: 320px;
+      margin: 0 0 6px;
+    }
+    .first-breath-gate-btn {
+      appearance: none;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 999px;
+      background: var(--text);
+      color: var(--bg);
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+      box-shadow: 0 4px 16px rgba(26,26,46,0.18);
+    }
+    .first-breath-gate-btn:hover  { transform: translateY(-1px); filter: brightness(1.06); }
+    .first-breath-gate-btn:active { transform: translateY(0); }
+    .first-breath-gate-note {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* The full-screen locked overlay (instruction → countdown → session → pivot) */
+    #onboarding-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: linear-gradient(135deg, #F5F0E8 0%, #E8EDF5 100%);
+      color: #1a1a2e;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+    [data-theme="dark"] #onboarding-overlay {
+      background: linear-gradient(135deg, #0e0e18 0%, #14141e 100%);
+      color: #ece9e0;
+    }
+    #onboarding-overlay.active { display: flex; }
+    /* Lock body when onboarding is active */
+    body.onboarding-active { overflow: hidden; }
+    body.onboarding-active .top-header,
+    body.onboarding-active .nav,
+    body.onboarding-active .sticky-back-bar { display: none !important; }
+
+    /* Generic stage panel — only the matching stage is visible */
+    .onboard-stage {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+    }
+    #onboarding-overlay[data-stage="instruction"] .onboard-stage[data-for="instruction"],
+    #onboarding-overlay[data-stage="countdown"]   .onboard-stage[data-for="countdown"],
+    #onboarding-overlay[data-stage="session"]     .onboard-stage[data-for="session"],
+    #onboarding-overlay[data-stage="pivot"]       .onboard-stage[data-for="pivot"] {
+      display: flex;
+    }
+
+    /* Stage 1: Instruction */
+    .onboard-logo { width: 92px; height: 92px; color: currentColor; }
+    .onboard-logo svg { width: 100%; height: 100%; }
+    .onboard-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+    .onboard-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+      margin: 0;
+    }
+    .onboard-sub {
+      font-size: 0.96rem;
+      line-height: 1.55;
+      opacity: 0.7;
+      max-width: 320px;
+      margin: 0 0 6px;
+    }
+    .onboard-btn {
+      appearance: none;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 999px;
+      background: currentColor;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+      box-shadow: 0 4px 16px rgba(26,26,46,0.18);
+    }
+    .onboard-btn > span { color: #F5F0E8; }
+    [data-theme="dark"] .onboard-btn > span { color: #14141e; }
+    .onboard-btn:hover  { transform: translateY(-1px); filter: brightness(1.06); }
+    .onboard-btn:active { transform: translateY(0); }
+
+    /* Stage 2: Countdown */
+    .onboard-count-num {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 7rem;
+      font-weight: 400;
+      line-height: 1;
+      opacity: 0;
+      transform: scale(0.7);
+    }
+    .onboard-count-num.flash {
+      animation: onboard-count-pop 1s ease-out forwards;
+    }
+    @keyframes onboard-count-pop {
+      0%   { opacity: 0; transform: scale(0.7); }
+      30%  { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.05); }
+    }
+
+    /* Stage 3: Session — locked breath triangle */
+    .onboard-session-counter {
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 4px;
+    }
+    .onboard-phase-label {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      min-height: 2.2rem;
+      transition: opacity 0.4s ease;
+    }
+    .onboard-tri-wrap {
+      width: 260px;
+      height: 260px;
+      color: currentColor;
+    }
+    .onboard-tri-wrap svg { width: 100%; height: 100%; }
+    #onboard-tri-edge {
+      stroke-dasharray: 4 4;
+      opacity: 0.3;
+    }
+    #onboard-dot {
+      transition: r 0.4s ease;
+    }
+    .onboard-hint {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin-top: 12px;
+    }
+
+    /* Stage 4: Pivot */
+    .onboard-pivot-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+      margin: 0;
+    }
+    .onboard-pivot-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: color-mix(in srgb, currentColor 8%, transparent);
+      border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      margin-top: 4px;
+    }
+    .onboard-pivot-badge::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.6;
+    }
+    .onboard-pivot-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 12px;
+    }
+    .onboard-pivot-btn {
+      appearance: none;
+      padding: 13px 22px;
+      border-radius: 14px;
+      background: transparent;
+      border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+      color: inherit;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .onboard-pivot-btn:hover  { background: color-mix(in srgb, currentColor 6%, transparent); transform: translateY(-1px); }
+    .onboard-pivot-btn:active { transform: translateY(0); }
+    .onboard-pivot-btn.primary {
+      background: currentColor;
+      color: #F5F0E8;
+      border-color: currentColor;
+    }
+    [data-theme="dark"] .onboard-pivot-btn.primary { color: #14141e; }
+
     /* ─── HOME ─── */
     #home {
       max-width: none;
@@ -5505,6 +5761,15 @@ var _introPlayedThisSession = false;
         </button>
       </div>
 
+      <!-- First Breath gate (shown only for brand-new users; replaces the 3-card menu) -->
+      <div class="first-breath-gate" id="first-breath-gate" hidden>
+        <div class="first-breath-gate-eyebrow">Welcome</div>
+        <h2 class="first-breath-gate-title">Begin with one breath.</h2>
+        <p class="first-breath-gate-body">Before the menu opens, take a moment of presence. Three breaths along the Triad.</p>
+        <button class="first-breath-gate-btn" id="first-breath-gate-btn" type="button">Take your first Breath</button>
+        <div class="first-breath-gate-note">About 40 seconds</div>
+      </div>
+
       <div class="home-auth-footer" id="home-auth-footer">
         <span class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</span>
       </div>
@@ -6370,7 +6635,7 @@ var _introPlayedThisSession = false;
 </nav>
 
 <script>
-  const APP_VERSION = 'v2.1';
+  const APP_VERSION = 'v2.2';
 
   /* ════════════════ DATA ════════════════ */
 
@@ -16053,6 +16318,315 @@ Build my personalised plan.`;
       document.querySelectorAll('.achievement.unlocked.tooltip-open').forEach(el => el.classList.remove('tooltip-open'));
     }
   });
+</script>
+
+<!-- ═════════ FIRST BREATH ONBOARDING OVERLAY ═════════ -->
+<div id="onboarding-overlay" role="dialog" aria-modal="true" aria-label="First Breath onboarding">
+  <!-- Stage 1: Instruction -->
+  <div class="onboard-stage" data-for="instruction">
+    <div class="onboard-logo">
+      <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1"/>
+        <polygon points="50,14 81,68 19,68" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="1.5" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="onboard-eyebrow">Follow the flow</div>
+    <h1 class="onboard-title">Three breaths.<br>That's all.</h1>
+    <p class="onboard-sub">A moment of presence before the menu opens. The dot leads — you follow.</p>
+    <button class="onboard-btn" id="onboard-begin-btn" type="button"><span>Take a moment for you</span></button>
+  </div>
+
+  <!-- Stage 2: Countdown -->
+  <div class="onboard-stage" data-for="countdown">
+    <div class="onboard-eyebrow">Settle in</div>
+    <div class="onboard-count-num" id="onboard-count-num">3</div>
+  </div>
+
+  <!-- Stage 3: Session -->
+  <div class="onboard-stage" data-for="session">
+    <div class="onboard-session-counter" id="onboard-cycle-count">Cycle 1 of 3</div>
+    <div class="onboard-phase-label" id="onboard-phase-label">Inhale</div>
+    <div class="onboard-tri-wrap">
+      <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <polygon id="onboard-tri-edge" points="50,14 81,68 19,68" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="50" cy="14" r="3" stroke="currentColor" stroke-width="0.6" opacity="0.35" fill="none"/>
+        <circle cx="81" cy="68" r="3" stroke="currentColor" stroke-width="0.6" opacity="0.35" fill="none"/>
+        <circle cx="19" cy="68" r="3" stroke="currentColor" stroke-width="0.6" opacity="0.35" fill="none"/>
+        <circle id="onboard-dot" cx="50" cy="14" r="3.5" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="onboard-hint">No exit · just breathe</div>
+  </div>
+
+  <!-- Stage 4: Pivot -->
+  <div class="onboard-stage" data-for="pivot">
+    <div class="onboard-eyebrow">Complete</div>
+    <h1 class="onboard-pivot-title">First breath, taken.</h1>
+    <div class="onboard-pivot-badge">Achievement unlocked · First Breath</div>
+    <p class="onboard-sub">Where would you like to go?</p>
+    <div class="onboard-pivot-actions">
+      <button class="onboard-pivot-btn primary" id="onboard-pivot-journey" type="button">Start my journey</button>
+      <button class="onboard-pivot-btn" id="onboard-pivot-meditate" type="button">Try a meditation</button>
+      <button class="onboard-pivot-btn" id="onboard-pivot-again" type="button">Breathe again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═════════ FIRST BREATH ONBOARDING ═════════
+   Brand-new users see a single "Take your first Breath" button instead of
+   the 3-card menu. Tapping it runs a locked 3-cycle Triad breath, then
+   surfaces a 3-choice pivot. Existing users (anyone with prior app data)
+   are grandfathered onboarded automatically. */
+(function(){
+  const ONBOARD_KEY  = 'triad:onboarded';
+  const ACHIEVE_KEY  = 'triad:firstBreathUnlocked';
+  const STORE_KEY_LS = 'triad:v1';        // existing app store
+  const CYCLES_TARGET = 3;
+  const PHASE_MS = { inhale: 4000, hold: 4000, exhale: 4000 };
+  const PHASE_ORDER = ['inhale', 'hold', 'exhale'];
+  const PHASE_LABEL = { inhale: 'Inhale', hold: 'Hold', exhale: 'Exhale' };
+  // Triangle vertices in the SVG viewBox (matches home-logo + intro mark)
+  const TRI = {
+    top:   { x: 50, y: 14 },
+    right: { x: 81, y: 68 },
+    left:  { x: 19, y: 68 }
+  };
+  function phaseEndpoints(phase) {
+    if (phase === 'inhale') return [TRI.top,   TRI.right]; // top → bottom-right
+    if (phase === 'hold')   return [TRI.right, TRI.left];  // bottom-right → bottom-left
+    return                       [TRI.left,   TRI.top];   // bottom-left → top
+  }
+
+  const state = {
+    active: false,
+    paused: false,
+    cycle: 1,
+    phaseIdx: 0,
+    phaseStart: 0,
+    pausedAt: 0,
+    rafId: null,
+    countdownId: null
+  };
+
+  function isOnboarded() {
+    try {
+      const flag = localStorage.getItem(ONBOARD_KEY);
+      if (flag === 'true')  return true;
+      if (flag === 'false') return false;
+      // No flag set — grandfather any existing user
+      if (localStorage.getItem(STORE_KEY_LS)) {
+        localStorage.setItem(ONBOARD_KEY, 'true');
+        return true;
+      }
+      return false;
+    } catch (e) { return true; } // if storage fails, never block
+  }
+  function markOnboarded() {
+    try {
+      localStorage.setItem(ONBOARD_KEY, 'true');
+      localStorage.setItem(ACHIEVE_KEY, '1');
+    } catch (e) {}
+  }
+
+  function $(id) { return document.getElementById(id); }
+  const overlay = () => $('onboarding-overlay');
+
+  function showGate() {
+    const g = $('first-breath-gate');
+    const c = document.querySelector('.home-cards');
+    if (g) g.hidden = false;
+    if (c) c.hidden = true;
+  }
+  function hideGate() {
+    const g = $('first-breath-gate');
+    const c = document.querySelector('.home-cards');
+    if (g) g.hidden = true;
+    if (c) c.hidden = false;
+  }
+
+  function setStage(stage) {
+    const o = overlay();
+    if (!o) return;
+    if (stage) {
+      o.dataset.stage = stage;
+      o.classList.add('active');
+      document.body.classList.add('onboarding-active');
+    } else {
+      o.dataset.stage = '';
+      o.classList.remove('active');
+      document.body.classList.remove('onboarding-active');
+    }
+  }
+
+  let _lastEntryClick = 0;
+  function onEntryClick() {
+    const now = Date.now();
+    if (now - _lastEntryClick < 800) return; // debounce
+    _lastEntryClick = now;
+    state.active = true;
+    setStage('instruction');
+    // Push a sentinel history entry so back-gesture during locked session no-ops
+    try { history.pushState({ onboard: true }, ''); } catch (e) {}
+  }
+
+  function startCountdown() {
+    setStage('countdown');
+    const numEl = $('onboard-count-num');
+    if (!numEl) return enterSession();
+    let n = 3;
+    const flash = () => {
+      numEl.textContent = String(n);
+      numEl.classList.remove('flash');
+      // force reflow so the animation restarts cleanly
+      void numEl.offsetWidth;
+      numEl.classList.add('flash');
+    };
+    flash();
+    if (state.countdownId) clearInterval(state.countdownId);
+    state.countdownId = setInterval(() => {
+      n -= 1;
+      if (n <= 0) {
+        clearInterval(state.countdownId);
+        state.countdownId = null;
+        enterSession();
+        return;
+      }
+      flash();
+    }, 1000);
+  }
+
+  function enterSession() {
+    setStage('session');
+    state.cycle = 1;
+    state.phaseIdx = 0;
+    state.paused = false;
+    state.phaseStart = performance.now();
+    paintSessionUI();
+    if (state.rafId) cancelAnimationFrame(state.rafId);
+    state.rafId = requestAnimationFrame(tick);
+  }
+
+  function paintSessionUI() {
+    const phase = PHASE_ORDER[state.phaseIdx];
+    const lbl = $('onboard-phase-label');
+    const cnt = $('onboard-cycle-count');
+    if (lbl) lbl.textContent = PHASE_LABEL[phase];
+    if (cnt) cnt.textContent = `Cycle ${state.cycle} of ${CYCLES_TARGET}`;
+    placeDot(phase, 0);
+  }
+
+  function placeDot(phase, p) {
+    const [a, b] = phaseEndpoints(phase);
+    const x = a.x + (b.x - a.x) * p;
+    const y = a.y + (b.y - a.y) * p;
+    const dot = $('onboard-dot');
+    if (dot) {
+      dot.setAttribute('cx', x.toFixed(2));
+      dot.setAttribute('cy', y.toFixed(2));
+    }
+  }
+
+  function tick(now) {
+    if (!state.active || state.paused) return;
+    const phase = PHASE_ORDER[state.phaseIdx];
+    const dur   = PHASE_MS[phase];
+    const p     = Math.min(1, (now - state.phaseStart) / dur);
+    placeDot(phase, p);
+
+    if (p >= 1) {
+      state.phaseIdx += 1;
+      if (state.phaseIdx >= PHASE_ORDER.length) {
+        state.phaseIdx = 0;
+        state.cycle += 1;
+        if (state.cycle > CYCLES_TARGET) {
+          // Persist completion BEFORE entering pivot so a crash here can't
+          // re-trap the user on next load.
+          markOnboarded();
+          enterPivot();
+          return;
+        }
+      }
+      state.phaseStart = now;
+      paintSessionUI();
+    }
+    state.rafId = requestAnimationFrame(tick);
+  }
+
+  function pauseSession() {
+    if (!state.active || state.paused) return;
+    // Only the session stage actually animates; pause is a no-op elsewhere
+    if (overlay()?.dataset.stage !== 'session') return;
+    state.paused = true;
+    state.pausedAt = performance.now();
+    if (state.rafId) { cancelAnimationFrame(state.rafId); state.rafId = null; }
+  }
+  function resumeSession() {
+    if (!state.active || !state.paused) return;
+    state.phaseStart += performance.now() - state.pausedAt;
+    state.paused = false;
+    state.rafId = requestAnimationFrame(tick);
+  }
+
+  function enterPivot() {
+    if (state.rafId) { cancelAnimationFrame(state.rafId); state.rafId = null; }
+    setStage('pivot');
+  }
+
+  function dismissOverlay() {
+    if (state.rafId) { cancelAnimationFrame(state.rafId); state.rafId = null; }
+    if (state.countdownId) { clearInterval(state.countdownId); state.countdownId = null; }
+    state.active = false;
+    state.paused = false;
+    setStage(null);
+    hideGate();
+  }
+
+  // ─── Pivot handlers ───
+  function pivotBreatheAgain() { startCountdown(); }
+  function pivotMeditate() {
+    dismissOverlay();
+    if (typeof window.navigate === 'function') window.navigate('meditate');
+  }
+  function pivotStartJourney() { dismissOverlay(); }
+
+  // ─── Visibility (pause/resume when tab hidden) ───
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') pauseSession();
+    else if (document.visibilityState === 'visible') resumeSession();
+  });
+
+  // ─── Block browser back-gesture during the locked session ───
+  window.addEventListener('popstate', function() {
+    const stage = overlay()?.dataset.stage;
+    if (state.active && (stage === 'countdown' || stage === 'session')) {
+      try { history.pushState({ onboard: true }, ''); } catch (e) {}
+    }
+  });
+
+  // ─── Wire DOM listeners + initial gate state ───
+  function init() {
+    const entry  = $('first-breath-gate-btn');
+    const begin  = $('onboard-begin-btn');
+    const again  = $('onboard-pivot-again');
+    const medit  = $('onboard-pivot-meditate');
+    const jrny   = $('onboard-pivot-journey');
+    if (entry) entry.addEventListener('click', onEntryClick);
+    if (begin) begin.addEventListener('click', startCountdown);
+    if (again) again.addEventListener('click', pivotBreatheAgain);
+    if (medit) medit.addEventListener('click', pivotMeditate);
+    if (jrny)  jrny.addEventListener('click',  pivotStartJourney);
+
+    if (isOnboarded()) hideGate();
+    else               showGate();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
 </body>
 </html>
