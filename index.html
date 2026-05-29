@@ -8,6 +8,54 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem('triad:theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    /* ── Guest welcome screen overrides (first-breath-mode) ── */
+    body.first-breath-mode .home-header        { display: none; }
+    body.first-breath-mode #home               { background: #F5F0E8; }
+    body.first-breath-mode .top-header-avatar  { display: flex !important; }
+    body.first-breath-mode .nav                { display: flex !important; }
+    body.first-breath-mode .first-breath-gate  { gap: 0; justify-content: center; }
+    [data-theme="dark"] body.first-breath-mode #home {
+      background: linear-gradient(135deg, #0A0F1E 0%, #0d1428 100%);
+    }
+    #guest-logo-slot {
+      width: 280px; height: 280px; display: block;
+      animation: logo-breathe 4s ease-in-out infinite;
+    }
+    #guest-logo-slot svg { width: 100%; height: 100%; display: block; }
+    .guest-slogan {
+      font-size: 0.72rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: #8B8070;
+      margin-top: 16px; text-align: center;
+    }
+    .guest-welcome-heading {
+      font-size: 1.4rem; font-weight: 700;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--text); margin-top: 24px; text-align: center;
+    }
+    .guest-cta-btn {
+      appearance: none; border: none;
+      padding: 18px 32px; border-radius: 50px;
+      background: linear-gradient(135deg, #C9A96E, #E8C87A);
+      color: #fff; font-size: 1rem; font-weight: 600;
+      font-family: inherit; cursor: pointer;
+      width: 100%; max-width: 320px; margin-top: 32px;
+      box-shadow: 0 4px 24px rgba(201,169,110,0.35);
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .guest-cta-btn:hover  { transform: translateY(-2px); filter: brightness(1.06); }
+    .guest-cta-btn:active { transform: translateY(0); }
+    .guest-cta-note {
+      font-size: 0.78rem; color: var(--text-muted);
+      margin-top: 10px; text-align: center;
+    }
+    .guest-auth-link-inner {
+      font-size: 0.72rem; color: var(--text-muted);
+      cursor: pointer; text-align: center;
+      margin-top: auto; padding-top: 24px;
+    }
+    .guest-auth-link-inner:hover { color: var(--text); }
+  </style>
 </head>
 <body>
 
@@ -97,11 +145,14 @@ var _introPlayedThisSession = false;
         </button>
       </div>
 
-      <!-- First Breath gate (shown only for brand-new users; replaces the 3-card menu) -->
+      <!-- Guest welcome screen (shown for brand-new / non-onboarded visitors) -->
       <div class="first-breath-gate" id="first-breath-gate" hidden>
-        <div class="first-breath-gate-eyebrow">Welcome</div>
-        <button class="first-breath-gate-btn" id="first-breath-gate-btn" type="button">Take your first Breath</button>
-        <div class="first-breath-gate-note">Takes about 40 seconds</div>
+        <div id="guest-logo-slot"></div>
+        <div class="guest-slogan">MIND &middot; BODY &middot; SPIRIT &middot; ALIGNED</div>
+        <div class="guest-welcome-heading">Welcome</div>
+        <button class="guest-cta-btn" id="first-breath-gate-btn" type="button">Take your First Breath</button>
+        <div class="guest-cta-note">Takes 30 seconds</div>
+        <div class="guest-auth-link-inner" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</div>
       </div>
 
       <div class="home-auth-footer" id="home-auth-footer">
@@ -983,6 +1034,7 @@ var _introPlayedThisSession = false;
 
 <!-- Init -->
 <script src="/static/js/app.js?v=2.5"></script>
+<script>(function(){var s=document.getElementById('guest-logo-slot');if(s&&typeof TRIAD_LOGO_SVG!=='undefined')s.innerHTML=TRIAD_LOGO_SVG;})();</script>
 
 <!-- ═════════ FIRST BREATH ONBOARDING OVERLAY ═════════ -->
 <div id="onboarding-overlay" role="dialog" aria-modal="true" aria-label="First Breath onboarding">
