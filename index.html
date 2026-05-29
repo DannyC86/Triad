@@ -9,35 +9,59 @@
   <script>(function(){var t=localStorage.getItem('triad:theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="stylesheet" href="/static/css/styles.css">
   <style>
-    /* ── Guest welcome screen overrides (first-breath-mode) ── */
+    /* ── Guest welcome screen (first-breath-mode) ── */
+
+    /* FIX 1: nav already hidden by styles.css rule; keep profile icon visible */
+    body.first-breath-mode                     { padding-bottom: 0; overflow: hidden; }
     body.first-breath-mode .home-header        { display: none; }
-    body.first-breath-mode #home               { background: #F5F0E8; }
     body.first-breath-mode .top-header-avatar  { display: flex !important; }
-    body.first-breath-mode .nav                { display: flex !important; }
-    body.first-breath-mode .first-breath-gate  { gap: 0; justify-content: center; }
+
+    /* FIX 2: hide version number (sign-in link removed from gate HTML) */
+    body.first-breath-mode .app-version        { display: none; }
+
+    /* FIX 3: cream background, full-screen, no scroll */
+    body.first-breath-mode #home {
+      background: #F5F0E8; height: 100dvh; min-height: unset; overflow: hidden;
+    }
     [data-theme="dark"] body.first-breath-mode #home {
       background: linear-gradient(135deg, #0A0F1E 0%, #0d1428 100%);
     }
+    body.first-breath-mode .home-container {
+      height: 100%; min-height: unset; padding: 0 24px; overflow: hidden;
+    }
+    body.first-breath-mode .first-breath-gate {
+      gap: 0; justify-content: space-evenly;
+      padding: 12px 0; max-width: none; width: 100%;
+    }
+    /* Zero individual margins so space-evenly controls all spacing */
+    body.first-breath-mode .guest-slogan,
+    body.first-breath-mode .guest-welcome-heading,
+    body.first-breath-mode .guest-cta-btn,
+    body.first-breath-mode .guest-cta-note    { margin-top: 0; }
+
+    /* Responsive logo — scales with viewport, clamped between 180px and 280px */
     #guest-logo-slot {
-      width: 280px; height: 280px; display: block;
+      width: clamp(180px, 55vw, 280px); height: clamp(180px, 55vw, 280px);
+      display: block; flex-shrink: 0;
       animation: logo-breathe 4s ease-in-out infinite;
     }
     #guest-logo-slot svg { width: 100%; height: 100%; display: block; }
+
     .guest-slogan {
-      font-size: 0.72rem; letter-spacing: 0.18em;
+      font-size: clamp(0.6rem, 1.8vw, 0.72rem); letter-spacing: 0.18em;
       text-transform: uppercase; color: #8B8070;
       margin-top: 16px; text-align: center;
     }
     .guest-welcome-heading {
-      font-size: 1.4rem; font-weight: 700;
+      font-size: clamp(1.1rem, 3.5vw, 1.4rem); font-weight: 700;
       letter-spacing: 0.25em; text-transform: uppercase;
       color: var(--text); margin-top: 24px; text-align: center;
     }
     .guest-cta-btn {
       appearance: none; border: none;
-      padding: 18px 32px; border-radius: 50px;
+      padding: clamp(14px, 4vw, 18px) 32px; border-radius: 50px;
       background: linear-gradient(135deg, #C9A96E, #E8C87A);
-      color: #fff; font-size: 1rem; font-weight: 600;
+      color: #fff; font-size: clamp(0.9rem, 2.5vw, 1rem); font-weight: 600;
       font-family: inherit; cursor: pointer;
       width: 100%; max-width: 320px; margin-top: 32px;
       box-shadow: 0 4px 24px rgba(201,169,110,0.35);
@@ -46,15 +70,9 @@
     .guest-cta-btn:hover  { transform: translateY(-2px); filter: brightness(1.06); }
     .guest-cta-btn:active { transform: translateY(0); }
     .guest-cta-note {
-      font-size: 0.78rem; color: var(--text-muted);
+      font-size: clamp(0.68rem, 2vw, 0.78rem); color: var(--text-muted);
       margin-top: 10px; text-align: center;
     }
-    .guest-auth-link-inner {
-      font-size: 0.72rem; color: var(--text-muted);
-      cursor: pointer; text-align: center;
-      margin-top: auto; padding-top: 24px;
-    }
-    .guest-auth-link-inner:hover { color: var(--text); }
   </style>
 </head>
 <body>
@@ -152,7 +170,6 @@ var _introPlayedThisSession = false;
         <div class="guest-welcome-heading">Welcome</div>
         <button class="guest-cta-btn" id="first-breath-gate-btn" type="button">Take your First Breath</button>
         <div class="guest-cta-note">Takes 30 seconds</div>
-        <div class="guest-auth-link-inner" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</div>
       </div>
 
       <div class="home-auth-footer" id="home-auth-footer">
