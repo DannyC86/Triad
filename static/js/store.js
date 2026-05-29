@@ -1,4 +1,22 @@
 
+  let state = {
+    section: 'home',
+    techDetail: null,
+    meditDetail: null,
+    libDetail: null,
+    libTab: 'books',
+    libSearch: '',
+    libFilters: [],
+    libPage: 1,
+    libPageSize: 10,
+    askContext: null,
+    askHistory: [],
+    askLoading: false,
+    planHistory: [],
+    planLoading: false,
+    planStep: 'form'
+  };
+
   function initStore() {
     return {
       sessions: [],                          // [{id, kind:'technique'|'meditation', practiceId, practiceTitle, durationMin, ts}]
