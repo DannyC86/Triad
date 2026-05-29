@@ -1,3 +1,43 @@
+  /* ────── Navigation stack ────── */
+  let _navStack = [];
+
+  function _navPush(backFn) {
+    _navStack.push(backFn);
+    _updateStickyBack();
+  }
+
+  function _navBack() {
+    const fn = _navStack.pop();
+    _updateStickyBack();
+    if (fn) fn();
+  }
+
+  function _navClear() {
+    _navStack = [];
+    hideStickyBack();
+  }
+
+  function _updateStickyBack() {
+    if (_navStack.length) showStickyBack();
+    else hideStickyBack();
+  }
+
+  function showStickyBack() {
+    document.getElementById('sticky-back-bar')?.classList.add('visible');
+  }
+
+  function hideStickyBack() {
+    document.getElementById('sticky-back-bar')?.classList.remove('visible');
+  }
+
+  let _backLabel = 'Back';
+
+  function _setBackLabel(label) {
+    _backLabel = label;
+    const el = document.getElementById('sticky-back-label');
+    if (el) el.textContent = label;
+  }
+
   let _lastHomeNav = 0;
   function homeNavigate(target) {
     const now = Date.now();
