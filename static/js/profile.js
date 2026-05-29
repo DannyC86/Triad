@@ -438,7 +438,7 @@ Build my personalised plan.`;
       let modified = false;
       let fragments = [text];
 
-      PRACTICE_NAME_MAP.forEach(({ name, section, id }) => {
+      getPracticeNameMap().forEach(({ name, section, id }) => {
         const key = `${section}:${id}`;
         if (seen.has(key)) return;
         const pattern = new RegExp(`\\b(${name.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')})\\b`, 'i');

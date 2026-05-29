@@ -999,8 +999,13 @@
     ],
   };
 
-  /* Map of practice names → ids for inline linking from AI responses */
-  const PRACTICE_NAME_MAP = (() => {
+  /* Map of practice names → ids for inline linking from AI responses.
+     Built lazily on first use: it reads TECHNIQUES/MEDITATIONS, which live in
+     app.js and load AFTER this data file — touching them at load time would throw
+     a TDZ ReferenceError and abort this whole script. */
+  let _practiceNameMap = null;
+  function getPracticeNameMap() {
+    if (_practiceNameMap) return _practiceNameMap;
     const map = [];
     const addAlias = (name, section, id) => map.push({ name, section, id });
     TECHNIQUES.forEach(t => {
@@ -1042,8 +1047,9 @@
     addAlias("open awareness", 'meditate', 'open-awareness');
     // Sort by length DESC so longest matches first
     map.sort((a, b) => b.name.length - a.name.length);
+    _practiceNameMap = map;
     return map;
-  })();
+  }
 
   /* ── Accordion toggle ── */
   function toggleAccordion(panelId) {
