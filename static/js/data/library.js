@@ -1045,20 +1045,6 @@
     return map;
   })();
 
-  /* ════════════════ STATE ════════════════ */
-
-  const state = {
-    section: 'home',
-    techniqueId: null,
-    meditationId: null,
-    askContext: null,           // {kind: 'technique'|'meditation', id, item}
-    askHistory: [],
-    askLoading: false,
-    planSelections: { goal: '', exp: '', time: '' },
-    planHistory: [],
-    planLoading: false
-  };
-
   /* ── Accordion toggle ── */
   function toggleAccordion(panelId) {
     const body = document.getElementById(panelId);
