@@ -5,6 +5,7 @@
   const TECHNIQUES = [
     {
       id: "physiological-sigh",
+      locked: true,
       title: "Physiological Sigh",
       desc: "A double-inhale and long exhale — the fastest reset available, in about 15 seconds.",
       bestFor: "Stress reset",
@@ -26,6 +27,7 @@
     },
     {
       id: "4-7-8-breathing",
+      locked: true,
       title: "4-7-8 Breathing",
       desc: "Dr Andrew Weil's natural tranquiliser — a 4-second inhale, 7-second hold, 8-second exhale.",
       bestFor: "Sleep",
@@ -48,6 +50,7 @@
     },
     {
       id: "box-breathing",
+      locked: true,
       title: "Box Breathing",
       desc: "The Navy SEAL favourite — equal counts of 4 in, 4 hold, 4 out, 4 hold. Quiet, controlled, focused.",
       bestFor: "Focus",
@@ -70,6 +73,7 @@
     },
     {
       id: "buteyko-method",
+      locked: true,
       title: "Buteyko Method",
       desc: "Restore tolerance to CO₂ through gentle nasal under-breathing — the antidote to chronic over-breathing.",
       bestFor: "Anxiety / Asthma",
@@ -92,6 +96,7 @@
     },
     {
       id: "wim-hof-method",
+      locked: true,
       title: "The Wim Hof Method",
       desc: "Powerful breaths, deliberate retentions, and (optionally) cold — voluntary access to the autonomic nervous system.",
       bestFor: "Energy / Resilience",
@@ -114,6 +119,7 @@
     },
     {
       id: "nadi-shodhana",
+      locked: true,
       title: "Nadi Shodhana",
       desc: "Alternate-nostril breathing — the yogi's tool for balancing nervous system and hemispheres.",
       bestFor: "Balance",
@@ -136,6 +142,7 @@
     },
     {
       id: "kapalabhati",
+      locked: true,
       title: "Kapalabhati",
       desc: "Skull-shining breath — sharp, rhythmic abdominal exhales that energise and clear the mind.",
       bestFor: "Energy",
@@ -158,6 +165,7 @@
     },
     {
       id: "bhramari",
+      locked: true,
       title: "Bhramari",
       desc: "Humming bee breath — a soft hum on the exhale that floods the body with nitric oxide and calm.",
       bestFor: "Sleep / Anxiety",
@@ -180,6 +188,7 @@
     },
     {
       id: "ujjayi",
+      locked: true,
       title: "Ujjayi",
       desc: "Ocean breath — a soft throat constriction creating an audible inner wave that anchors attention.",
       bestFor: "Focus / Yoga",
@@ -202,6 +211,7 @@
     },
     {
       id: "kumbhaka",
+      locked: true,
       title: "Kumbhaka",
       desc: "Deliberate breath retention — the advanced art of pausing prana to refine awareness.",
       bestFor: "Deep practice",
@@ -224,6 +234,7 @@
     },
     {
       id: "diaphragmatic-breathing",
+      locked: true,
       title: "Diaphragmatic Breathing",
       desc: "Deep belly breathing designed to maximise oxygen exchange and lower cortisol.",
       bestFor: "Recovery",
@@ -246,6 +257,7 @@
     },
     {
       id: "extended-exhale",
+      locked: true,
       title: "Extended Exhale",
       desc: "A down-regulation protocol stretching the exhalation phase to trigger instant calm.",
       bestFor: "Down-regulation",
@@ -268,17 +280,18 @@
     },
     {
       id: "resonant-breathing",
+      locked: false,
       title: "Resonant Breathing",
       desc: "Equal-duration pacing to sync heart rate variability with respiratory patterns.",
       bestFor: "Balance",
       difficulty: "Beginner",
       duration: "5–20 minutes",
       steps: [
-        "Adopt a comfortable, supported seated posture with your spine straight.",
-        "Inhale smoothly through your nose for exactly 5 seconds.",
-        "Transition without holding and exhale smoothly through your nose for exactly 5 seconds.",
-        "Maintain this continuous, circular rhythm without pausing at the top or bottom.",
-        "Focus entirely on the steady, rhythmic flow of air moving across your throat."
+        "Sit tall: Adopt a comfortable, upright posture with a straight spine.",
+        "Inhale: Breathe smoothly through your nose for a steady 5-second count.",
+        "Exhale: Transition smoothly into a 5-second nasal exhale. No holding at the top.",
+        "Loop it: Maintain this continuous, circular rhythm without pausing between breaths.",
+        "Focus: Lock your awareness entirely on the steady flow of air."
       ],
       benefits: [
         "Maximises heart rate variability (HRV).",
@@ -290,6 +303,7 @@
     },
     {
       id: "tummo",
+      locked: true,
       title: "Tummo",
       desc: "Inner fire breathing from Tibetan Vajrayana tradition. Generates internal heat and altered states.",
       bestFor: "Heat / Energy",
@@ -312,6 +326,7 @@
     },
     {
       id: "sama-vritti",
+      locked: true,
       title: "Sama Vritti",
       desc: "Equal ratio breathing. Four counts in, four counts out. Balance through symmetry.",
       bestFor: "Balance",
@@ -334,6 +349,7 @@
     },
     {
       id: "uddiyana-bandha",
+      locked: true,
       title: "Uddiyana Bandha",
       desc: "Abdominal lock. Advanced pranayama combining breath retention with deep core engagement.",
       bestFor: "Core / Energy",
@@ -356,6 +372,7 @@
     },
     {
       id: "advanced-buteyko",
+      locked: true,
       title: "Advanced Buteyko",
       desc: "Extended CO₂ tolerance training protocols for athletes and advanced practitioners.",
       bestFor: "Performance",
@@ -378,6 +395,7 @@
     },
     {
       id: "holotropic-breathwork",
+      locked: true,
       title: "Holotropic Breathwork",
       desc: "Stanislav Grof's transformative method using accelerated breathing to access non-ordinary states.",
       bestFor: "Deep healing",
@@ -403,17 +421,18 @@
   const MEDITATIONS = [
     {
       id: "mindfulness-of-breath",
+      locked: false,
       title: "Mindfulness of Breath",
       desc: "Anapanasati — gentle attention to the natural breath, returning whenever the mind wanders.",
       bestFor: "Focus",
       difficulty: "Beginner",
-      duration: "10–60+ minutes",
+      duration: "5–10 minutes daily",
       steps: [
-        "Sit in a stable, comfortable position with the eyes closed.",
-        "Take a few intentional breaths to settle into the body.",
-        "Release control — let the breath breathe naturally.",
-        "Choose an anchor: the nostrils, the chest, or the belly's movement.",
-        "Rest attention on the anchor. When the mind wanders, gently return."
+        "Get Set: Sit in a stable, comfortable position with your eyes closed.",
+        "Settle In: Take a few intentional breaths to drop your awareness into your body.",
+        "Let Go: Release all control and let your breath flow completely naturally.",
+        "Pick an Anchor: Choose one spot to watch — the tip of your nostrils, the rise of your chest, or the movement of your belly.",
+        "Stay Present: Rest your full attention on that anchor. The moment you notice your mind wandering, gently bring it right back."
       ],
       benefits: [
         "Reduces amygdala reactivity over time.",
@@ -425,6 +444,7 @@
     },
     {
       id: "body-scan",
+      locked: true,
       title: "Body Scan",
       desc: "Systematic head-to-toe attention to physical sensation — the gateway to interoception.",
       bestFor: "Pain / Sleep",
@@ -447,6 +467,7 @@
     },
     {
       id: "loving-kindness",
+      locked: true,
       title: "Loving-Kindness (Metta)",
       desc: "Five-stage cultivation of benevolence — toward self, loved ones, strangers, the difficult, and all beings.",
       bestFor: "Compassion",
@@ -470,6 +491,7 @@
     },
     {
       id: "yoga-nidra",
+      locked: true,
       title: "Yoga Nidra (NSDR)",
       desc: "Non-Sleep Deep Rest — guided descent into the hypnagogic state for profound restoration.",
       bestFor: "Recovery",
@@ -492,6 +514,7 @@
     },
     {
       id: "trataka",
+      locked: true,
       title: "Trataka",
       desc: "Candle gazing — unwavering visual focus followed by inner visualisation. A classical concentration practice.",
       bestFor: "Concentration",
@@ -514,6 +537,7 @@
     },
     {
       id: "open-awareness",
+      locked: true,
       title: "Open Awareness",
       desc: "Resting as awareness itself, without object — the non-dual practice of recognising what's already here.",
       bestFor: "Insight",
@@ -536,6 +560,7 @@
     },
     {
       id: "gratitude-meditation",
+      locked: true,
       title: "Gratitude Meditation",
       desc: "Active cognitive reframing targeting positive states and neurochemical rewires.",
       bestFor: "Heart",
@@ -558,6 +583,7 @@
     },
     {
       id: "box-visualization",
+      locked: true,
       title: "Box Visualization",
       desc: "A high-focus mental projection tracking a geometric anchor to lock down wandering thoughts.",
       bestFor: "Clarity",
@@ -580,6 +606,7 @@
     },
     {
       id: "soundscape-meditation",
+      locked: true,
       title: "Soundscape Meditation",
       desc: "Using external auditory frequencies to anchor presence and clear background noise.",
       bestFor: "Awareness",
@@ -602,6 +629,7 @@
     },
     {
       id: "visualization",
+      locked: true,
       title: "Visualization",
       desc: "Directed mental imagery for performance, healing, and manifestation. Used by elite athletes worldwide.",
       bestFor: "Performance",
@@ -624,6 +652,7 @@
     },
     {
       id: "mantra-japa",
+      locked: true,
       title: "Mantra (Japa)",
       desc: "Sacred sound repetition from the Vedic tradition. The vibration of mantra settles the mind.",
       bestFor: "Depth / Tradition",
@@ -646,6 +675,7 @@
     },
     {
       id: "gap-watching",
+      locked: true,
       title: "Gap Watching",
       desc: "Observing the space between thoughts. Eckhart Tolle's direct path to present-moment awareness.",
       bestFor: "Presence",
@@ -668,6 +698,7 @@
     },
     {
       id: "self-inquiry",
+      locked: true,
       title: "Self-Inquiry",
       desc: "Who am I? Ramana Maharshi's direct path to awareness through questioning the nature of self.",
       bestFor: "Liberation",
@@ -690,6 +721,7 @@
     },
     {
       id: "chakra-visualization",
+      locked: true,
       title: "Chakra Visualization",
       desc: "Energy centre activation through focused imagery. Bridges ancient yogic anatomy with modern bodywork.",
       bestFor: "Energy / Tradition",
@@ -712,6 +744,7 @@
     },
     {
       id: "void-meditation",
+      locked: true,
       title: "Void Meditation (Shunyata)",
       desc: "Resting as pure emptiness. The Heart Sutra's teaching on the nature of reality.",
       bestFor: "Liberation",

@@ -129,6 +129,11 @@
   function _practiceLevel(id) { return _LEVEL_BY_ID[id] || 1; }
   function _practiceLocked(id) { return _practiceLevel(id) > 1; }
 
+  // Locked cards don't navigate — gently explain why instead.
+  function lockedToast() {
+    showToast({ icon: '🔒', label: 'This practice unlocks as you progress through Triad', autohide: 2600 });
+  }
+
   function renderCardGrid(items, gridId, openFn) {
     const grid = document.getElementById(gridId);
     const sorted = [...items].sort((a, b) => {
@@ -138,12 +143,14 @@
     });
     grid.innerHTML = sorted.map(item => {
       const level  = _practiceLevel(item.id);
-      const locked = level > 1;
-      const click  = locked ? '' : ` onclick="${openFn}('${item.id}')"`;
-      const aria   = locked ? ' aria-disabled="true" tabindex="-1"' : '';
+      // Per-item `locked` flag (set on the card data) wins; otherwise fall back to level gating.
+      const locked = (item.locked !== undefined) ? item.locked : level > 1;
+      const click  = locked ? ` onclick="lockedToast()"` : ` onclick="${openFn}('${item.id}')"`;
+      const aria   = locked ? ' aria-disabled="true"' : '';
+      const dim    = locked ? ' style="opacity:0.5"' : '';
       const badge  = `<div class="card-level-badge lv-${level}">${locked ? _LOCK_ICON_SVG : ''}<span>Level ${level}</span></div>`;
       return `
-      <button class="card${locked ? ' locked' : ''}"${aria}${click}>
+      <button class="card${locked ? ' locked' : ''}"${aria}${click}${dim}>
         ${badge}
         <div class="card-title">${escapeHtml(item.title)}</div>
         <div class="card-desc">${escapeHtml(item.desc)}</div>
@@ -292,6 +299,8 @@
           </div>
         ` : ''}
 
+        ${d.overview?.tldr ? `<p class="learn-tldr" style="border-left:3px solid var(--gold,#c9a24b);padding:10px 14px;margin:0 0 14px;background:rgba(201,162,75,0.08);border-radius:8px;font-weight:600;"><span style="opacity:0.7;font-size:0.72em;letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:2px;">TL;DR</span>${escapeHtml(d.overview.tldr)}</p>` : ''}
+
         ${d.overview?.what ? `<h3>Overview</h3><p class="learn-prose">${escapeHtml(d.overview.what)}</p>` : ''}
 
         ${d.overview?.keyBenefits?.length ? `
@@ -326,9 +335,20 @@
           <div class="learn-tags">${d.science.tags.map(t => `<span class="learn-tag">${escapeHtml(t)}</span>`).join('')}</div>
         ` : ''}
 
+        ${d.science?.keyMechanisms?.length ? `
+          <h3>Key mechanisms</h3>
+          <ul class="learn-list">${d.science.keyMechanisms.map(m => `<li>${escapeHtml(m)}</li>`).join('')}</ul>
+        ` : ''}
+
         ${d.science?.research?.length ? `
           <h3>Research findings</h3>
-          <ul class="learn-list">${d.science.research.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+          <ul class="learn-list">${d.science.research.map(r => typeof r === 'string'
+            ? `<li>${escapeHtml(r)}</li>`
+            : `<li>${r.url ? `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.title)}</a>` : `<strong>${escapeHtml(r.title)}</strong>`}${r.finding ? ` — ${escapeHtml(r.finding)}` : ''}</li>`).join('')}</ul>
+        ` : ''}
+
+        ${d.quiz ? `
+          <button type="button" class="level-quiz-btn" onclick="showToast({ icon: '🙏', label: 'Quiz coming soon — this will unlock in the next update', autohide: 3200 })" style="display:block;width:100%;margin-top:22px;padding:13px 16px;background:transparent;border:1.5px solid var(--gold,#c9a24b);color:var(--gold,#c9a24b);border-radius:12px;font-weight:600;font-size:0.95rem;letter-spacing:0.02em;cursor:pointer;">Level 1 Quiz</button>
         ` : ''}
       </div>
 

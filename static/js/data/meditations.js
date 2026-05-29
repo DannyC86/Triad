@@ -6,54 +6,60 @@
 
     'mindfulness-of-breath': {
       overview: {
-        what: "Gentle, sustained attention to the natural breath as it is — not as you want it to be. When the mind wanders (it will), you gently return. The most foundational meditation across nearly every contemplative tradition.",
+        what: "A gentle, sustained attention to your natural breath exactly as it is — not how you want it to be. Known traditionally as Anapanasati (mindfulness of breathing), this practice is the bedrock of breath awareness. The process is simple: when your mind wanders (and it will), you gently return your focus. This straightforward reset is the most foundational meditation across nearly every contemplative tradition on earth.",
+        tldr: "Rest your attention on your natural breath. When your mind wanders, gently return. That's the whole practice.",
         keyBenefits: [
-          "Reduces amygdala reactivity over weeks of practice.",
-          "Strengthens sustained attention and decreases mind-wandering.",
-          "Lowers rumination, anxiety, and depressive symptoms.",
-          "Builds equanimity that carries into ordinary life."
+          "Calms the brain's alarm system over weeks of consistent practice",
+          "Sharpens sustained attention and breaks mind-wandering loops",
+          "Cuts through overthinking, rumination, anxiety and depressive symptoms",
+          "Builds lasting equanimity that carries into daily life"
         ],
         whenToUse: [
-          "Daily — morning is the classical recommendation.",
-          "As a 5-minute reset midday.",
-          "Before sleep as a wind-down.",
-          "Whenever you notice attention has scattered."
+          "Start your day — first thing in the morning is the classical recommendation",
+          "Midday reset — a quick 5-minute circuit breaker during the afternoon slump",
+          "Wind down — right before bed to quiet your mind",
+          "On-demand focus — whenever your attention has scattered"
         ],
-        whoFor: "Anyone. The most accessible and best-studied meditation. For trauma survivors, an open-eye variant or a body-anchor may feel safer than closed-eye breath focus."
+        whoFor: "Everyone. The single most accessible and deeply studied meditation available. For trauma survivors, keeping eyes slightly open or focusing on a physical body anchor can feel safer than closed-eye breath focus."
       },
       history: {
-        origins: "Taught by the Buddha himself in the Anapanasati Sutta (Majjhima Nikaya 118) approximately 2,500 years ago. The term anapanasati means 'mindfulness of breathing' — sati (mindfulness) on the pana (breath). One of the earliest formal meditation instructions in recorded history.",
-        evolution: "Preserved unbroken across all Buddhist traditions — Theravada (Mahasi Sayadaw, Ajahn Chah, S.N. Goenka), Mahayana, Zen, Tibetan. Stripped of religious framing and brought to clinical use as the foundation of MBSR (Mindfulness-Based Stress Reduction) by Jon Kabat-Zinn at UMass Medical School in 1979. Now the most-studied meditation practice in contemporary neuroscience.",
+        origins: "Taught by the Buddha himself in the Anapanasati Sutta (Majjhima Nikaya 118) approximately 2,500 years ago. The term anapanasati literally means mindfulness of breathing — directing sati (mindfulness) onto the pana (breath). One of the very earliest formal meditation instructions ever recorded.",
+        evolution: "Preserved intact across all major Buddhist traditions including Theravada, Mahayana, Zen and Tibetan lineages. In 1979, Jon Kabat-Zinn at UMass Medical School stripped away the religious framing to create MBSR (Mindfulness-Based Stress Reduction). Today it is the single most-studied meditation practice in contemporary neuroscience.",
         figures: [
-          { name: "The Buddha",       credit: "Original teacher; the Anapanasati Sutta gives the foundational instructions still followed today." },
-          { name: "Mahasi Sayadaw",   credit: "Burmese monk (1904–1982) whose dry-insight Vipassana method shaped global mindfulness teaching." },
-          { name: "Jon Kabat-Zinn",   credit: "Founder of MBSR (1979); brought breath meditation into clinical and corporate mainstream." },
-          { name: "Jack Kornfield",   credit: "American Theravada teacher; co-founder of Insight Meditation Society and Spirit Rock." }
+          { name: "The Buddha",       credit: "Original teacher whose Anapanasati Sutta provided foundational instructions still followed today." },
+          { name: "Mahasi Sayadaw",   credit: "Renowned Burmese monk (1904–1982) whose Vipassana method shaped modern mindfulness teaching." },
+          { name: "Jon Kabat-Zinn",   credit: "Founder of MBSR (1979) who brought breath meditation into clinical and corporate mainstream." },
+          { name: "Jack Kornfield",   credit: "Theravada teacher and co-founder of Insight Meditation Society." }
         ],
-        ancient: "Likely the oldest formal meditation practice in continuous transmission. Predates writing — passed orally through monastic communities for centuries before being recorded in Pali. The ancient insight: where attention rests, mind becomes. Rest attention on something always present (breath), and you have a permanent meditation object."
+        ancient: "Considered the oldest formal meditation practice still in continuous transmission today. Passed down orally through monastic communities for centuries before being recorded in ancient Pali. Core philosophy: where attention rests, the mind becomes."
       },
       howTo: {
         progressions: [
           { level: "Beginner",     detail: "5–10 minutes daily. Set a timer. Notice when you've wandered; return without self-criticism." },
-          { level: "Intermediate", detail: "20–30 minutes. Choose one anchor (nostrils, chest, or belly) and stay with it. Add gentle noting (rising / falling)." },
-          { level: "Advanced",     detail: "Longer sessions; explore the 16 contemplations of the Anapanasati Sutta (body, feelings, mind, mental objects). Retreat work." }
+          { level: "Intermediate", detail: "20–30 minutes. Choose one anchor and stay with it. Add gentle noting (rising / falling)." },
+          { level: "Advanced",     detail: "Longer sessions; explore the 16 contemplations of the Anapanasati Sutta. Retreat work." }
         ],
         tips: [
-          "The wandering IS the practice — the return is the rep that builds attention.",
-          "Don't force concentration; invite it. Strain produces tension, not calm.",
-          "Pick one anchor and commit to it for at least a month — switching anchors confuses early development.",
-          "If sleepy, open the eyes slightly. If agitated, lengthen the exhale."
+          "The Return Is the Rep: Every time you notice your mind drifting and bring it back, you just did a bicep curl for your attention span.",
+          "Invite, Don't Force: Simply invite your focus back. Forcing creates tension, not calm.",
+          "Stick to One Anchor: Pick one focal point and commit to it for at least a month.",
+          "Quick Adjustments: If falling asleep, crack your eyes slightly. If restless, make your exhales a little longer."
         ]
       },
       science: {
-        physiology: "Slow attention to breath naturally slows respiratory rate, shifts heart-rate variability toward parasympathetic dominance, and lowers cortisol over sustained practice.",
-        neuroscience: "Sara Lazar's lab (Harvard) showed structural changes after 8 weeks of MBSR — increased grey matter density in the hippocampus, insula, and prefrontal cortex; reduced amygdala volume. Long-term practitioners show decreased default-mode network activity during meditation.",
-        research: [
-          "Lazar et al. — 8 weeks of MBSR produces measurable brain structural changes.",
-          "Brewer et al. — meditation experience correlates with default-mode network deactivation.",
-          "Hundreds of MBSR trials for chronic pain, anxiety, depression, and immune function."
+        physiology: "Bringing slow, sustained attention to your breath naturally lowers your respiratory rate. Over time this shifts heart-rate variability toward parasympathetic dominance and actively drops cortisol stress levels.",
+        neuroscience: "Sara Lazar's lab at Harvard demonstrated that just 8 weeks of MBSR produces measurable physical changes in brain structure — increased grey matter density in the hippocampus, insula and prefrontal cortex, alongside a physical reduction in amygdala volume. Long-term meditators show significantly decreased activity in the Default-Mode Network (DMN).",
+        keyMechanisms: [
+          "Default-Mode Network (DMN): Deactivating this network stops repetitive thought patterns",
+          "Amygdala-PFC Coupling: Strengthens connection between rational prefrontal cortex and emotional amygdala",
+          "Insula: Increasing grey matter sharpens interoception and self-regulation",
+          "Neuroplasticity: Physical remodeling of neural pathways based on targeted attention"
         ],
-        tags: ["Default-mode network", "Amygdala-PFC coupling", "Insula", "Neuroplasticity"]
+        research: [
+          { title: "Lazar et al.", finding: "8-week MBSR produces measurable structural changes across key brain regions", url: "" },
+          { title: "Brewer et al.", finding: "Meditation experience directly correlates with DMN deactivation during practice", url: "" },
+          { title: "Clinical MBSR trials", finding: "Documented success managing chronic pain, anxiety, depression and immune function", url: "" }
+        ]
       },
       learn: {
         animation: "mindful-breath",
@@ -63,6 +69,7 @@
           youtubeId: "qpRpgrlvKa0"
         }
       },
+      quiz: true,
       related: {
         people:     ["Jack Kornfield", "Andrew Huberman"],
         books:      ["The Miracle of Mindfulness", "Breath: The New Science of a Lost Art"],
