@@ -1510,6 +1510,7 @@ Build my personalised plan.`;
         </button>
 
         <div class="triad-mastery-header">
+          <div class="triad-mastery-logo">${typeof TRIAD_LOGO_SVG !== 'undefined' ? TRIAD_LOGO_SVG : ''}</div>
           <div class="triad-mastery-title">Triad Mastery</div>
           <div class="triad-mastery-subtitle">Your journey across Mind, Body and Spirit</div>
         </div>

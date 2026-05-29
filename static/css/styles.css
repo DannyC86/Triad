@@ -189,47 +189,61 @@
     #intro-svg-wrap {
       width: 180px;
       height: 180px;
-      color: #1a1a2e;
       animation: intro-shrink 1s 2s ease-in-out both;
     }
     #intro-svg-wrap svg { width: 100%; height: 100%; }
-    #intro-circle {
+    /* Phase 1: outer circle draws in */
+    #intro-svg-wrap .tl-outer {
       stroke-dasharray: 578;
       stroke-dashoffset: 578;
       animation: intro-draw-stroke 0.8s 0s ease-in-out forwards;
     }
-    #intro-triangle {
+    /* Phase 1: triangle draws in */
+    #intro-svg-wrap .tl-tri {
       stroke-dasharray: 373;
       stroke-dashoffset: 373;
       animation: intro-draw-stroke 0.8s 0.8s ease-in-out forwards;
     }
-    #intro-dot {
+    /* Phase 1: vertex circles fade in simultaneously */
+    #intro-svg-wrap .tl-vc {
+      opacity: 0;
+      animation: intro-vc-in 0.6s 1.2s ease-in-out both;
+    }
+    /* Phase 1: inner circle and dot scale in */
+    #intro-svg-wrap .tl-inner,
+    #intro-svg-wrap .tl-dot {
       transform-box: fill-box;
       transform-origin: center;
       transform: scale(0);
       opacity: 0;
       animation: intro-dot-in 0.4s 1.6s ease-in-out forwards;
     }
+    /* Phase 3: TRIAD — gold gradient text, letter-spacing 0.2em */
     #intro-title {
       font-family: 'DM Sans', sans-serif;
       font-weight: 700;
-      font-size: 2.4rem;
-      letter-spacing: 0.15em;
-      color: #1a1a2e;
+      font-size: 2.2rem;
+      letter-spacing: 0.2em;
+      background: linear-gradient(180deg, #C9A96E 0%, #F0D080 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
       opacity: 0;
       margin-top: 16px;
       animation: intro-slide-up 1s 3s ease-in-out both;
     }
+    /* Phase 4: slogan — small tracked caps, warm muted */
     #intro-slogan {
       font-size: 0.65rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: #8a8aaa;
+      color: #8B8070;
       opacity: 0;
       margin-top: 10px;
       animation: intro-fade-in 1.5s 4s ease-in-out both;
     }
     @keyframes intro-draw-stroke { to { stroke-dashoffset: 0; } }
+    @keyframes intro-vc-in       { to { opacity: 0.3; } }
     @keyframes intro-dot-in      { to { transform: scale(1); opacity: 1; } }
     @keyframes intro-shrink      { to { width: 100px; height: 100px; } }
     @keyframes intro-slide-up {
@@ -538,14 +552,14 @@
     }
 
     .home-logo {
-      width: 130px;
-      height: 130px;
+      width: 120px;
+      height: 120px;
       display: block;
-      color: var(--text);
       animation: logo-breathe 4s ease-in-out infinite;
       padding-top: 24px;
       margin-bottom: 16px;
     }
+    .home-logo svg { width: 100%; height: 100%; display: block; }
 
     .home-logo-slogan {
       font-size: 0.72rem;
@@ -645,7 +659,7 @@
     @media (max-width: 600px) {
       #home            { min-height: calc(100dvh - 72px); padding-top: 52px; }
       .home-container  { min-height: calc(100dvh - 124px); padding: 16px 20px; }
-      .home-logo       { width: 110px; height: 110px; padding-top: 12px; margin-bottom: 8px; }
+      .home-logo       { width: 100px; height: 100px; padding-top: 12px; margin-bottom: 8px; }
       .home-logo-slogan { margin-bottom: 20px; }
       .home-cards      { flex-direction: column; align-items: center; width: 100%; gap: 8px; }
       .home-card       { width: 100%; max-width: 320px; padding: 10px 16px; max-height: 70px; }
@@ -1540,7 +1554,8 @@
       padding: 0;
     }
     .top-header-brand:hover { opacity: 0.75; }
-    .top-header-logo { color: var(--text); flex-shrink: 0; display: block; }
+    .top-header-logo { flex-shrink: 0; display: inline-flex; width: 32px; height: 32px; }
+    .top-header-logo svg { width: 100%; height: 100%; display: block; }
     .top-header-brand-text {
       display: flex;
       flex-direction: column;
@@ -5399,6 +5414,8 @@
       font-size: 1.75rem; font-weight: 400; color: var(--text);
     }
     .triad-mastery-subtitle { font-size: 0.83rem; color: var(--text-soft); margin-top: 5px; }
+    .triad-mastery-logo { width: 200px; height: 200px; margin: 0 auto 20px; }
+    .triad-mastery-logo svg { width: 100%; height: 100%; display: block; }
 
     /* SVG wrap */
     .mt-svg-wrap {

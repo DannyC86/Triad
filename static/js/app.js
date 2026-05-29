@@ -800,6 +800,17 @@
     document.getElementById('authModal').classList.add('active');
   })();
 
+  // Inject TRIAD_LOGO_SVG into all logo slots (intro, home, header)
+  (function(){
+    if (typeof TRIAD_LOGO_SVG === 'undefined') return;
+    var introWrap = document.getElementById('intro-svg-wrap');
+    if (introWrap) introWrap.innerHTML = TRIAD_LOGO_SVG;
+    var homeLogo = document.querySelector('.home-logo');
+    if (homeLogo) homeLogo.innerHTML = TRIAD_LOGO_SVG;
+    var headerLogo = document.querySelector('.top-header-logo');
+    if (headerLogo) headerLogo.innerHTML = TRIAD_LOGO_SVG;
+  })();
+
   // Intro animation — mark played this session, block home clicks until it completes
   (function(){
     var intro = document.getElementById('intro-screen');

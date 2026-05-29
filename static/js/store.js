@@ -1,4 +1,11 @@
 
+  /* ════════ TRIAD LOGO SVG ════════
+     Sacred geometry mark — used in header, home, intro, and mastery page.
+     Gold linear gradient (#C9A96E → #F0D080), viewBox 0 0 200 200.
+     Element classes: tl-outer, tl-tri, tl-vc (×3), tl-inner, tl-dot
+     Intro animation CSS targets these classes scoped to #intro-svg-wrap. */
+  const TRIAD_LOGO_SVG = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none"><defs><linearGradient id="triad-gold-grad" x1="100" y1="8" x2="100" y2="192" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#C9A96E"/><stop offset="100%" stop-color="#F0D080"/></linearGradient></defs><circle class="tl-outer" cx="100" cy="100" r="92" stroke="url(#triad-gold-grad)" stroke-width="1"/><polygon class="tl-tri" points="100,28 162,136 38,136" stroke="url(#triad-gold-grad)" stroke-width="1.5"/><circle class="tl-vc" cx="100" cy="28" r="22" stroke="url(#triad-gold-grad)" stroke-width="0.8" opacity="0.3"/><circle class="tl-vc" cx="162" cy="136" r="22" stroke="url(#triad-gold-grad)" stroke-width="0.8" opacity="0.3"/><circle class="tl-vc" cx="38" cy="136" r="22" stroke="url(#triad-gold-grad)" stroke-width="0.8" opacity="0.3"/><circle class="tl-inner" cx="100" cy="100" r="10" stroke="url(#triad-gold-grad)" stroke-width="0.8"/><circle class="tl-dot" cx="100" cy="100" r="3" fill="url(#triad-gold-grad)"/></svg>`;
+
   let state = {
     section: 'home',
     techDetail: null,
