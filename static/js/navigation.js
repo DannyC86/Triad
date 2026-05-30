@@ -600,69 +600,195 @@
         || null;
   }
 
+  // Entry point: techniques with a `phases` array go to the curve pacer;
+  // everything else uses the existing session engine.
+  // Wired here at navigation.js (was line 603) — the "Start session" button in
+  // renderRichDetail calls openStartSession(practiceId).
   function openStartSession(practiceId) {
-    openSession(practiceId);
+    const practice = findPractice(practiceId);
+    if (practice && practice.phases && practice.phases.length) {
+      openPacer(practiceId);
+    } else {
+      openSession(practiceId);
+    }
   }
   function closeStartSession() {
     sessionCancel();
   }
 
-  /* ─── Breath Pacer ─── */
-  const _PACER_VERTS = [
-    { x: 50, y: 14 },  // 0 = top = INHALE
-    { x: 81, y: 68 },  // 1 = BR  = HOLD
-    { x: 19, y: 68 },  // 2 = BL  = EXHALE
-  ];
-  const _PACER_PRESETS = {
-    sigh: { phases: [
-      { from: 2, to: 0, move: 2500, dwell: 800  },
-      { from: 0, to: 1, move: 800,  dwell: 400  },
-      { from: 1, to: 2, move: 7500, dwell: 0    },
-    ]},
-    '478': { phases: [
-      { from: 2, to: 0, move: 4000, dwell: 7000 },
-      { from: 0, to: 1, move: 500,  dwell: 0    },
-      { from: 1, to: 2, move: 8000, dwell: 0    },
-    ]},
-    free: { phases: [
-      { from: 2, to: 0, move: 4000, dwell: 0 },
-      { from: 0, to: 2, move: 4000, dwell: 0 },
-    ]}
+  /* ─── Breath Pacer — curve-based ─── */
+
+  // SVG coordinate space (viewBox="0 0 500 200")
+  const _PACER_SVG_W = 500;
+  const _PACER_YTOP  = 20;   // y when lungs full (top of curve)
+  const _PACER_YBOT  = 180;  // y when lungs empty (bottom of curve)
+
+  let _pacerState = {
+    phases: [],
+    running: false,
+    raf: null,
+    breathCount: 1,
+    totalMs: 0,   // accumulated ms played (pauses excluded)
+    cycleMs: 0,   // accumulated ms in current breath cycle
+    lastTs: null, // rAF timestamp of last frame; null when paused
+    pathLen: 0,   // total SVG path length (set after first paint)
   };
-  let _pacerRunning  = false;
-  let _pacerRaf      = null;
-  let _pacerStart    = null;
-  let _pacerPhaseIdx = 0;
-  let _pacerPhaseStart = null;
-  let _pacerPreset   = 'sigh';
+
+  // Generates an SVG polyline path from a phases array.
+  // Cosine ease on inhale/exhale produces the smooth S-curve shape.
+  // Phase widths are proportional to their `sec` value — so a 9s exhale
+  // is physically much wider than a 2s inhale: the visual matches the timing.
+  function _pacerBuildPath(phases) {
+    const totalSec = phases.reduce((s, p) => s + p.sec, 0);
+    if (!totalSec) return `M 0 ${_PACER_YBOT}`;
+    const W = _PACER_SVG_W, YTOP = _PACER_YTOP, YBOT = _PACER_YBOT;
+    const SAMPLES = 32; // points per phase — enough for a visually smooth curve
+    const pts = [];
+    let xOff = 0;
+    phases.forEach((phase) => {
+      const phaseW = (phase.sec / totalSec) * W;
+      let yS, yE;
+      if      (phase.type === 'inhale')    { yS = YBOT; yE = YTOP; }
+      else if (phase.type === 'exhale')    { yS = YTOP; yE = YBOT; }
+      else if (phase.type === 'holdFull')  { yS = YTOP; yE = YTOP; }
+      else /* holdEmpty */                 { yS = YBOT; yE = YBOT; }
+      // Skip i=0 for subsequent phases to avoid duplicate junction points
+      const iStart = pts.length === 0 ? 0 : 1;
+      for (let i = iStart; i <= SAMPLES; i++) {
+        const t    = i / SAMPLES;
+        const ease = 0.5 - 0.5 * Math.cos(t * Math.PI); // cosine ease 0→1
+        pts.push({ x: xOff + t * phaseW, y: yS + (yE - yS) * ease });
+      }
+      xOff += phaseW;
+    });
+    let d = `M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`;
+    for (let i = 1; i < pts.length; i++) d += ` L ${pts[i].x.toFixed(2)} ${pts[i].y.toFixed(2)}`;
+    return d;
+  }
 
   function openPacer(practiceId) {
     const overlay = document.getElementById('pacerOverlay');
     if (!overlay) return;
-    _pacerStop();
+
+    // Reset all playback state
+    _pacerState.running = false;
+    if (_pacerState.raf) { cancelAnimationFrame(_pacerState.raf); _pacerState.raf = null; }
+    _pacerState.breathCount = 1;
+    _pacerState.totalMs = 0;
+    _pacerState.cycleMs = 0;
+    _pacerState.lastTs  = null;
+    _pacerState.pathLen = 0;
 
     const item = practiceId ? findPractice(practiceId) : null;
+    _pacerState.phases = (item && item.phases && item.phases.length)
+      ? item.phases
+      : [{ type: 'inhale', sec: 5 }, { type: 'exhale', sec: 5 }];
 
-    // Title
-    const titleEl = document.getElementById('pacerTitle');
-    if (titleEl) titleEl.textContent = item ? item.title : 'Breath Pacer';
+    // Build curve path and apply to both guide (dim, always visible) and trail
+    const d = _pacerBuildPath(_pacerState.phases);
+    const guide = document.getElementById('pacerGuide');
+    const trail = document.getElementById('pacerTrail');
+    if (guide) guide.setAttribute('d', d);
+    if (trail) trail.setAttribute('d', d);
 
-    // Auto-select preset
-    let preset = 'free';
-    if (practiceId === 'physiological-sigh') preset = 'sigh';
-    else if (practiceId === '4-7-8-breathing') preset = '478';
-    _pacerSetPreset(preset, false);
+    // Technique labels below the panel
+    const nameEl = document.getElementById('pacerTechName');
+    const tierEl = document.getElementById('pacerTechTier');
+    if (nameEl) nameEl.textContent = item && item.title ? item.title.toUpperCase() : 'RESONANT BREATHING';
+    if (tierEl) tierEl.textContent = item && item.tier  ? item.tier.toUpperCase()  : '';
 
-    // Steps
-    const stepsEl = document.getElementById('pacerStepsWrap');
-    if (stepsEl && item && item.steps && item.steps.length) {
-      stepsEl.innerHTML = item.steps.map((s, i) =>
-        `<div style="margin-bottom:4px"><strong>${i + 1}.</strong> ${escapeHtml(s)}</div>`
-      ).join('');
-    } else if (stepsEl) {
-      stepsEl.innerHTML = '';
-    }
+    // Reset stats and button
+    _pacerUpdateBreath(1);
+    _pacerUpdateTime(0);
+    const btn = document.getElementById('pacerBreatheBtn');
+    if (btn) btn.textContent = 'and Breathe';
 
     overlay.classList.add('active');
+
+    // Measure path length after first paint so getTotalLength() sees the live DOM,
+    // then hide the trail and rest the orb at the path start.
+    requestAnimationFrame(() => {
+      if (trail && trail.getTotalLength) {
+        _pacerState.pathLen = trail.getTotalLength();
+        trail.setAttribute('stroke-dasharray',  `${_pacerState.pathLen} ${_pacerState.pathLen}`);
+        trail.setAttribute('stroke-dashoffset', String(_pacerState.pathLen)); // fully hidden
+      }
+      _pacerMoveOrb(0); // orb sits at start (bottom-left)
+    });
+  }
+
+  // Moves the orb to `progress` ∈ [0,1] along the path and reveals the trail.
+  function _pacerMoveOrb(progress) {
+    const trail = document.getElementById('pacerTrail');
+    const orb   = document.getElementById('pacerOrb');
+    if (!trail || !orb || !_pacerState.pathLen) return;
+    const dist = progress * _pacerState.pathLen;
+    // Reveal: dashoffset = L*(1-p) so at p=0 → L (hidden), at p=1 → 0 (full)
+    trail.setAttribute('stroke-dashoffset', String(_pacerState.pathLen - dist));
+    const pt = trail.getPointAtLength(dist);
+    orb.setAttribute('cx', pt.x.toFixed(2));
+    orb.setAttribute('cy', pt.y.toFixed(2));
+  }
+
+  function _pacerUpdateBreath(n) {
+    const el = document.getElementById('pacerBreath');
+    if (el) el.textContent = String(n !== undefined ? n : _pacerState.breathCount);
+  }
+
+  function _pacerUpdateTime(totalSec) {
+    const el = document.getElementById('pacerTime');
+    if (!el) return;
+    const s = Math.floor(totalSec);
+    el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  }
+
+  function _pacerTick(now) {
+    if (!_pacerState.running) return;
+    if (_pacerState.lastTs !== null) {
+      const dt = now - _pacerState.lastTs;
+      _pacerState.totalMs += dt;
+      _pacerState.cycleMs += dt;
+    }
+    _pacerState.lastTs = now;
+
+    const totalSec    = _pacerState.phases.reduce((s, p) => s + p.sec, 0);
+    const cycleDurMs  = totalSec * 1000;
+
+    // Carry any overshoot into the next cycle and increment BREATH
+    while (_pacerState.cycleMs >= cycleDurMs) {
+      _pacerState.cycleMs -= cycleDurMs;
+      _pacerState.breathCount++;
+      _pacerUpdateBreath(_pacerState.breathCount);
+    }
+
+    const progress = cycleDurMs > 0 ? _pacerState.cycleMs / cycleDurMs : 0;
+    _pacerMoveOrb(progress);
+    _pacerUpdateTime(_pacerState.totalMs / 1000);
+    _pacerState.raf = requestAnimationFrame(_pacerTick);
+  }
+
+  function closePacer() {
+    _pacerState.running = false;
+    if (_pacerState.raf) { cancelAnimationFrame(_pacerState.raf); _pacerState.raf = null; }
+    _pacerState.lastTs = null;
+    const overlay = document.getElementById('pacerOverlay');
+    if (overlay) overlay.classList.remove('active');
+  }
+
+  function togglePacer() {
+    if (_pacerState.running) {
+      // Pause — freeze orb and timer by stopping the rAF loop
+      _pacerState.running = false;
+      if (_pacerState.raf) { cancelAnimationFrame(_pacerState.raf); _pacerState.raf = null; }
+      _pacerState.lastTs = null; // reset so next play frame has dt=0
+      const btn = document.getElementById('pacerBreatheBtn');
+      if (btn) btn.textContent = 'and Breathe';
+    } else {
+      // Play
+      _pacerState.running = true;
+      const btn = document.getElementById('pacerBreatheBtn');
+      if (btn) btn.textContent = 'Pause';
+      _pacerState.raf = requestAnimationFrame(_pacerTick);
+    }
   }
 

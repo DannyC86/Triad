@@ -281,6 +281,8 @@
     {
       id: "resonant-breathing",
       locked: false,
+      tier: "Apprentice",
+      phases: [ { type: 'inhale', sec: 5 }, { type: 'exhale', sec: 5 } ],
       title: "Resonant Breathing",
       desc: "Equal-duration pacing to sync heart rate variability with respiratory patterns.",
       bestFor: "Balance",
