@@ -686,11 +686,9 @@
     _pacerState.completedCycles = 0;
     _pacerState.currentPhaseLabel = '';
 
-    // Clean up any leftover UI from a previous session
-    const _oldCd = document.getElementById('pacerCountdown');
-    if (_oldCd) _oldCd.remove();
-    const _oldPl = document.getElementById('pacerPhaseLabel');
-    if (_oldPl) _oldPl.remove();
+    // Clear any leftover countdown/phase-label from a previous session
+    const _mzClean = document.getElementById('pacerMidZone');
+    if (_mzClean) _mzClean.innerHTML = '';
 
     const item = practiceId ? findPractice(practiceId) : null;
     _pacerState.phases = (item && item.phases && item.phases.length)
@@ -755,15 +753,17 @@
     el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   }
 
-  // Returns the phase type at a given cycle progress (0–1) by walking the phases array.
-  function _pacerCurrentPhaseType(phases, cycleProgress) {
+  // Returns the current phase type and progress (0–1) within that phase.
+  // Used per-frame to drive the sine-curve opacity on the phase label.
+  function _pacerPhaseProgress(phases, cycleMs) {
     const totalSec = phases.reduce((s, p) => s + p.sec, 0);
-    let rem = cycleProgress * totalSec;
+    if (!totalSec) return { type: 'inhale', progress: 0 };
+    let rem = (cycleMs / 1000) % totalSec;
     for (const ph of phases) {
-      if (rem < ph.sec) return ph.type;
+      if (rem < ph.sec) return { type: ph.type, progress: rem / ph.sec };
       rem -= ph.sec;
     }
-    return phases[phases.length - 1].type;
+    return { type: phases[phases.length - 1].type, progress: 1 };
   }
 
   function _pacerTick(now) {
@@ -793,18 +793,15 @@
 
     const progress = cycleDurMs > 0 ? _pacerState.cycleMs / cycleDurMs : 0;
 
-    // INHALE / EXHALE crossfade label — only update on transition
-    const phType  = _pacerCurrentPhaseType(_pacerState.phases, progress);
+    // Phase label: text set on transition, opacity breathing via sine curve each frame.
+    // opacity = sin(phaseProgress * π) → 0 at start, peaks at midpoint, 0 at end.
+    const phInfo  = _pacerPhaseProgress(_pacerState.phases, _pacerState.cycleMs);
     const phNames = { inhale: 'INHALE', exhale: 'EXHALE', holdFull: 'HOLD', holdEmpty: 'HOLD' };
-    const newLabel = phNames[phType] || '';
-    if (newLabel !== _pacerState.currentPhaseLabel) {
-      _pacerState.currentPhaseLabel = newLabel;
-      const pl = document.getElementById('pacerPhaseLabel');
-      if (pl) {
-        pl.style.transition = 'opacity .4s';
-        pl.style.opacity = '0';
-        setTimeout(() => { if (pl) { pl.textContent = newLabel; pl.style.opacity = '1'; } }, 200);
-      }
+    const newLabel = phNames[phInfo.type] || '';
+    const pl = document.getElementById('pacerPhaseLabel');
+    if (pl) {
+      if (pl.textContent !== newLabel) pl.textContent = newLabel;
+      pl.style.opacity = Math.sin(phInfo.progress * Math.PI).toFixed(3);
     }
 
     _pacerMoveOrb(progress);
@@ -830,21 +827,22 @@
   /* ── Countdown 3→2→1 ──────────────────────────────────────────── */
 
   function _pacerStartCountdown() {
+    // Hide button (visibility:hidden preserves its space in Zone C)
     const btn = document.getElementById('pacerBreatheBtn');
     if (btn) {
       btn.style.transition = 'opacity .4s';
       btn.style.opacity = '0';
-      setTimeout(() => { if (btn) btn.style.pointerEvents = 'none'; }, 400);
+      setTimeout(() => { if (btn) { btn.style.visibility = 'hidden'; btn.style.pointerEvents = 'none'; } }, 400);
     }
 
-    let cd = document.getElementById('pacerCountdown');
-    if (!cd) {
-      cd = document.createElement('div');
-      cd.id = 'pacerCountdown';
-      cd.className = 'pacer-countdown';
-      cd.innerHTML = '<span class="pacer-cd-label">settle in</span><div class="pacer-cd-num" id="pacerCdNum"></div>';
-      if (btn && btn.parentNode) btn.parentNode.insertBefore(cd, btn);
-    }
+    // Inject countdown into the fixed-height mid-zone
+    const midZone = document.getElementById('pacerMidZone');
+    if (midZone) midZone.innerHTML = '';
+    const cd = document.createElement('div');
+    cd.id = 'pacerCountdown';
+    cd.className = 'pacer-countdown';
+    cd.innerHTML = '<span class="pacer-cd-label">settle in</span><div class="pacer-cd-num" id="pacerCdNum"></div>';
+    if (midZone) midZone.appendChild(cd);
     cd.style.display = 'flex';
     cd.style.opacity = '0';
 
@@ -879,7 +877,11 @@
       else {
         cd.style.transition = 'opacity .3s';
         cd.style.opacity = '0';
-        setTimeout(() => { if (cd.parentNode) cd.remove(); _pacerLaunch(); }, 300);
+        setTimeout(() => {
+          const _mz = document.getElementById('pacerMidZone');
+          if (_mz) _mz.innerHTML = '';
+          _pacerLaunch();
+        }, 300);
       }
     }
 
@@ -889,24 +891,23 @@
   /* ── Live session launch ──────────────────────────────────────── */
 
   function _pacerLaunch() {
+    // Keep button space reserved with visibility:hidden (Zone C never shifts)
     const btn = document.getElementById('pacerBreatheBtn');
-    if (btn) btn.style.display = 'none';
+    if (btn) { btn.style.visibility = 'hidden'; btn.style.opacity = '0'; btn.style.pointerEvents = 'none'; }
 
-    // Inject phase label between panel and info
-    let pl = document.getElementById('pacerPhaseLabel');
-    if (!pl) {
-      pl = document.createElement('div');
-      pl.id = 'pacerPhaseLabel';
-      pl.className = 'pacer-phase-label';
-      const panel = document.querySelector('.pacer-panel-frame');
-      if (panel && panel.nextSibling) panel.parentNode.insertBefore(pl, panel.nextSibling);
-    }
+    // Inject phase label into fixed mid-zone (opacity starts at 0; sine curve animates it)
+    const midZone = document.getElementById('pacerMidZone');
+    if (midZone) midZone.innerHTML = '';
+    const pl = document.createElement('div');
+    pl.id = 'pacerPhaseLabel';
+    pl.className = 'pacer-phase-label';
     pl.textContent = 'INHALE';
-    pl.style.opacity = '1';
+    pl.style.opacity = '0';
+    if (midZone) midZone.appendChild(pl);
 
     _pacerState.running = true;
     _pacerState.completedCycles = 0;
-    _pacerState.currentPhaseLabel = 'INHALE';
+    _pacerState.currentPhaseLabel = '';
     _pacerState.lastTs = null;
     _pacerState.totalMs = 0;
     _pacerState.cycleMs = 0;
@@ -921,8 +922,8 @@
   /* ── Session end → completion screen ─────────────────────────── */
 
   function _pacerSessionEnd() {
-    const pl = document.getElementById('pacerPhaseLabel');
-    if (pl) pl.remove();
+    const _mz = document.getElementById('pacerMidZone');
+    if (_mz) _mz.innerHTML = '';
 
     // Persist the session in the store (same pattern as _sessComplete)
     const item = findPractice(_pacerState.practiceId || 'resonant-breathing');

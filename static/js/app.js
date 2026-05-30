@@ -813,19 +813,40 @@
     if (headerLogo) headerLogo.innerHTML = TRIAD_LOGO_SVG;
     var completionLogo = document.getElementById('completion-logo-slot');
     if (completionLogo) completionLogo.innerHTML = TRIAD_LOGO_SVG;
+    var pacerLogo = document.getElementById('pacer-logo-slot');
+    if (pacerLogo) pacerLogo.innerHTML = TRIAD_LOGO_SVG;
   })();
 
-  // Intro animation — mark played this session, block home clicks until it completes
+  // Intro animation — crossfade splash directly to guest homepage (no white flash)
   (function(){
     var intro = document.getElementById('intro-screen');
     if (!intro) return;
     _introPlayedThisSession = true;
+    var home = document.getElementById('home');
     var homeContainer = document.querySelector('#home .home-container');
     if (homeContainer) homeContainer.style.pointerEvents = 'none';
-    setTimeout(function(){
-      if (intro.parentNode) intro.remove();
-      if (homeContainer) homeContainer.style.pointerEvents = '';
-    }, 7100);
+
+    // Keep home invisible behind splash so nothing bleeds through during fade
+    if (home) home.style.opacity = '0';
+
+    // Cancel the CSS fade-out animation so JS drives the crossfade instead.
+    // Children (#intro-svg-wrap, #intro-title, etc.) keep their own animations.
+    intro.style.animation = 'none';
+
+    // At 5.5s both transitions start simultaneously — 600ms each, no gap between them
+    setTimeout(function() {
+      intro.style.transition = 'opacity 0.6s ease-in-out';
+      intro.style.opacity = '0';
+      if (home) {
+        home.style.transition = 'opacity 0.6s ease-in-out';
+        home.style.opacity = '1';
+      }
+      setTimeout(function() {
+        if (intro.parentNode) intro.remove();
+        if (home) { home.style.transition = ''; home.style.opacity = ''; }
+        if (homeContainer) homeContainer.style.pointerEvents = '';
+      }, 700);
+    }, 5500);
   })();
 
   /* ─── Mystery achievement tap-to-reveal ─── */
