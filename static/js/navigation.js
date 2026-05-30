@@ -976,6 +976,8 @@
     if (typeof _sess !== 'undefined') {
       _sess.running = false; _sess.paused = false; _sess.countdown = false;
     }
+    // Dismiss the guest gate now that the user has completed their first session
+    if (typeof window._hideGuestGate === 'function') window._hideGuestGate();
     if (action === 'technique') {
       const techId = (typeof _sess !== 'undefined' && _sess.practiceId) || 'resonant-breathing';
       navigate('techniques');

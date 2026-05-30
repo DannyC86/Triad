@@ -1064,58 +1064,6 @@ var _introPlayedThisSession = false;
 <script src="/static/js/app.js?v=2.5"></script>
 <script>(function(){var s=document.getElementById('guest-logo-slot');if(s&&typeof TRIAD_LOGO_SVG!=='undefined')s.innerHTML=TRIAD_LOGO_SVG;})();</script>
 
-<!-- ═════════ FIRST BREATH ONBOARDING OVERLAY ═════════ -->
-<div id="onboarding-overlay" role="dialog" aria-modal="true" aria-label="First Breath onboarding">
-  <!-- Stage 1: Instruction -->
-  <div class="onboard-stage" data-for="instruction">
-    <div class="onboard-logo">
-      <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
-        <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1"/>
-        <polygon points="50,14 81,68 19,68" stroke="currentColor" stroke-width="1.5"/>
-        <circle cx="50" cy="50" r="1.5" fill="currentColor"/>
-      </svg>
-    </div>
-    <div class="onboard-eyebrow">Follow the flow</div>
-    <h1 class="onboard-title">Three breaths.<br>That's all.</h1>
-    <p class="onboard-sub">A moment of presence before the menu opens. The dot leads — you follow.</p>
-    <button class="onboard-btn" id="onboard-begin-btn" type="button"><span>Take a moment for you</span></button>
-  </div>
-
-  <!-- Stage 2: Countdown -->
-  <div class="onboard-stage" data-for="countdown">
-    <div class="onboard-eyebrow">Settle in</div>
-    <div class="onboard-count-num" id="onboard-count-num">3</div>
-  </div>
-
-  <!-- Stage 3: Session -->
-  <div class="onboard-stage" data-for="session">
-    <div class="onboard-session-counter" id="onboard-cycle-count">Cycle 1 of 3</div>
-    <div class="onboard-phase-label" id="onboard-phase-label">Inhale</div>
-    <div class="onboard-tri-wrap">
-      <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
-        <polygon id="onboard-tri-edge" points="50,14 81,68 19,68" stroke="currentColor" stroke-width="1.5"/>
-        <circle cx="50" cy="14" r="3" stroke="currentColor" stroke-width="0.6" opacity="0.35" fill="none"/>
-        <circle cx="81" cy="68" r="3" stroke="currentColor" stroke-width="0.6" opacity="0.35" fill="none"/>
-        <circle cx="19" cy="68" r="3" stroke="currentColor" stroke-width="0.6" opacity="0.35" fill="none"/>
-        <circle id="onboard-dot" cx="50" cy="14" r="3.5" fill="currentColor"/>
-      </svg>
-    </div>
-    <div class="onboard-hint">No exit · just breathe</div>
-  </div>
-
-  <!-- Stage 4: Pivot -->
-  <div class="onboard-stage" data-for="pivot">
-    <div class="onboard-eyebrow">Complete</div>
-    <h1 class="onboard-pivot-title">First breath, taken.</h1>
-    <div class="onboard-pivot-badge">Achievement unlocked · First Breath</div>
-    <p class="onboard-sub">Where would you like to go?</p>
-    <div class="onboard-pivot-actions">
-      <button class="onboard-pivot-btn primary" id="onboard-pivot-journey" type="button">Start my journey</button>
-      <button class="onboard-pivot-btn" id="onboard-pivot-meditate" type="button">Try a meditation</button>
-      <button class="onboard-pivot-btn" id="onboard-pivot-again" type="button">Breathe again</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>

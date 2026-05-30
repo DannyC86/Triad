@@ -850,248 +850,42 @@
       document.querySelectorAll('.achievement.unlocked.tooltip-open').forEach(el => el.classList.remove('tooltip-open'));
     }
   });
-/* ═════════ FIRST BREATH ONBOARDING ═════════
-   Brand-new users see a single "Take your first Breath" button instead of
-   the 3-card menu. Tapping it runs a locked 3-cycle Triad breath, then
-   surfaces a 3-choice pivot. Existing users (anyone with prior app data)
-   are grandfathered onboarded automatically. */
+/* ─── Guest gate: show "Take your First Breath" for brand-new visitors ─── */
 (function(){
-  const ONBOARD_KEY  = 'triad:onboarded';
-  const ACHIEVE_KEY  = 'triad:firstBreathUnlocked';
-  const STORE_KEY_LS = 'triad:v1';        // existing app store
-  const CYCLES_TARGET = 3;
-  const PHASE_MS = { inhale: 4000, hold: 4000, exhale: 4000 };
-  const PHASE_ORDER = ['inhale', 'hold', 'exhale'];
-  const PHASE_LABEL = { inhale: 'Inhale', hold: 'Hold', exhale: 'Exhale' };
-  // Triangle vertices in the SVG viewBox (matches home-logo + intro mark)
-  const TRI = {
-    top:   { x: 50, y: 14 },
-    right: { x: 81, y: 68 },
-    left:  { x: 19, y: 68 }
-  };
-  function phaseEndpoints(phase) {
-    if (phase === 'inhale') return [TRI.top,   TRI.right]; // top → bottom-right
-    if (phase === 'hold')   return [TRI.right, TRI.left];  // bottom-right → bottom-left
-    return                       [TRI.left,   TRI.top];   // bottom-left → top
-  }
-
-  const state = {
-    active: false,
-    paused: false,
-    cycle: 1,
-    phaseIdx: 0,
-    phaseStart: 0,
-    pausedAt: 0,
-    rafId: null,
-    countdownId: null
-  };
+  var ONBOARD_KEY = 'triad:onboarded';
 
   function isOnboarded() {
-    // Default false. Only the breath-session completion (markOnboarded) writes 'true'.
     try {
-      return localStorage.getItem(ONBOARD_KEY) === 'true';
-    } catch (e) { return true; } // if storage itself fails, never block the app
+      // Legacy key (old triangle-pacer flow) OR tour-complete key (new pacer flow)
+      return localStorage.getItem(ONBOARD_KEY) === 'true'
+          || localStorage.getItem('triad_pacer_tour_done') === '1';
+    } catch(e) { return true; } // storage failure → never block the app
   }
-  function markOnboarded() {
-    try {
-      localStorage.setItem(ONBOARD_KEY, 'true');
-      localStorage.setItem(ACHIEVE_KEY, '1');
-    } catch (e) {}
-  }
-
-  function $(id) { return document.getElementById(id); }
-  const overlay = () => $('onboarding-overlay');
 
   function showGate() {
-    const g = $('first-breath-gate');
-    const c = document.querySelector('.home-cards');
+    var g = document.getElementById('first-breath-gate');
+    var c = document.querySelector('.home-cards');
     if (g) g.hidden = false;
     if (c) c.hidden = true;
     document.body.classList.add('first-breath-mode');
   }
+
   function hideGate() {
-    const g = $('first-breath-gate');
-    const c = document.querySelector('.home-cards');
+    var g = document.getElementById('first-breath-gate');
+    var c = document.querySelector('.home-cards');
     if (g) g.hidden = true;
     if (c) c.hidden = false;
     document.body.classList.remove('first-breath-mode');
   }
 
-  function setStage(stage) {
-    const o = overlay();
-    if (!o) return;
-    if (stage) {
-      o.dataset.stage = stage;
-      o.classList.add('active');
-      document.body.classList.add('onboarding-active');
-    } else {
-      o.dataset.stage = '';
-      o.classList.remove('active');
-      document.body.classList.remove('onboarding-active');
-    }
-  }
+  // Exposed so the pacer completion buttons can dismiss the gate
+  window._hideGuestGate = hideGate;
 
-  let _lastEntryClick = 0;
-  function onEntryClick() {
-    const now = Date.now();
-    if (now - _lastEntryClick < 800) return; // debounce
-    _lastEntryClick = now;
-    state.active = true;
-    setStage('instruction');
-    // Push a sentinel history entry so back-gesture during locked session no-ops
-    try { history.pushState({ onboard: true }, ''); } catch (e) {}
-  }
-
-  function startCountdown() {
-    setStage('countdown');
-    const numEl = $('onboard-count-num');
-    if (!numEl) return enterSession();
-    let n = 3;
-    const flash = () => {
-      numEl.textContent = String(n);
-      numEl.classList.remove('flash');
-      // force reflow so the animation restarts cleanly
-      void numEl.offsetWidth;
-      numEl.classList.add('flash');
-    };
-    flash();
-    if (state.countdownId) clearInterval(state.countdownId);
-    state.countdownId = setInterval(() => {
-      n -= 1;
-      if (n <= 0) {
-        clearInterval(state.countdownId);
-        state.countdownId = null;
-        enterSession();
-        return;
-      }
-      flash();
-    }, 1000);
-  }
-
-  function enterSession() {
-    setStage('session');
-    state.cycle = 1;
-    state.phaseIdx = 0;
-    state.paused = false;
-    state.phaseStart = performance.now();
-    paintSessionUI();
-    if (state.rafId) cancelAnimationFrame(state.rafId);
-    state.rafId = requestAnimationFrame(tick);
-  }
-
-  function paintSessionUI() {
-    const phase = PHASE_ORDER[state.phaseIdx];
-    const lbl = $('onboard-phase-label');
-    const cnt = $('onboard-cycle-count');
-    if (lbl) lbl.textContent = PHASE_LABEL[phase];
-    if (cnt) cnt.textContent = `Cycle ${state.cycle} of ${CYCLES_TARGET}`;
-    placeDot(phase, 0);
-  }
-
-  function placeDot(phase, p) {
-    const [a, b] = phaseEndpoints(phase);
-    const x = a.x + (b.x - a.x) * p;
-    const y = a.y + (b.y - a.y) * p;
-    const dot = $('onboard-dot');
-    if (dot) {
-      dot.setAttribute('cx', x.toFixed(2));
-      dot.setAttribute('cy', y.toFixed(2));
-    }
-  }
-
-  function tick(now) {
-    if (!state.active || state.paused) return;
-    const phase = PHASE_ORDER[state.phaseIdx];
-    const dur   = PHASE_MS[phase];
-    const p     = Math.min(1, (now - state.phaseStart) / dur);
-    placeDot(phase, p);
-
-    if (p >= 1) {
-      state.phaseIdx += 1;
-      if (state.phaseIdx >= PHASE_ORDER.length) {
-        state.phaseIdx = 0;
-        state.cycle += 1;
-        if (state.cycle > CYCLES_TARGET) {
-          // Persist completion BEFORE entering pivot so a crash here can't
-          // re-trap the user on next load.
-          markOnboarded();
-          enterPivot();
-          return;
-        }
-      }
-      state.phaseStart = now;
-      paintSessionUI();
-    }
-    state.rafId = requestAnimationFrame(tick);
-  }
-
-  function pauseSession() {
-    if (!state.active || state.paused) return;
-    // Only the session stage actually animates; pause is a no-op elsewhere
-    if (overlay()?.dataset.stage !== 'session') return;
-    state.paused = true;
-    state.pausedAt = performance.now();
-    if (state.rafId) { cancelAnimationFrame(state.rafId); state.rafId = null; }
-  }
-  function resumeSession() {
-    if (!state.active || !state.paused) return;
-    state.phaseStart += performance.now() - state.pausedAt;
-    state.paused = false;
-    state.rafId = requestAnimationFrame(tick);
-  }
-
-  function enterPivot() {
-    if (state.rafId) { cancelAnimationFrame(state.rafId); state.rafId = null; }
-    setStage('pivot');
-  }
-
-  function dismissOverlay() {
-    if (state.rafId) { cancelAnimationFrame(state.rafId); state.rafId = null; }
-    if (state.countdownId) { clearInterval(state.countdownId); state.countdownId = null; }
-    state.active = false;
-    state.paused = false;
-    setStage(null);
-    hideGate();
-  }
-
-  // ─── Pivot handlers ───
-  function pivotBreatheAgain() { startCountdown(); }
-  function pivotMeditate() {
-    dismissOverlay();
-    if (typeof window.navigate === 'function') window.navigate('meditate');
-  }
-  function pivotStartJourney() { dismissOverlay(); }
-
-  // ─── Visibility (pause/resume when tab hidden) ───
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'hidden') pauseSession();
-    else if (document.visibilityState === 'visible') resumeSession();
-  });
-
-  // ─── Block browser back-gesture during the locked session ───
-  window.addEventListener('popstate', function() {
-    const stage = overlay()?.dataset.stage;
-    if (state.active && (stage === 'countdown' || stage === 'session')) {
-      try { history.pushState({ onboard: true }, ''); } catch (e) {}
-    }
-  });
-
-  // ─── Wire DOM listeners + initial gate state ───
   function init() {
-    const entry  = $('first-breath-gate-btn');
-    const begin  = $('onboard-begin-btn');
-    const again  = $('onboard-pivot-again');
-    const medit  = $('onboard-pivot-meditate');
-    const jrny   = $('onboard-pivot-journey');
-    if (entry) entry.addEventListener('click', onEntryClick);
-    if (begin) begin.addEventListener('click', startCountdown);
-    if (again) again.addEventListener('click', pivotBreatheAgain);
-    if (medit) medit.addEventListener('click', pivotMeditate);
-    if (jrny)  jrny.addEventListener('click',  pivotStartJourney);
-
     if (isOnboarded()) hideGate();
     else               showGate();
   }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
