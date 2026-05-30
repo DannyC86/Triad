@@ -625,13 +625,17 @@
 
   let _pacerState = {
     phases: [],
+    practiceId: null,
     running: false,
     raf: null,
     breathCount: 1,
-    totalMs: 0,   // accumulated ms played (pauses excluded)
-    cycleMs: 0,   // accumulated ms in current breath cycle
-    lastTs: null, // rAF timestamp of last frame; null when paused
-    pathLen: 0,   // total SVG path length (set after first paint)
+    totalMs: 0,
+    cycleMs: 0,
+    lastTs: null,
+    pathLen: 0,
+    completedCycles: 0,
+    totalCycles: 3,
+    currentPhaseLabel: '',
   };
 
   // Generates an SVG polyline path from a phases array.
@@ -670,50 +674,66 @@
     const overlay = document.getElementById('pacerOverlay');
     if (!overlay) return;
 
-    // Reset all playback state
+    // Halt any running session
     _pacerState.running = false;
     if (_pacerState.raf) { cancelAnimationFrame(_pacerState.raf); _pacerState.raf = null; }
+    _pacerState.practiceId = practiceId || null;
     _pacerState.breathCount = 1;
     _pacerState.totalMs = 0;
     _pacerState.cycleMs = 0;
     _pacerState.lastTs  = null;
     _pacerState.pathLen = 0;
+    _pacerState.completedCycles = 0;
+    _pacerState.currentPhaseLabel = '';
+
+    // Clean up any leftover UI from a previous session
+    const _oldCd = document.getElementById('pacerCountdown');
+    if (_oldCd) _oldCd.remove();
+    const _oldPl = document.getElementById('pacerPhaseLabel');
+    if (_oldPl) _oldPl.remove();
+    const _oldTour = document.getElementById('pacerTour');
+    if (_oldTour) _oldTour.remove();
+    overlay.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
 
     const item = practiceId ? findPractice(practiceId) : null;
     _pacerState.phases = (item && item.phases && item.phases.length)
       ? item.phases
       : [{ type: 'inhale', sec: 5 }, { type: 'exhale', sec: 5 }];
 
-    // Build curve path and apply to both guide (dim, always visible) and trail
     const d = _pacerBuildPath(_pacerState.phases);
     const guide = document.getElementById('pacerGuide');
     const trail = document.getElementById('pacerTrail');
     if (guide) guide.setAttribute('d', d);
     if (trail) trail.setAttribute('d', d);
 
-    // Technique labels below the panel
     const nameEl = document.getElementById('pacerTechName');
     const tierEl = document.getElementById('pacerTechTier');
     if (nameEl) nameEl.textContent = item && item.title ? item.title.toUpperCase() : 'RESONANT BREATHING';
     if (tierEl) tierEl.textContent = item && item.tier  ? item.tier.toUpperCase()  : '';
 
-    // Reset stats and button
     _pacerUpdateBreath(1);
     _pacerUpdateTime(0);
+
+    // Restore button to full idle state
     const btn = document.getElementById('pacerBreatheBtn');
-    if (btn) btn.textContent = 'and Breathe';
+    if (btn) {
+      btn.textContent = 'and Breathe';
+      btn.style.cssText = '';
+    }
 
     overlay.classList.add('active');
 
-    // Measure path length after first paint so getTotalLength() sees the live DOM,
-    // then hide the trail and rest the orb at the path start.
     requestAnimationFrame(() => {
       if (trail && trail.getTotalLength) {
         _pacerState.pathLen = trail.getTotalLength();
         trail.setAttribute('stroke-dasharray',  `${_pacerState.pathLen} ${_pacerState.pathLen}`);
-        trail.setAttribute('stroke-dashoffset', String(_pacerState.pathLen)); // fully hidden
+        trail.setAttribute('stroke-dashoffset', String(_pacerState.pathLen));
       }
-      _pacerMoveOrb(0); // orb sits at start (bottom-left)
+      _pacerMoveOrb(0);
+      // First visit: run the 4-step tutorial; subsequent visits: idle state ready
+      if (!localStorage.getItem('triad_pacer_tour_done')) {
+        _pacerShowTour();
+      }
     });
   }
 
@@ -742,6 +762,17 @@
     el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   }
 
+  // Returns the phase type at a given cycle progress (0–1) by walking the phases array.
+  function _pacerCurrentPhaseType(phases, cycleProgress) {
+    const totalSec = phases.reduce((s, p) => s + p.sec, 0);
+    let rem = cycleProgress * totalSec;
+    for (const ph of phases) {
+      if (rem < ph.sec) return ph.type;
+      rem -= ph.sec;
+    }
+    return phases[phases.length - 1].type;
+  }
+
   function _pacerTick(now) {
     if (!_pacerState.running) return;
     if (_pacerState.lastTs !== null) {
@@ -751,17 +782,38 @@
     }
     _pacerState.lastTs = now;
 
-    const totalSec    = _pacerState.phases.reduce((s, p) => s + p.sec, 0);
-    const cycleDurMs  = totalSec * 1000;
+    const totalSec   = _pacerState.phases.reduce((s, p) => s + p.sec, 0);
+    const cycleDurMs = totalSec * 1000;
 
-    // Carry any overshoot into the next cycle and increment BREATH
     while (_pacerState.cycleMs >= cycleDurMs) {
       _pacerState.cycleMs -= cycleDurMs;
+      _pacerState.completedCycles++;
+      if (_pacerState.completedCycles >= _pacerState.totalCycles) {
+        _pacerState.running = false;
+        _pacerState.raf = null;
+        _pacerSessionEnd();
+        return;
+      }
       _pacerState.breathCount++;
       _pacerUpdateBreath(_pacerState.breathCount);
     }
 
     const progress = cycleDurMs > 0 ? _pacerState.cycleMs / cycleDurMs : 0;
+
+    // INHALE / EXHALE crossfade label — only update on transition
+    const phType  = _pacerCurrentPhaseType(_pacerState.phases, progress);
+    const phNames = { inhale: 'INHALE', exhale: 'EXHALE', holdFull: 'HOLD', holdEmpty: 'HOLD' };
+    const newLabel = phNames[phType] || '';
+    if (newLabel !== _pacerState.currentPhaseLabel) {
+      _pacerState.currentPhaseLabel = newLabel;
+      const pl = document.getElementById('pacerPhaseLabel');
+      if (pl) {
+        pl.style.transition = 'opacity .4s';
+        pl.style.opacity = '0';
+        setTimeout(() => { if (pl) { pl.textContent = newLabel; pl.style.opacity = '1'; } }, 200);
+      }
+    }
+
     _pacerMoveOrb(progress);
     _pacerUpdateTime(_pacerState.totalMs / 1000);
     _pacerState.raf = requestAnimationFrame(_pacerTick);
@@ -776,19 +828,259 @@
   }
 
   function togglePacer() {
-    if (_pacerState.running) {
-      // Pause — freeze orb and timer by stopping the rAF loop
-      _pacerState.running = false;
-      if (_pacerState.raf) { cancelAnimationFrame(_pacerState.raf); _pacerState.raf = null; }
-      _pacerState.lastTs = null; // reset so next play frame has dt=0
-      const btn = document.getElementById('pacerBreatheBtn');
-      if (btn) btn.textContent = 'and Breathe';
-    } else {
-      // Play
-      _pacerState.running = true;
-      const btn = document.getElementById('pacerBreatheBtn');
-      if (btn) btn.textContent = 'Pause';
-      _pacerState.raf = requestAnimationFrame(_pacerTick);
+    // Button is hidden during session; this only fires the initial "and Breathe" click.
+    if (!_pacerState.running) {
+      _pacerStartCountdown();
     }
+  }
+
+  /* ── Countdown 3→2→1 ──────────────────────────────────────────── */
+
+  function _pacerStartCountdown() {
+    const btn = document.getElementById('pacerBreatheBtn');
+    if (btn) {
+      btn.style.transition = 'opacity .4s';
+      btn.style.opacity = '0';
+      setTimeout(() => { if (btn) btn.style.pointerEvents = 'none'; }, 400);
+    }
+
+    let cd = document.getElementById('pacerCountdown');
+    if (!cd) {
+      cd = document.createElement('div');
+      cd.id = 'pacerCountdown';
+      cd.className = 'pacer-countdown';
+      cd.innerHTML = '<span class="pacer-cd-label">settle in</span><div class="pacer-cd-num" id="pacerCdNum"></div>';
+      if (btn && btn.parentNode) btn.parentNode.insertBefore(cd, btn);
+    }
+    cd.style.display = 'flex';
+    cd.style.opacity = '0';
+
+    const numEl = document.getElementById('pacerCdNum');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let n = 3;
+
+    function showNum(num, onDone) {
+      if (numEl) {
+        numEl.textContent = String(num);
+        numEl.style.transition = '';
+        numEl.style.opacity = '0';
+        if (!reduced) numEl.style.transform = 'scale(.9)';
+      }
+      requestAnimationFrame(() => {
+        cd.style.transition = 'opacity .2s';
+        cd.style.opacity = '1';
+        if (numEl) {
+          numEl.style.transition = 'opacity .3s ease' + (reduced ? '' : ', transform .3s ease');
+          numEl.style.opacity = '1';
+          if (!reduced) numEl.style.transform = 'scale(1)';
+        }
+        setTimeout(() => {
+          if (numEl) numEl.style.opacity = '0';
+          setTimeout(onDone, 300);
+        }, 700);
+      });
+    }
+
+    function runNext() {
+      if (n > 0) { showNum(n, () => { n--; runNext(); }); }
+      else {
+        cd.style.transition = 'opacity .3s';
+        cd.style.opacity = '0';
+        setTimeout(() => { if (cd.parentNode) cd.remove(); _pacerLaunch(); }, 300);
+      }
+    }
+
+    setTimeout(runNext, 400);
+  }
+
+  /* ── Live session launch ──────────────────────────────────────── */
+
+  function _pacerLaunch() {
+    const btn = document.getElementById('pacerBreatheBtn');
+    if (btn) btn.style.display = 'none';
+
+    // Inject phase label between panel and info
+    let pl = document.getElementById('pacerPhaseLabel');
+    if (!pl) {
+      pl = document.createElement('div');
+      pl.id = 'pacerPhaseLabel';
+      pl.className = 'pacer-phase-label';
+      const panel = document.querySelector('.pacer-panel-frame');
+      if (panel && panel.nextSibling) panel.parentNode.insertBefore(pl, panel.nextSibling);
+    }
+    pl.textContent = 'INHALE';
+    pl.style.opacity = '1';
+
+    _pacerState.running = true;
+    _pacerState.completedCycles = 0;
+    _pacerState.currentPhaseLabel = 'INHALE';
+    _pacerState.lastTs = null;
+    _pacerState.totalMs = 0;
+    _pacerState.cycleMs = 0;
+    _pacerState.breathCount = 1;
+    _pacerUpdateBreath(1);
+    _pacerUpdateTime(0);
+    _pacerMoveOrb(0);
+
+    _pacerState.raf = requestAnimationFrame(_pacerTick);
+  }
+
+  /* ── Session end → completion screen ─────────────────────────── */
+
+  function _pacerSessionEnd() {
+    const pl = document.getElementById('pacerPhaseLabel');
+    if (pl) pl.remove();
+
+    // Persist the session in the store (same pattern as _sessComplete)
+    const item = findPractice(_pacerState.practiceId || 'resonant-breathing');
+    store.sessions.unshift({
+      id: 's_' + Date.now().toString(36),
+      kind: 'technique',
+      practiceId: _pacerState.practiceId || 'resonant-breathing',
+      practiceTitle: item ? item.title : 'Resonant Breathing',
+      durationMin: 1,
+      ts: new Date().toISOString(),
+    });
+    updateStreakOnComplete();
+    saveStore(store);
+    checkAchievements();
+    refreshStreakBadge();
+
+    // Route to the existing #sessionOverlay completion screen.
+    // _sess.practiceId is set so sessionReturn() navigates back correctly.
+    _sess.practiceId = _pacerState.practiceId || 'resonant-breathing';
+    _sess.running = false; _sess.paused = false; _sess.countdown = false; _sess.raf = null;
+
+    closePacer(); // removes .active from #pacerOverlay
+
+    document.getElementById('sessionCompleteDetail').textContent =
+      _pacerState.totalCycles + ' cycles · ' +
+      Math.round((_pacerState.phases.reduce((s, p) => s + p.sec, 0) * _pacerState.totalCycles)) + ' sec';
+    document.getElementById('sessionView').classList.remove('active');
+    document.getElementById('sessionComplete').classList.add('active');
+    document.getElementById('sessionOverlay').classList.add('active');
+  }
+
+  /* ── 4-step tutorial ──────────────────────────────────────────── */
+
+  let _pacerTourStep = 0;
+
+  const _PACER_TOUR_STEPS = [
+    {
+      spotlight: '.pacer-topbar',
+      position: 'below',
+      html: '<p><span class="ptour-em">BREATH</span> — Number of breaths in current breath work</p>' +
+            '<p><span class="ptour-em">TIME</span> — Amount of time passed in current breath work</p>'
+    },
+    {
+      spotlight: '.pacer-panel-frame',
+      position: 'below',
+      html: '<p>The curve always starts with an <span class="ptour-em">INHALE</span></p>' +
+            '<p>Follow the orb in time with your breath</p>'
+    },
+    {
+      spotlight: '.pacer-info',
+      position: 'below',
+      html: '<p><span class="ptour-em">Technique name</span> — Current breath work name</p>' +
+            '<p>Your current level at this breath work</p>'
+    },
+    {
+      spotlight: '.pacer-breathe-btn',
+      position: 'above',
+      html: '<p>You are now ready to take your first step</p>',
+      isLast: true
+    }
+  ];
+
+  function _pacerShowTour() {
+    const overlay = document.getElementById('pacerOverlay');
+    if (!overlay) return;
+    const existing = document.getElementById('pacerTour');
+    if (existing) existing.remove();
+
+    const tour = document.createElement('div');
+    tour.id = 'pacerTour';
+    tour.className = 'ptour-scrim';
+    tour.innerHTML =
+      '<div class="ptour-card" id="ptourCard">' +
+        '<button class="ptour-skip" onclick="endTour()">SKIP</button>' +
+        '<div class="ptour-body" id="ptourBody"></div>' +
+        '<div class="ptour-footer">' +
+          '<span class="ptour-counter" id="ptourCounter">1 / 4</span>' +
+          '<button class="ptour-next-btn" id="ptourNext" onclick="_pacerTourNext()">Next →</button>' +
+        '</div>' +
+      '</div>';
+    overlay.appendChild(tour);
+
+    _pacerDisableBreatheBtn(true);
+    _pacerTourStep = 0;
+    _pacerShowTourStep(0);
+  }
+
+  function _pacerDisableBreatheBtn(disabled) {
+    const btn = document.getElementById('pacerBreatheBtn');
+    if (!btn) return;
+    if (disabled) {
+      btn.style.opacity = '0.45';
+      btn.style.pointerEvents = 'none';
+      btn.style.background = 'var(--text-muted)';
+      btn.style.boxShadow = 'none';
+    } else {
+      btn.style.cssText = '';
+    }
+  }
+
+  function _pacerShowTourStep(stepIdx) {
+    const overlay = document.getElementById('pacerOverlay');
+    const step = _PACER_TOUR_STEPS[stepIdx];
+    if (!step || !overlay) return;
+
+    overlay.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
+    const target = overlay.querySelector(step.spotlight);
+    if (target) target.classList.add('tour-spotlight');
+
+    document.getElementById('ptourBody').innerHTML = step.html;
+    document.getElementById('ptourCounter').textContent = (stepIdx + 1) + ' / ' + _PACER_TOUR_STEPS.length;
+    const nextBtn = document.getElementById('ptourNext');
+    if (nextBtn) nextBtn.textContent = step.isLast ? 'Begin' : 'Next →';
+
+    if (target) _pacerPositionTourCard(target, step.position);
+  }
+
+  function _pacerPositionTourCard(targetEl, position) {
+    const card = document.getElementById('ptourCard');
+    if (!card) return;
+    card.style.top = card.style.bottom = card.style.left = card.style.right = '';
+
+    const rect = targetEl.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const CARD_W = Math.min(260, vw - 32);
+    card.style.width = CARD_W + 'px';
+
+    if (position === 'above') {
+      card.style.bottom = (vh - rect.top + 12) + 'px';
+    } else {
+      card.style.top = (rect.bottom + 12) + 'px';
+    }
+    const cx = rect.left + rect.width / 2;
+    card.style.left = Math.max(16, Math.min(cx - CARD_W / 2, vw - CARD_W - 16)) + 'px';
+  }
+
+  function _pacerTourNext() {
+    _pacerTourStep++;
+    if (_pacerTourStep >= _PACER_TOUR_STEPS.length) endTour();
+    else _pacerShowTourStep(_pacerTourStep);
+  }
+
+  function endTour() {
+    const tour = document.getElementById('pacerTour');
+    if (tour) tour.remove();
+    document.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
+    _pacerDisableBreatheBtn(false);
+    localStorage.setItem('triad_pacer_tour_done', '1');
+  }
+
+  function triggerPacerTour() {
+    if (!_pacerState.running) _pacerShowTour();
   }
 

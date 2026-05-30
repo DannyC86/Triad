@@ -1721,6 +1721,92 @@
     .pacer-breathe-btn:hover  { filter: brightness(1.06); transform: translateY(-1px); }
     .pacer-breathe-btn:active { transform: scale(0.97); }
 
+    /* ─── Pacer: tour help button ─── */
+    .pacer-tour-btn {
+      position: absolute; top: 16px; right: 52px;
+      background: transparent;
+      border: 1px solid var(--border); border-radius: 50%;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 600; color: var(--text-muted);
+      line-height: 1;
+    }
+    .pacer-tour-btn:hover { color: var(--text); border-color: var(--text-soft); }
+
+    /* ─── Pacer: tour overlay ─── */
+    .ptour-scrim {
+      position: absolute; inset: 0; z-index: 100;
+      background: rgba(20,16,8,.58);
+    }
+    .ptour-card {
+      position: absolute; z-index: 101;
+      background: #fff; border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.18);
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      color: var(--text); box-sizing: border-box;
+    }
+    [data-theme="dark"] .ptour-card { background: #1a2235; }
+    .ptour-body p { margin: 0 0 6px; line-height: 1.55; }
+    .ptour-body p:last-child { margin-bottom: 0; }
+    .ptour-em { color: var(--gold); font-weight: 600; }
+    .ptour-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 10px; padding-top: 8px;
+      border-top: 1px solid rgba(0,0,0,.08);
+    }
+    [data-theme="dark"] .ptour-footer { border-top-color: rgba(255,255,255,.08); }
+    .ptour-counter { font-size: 12px; color: var(--text-muted); }
+    .ptour-next-btn {
+      background: var(--text); color: var(--bg);
+      border: none; border-radius: 999px;
+      padding: 6px 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+    }
+    .ptour-skip {
+      position: absolute; top: -26px; right: 0;
+      background: none; border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 11px;
+      letter-spacing: .3em; text-transform: uppercase;
+      color: rgba(255,255,255,.68); padding: 2px 0;
+    }
+    .ptour-skip:hover { color: #fff; }
+    .tour-spotlight {
+      position: relative; z-index: 101;
+      box-shadow: 0 0 0 100vmax rgba(20,16,8,.58);
+      outline: 1.5px solid var(--gold);
+      border-radius: inherit;
+    }
+
+    /* ─── Pacer: countdown 3→2→1 ─── */
+    .pacer-countdown {
+      flex-direction: column; align-items: center;
+      gap: 2px; text-align: center;
+    }
+    .pacer-cd-label {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      color: var(--gold);
+      font-size: clamp(18px, 4vw, 26px);
+      letter-spacing: .08em;
+    }
+    .pacer-cd-num {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 700; color: var(--gold);
+      font-size: clamp(56px, 14vw, 88px);
+      line-height: 1; text-align: center;
+    }
+
+    /* ─── Pacer: live phase label ─── */
+    .pacer-phase-label {
+      font-family: 'DM Sans', sans-serif;
+      text-transform: uppercase; color: var(--text-soft);
+      font-size: 13px; letter-spacing: .2em;
+      text-align: center;
+    }
+
     /* ─── Session Engine ─── */
     .session-overlay {
       position: fixed; inset: 0; z-index: 300;
