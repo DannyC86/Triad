@@ -674,10 +674,26 @@ var _introPlayedThisSession = false;
 
   <!-- Completion screen -->
   <div class="session-complete" id="sessionComplete">
-    <div class="session-complete-icon">🙏</div>
-    <div class="session-complete-title">Session Complete</div>
-    <div class="session-complete-detail" id="sessionCompleteDetail"></div>
-    <button class="session-return-btn" onclick="sessionReturn()">Return to Practice</button>
+    <div class="sc-emblem" id="completion-logo-slot"></div>
+    <div class="sc-wordmark">TRIAD</div>
+    <div class="sc-tech-name" id="sessionCompleteTechName">RESONANT BREATHING</div>
+    <div class="sc-congrats">Congratulations</div>
+    <p class="sc-body">How do you feel? Keep up the momentum. Want to learn more about this breath or try a meditation?</p>
+    <div class="sc-report">
+      <div class="sc-report-left">
+        <div class="sc-report-head">Session Report</div>
+        <div class="sc-report-line" id="sessionCompleteDuration">30 second session</div>
+        <div class="sc-report-line" id="sessionCompleteCycles">3 Breathing Cycles</div>
+      </div>
+      <div class="sc-report-right">
+        <div class="sc-report-head">+ Level (Body)</div>
+      </div>
+    </div>
+    <div class="sc-actions">
+      <button class="sc-btn" id="sessionCompleteLearnBtn" onclick="_sessionCompleteGo('technique')">Learn about Resonant Breathing</button>
+      <button class="sc-btn" onclick="_sessionCompleteGo('meditate')">Try a meditation (2 mins)</button>
+      <button class="sc-btn" onclick="_sessionCompleteGo('home')">Explore the App</button>
+    </div>
   </div>
 
 </div>

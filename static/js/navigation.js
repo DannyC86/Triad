@@ -953,12 +953,38 @@
 
     closePacer(); // removes .active from #pacerOverlay
 
-    document.getElementById('sessionCompleteDetail').textContent =
-      _pacerState.totalCycles + ' cycles · ' +
-      Math.round((_pacerState.phases.reduce((s, p) => s + p.sec, 0) * _pacerState.totalCycles)) + ' sec';
+    const pcTitle  = item ? item.title : 'Resonant Breathing';
+    const pcTotalSec = Math.round(_pacerState.phases.reduce((s, p) => s + p.sec, 0) * _pacerState.totalCycles);
+    const scTechName = document.getElementById('sessionCompleteTechName');
+    const scDuration = document.getElementById('sessionCompleteDuration');
+    const scCycles   = document.getElementById('sessionCompleteCycles');
+    const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
+    if (scTechName) scTechName.textContent = pcTitle.toUpperCase();
+    if (scDuration)  scDuration.textContent  = pcTotalSec + ' second session';
+    if (scCycles)    scCycles.textContent    = _pacerState.totalCycles + ' Breathing Cycle' + (_pacerState.totalCycles !== 1 ? 's' : '');
+    if (scLearnBtn)  scLearnBtn.textContent  = 'Learn about ' + pcTitle;
+
     document.getElementById('sessionView').classList.remove('active');
     document.getElementById('sessionComplete').classList.add('active');
     document.getElementById('sessionOverlay').classList.add('active');
+  }
+
+  // Button handler for the completion screen's three navigation pills.
+  // Called from onclick in index.html — must remain a named global function.
+  function _sessionCompleteGo(action) {
+    document.getElementById('sessionOverlay').classList.remove('active');
+    if (typeof _sess !== 'undefined') {
+      _sess.running = false; _sess.paused = false; _sess.countdown = false;
+    }
+    if (action === 'technique') {
+      const techId = (typeof _sess !== 'undefined' && _sess.practiceId) || 'resonant-breathing';
+      navigate('techniques');
+      showTechniqueDetail(techId);
+    } else if (action === 'meditate') {
+      navigate('meditate');
+    } else {
+      navigate('home');
+    }
   }
 
   /* ── 4-step tutorial ──────────────────────────────────────────── */

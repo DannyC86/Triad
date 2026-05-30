@@ -259,8 +259,14 @@
 
     const timeStr = totalMin >= 1 ? `${totalMin} min` : `${totalSec} sec`;
     const cycles = _sess.loopCount === null ? _sess.currentLoop - 1 : _sess.loopCount;
-    document.getElementById('sessionCompleteDetail').textContent =
-      `${cycles} cycle${cycles !== 1 ? 's' : ''} · ${timeStr}`;
+    const scTechName = document.getElementById('sessionCompleteTechName');
+    const scDuration = document.getElementById('sessionCompleteDuration');
+    const scCycles   = document.getElementById('sessionCompleteCycles');
+    const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
+    if (scTechName) scTechName.textContent = (_sess.techniqueTitle || '').toUpperCase();
+    if (scDuration)  scDuration.textContent  = `${timeStr} session`;
+    if (scCycles)    scCycles.textContent    = `${cycles} Breathing Cycle${cycles !== 1 ? 's' : ''}`;
+    if (scLearnBtn)  scLearnBtn.textContent  = 'Learn about ' + (_sess.techniqueTitle || 'this technique');
 
     document.getElementById('sessionView').classList.remove('active');
     document.getElementById('sessionComplete').classList.add('active');

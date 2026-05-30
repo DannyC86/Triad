@@ -811,6 +811,8 @@
     if (homeLogo) homeLogo.innerHTML = TRIAD_LOGO_SVG;
     var headerLogo = document.querySelector('.top-header-logo');
     if (headerLogo) headerLogo.innerHTML = TRIAD_LOGO_SVG;
+    var completionLogo = document.getElementById('completion-logo-slot');
+    if (completionLogo) completionLogo.innerHTML = TRIAD_LOGO_SVG;
   })();
 
   // Intro animation — mark played this session, block home clicks until it completes
