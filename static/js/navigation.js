@@ -691,9 +691,6 @@
     if (_oldCd) _oldCd.remove();
     const _oldPl = document.getElementById('pacerPhaseLabel');
     if (_oldPl) _oldPl.remove();
-    const _oldTour = document.getElementById('pacerTour');
-    if (_oldTour) _oldTour.remove();
-    overlay.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
 
     const item = practiceId ? findPractice(practiceId) : null;
     _pacerState.phases = (item && item.phases && item.phases.length)
@@ -730,10 +727,6 @@
         trail.setAttribute('stroke-dashoffset', String(_pacerState.pathLen));
       }
       _pacerMoveOrb(0);
-      // First visit: run the 4-step tutorial; subsequent visits: idle state ready
-      if (!localStorage.getItem('triad_pacer_tour_done')) {
-        _pacerShowTour();
-      }
     });
   }
 
@@ -989,126 +982,4 @@
     }
   }
 
-  /* ── 4-step tutorial ──────────────────────────────────────────── */
-
-  let _pacerTourStep = 0;
-
-  const _PACER_TOUR_STEPS = [
-    {
-      spotlight: '.pacer-topbar',
-      position: 'below',
-      html: '<p><span class="ptour-em">BREATH</span> — Number of breaths in current breath work</p>' +
-            '<p><span class="ptour-em">TIME</span> — Amount of time passed in current breath work</p>'
-    },
-    {
-      spotlight: '.pacer-panel-frame',
-      position: 'below',
-      html: '<p>The curve always starts with an <span class="ptour-em">INHALE</span></p>' +
-            '<p>Follow the orb in time with your breath</p>'
-    },
-    {
-      spotlight: '.pacer-info',
-      position: 'below',
-      html: '<p><span class="ptour-em">Technique name</span> — Current breath work name</p>' +
-            '<p>Your current level at this breath work</p>'
-    },
-    {
-      spotlight: '.pacer-breathe-btn',
-      position: 'above',
-      html: '<p>You are now ready to take your first step</p>',
-      isLast: true
-    }
-  ];
-
-  function _pacerShowTour() {
-    const overlay = document.getElementById('pacerOverlay');
-    if (!overlay) return;
-    const existing = document.getElementById('pacerTour');
-    if (existing) existing.remove();
-
-    const tour = document.createElement('div');
-    tour.id = 'pacerTour';
-    tour.className = 'ptour-scrim';
-    tour.innerHTML =
-      '<div class="ptour-card" id="ptourCard">' +
-        '<button class="ptour-skip" onclick="endTour()">SKIP</button>' +
-        '<div class="ptour-body" id="ptourBody"></div>' +
-        '<div class="ptour-footer">' +
-          '<span class="ptour-counter" id="ptourCounter">1 / 4</span>' +
-          '<button class="ptour-next-btn" id="ptourNext" onclick="_pacerTourNext()">Next →</button>' +
-        '</div>' +
-      '</div>';
-    overlay.appendChild(tour);
-
-    _pacerDisableBreatheBtn(true);
-    _pacerTourStep = 0;
-    _pacerShowTourStep(0);
-  }
-
-  function _pacerDisableBreatheBtn(disabled) {
-    const btn = document.getElementById('pacerBreatheBtn');
-    if (!btn) return;
-    if (disabled) {
-      btn.style.opacity = '0.45';
-      btn.style.pointerEvents = 'none';
-      btn.style.background = 'var(--text-muted)';
-      btn.style.boxShadow = 'none';
-    } else {
-      btn.style.cssText = '';
-    }
-  }
-
-  function _pacerShowTourStep(stepIdx) {
-    const overlay = document.getElementById('pacerOverlay');
-    const step = _PACER_TOUR_STEPS[stepIdx];
-    if (!step || !overlay) return;
-
-    overlay.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
-    const target = overlay.querySelector(step.spotlight);
-    if (target) target.classList.add('tour-spotlight');
-
-    document.getElementById('ptourBody').innerHTML = step.html;
-    document.getElementById('ptourCounter').textContent = (stepIdx + 1) + ' / ' + _PACER_TOUR_STEPS.length;
-    const nextBtn = document.getElementById('ptourNext');
-    if (nextBtn) nextBtn.textContent = step.isLast ? 'Begin' : 'Next →';
-
-    if (target) _pacerPositionTourCard(target, step.position);
-  }
-
-  function _pacerPositionTourCard(targetEl, position) {
-    const card = document.getElementById('ptourCard');
-    if (!card) return;
-    card.style.top = card.style.bottom = card.style.left = card.style.right = '';
-
-    const rect = targetEl.getBoundingClientRect();
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const CARD_W = Math.min(260, vw - 32);
-    card.style.width = CARD_W + 'px';
-
-    if (position === 'above') {
-      card.style.bottom = (vh - rect.top + 12) + 'px';
-    } else {
-      card.style.top = (rect.bottom + 12) + 'px';
-    }
-    const cx = rect.left + rect.width / 2;
-    card.style.left = Math.max(16, Math.min(cx - CARD_W / 2, vw - CARD_W - 16)) + 'px';
-  }
-
-  function _pacerTourNext() {
-    _pacerTourStep++;
-    if (_pacerTourStep >= _PACER_TOUR_STEPS.length) endTour();
-    else _pacerShowTourStep(_pacerTourStep);
-  }
-
-  function endTour() {
-    const tour = document.getElementById('pacerTour');
-    if (tour) tour.remove();
-    document.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
-    _pacerDisableBreatheBtn(false);
-    localStorage.setItem('triad_pacer_tour_done', '1');
-  }
-
-  function triggerPacerTour() {
-    if (!_pacerState.running) _pacerShowTour();
-  }
 
