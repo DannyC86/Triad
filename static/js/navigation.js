@@ -961,6 +961,8 @@
     document.getElementById('sessionView').classList.remove('active');
     document.getElementById('sessionComplete').classList.add('active');
     document.getElementById('sessionOverlay').classList.add('active');
+
+    try { localStorage.setItem('triad:onboarded', 'true'); } catch(e) {}
   }
 
   // Button handler for the completion screen's three navigation pills.
