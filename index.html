@@ -635,6 +635,60 @@ var _introPlayedThisSession = false;
   </div>
 </div>
 
+<!-- ═════════ Post-Onboarding Pacer Overlay ═════════ -->
+<div class="pacer-overlay" id="pacerOverlayPro">
+  <!-- Header -->
+  <div class="pacer-hdr">
+    <span class="pacer-hdr-logo" id="pro-logo-slot"></span>
+    <span class="pacer-hdr-wordmark">TRIAD</span>
+    <button id="proMuteBtn" onclick="pacerToggleMute()" aria-label="Toggle sound" style="background:transparent;border:none;font-size:16px;cursor:pointer;opacity:0.6;padding:4px 8px;margin-left:auto;">🔔</button>
+  </div>
+  <!-- Technique info + stats -->
+  <div class="pacer-top-info">
+    <div class="pacer-tech-name" id="proTechName"></div>
+    <div class="pacer-tech-tier" id="proTechTier"></div>
+    <div class="pacer-topbar">
+      <div class="pacer-stat">
+        <span class="pacer-stat-label">BREATH</span>
+        <span class="pacer-stat-value" id="proBreathCount">1</span>
+      </div>
+      <div class="pacer-stat pacer-stat-right">
+        <span class="pacer-stat-label">TIME</span>
+        <span class="pacer-stat-value" id="proTimer">0:00</span>
+      </div>
+    </div>
+  </div>
+  <!-- Chart -->
+  <div class="pacer-chart-wrap">
+    <canvas id="proCanvas"></canvas>
+  </div>
+  <!-- Zone C: state machine -->
+  <div class="pacer-zone-c">
+    <!-- State 1: session selection -->
+    <div class="pacer-state" id="proSessionSelect">
+      <div class="pro-select-title">Select your session</div>
+      <div class="pro-tiles-row" id="proTilesRow">
+        <div class="pro-tile selected" data-duration="1" data-cycles="6" onclick="proSelectTile(this)">1 min</div>
+        <div class="pro-tile" data-duration="5" data-cycles="30" onclick="proSelectTile(this)">5 min</div>
+        <div class="pro-tile" data-duration="10" data-cycles="60" onclick="proSelectTile(this)">10 min</div>
+        <div class="pro-tile" data-duration="0" data-cycles="0" onclick="proSelectTile(this)">∞</div>
+      </div>
+      <div class="pro-tile-label" id="proTileLabel">1 min</div>
+      <button class="pacer-breathe-btn pro-begin-btn" id="proBeginBtn" onclick="_proStartCountdown()">Begin</button>
+    </div>
+    <!-- State 2: countdown -->
+    <div class="pacer-state" id="proCountdown" style="display:none">
+      <div class="pacer-cd-label">settle in</div>
+      <div class="pacer-cd-num" id="proCountdownNum"></div>
+    </div>
+    <!-- State 3: session active -->
+    <div class="pacer-state" id="proSessionActive" style="display:none">
+      <div class="pacer-phase-label" id="proPhaseLabel" style="opacity:0">INHALE</div>
+      <button class="pro-end-btn" id="proEndBtn" style="display:none" onclick="proEndSession()">End Session</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- ═════════ Session Engine Overlay ═════════ -->
 <div class="session-overlay" id="sessionOverlay">

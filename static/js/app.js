@@ -817,6 +817,8 @@
     if (scLogo) scLogo.innerHTML = TRIAD_LOGO_SVG;
     var pacerLogo = document.getElementById('pacer-logo-slot');
     if (pacerLogo) pacerLogo.innerHTML = TRIAD_LOGO_SVG;
+    var proLogo = document.getElementById('pro-logo-slot');
+    if (proLogo) proLogo.innerHTML = TRIAD_LOGO_SVG;
   })();
 
   // Intro animation — crossfade splash directly to guest homepage (no white flash)

@@ -578,8 +578,11 @@
   function pacerToggleMute() {
     soundEnabled = !soundEnabled;
     localStorage.setItem('triad:soundEnabled', soundEnabled);
-    const btn = document.getElementById('pacerMuteBtn');
-    if (btn) btn.textContent = soundEnabled ? '🔔' : '🔕';
+    const icon = soundEnabled ? '🔔' : '🔕';
+    const btn1 = document.getElementById('pacerMuteBtn');
+    if (btn1) btn1.textContent = icon;
+    const btn2 = document.getElementById('proMuteBtn');
+    if (btn2) btn2.textContent = icon;
   }
 
   let _pacerState = {
@@ -608,11 +611,8 @@
     canvas.height = wrap.clientHeight;
   }
 
-  // Draw one frame of the pacer canvas.
-  // running: true = active session (trail + full glow); false = idle (guide + dim orb only)
-  // scrollOffset: how many px the curve has scrolled (increases each tick during session)
-  function _pacerDraw(running, scrollOffset) {
-    const canvas = document.getElementById('pacerCanvas');
+  // Core draw routine — accepts any canvas element.
+  function _pacerDrawToCanvas(canvas, running, scrollOffset) {
     if (!canvas || !canvas.getContext) return;
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
@@ -685,6 +685,10 @@
     ctx.restore();
   }
 
+  function _pacerDraw(running, scrollOffset) {
+    _pacerDrawToCanvas(document.getElementById('pacerCanvas'), running, scrollOffset);
+  }
+
   // Resize + redraw canvas when overlay is visible and window resizes
   window.addEventListener('resize', () => {
     if (document.getElementById('pacerOverlay')?.classList.contains('active')) {
@@ -692,6 +696,13 @@
       if (!_pacerState.running && !_pacerState.prerollRaf) {
         const _rc = document.getElementById('pacerCanvas');
         _pacerDraw(false, _rc ? _rc.width * _PACER_IDLE_FRAC : 0);
+      }
+    }
+    if (document.getElementById('pacerOverlayPro')?.classList.contains('active')) {
+      _proResizeCanvas();
+      if (!_proPacerState.running && !_proPacerState.prerollRaf) {
+        const _rc = document.getElementById('proCanvas');
+        _pacerDrawToCanvas(_rc, false, _rc ? _rc.width * _PACER_IDLE_FRAC : 0);
       }
     }
   });
@@ -711,6 +722,14 @@
   }
 
   function openPacer(practiceId) {
+    const isOnboarded = localStorage.getItem('triad:onboarded') === 'true';
+    if (!isOnboarded) {
+      return _openGuestPacer(practiceId);
+    }
+    openProPacer(practiceId);
+  }
+
+  function _openGuestPacer(practiceId) {
     const overlay = document.getElementById('pacerOverlay');
     if (!overlay) return;
 
@@ -1046,4 +1065,337 @@
     }
   }
 
+  /* ════════════════ POST-ONBOARDING PACER ════════════════ */
+
+  let _proPacerState = {
+    phases: [],
+    practiceId: null,
+    running: false,
+    raf: null,
+    breathCount: 1,
+    totalMs: 0,
+    cycleMs: 0,
+    lastTs: null,
+    completedCycles: 0,
+    selectedCycles: 6,
+    isInfinite: false,
+    prerollMs: 0,
+    prerollLastTs: null,
+    prerollRaf: null,
+  };
+
+  function _proResizeCanvas() {
+    const canvas = document.getElementById('proCanvas');
+    if (!canvas) return;
+    const wrap = canvas.parentElement;
+    if (!wrap) return;
+    canvas.width  = wrap.clientWidth;
+    canvas.height = wrap.clientHeight;
+  }
+
+  function openProPacer(practiceId) {
+    const overlay = document.getElementById('pacerOverlayPro');
+    if (!overlay) return;
+
+    _proPacerState.running = false;
+    if (_proPacerState.raf)        { cancelAnimationFrame(_proPacerState.raf);        _proPacerState.raf        = null; }
+    if (_proPacerState.prerollRaf) { cancelAnimationFrame(_proPacerState.prerollRaf); _proPacerState.prerollRaf = null; }
+
+    _proPacerState.practiceId     = practiceId || null;
+    _proPacerState.breathCount    = 1;
+    _proPacerState.totalMs        = 0;
+    _proPacerState.cycleMs        = 0;
+    _proPacerState.lastTs         = null;
+    _proPacerState.completedCycles = 0;
+    _proPacerState.selectedCycles = 6;
+    _proPacerState.isInfinite     = false;
+    _proPacerState.prerollMs      = 0;
+    _proPacerState.prerollLastTs  = null;
+
+    const item = practiceId ? findPractice(practiceId) : null;
+    _proPacerState.phases = (item && item.phases && item.phases.length)
+      ? item.phases
+      : [{ type: 'inhale', sec: 5 }, { type: 'exhale', sec: 5 }];
+
+    const nameEl = document.getElementById('proTechName');
+    const tierEl = document.getElementById('proTechTier');
+    if (nameEl) nameEl.textContent = item && item.title ? item.title.toUpperCase() : 'RESONANT BREATHING';
+    if (tierEl) tierEl.textContent = item && item.tier  ? item.tier.toUpperCase()  : '';
+
+    const breathEl = document.getElementById('proBreathCount');
+    const timerEl  = document.getElementById('proTimer');
+    if (breathEl) breathEl.textContent = '1';
+    if (timerEl)  timerEl.textContent  = '0:00';
+
+    // Reset zone-C to session select state
+    const selDiv = document.getElementById('proSessionSelect');
+    const cdDiv  = document.getElementById('proCountdown');
+    const actDiv = document.getElementById('proSessionActive');
+    if (selDiv) selDiv.style.display = 'flex';
+    if (cdDiv)  cdDiv.style.display  = 'none';
+    if (actDiv) actDiv.style.display = 'none';
+
+    // Reset tile selection to default (1 min)
+    document.querySelectorAll('#proTilesRow .pro-tile').forEach(t => t.classList.remove('selected'));
+    const firstTile = document.querySelector('#proTilesRow .pro-tile');
+    if (firstTile) firstTile.classList.add('selected');
+    const labelEl = document.getElementById('proTileLabel');
+    if (labelEl) labelEl.textContent = '1 min';
+
+    // Hide End Session button
+    const endBtn = document.getElementById('proEndBtn');
+    if (endBtn) endBtn.style.display = 'none';
+
+    // Reset phase label
+    const pl = document.getElementById('proPhaseLabel');
+    if (pl) { pl.textContent = 'INHALE'; pl.style.opacity = '0'; }
+
+    // Sync mute button
+    const muteBtn = document.getElementById('proMuteBtn');
+    if (muteBtn) muteBtn.textContent = soundEnabled ? '🔔' : '🔕';
+
+    overlay.classList.add('active');
+
+    requestAnimationFrame(() => {
+      _proResizeCanvas();
+      const c = document.getElementById('proCanvas');
+      _pacerDrawToCanvas(c, false, c ? c.width * _PACER_IDLE_FRAC : 0);
+    });
+  }
+
+  function proSelectTile(tile) {
+    document.querySelectorAll('#proTilesRow .pro-tile').forEach(t => t.classList.remove('selected'));
+    tile.classList.add('selected');
+    const dur = parseInt(tile.dataset.duration, 10);
+    _proPacerState.selectedCycles = parseInt(tile.dataset.cycles, 10);
+    _proPacerState.isInfinite = dur === 0;
+    const labelEl = document.getElementById('proTileLabel');
+    if (labelEl) labelEl.textContent = dur === 0 ? 'Infinite' : dur + ' min';
+  }
+
+  function _proPrerollTick(now) {
+    if (!_proPacerState.prerollRaf) return;
+    const dt = _proPacerState.prerollLastTs !== null ? now - _proPacerState.prerollLastTs : 0;
+    _proPacerState.prerollLastTs = now;
+    _proPacerState.prerollMs += dt;
+    const canvas = document.getElementById('proCanvas');
+    const W = canvas ? canvas.width : 390;
+    _pacerDrawToCanvas(canvas, false, W * _PACER_IDLE_FRAC + (_proPacerState.prerollMs / 10000) * W);
+    _proPacerState.prerollRaf = requestAnimationFrame(_proPrerollTick);
+  }
+
+  function _proStartCountdown() {
+    const selDiv = document.getElementById('proSessionSelect');
+    const cdDiv  = document.getElementById('proCountdown');
+    if (selDiv) selDiv.style.display = 'none';
+    if (cdDiv)  cdDiv.style.display  = 'flex';
+
+    _proPacerState.prerollMs = 0;
+    _proPacerState.prerollLastTs = null;
+    _proPacerState.prerollRaf = requestAnimationFrame(_proPrerollTick);
+
+    const numEl   = document.getElementById('proCountdownNum');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let n = 3;
+
+    if (numEl) { numEl.textContent = ''; numEl.style.opacity = '0'; }
+
+    function showNum(num, onDone) {
+      if (numEl) {
+        numEl.textContent = String(num);
+        numEl.style.transition = '';
+        numEl.style.opacity = '0';
+        if (!reduced) numEl.style.transform = 'scale(.9)';
+      }
+      requestAnimationFrame(() => {
+        if (numEl) {
+          numEl.style.transition = 'opacity .3s ease' + (reduced ? '' : ', transform .3s ease');
+          numEl.style.opacity = '1';
+          if (!reduced) numEl.style.transform = 'scale(1)';
+        }
+        setTimeout(() => {
+          if (numEl) numEl.style.opacity = '0';
+          setTimeout(onDone, 300);
+        }, 700);
+      });
+    }
+
+    function runNext() {
+      if (n > 0) { showNum(n, () => { n--; runNext(); }); }
+      else {
+        if (cdDiv) cdDiv.style.display = 'none';
+        _proLaunch();
+      }
+    }
+
+    runNext();
+  }
+
+  function _proLaunch() {
+    const actDiv = document.getElementById('proSessionActive');
+    if (actDiv) actDiv.style.display = 'flex';
+
+    if (_proPacerState.prerollRaf) { cancelAnimationFrame(_proPacerState.prerollRaf); _proPacerState.prerollRaf = null; }
+
+    const pl = document.getElementById('proPhaseLabel');
+    if (pl) { pl.textContent = 'INHALE'; pl.style.opacity = '0'; }
+
+    const endBtn = document.getElementById('proEndBtn');
+    if (endBtn) endBtn.style.display = _proPacerState.isInfinite ? 'block' : 'none';
+
+    chimeFired = false;
+    dongFired  = false;
+
+    _proPacerState.running        = true;
+    _proPacerState.completedCycles = 0;
+    _proPacerState.lastTs         = null;
+    _proPacerState.totalMs        = 0;
+    _proPacerState.cycleMs        = 0;
+    _proPacerState.breathCount    = 1;
+
+    const breathEl = document.getElementById('proBreathCount');
+    if (breathEl) breathEl.textContent = '1';
+    const timerEl = document.getElementById('proTimer');
+    if (timerEl) timerEl.textContent = '0:00';
+
+    _proPacerState.raf = requestAnimationFrame(_proTick);
+  }
+
+  function _proTick(now) {
+    if (!_proPacerState.running) return;
+    if (_proPacerState.lastTs !== null) {
+      const dt = now - _proPacerState.lastTs;
+      _proPacerState.totalMs += dt;
+      _proPacerState.cycleMs += dt;
+    }
+    _proPacerState.lastTs = now;
+
+    const totalSec   = _proPacerState.phases.reduce((s, p) => s + p.sec, 0);
+    const cycleDurMs = totalSec * 1000;
+
+    while (_proPacerState.cycleMs >= cycleDurMs) {
+      _proPacerState.cycleMs -= cycleDurMs;
+      _proPacerState.completedCycles++;
+      if (!_proPacerState.isInfinite && _proPacerState.completedCycles >= _proPacerState.selectedCycles) {
+        _proPacerState.running = false;
+        _proPacerState.raf = null;
+        _proSessionEnd();
+        return;
+      }
+      _proPacerState.breathCount++;
+      const breathEl = document.getElementById('proBreathCount');
+      if (breathEl) breathEl.textContent = String(_proPacerState.breathCount);
+      chimeFired = false;
+      dongFired  = false;
+    }
+
+    // Audio cues
+    const cycleProgress = cycleDurMs > 0 ? _proPacerState.cycleMs / cycleDurMs : 0;
+    if (cycleProgress >= 0.25 && !chimeFired) { playChime(); chimeFired = true; }
+    if (cycleProgress < 0.25) chimeFired = false;
+    if (cycleProgress >= 0.75 && !dongFired) { playDong(); dongFired = true; }
+    if (cycleProgress < 0.75) dongFired = false;
+
+    // Draw
+    const canvas = document.getElementById('proCanvas');
+    const W = canvas ? canvas.width : 390;
+    const scrollOffset = W * _PACER_IDLE_FRAC
+      + (_proPacerState.prerollMs / 10000) * W
+      + (_proPacerState.totalMs   / 10000) * W;
+    _pacerDrawToCanvas(canvas, true, scrollOffset);
+
+    // Phase label
+    const phInfo   = _pacerPhaseProgress(_proPacerState.phases, _proPacerState.cycleMs);
+    const phNames  = { inhale: 'INHALE', exhale: 'EXHALE', holdFull: 'HOLD', holdEmpty: 'HOLD' };
+    const newLabel = phNames[phInfo.type] || '';
+    const pl = document.getElementById('proPhaseLabel');
+    if (pl) {
+      if (pl.textContent !== newLabel) pl.textContent = newLabel;
+      pl.style.opacity = Math.sin(phInfo.progress * Math.PI).toFixed(3);
+    }
+
+    // Timer
+    const s = Math.floor(_proPacerState.totalMs / 1000);
+    const timerEl = document.getElementById('proTimer');
+    if (timerEl) timerEl.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+    _proPacerState.raf = requestAnimationFrame(_proTick);
+  }
+
+  function closeProPacer() {
+    _proPacerState.running = false;
+    if (_proPacerState.raf)        { cancelAnimationFrame(_proPacerState.raf);        _proPacerState.raf        = null; }
+    if (_proPacerState.prerollRaf) { cancelAnimationFrame(_proPacerState.prerollRaf); _proPacerState.prerollRaf = null; }
+    _proPacerState.lastTs = null;
+    const overlay = document.getElementById('pacerOverlayPro');
+    if (overlay) overlay.classList.remove('active');
+  }
+
+  function proEndSession() {
+    _proPacerState.running = false;
+    if (_proPacerState.raf) { cancelAnimationFrame(_proPacerState.raf); _proPacerState.raf = null; }
+    _proSessionEnd();
+  }
+
+  function _proSessionEnd() {
+    const bwId       = _proPacerState.practiceId || 'resonant-breathing';
+    const elapsedSec = Math.round(_proPacerState.totalMs / 1000);
+    const completed  = _proPacerState.completedCycles;
+
+    const item = findPractice(bwId);
+    store.sessions.unshift({
+      id: 's_' + Date.now().toString(36),
+      kind: 'technique',
+      practiceId: bwId,
+      practiceTitle: item ? item.title : 'Resonant Breathing',
+      durationMin: Math.max(1, Math.round(elapsedSec / 60)),
+      ts: new Date().toISOString(),
+    });
+
+    if (!store.breathwork) store.breathwork = {};
+    if (!store.breathwork[bwId]) store.breathwork[bwId] = { totalBreaths: 0, totalSessions: 0, totalDuration: 0 };
+    store.breathwork[bwId].totalBreaths  += completed;
+    store.breathwork[bwId].totalSessions += 1;
+    store.breathwork[bwId].totalDuration += elapsedSec;
+
+    updateStreakOnComplete();
+    saveStore(store);
+    checkAchievements();
+    refreshStreakBadge();
+
+    _sess.practiceId = bwId;
+    _sess.running = false; _sess.paused = false; _sess.countdown = false; _sess.raf = null;
+
+    closeProPacer();
+
+    const pcTitle   = item ? item.title : 'Resonant Breathing';
+    const pcMM      = Math.floor(elapsedSec / 60);
+    const pcSS      = elapsedSec % 60;
+    const pcTimeStr = pcMM + ':' + String(pcSS).padStart(2, '0');
+    const pcTotalBreaths = ((store.breathwork || {})[bwId] || {}).totalBreaths || completed;
+
+    const scTechName = document.getElementById('sessionCompleteTechName');
+    const scDuration = document.getElementById('sessionCompleteDuration');
+    const scCycles   = document.getElementById('sessionCompleteCycles');
+    const scBreaths  = document.getElementById('sessionCompleteBreaths');
+    const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
+    if (scTechName) scTechName.textContent = pcTitle.toUpperCase();
+    if (scDuration)  scDuration.textContent = 'Session Time: '    + pcTimeStr;
+    if (scCycles)    scCycles.textContent   = 'Session Breaths: ' + completed;
+    if (scBreaths)   scBreaths.textContent  = 'Total Resonant Breaths: ' + pcTotalBreaths;
+    if (scLearnBtn)  scLearnBtn.textContent = 'Learn about ' + pcTitle;
+
+    const scAvatar = document.getElementById('scAvatarBtn');
+    if (scAvatar && typeof auth !== 'undefined' && auth.loggedIn) {
+      const initial = ((auth.email || 'U')[0] || 'U').toUpperCase();
+      scAvatar.classList.add('logged-in');
+      scAvatar.innerHTML = `<span>${initial}</span>`;
+    }
+
+    renderHeader({ showUserIcon: typeof auth !== 'undefined' && auth.loggedIn });
+
+    document.getElementById('sessionView').classList.remove('active');
+    document.getElementById('sessionComplete').classList.add('active');
+    document.getElementById('sessionOverlay').classList.add('active');
+  }
 
