@@ -534,6 +534,7 @@
   let soundEnabled = localStorage.getItem('triad:soundEnabled') !== 'false';
   let chimeFired = false;
   let dongFired  = false;
+  let prevOrbY   = null;
 
   function getAudioCtx() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -842,24 +843,37 @@
       _pacerUpdateBreath(_pacerState.breathCount);
       chimeFired = false;
       dongFired  = false;
+      prevOrbY   = null;
     }
-
-    // Audio cues keyed to cycle progress (0→1 per cycle)
-    const cycleProgress = cycleDurMs > 0 ? _pacerState.cycleMs / cycleDurMs : 0;
-    if (cycleProgress >= 0.25 && !chimeFired) { playChime(); chimeFired = true; }
-    if (cycleProgress < 0.25) chimeFired = false;
-    if (cycleProgress >= 0.75 && !dongFired) { playDong(); dongFired = true; }
-    if (cycleProgress < 0.75) dongFired = false;
 
     // scrollOffset = idle pre-position (0.7W) + full-speed pre-roll + full-speed session.
     // idle(0.7W) + preroll(0→0.3W over 3s) + session(0→∞) → seamless from countdown end.
     const canvas = document.getElementById('pacerCanvas');
-    const W = canvas ? canvas.width : 390;
+    const W = canvas ? canvas.width  : 390;
+    const H = canvas ? canvas.height : 600;
     const idleOffset    = W * _PACER_IDLE_FRAC;
     const prerollScroll = (_pacerState.prerollMs / 10000) * W;
     const sessionScroll = (_pacerState.totalMs   / 10000) * W;
     const scrollOffset  = idleOffset + prerollScroll + sessionScroll;
     _pacerDraw(true, scrollOffset);
+
+    // Audio cues: fire at actual wave peak/trough position
+    if (H > 0 && W > 0) {
+      const baseline  = H * _PACER_BASELINE_R;
+      const amplitude = H * _PACER_AMPLITUDE_R;
+      const phaseOff  = W * _PACER_PHASE;
+      const centreX   = W / 2;
+      const orbY = baseline - amplitude * Math.sin(((centreX + scrollOffset + phaseOff) / W) * Math.PI * 2);
+      if (prevOrbY === null) prevOrbY = orbY;
+      const peakY    = baseline - amplitude;
+      const troughY  = baseline + amplitude;
+      const threshold = amplitude * 0.05;
+      if (orbY <= peakY   + threshold     && !chimeFired) { playChime(); chimeFired = true; }
+      if (orbY >  peakY   + threshold * 3) chimeFired = false;
+      if (orbY >= troughY - threshold     && !dongFired)  { playDong();  dongFired  = true; }
+      if (orbY <  troughY - threshold * 3) dongFired = false;
+      prevOrbY = orbY;
+    }
 
     // Phase label: text + sine opacity (unchanged logic)
     const phInfo  = _pacerPhaseProgress(_pacerState.phases, _pacerState.cycleMs);
@@ -961,6 +975,7 @@
 
     chimeFired = false;
     dongFired  = false;
+    prevOrbY   = null;
 
     _pacerState.running = true;
     _pacerState.completedCycles = 0;
@@ -1245,6 +1260,7 @@
 
     chimeFired = false;
     dongFired  = false;
+    prevOrbY   = null;
 
     _proPacerState.running        = true;
     _proPacerState.completedCycles = 0;
@@ -1287,22 +1303,35 @@
       if (breathEl) breathEl.textContent = String(_proPacerState.breathCount);
       chimeFired = false;
       dongFired  = false;
+      prevOrbY   = null;
     }
-
-    // Audio cues
-    const cycleProgress = cycleDurMs > 0 ? _proPacerState.cycleMs / cycleDurMs : 0;
-    if (cycleProgress >= 0.25 && !chimeFired) { playChime(); chimeFired = true; }
-    if (cycleProgress < 0.25) chimeFired = false;
-    if (cycleProgress >= 0.75 && !dongFired) { playDong(); dongFired = true; }
-    if (cycleProgress < 0.75) dongFired = false;
 
     // Draw
     const canvas = document.getElementById('proCanvas');
-    const W = canvas ? canvas.width : 390;
+    const W = canvas ? canvas.width  : 390;
+    const H = canvas ? canvas.height : 600;
     const scrollOffset = W * _PACER_IDLE_FRAC
       + (_proPacerState.prerollMs / 10000) * W
       + (_proPacerState.totalMs   / 10000) * W;
     _pacerDrawToCanvas(canvas, true, scrollOffset);
+
+    // Audio cues: fire at actual wave peak/trough position
+    if (H > 0 && W > 0) {
+      const baseline  = H * _PACER_BASELINE_R;
+      const amplitude = H * _PACER_AMPLITUDE_R;
+      const phaseOff  = W * _PACER_PHASE;
+      const centreX   = W / 2;
+      const orbY = baseline - amplitude * Math.sin(((centreX + scrollOffset + phaseOff) / W) * Math.PI * 2);
+      if (prevOrbY === null) prevOrbY = orbY;
+      const peakY    = baseline - amplitude;
+      const troughY  = baseline + amplitude;
+      const threshold = amplitude * 0.05;
+      if (orbY <= peakY   + threshold     && !chimeFired) { playChime(); chimeFired = true; }
+      if (orbY >  peakY   + threshold * 3) chimeFired = false;
+      if (orbY >= troughY - threshold     && !dongFired)  { playDong();  dongFired  = true; }
+      if (orbY <  troughY - threshold * 3) dongFired = false;
+      prevOrbY = orbY;
+    }
 
     // Phase label
     const phInfo   = _pacerPhaseProgress(_proPacerState.phases, _proPacerState.cycleMs);
