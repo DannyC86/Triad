@@ -584,16 +584,12 @@ var _introPlayedThisSession = false;
 
 <!-- ═════════ Breath Pacer Overlay ═════════ -->
 <div class="pacer-overlay" id="pacerOverlay">
-  <!-- Zone A: Triad header — logo + wordmark -->
+  <!-- Zone A: header (logo + wordmark) -->
   <div class="pacer-hdr">
     <span class="pacer-hdr-logo" id="pacer-logo-slot"></span>
     <span class="pacer-hdr-wordmark">TRIAD</span>
   </div>
-  <!-- Close button — absolute positioned, hidden during active session -->
-  <button class="pacer-close-btn" id="pacerCloseBtn" onclick="closePacer()" aria-label="Close">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M6 6L18 18M18 6L6 18"/></svg>
-  </button>
-  <!-- Zone A (cont.): session title + level + stats — fixed, never moves -->
+  <!-- Zone A (cont.): title + tier + stats — fixed height, never resizes -->
   <div class="pacer-top-info">
     <div class="pacer-tech-name" id="pacerTechName">RESONANT BREATHING</div>
     <div class="pacer-tech-tier" id="pacerTechTier">APPRENTICE</div>
@@ -608,35 +604,45 @@ var _introPlayedThisSession = false;
       </div>
     </div>
   </div>
-  <!-- Zone B: chart + fixed mid-zone — flex-grows, chart never moves -->
-  <div class="pacer-container">
-    <div class="pacer-chart-zone">
-      <div class="pacer-panel-frame">
-        <svg id="pacerSvg" viewBox="0 0 500 200" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
-          <defs>
-            <filter id="pacerGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <path id="pacerGuide" fill="none" stroke="#C9A96E" stroke-opacity="0.22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          <path id="pacerTrail" fill="none" stroke="#C9A96E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#pacerGlow)"/>
-          <circle id="pacerOrb" cx="0" cy="180" r="7" fill="#C9A96E" filter="url(#pacerGlow)"/>
-        </svg>
-      </div>
-    </div>
-    <!-- Fixed-height mid-zone: countdown (3→2→1) + phase label during session -->
-    <div class="pacer-mid-zone" id="pacerMidZone"></div>
+  <!-- Zone B: chart — fills all remaining space, edge to edge, no frame -->
+  <div class="pacer-chart-wrap">
+    <svg id="pacerSvg" viewBox="0 0 500 200" width="100%" height="100%" preserveAspectRatio="none">
+      <defs>
+        <filter id="pacerGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="pacerOrbGrad" cx="50%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#E8C87A"/>
+          <stop offset="100%" stop-color="#C9A96E"/>
+        </radialGradient>
+      </defs>
+      <path id="pacerGuide" fill="none" stroke="rgba(201,169,110,0.25)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path id="pacerTrail" fill="none" stroke="#C9A96E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#pacerGlow)"/>
+      <circle id="pacerOrb" cx="0" cy="180" r="7" fill="url(#pacerOrbGrad)" filter="url(#pacerGlow)"/>
+    </svg>
   </div>
-  <!-- Zone C: instructions + cue text + button — pinned at bottom -->
-  <div class="pacer-btn-zone">
-    <div class="pacer-instructions" id="pacerInstructions">
-      <div class="pacer-instr-line">5 Seconds Inhale</div>
-      <div class="pacer-instr-line">5 Seconds Exhale</div>
-      <div class="pacer-instr-line">Slow Rounded Breathing</div>
+  <!-- Zone C: fixed 140px — state content swaps, chart never moves -->
+  <div class="pacer-zone-c">
+    <!-- State 1: Idle -->
+    <div class="pacer-state" id="pacerStateIdle">
+      <div class="pacer-instructions">
+        <div class="pacer-instr-line">5 Seconds Inhale</div>
+        <div class="pacer-instr-line">5 Seconds Exhale</div>
+        <div class="pacer-instr-line">Slow Rounded Breathing</div>
+      </div>
+      <p class="pacer-idle-copy">If you're ready, sit straight, relax…</p>
+      <button class="pacer-breathe-btn" id="pacerBreatheBtn" onclick="togglePacer()">and Breathe</button>
     </div>
-    <p class="pacer-idle-copy" id="pacerIdleCopy">If you're ready, sit straight, relax…</p>
-    <button class="pacer-breathe-btn" id="pacerBreatheBtn" onclick="togglePacer()">and Breathe</button>
+    <!-- State 2: Countdown -->
+    <div class="pacer-state" id="pacerStateCountdown" style="display:none">
+      <div class="pacer-cd-label">settle in</div>
+      <div class="pacer-cd-num" id="pacerCdNum"></div>
+    </div>
+    <!-- State 3: Session -->
+    <div class="pacer-state" id="pacerStateSession" style="display:none">
+      <div class="pacer-phase-label" id="pacerPhaseLabel" style="opacity:0">INHALE</div>
+    </div>
   </div>
 </div>
 
