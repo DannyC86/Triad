@@ -59,6 +59,40 @@ WHIMSICAL_NOUNS = [
     'Leaf','Stream'
 ]
 
+# Specific named options — served alongside compound combos, picked randomly.
+TRIAD_SPECIFIC_NAMES = [
+    # Calm / Spiritual
+    'Serene Dawn', 'Peaceful River', 'Golden Light', 'Sacred Breath',
+    'Gentle Wind', 'Morning Mist', 'Quiet Storm', 'Silver Moon',
+    'Ancient Oak', 'Crystal Clear', 'Flowing Water', 'Still Lake',
+    'Warm Earth', 'Rising Sun', 'Open Sky', 'Deep Root',
+    'Soft Rain', 'Pure Light', 'Tender Heart', 'Wise Soul',
+    'Boundless Sea', 'Eternal Flame', 'Humble Path', 'Silent Grove',
+    'Radiant Being',
+    # Funny
+    'Barry Breathsalot', 'Wheezy McWheeze', 'Sir Inhales-a-Lot',
+    'Puffington Bear', 'Breathy McBreathface', 'Gary the Calm',
+    'Karen from Yoga', 'Deeply Relaxed Derek', 'Mindful Mike from Leeds',
+    'Sergeant Serenity', 'Captain Calm', 'Professor Breathwell',
+    'Doctor Zen', 'Reverend Relax', 'Agent Exhale',
+    'Superintendent Stillness',
+    # Odd / Unexpected
+    'Quantum Yogi', 'Dave from Accounting', 'Mysterious Fog',
+    'Temporary Vessel', 'Unit 7', 'Unnamed Presence', 'The Algorithm',
+    'Placeholder Human', 'Default User', 'Person of Interest',
+    'Unknown Breather', 'Cosmic Accountant', 'Interdimensional Dan',
+    'Regular Gregory', 'Surprisingly Calm Steve', 'Basically Fine Brian',
+    # Downright Crazy
+    'Lord Vaporlung', 'Chairman of Sighs', 'The Exhaling Avenger',
+    'Grand Duchess of Breath', 'Supreme Oxygen Officer', 'Baron Von Breathe',
+    'His Holiness the Inhale', 'Exalted Lungmaster', 'The Breathing Phenomenon',
+    'Certified Nostril Expert', 'Licensed Air Enthusiast',
+    'Professional Oxygen Consumer', 'Breathwork Overlord',
+    'Sultan of Stillness', 'Admiral of the Airway',
+    'Chief Executive of Exhaling', 'The Notorious B.R.E.A.T.H',
+    'Lung Whisperer 3000', 'Respiration Station', 'Oxygen Connoisseur',
+]
+
 # ─────────────────────────── App + config ───────────────────────────
 
 app = Flask(__name__, static_folder=".", static_url_path="")
@@ -1057,13 +1091,14 @@ def triad_name_generate():
     }
     conn.close()
 
-    combos = [f"{adj}{noun}" for adj in WHIMSICAL_ADJECTIVES for noun in WHIMSICAL_NOUNS]
-    random.shuffle(combos)
-    for name in combos:
+    combos = [f"{adj} {noun}" for adj in WHIMSICAL_ADJECTIVES for noun in WHIMSICAL_NOUNS]
+    all_names = list(TRIAD_SPECIFIC_NAMES) + combos
+    random.shuffle(all_names)
+    for name in all_names:
         if name not in taken:
             return jsonify({"name": name})
 
-    # Fallback: all 400 combinations somehow taken
+    # Fallback: all combinations somehow taken
     import time
     return jsonify({"name": f"Triad{int(time.time())}"})
 

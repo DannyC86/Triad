@@ -587,16 +587,6 @@
         <h1 class="detail-content-title">${escapeHtml(book.title)}</h1>
         <div class="detail-content-byline">${escapeHtml(book.author)}</div>
         <div class="detail-content-year">First published ${book.year}</div>
-        <div class="book-detail-actions" style="margin-bottom:22px">
-          <button class="action-btn primary reading-state-btn ${inReading ? 'read' : ''}"
-                  onclick="toggleReadFromDetail(${JSON.stringify(book.title).replace(/"/g, '&quot;')})">
-            <svg viewBox="0 0 24 24">${inReading
-              ? '<path d="M5 12l5 5L20 7"/>'
-              : '<path d="M12 5v14M5 12h14"/>'
-            }</svg>
-            ${inReading ? 'On your reading list' : 'Add to reading list'}
-          </button>
-        </div>
         <p class="detail-body-text">${escapeHtml(book.summary)}</p>
 
         ${book.whyMatters ? secQ('Why it matters', _firstSentence(book.whyMatters),
