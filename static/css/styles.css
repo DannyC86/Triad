@@ -797,10 +797,10 @@
       margin-bottom: 36px;
     }
     .detail-section h3 {
-      font-size: 0.74rem;
-      letter-spacing: 0.16em;
+      font-size: 11px;
+      letter-spacing: 0.4em;
       text-transform: uppercase;
-      color: var(--accent, var(--teal));
+      color: var(--text-soft);
       margin-bottom: 12px;
       font-weight: 600;
     }
@@ -813,7 +813,7 @@
     .detail-section ul li {
       position: relative;
       padding: 10px 0 10px 36px;
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border);
       color: var(--text);
       font-size: 0.93rem;
       line-height: 1.6;

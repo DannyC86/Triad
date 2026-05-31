@@ -191,34 +191,20 @@
       <h1 class="detail-title">${escapeHtml(item.title)}</h1>
       <p class="detail-desc">${escapeHtml(item.desc)}</p>
 
+      <div class="detail-section">
+        <h3>The method, step by step</h3>
+        <ol>${(item.steps || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
+      </div>
+
       <div class="howto-start-wrap">
         <button class="detail-start-btn" onclick="openStartSession('${itemIdJs}')">Start Session</button>
       </div>
 
       <div class="detail-meta">
         <span class="pill accent">${escapeHtml(item.bestFor)}</span>
-        <span class="pill diff-${item.difficulty}">${item.difficulty}</span>
+        <span class="pill diff-${item.difficulty}">${escapeHtml(item.difficulty)}</span>
         <span class="pill">${escapeHtml(item.duration)}</span>
       </div>
-
-      <div class="detail-section">
-        <h3>How to practise</h3>
-        <ol>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
-      </div>
-
-      <div class="detail-section">
-        <h3>Why it works</h3>
-        <ul>${item.benefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
-      </div>
-
-      ${item.cautions ? `
-      <div class="detail-section">
-        <h3>Cautions</h3>
-        <div class="caution-box ${cautionClass(item.cautions)}">
-          <strong>Practice safely</strong>
-          ${escapeHtml(item.cautions)}
-        </div>
-      </div>` : ''}
     `;
   }
 
@@ -234,14 +220,21 @@
          </button>`;
   }
 
-  /* ─── Detail view for practices accessed via list — How To only, no tabs ─── */
+  /* ─── Detail view for practices accessed via list — method, tips, progressions only ─── */
   function renderRichDetail(item, containerId, kind) {
     const d = (kind === 'meditation' ? MEDITATION_DETAILS : TECHNIQUE_DETAILS)[item.id];
     const container = document.getElementById(containerId);
     const itemIdJs = item.id.replace(/'/g, "\\'");
+    const tips = d?.howTo?.tips || [];
+    const progressions = d?.howTo?.progressions || [];
     container.innerHTML = `
       <h1 class="detail-title">${escapeHtml(item.title)}</h1>
       <p class="detail-desc">${escapeHtml(item.desc)}</p>
+
+      <div class="detail-section">
+        <h3>The method, step by step</h3>
+        <ol>${(item.steps || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
+      </div>
 
       <div class="howto-start-wrap">
         <button class="detail-start-btn" onclick="openStartSession('${itemIdJs}')">Start Session</button>
@@ -249,105 +242,27 @@
 
       <div class="detail-meta">
         <span class="pill accent">${escapeHtml(item.bestFor)}</span>
-        <span class="pill diff-${item.difficulty}">${item.difficulty}</span>
+        <span class="pill diff-${item.difficulty}">${escapeHtml(item.difficulty)}</span>
         <span class="pill">${escapeHtml(item.duration)}</span>
       </div>
 
-      <h3>The method, step by step</h3>
-      <ul>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+      ${tips.length ? `
+      <div class="detail-section">
+        <h3>Tips</h3>
+        <ul>${tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+      </div>` : ''}
 
-      <h3>Tips</h3>
-      <ul>${d.howTo.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
-
-      <h3>Beginner → advanced progression</h3>
-      <div class="progressions">
-        ${d.howTo.progressions.map(p => `
-          <div class="progression">
-            <div class="prog-level">${escapeHtml(p.level)}</div>
-            <div class="prog-detail">${escapeHtml(p.detail)}</div>
-          </div>`).join('')}
-      </div>
-
-      <!-- Learn / science content (appended below How To) -->
-      <div class="tab-panel active" data-panel="learn">
-        <h3>${kind === 'meditation' ? 'Meditation animation' : 'Breathing animation'}</h3>
-        <div class="learn-animation">
-          ${renderAnimation(d.learn?.animation || 'default')}
-          <div class="learn-anim-caption">${escapeHtml(animationCaption(d.learn?.animation || 'default', item))}</div>
+      ${progressions.length ? `
+      <div class="detail-section">
+        <h3>Beginner → advanced progression</h3>
+        <div class="progressions">
+          ${progressions.map(p => `
+            <div class="progression">
+              <div class="prog-level">${escapeHtml(p.level)}</div>
+              <div class="prog-detail">${escapeHtml(p.detail)}</div>
+            </div>`).join('')}
         </div>
-
-        ${d.learn?.video ? `
-          <h3>Verified demonstration</h3>
-          <div class="yt-demo-card">
-            <div class="yt-demo-top">
-              <div class="yt-demo-icon">
-                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-              </div>
-              <div class="yt-demo-body">
-                <span class="yt-demo-label">Verified demonstration</span>
-                <span class="yt-demo-title">${escapeHtml(d.learn.video.title)}</span>
-                <span class="yt-demo-teacher">${escapeHtml(d.learn.video.teacher)}</span>
-              </div>
-            </div>
-            <a class="yt-demo-btn" href="https://www.youtube.com/watch?v=${encodeURIComponent(d.learn.video.youtubeId)}" target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              Watch on YouTube
-            </a>
-          </div>
-        ` : ''}
-
-        ${d.overview?.tldr ? `<p class="learn-tldr" style="border-left:3px solid var(--gold,#c9a24b);padding:10px 14px;margin:0 0 14px;background:rgba(201,162,75,0.08);border-radius:8px;font-weight:600;"><span style="opacity:0.7;font-size:0.72em;letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:2px;">TL;DR</span>${escapeHtml(d.overview.tldr)}</p>` : ''}
-
-        ${d.overview?.what ? `<h3>Overview</h3><p class="learn-prose">${escapeHtml(d.overview.what)}</p>` : ''}
-
-        ${d.overview?.keyBenefits?.length ? `
-          <h3>Key benefits</h3>
-          <ul class="learn-list">${d.overview.keyBenefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
-        ` : ''}
-
-        ${d.overview?.whenToUse?.length ? `
-          <h3>When to use it</h3>
-          <ul class="learn-list">${d.overview.whenToUse.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul>
-        ` : ''}
-
-        ${d.overview?.whoFor ? `<h3>Who it's for</h3><p class="learn-prose">${escapeHtml(d.overview.whoFor)}</p>` : ''}
-
-        ${d.history?.evolution ? `<h3>How it evolved</h3><p class="learn-prose">${escapeHtml(d.history.evolution)}</p>` : ''}
-
-        ${d.history?.figures?.length ? `
-          <h3>Key figures</h3>
-          <ul class="learn-figures">${d.history.figures.map(f => `<li><span class="learn-figure-name">${escapeHtml(f.name)}</span> — ${escapeHtml(f.credit)}</li>`).join('')}</ul>
-        ` : ''}
-
-        ${d.history?.ancient ? `<h3>Connection to ancient practice</h3><p class="learn-prose">${escapeHtml(d.history.ancient)}</p>` : ''}
-
-        ${(d.science?.physiology || d.science?.neuroscience) ? `
-          <h3>What's happening in the body</h3>
-          ${d.science.physiology ? `<p class="learn-prose">${escapeHtml(d.science.physiology)}</p>` : ''}
-          ${d.science.neuroscience ? `<p class="learn-prose">${escapeHtml(d.science.neuroscience)}</p>` : ''}
-        ` : ''}
-
-        ${d.science?.tags?.length ? `
-          <h3>Key mechanisms</h3>
-          <div class="learn-tags">${d.science.tags.map(t => `<span class="learn-tag">${escapeHtml(t)}</span>`).join('')}</div>
-        ` : ''}
-
-        ${d.science?.keyMechanisms?.length ? `
-          <h3>Key mechanisms</h3>
-          <ul class="learn-list">${d.science.keyMechanisms.map(m => `<li>${escapeHtml(m)}</li>`).join('')}</ul>
-        ` : ''}
-
-        ${d.science?.research?.length ? `
-          <h3>Research findings</h3>
-          <ul class="learn-list">${d.science.research.map(r => typeof r === 'string'
-            ? `<li>${escapeHtml(r)}</li>`
-            : `<li>${r.url ? `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.title)}</a>` : `<strong>${escapeHtml(r.title)}</strong>`}${r.finding ? ` — ${escapeHtml(r.finding)}` : ''}</li>`).join('')}</ul>
-        ` : ''}
-
-        ${d.quiz ? `
-          <button type="button" class="level-quiz-btn" onclick="showToast({ icon: '🙏', label: 'Quiz coming soon — this will unlock in the next update', autohide: 3200 })" style="display:block;width:100%;margin-top:22px;padding:13px 16px;background:transparent;border:1.5px solid var(--gold,#c9a24b);color:var(--gold,#c9a24b);border-radius:12px;font-weight:600;font-size:0.95rem;letter-spacing:0.02em;cursor:pointer;">Level 1 Quiz</button>
-        ` : ''}
-      </div>
+      </div>` : ''}
     `;
   }
 

@@ -809,55 +809,107 @@
   }
 
   function renderKnowledgePracticeDetail(item, d) {
-    const ov = d.overview, hi = d.history, sc = d.science;
-    return `
-      <div class="know-detail-head">
-        <div class="know-detail-title">${escapeHtml(item.title)}</div>
-        <div class="know-detail-desc">${escapeHtml(item.desc)}</div>
-      </div>
+    try {
+      const ov = d?.overview, hi = d?.history, sc = d?.science;
+      const learn = d?.learn;
 
-      <div class="know-section">
-        <div class="know-section-heading">Overview</div>
-        <h4>What it is</h4>
-        ${collapseP(ov.what, item.id + '-kw-what')}
-        <h4>Key benefits</h4>
-        <ul>${ov.keyBenefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
-        <h4>When to use it</h4>
-        <ul>${ov.whenToUse.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul>
-        <h4>Who it's for</h4>
-        <p>${escapeHtml(ov.whoFor)}</p>
-      </div>
+      const ovBenefits  = (ov?.keyBenefits  || []).map(b => `<li>${escapeHtml(b)}</li>`).join('');
+      const ovWhenToUse = (ov?.whenToUse    || []).map(w => `<li>${escapeHtml(w)}</li>`).join('');
+      const ovSection = (ov?.what || ovBenefits || ovWhenToUse || ov?.whoFor) ? `
+        <div class="know-section">
+          <div class="know-section-heading">Overview</div>
+          ${ov?.what        ? `<h4>What it is</h4>${collapseP(ov.what, item.id + '-kw-what')}` : ''}
+          ${ovBenefits      ? `<h4>Key benefits</h4><ul>${ovBenefits}</ul>` : ''}
+          ${ovWhenToUse     ? `<h4>When to use it</h4><ul>${ovWhenToUse}</ul>` : ''}
+          ${ov?.whoFor      ? `<h4>Who it's for</h4><p>${escapeHtml(ov.whoFor)}</p>` : ''}
+        </div>` : '';
 
-      <div class="know-section">
-        <div class="know-section-heading">History</div>
-        <h4>Origins &amp; tradition</h4>
-        ${collapseP(hi.origins, item.id + '-kw-origins')}
-        <h4>How it evolved</h4>
-        ${collapseP(hi.evolution, item.id + '-kw-evolution')}
-        <h4>Key figures</h4>
-        <div class="know-figures">
-          ${hi.figures.map(f => `
-            <div class="know-figure">
-              <div class="know-figure-name">${escapeHtml(f.name)}</div>
-              <div class="know-figure-credit">${escapeHtml(f.credit)}</div>
-            </div>`).join('')}
+      const howItWorksSection = (sc?.physiology || sc?.neuroscience) ? `
+        <div class="know-section">
+          <div class="know-section-heading">How It Works</div>
+          ${sc?.physiology   ? `<h4>What's happening in the body</h4>${collapseP(sc.physiology, item.id + '-kw-phys')}` : ''}
+          ${sc?.neuroscience ? `<h4>Neuroscience</h4>${collapseP(sc.neuroscience, item.id + '-kw-neuro')}` : ''}
+        </div>` : '';
+
+      const howItEvolvedSection = (hi?.origins || hi?.evolution) ? `
+        <div class="know-section">
+          <div class="know-section-heading">How It Evolved</div>
+          ${hi?.origins   ? `<h4>Origins &amp; tradition</h4>${collapseP(hi.origins, item.id + '-kw-origins')}` : ''}
+          ${hi?.evolution ? `<h4>How it evolved</h4>${collapseP(hi.evolution, item.id + '-kw-evolution')}` : ''}
+        </div>` : '';
+
+      const figureItems = (hi?.figures || []).map(f => `
+        <div class="know-figure">
+          <div class="know-figure-name">${escapeHtml(f?.name || '')}</div>
+          <div class="know-figure-credit">${escapeHtml(f?.credit || '')}</div>
+        </div>`).join('');
+      const keyFiguresSection = figureItems ? `
+        <div class="know-section">
+          <div class="know-section-heading">Key Figures</div>
+          <div class="know-figures">${figureItems}</div>
+        </div>` : '';
+
+      const ancientSection = hi?.ancient ? `
+        <div class="know-section">
+          <div class="know-section-heading">Ancient Connection</div>
+          <p>${escapeHtml(hi.ancient)}</p>
+        </div>` : '';
+
+      const mechItems = (sc?.keyMechanisms || []).map(m => `<li>${escapeHtml(m)}</li>`).join('');
+      const keyMechSection = mechItems ? `
+        <div class="know-section">
+          <div class="know-section-heading">Key Mechanisms</div>
+          <ul>${mechItems}</ul>
+        </div>` : '';
+
+      const tagItems = (sc?.tags || []).map(t => `<span class="know-sci-tag">${escapeHtml(t)}</span>`).join('');
+      const sciTagsSection = tagItems ? `
+        <div class="know-section">
+          <div class="know-section-heading">Key Mechanisms</div>
+          <div class="know-sci-tags">${tagItems}</div>
+        </div>` : '';
+
+      const researchItems = (sc?.research || []).map(r => {
+        if (typeof r === 'string') return `<li>${escapeHtml(r)}</li>`;
+        return `<li><strong>${escapeHtml(r?.title || '')}</strong> — ${escapeHtml(r?.finding || '')}</li>`;
+      }).join('');
+      const researchSection = researchItems ? `
+        <div class="know-section">
+          <div class="know-section-heading">Research</div>
+          <ul>${researchItems}</ul>
+        </div>` : '';
+
+      const animId = learn?.animation;
+      const animSection = animId ? `
+        <div class="know-section">
+          ${renderAnimation(animId)}
+        </div>` : '';
+
+      const videoSection = learn?.video ? `
+        <div class="know-section">
+          <div class="know-section-heading">Video</div>
+          <p>${escapeHtml(learn.video.title || '')}${learn.video.teacher ? ' — ' + escapeHtml(learn.video.teacher) : ''}</p>
+        </div>` : '';
+
+      return `
+        <div class="know-detail-head">
+          <div class="know-detail-title">${escapeHtml(item.title)}</div>
+          <div class="know-detail-desc">${escapeHtml(item.desc)}</div>
         </div>
-        <h4>Connection to ancient practice</h4>
-        <p>${escapeHtml(hi.ancient)}</p>
-      </div>
-
-      <div class="know-section">
-        <div class="know-section-heading">Science</div>
-        <h4>What's happening in the body</h4>
-        ${collapseP(sc.physiology, item.id + '-kw-phys')}
-        <h4>Neuroscience</h4>
-        ${collapseP(sc.neuroscience, item.id + '-kw-neuro')}
-        <h4>Key mechanisms</h4>
-        <div class="know-sci-tags">${sc.tags.map(t => `<span class="know-sci-tag">${escapeHtml(t)}</span>`).join('')}</div>
-        <h4>Research findings</h4>
-        <ul>${sc.research.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
-      </div>
-    `;
+        ${ovSection}
+        ${howItWorksSection}
+        ${howItEvolvedSection}
+        ${keyFiguresSection}
+        ${ancientSection}
+        ${keyMechSection || sciTagsSection}
+        ${researchSection}
+        ${animSection}
+        ${videoSection}
+      `;
+    } catch (e) {
+      console.error('[Triad] knowledge detail error:', e);
+      return '<p style="padding:20px">Content unavailable</p>';
+    }
   }
 
   /* Navigate to Knowledge and open a specific practice entry directly */
