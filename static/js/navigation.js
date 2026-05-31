@@ -629,7 +629,7 @@
   /* ─── Breath Pacer — canvas scrolling sine wave ─── */
 
   const _PACER_BASELINE_R  = 0.5;   // Y baseline — centre of canvas
-  const _PACER_AMPLITUDE_R = 0.35;  // amplitude — 35% above and below centre
+  const _PACER_AMPLITUDE_R = 0.42;  // amplitude — fills canvas more tightly
 
   let _pacerState = {
     phases: [],
@@ -681,13 +681,13 @@
       }
     }
 
-    // 2a. Guide: full curve across panel width, dim gold
+    // 2a. Guide: right of orb only — dim gold ahead of the orb
     ctx.save();
     ctx.strokeStyle = 'rgba(201,169,110,0.22)';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(0, curveY(0));
-    for (let x = 2; x <= W; x += 2) ctx.lineTo(x, curveY(x));
+    ctx.moveTo(centreX, curveY(centreX));
+    for (let x = centreX + 2; x <= W; x += 2) ctx.lineTo(x, curveY(x));
     ctx.stroke();
     ctx.restore();
 
