@@ -72,10 +72,9 @@
 
     /* Hardcoded-colour fixes for dark theme */
     [data-theme="dark"] .nav                { background: var(--nav-bg); }
-    [data-theme="dark"] #home               { background: linear-gradient(135deg, #0A0F1E 0%, #0d1428 100%); }
+    [data-theme="dark"] #home               { background: transparent; }
     [data-theme="dark"] .home-card          { background: var(--card-bg); border-color: var(--border); }
     [data-theme="dark"] .home-card-label    { color: var(--text); }
-    [data-theme="dark"] #home               { background: linear-gradient(135deg, var(--bg) 0%, var(--card-bg) 100%); }
     [data-theme="dark"] .toast              { background: rgba(10,15,30,0.97); }
     [data-theme="dark"] .usage-toast        { background: rgba(10,15,30,0.97); }
     [data-theme="dark"] *:focus-visible     { outline-color: var(--text-soft); }
@@ -84,13 +83,18 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      min-height: 100%;
-      background: var(--bg);
+      min-height: 100dvh;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--cream-deep, #EADCC2) 100%);
+      background-attachment: fixed;
       color: var(--text);
       font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
       font-size: 16px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+    }
+    [data-theme="dark"] html, [data-theme="dark"] body {
+      background: linear-gradient(180deg, var(--bg) 0%, #0d1428 100%);
+      background-attachment: fixed;
     }
 
     body {
@@ -340,8 +344,7 @@
       max-width: none;
       padding: 52px 0 0;
       margin: 0;
-      background: linear-gradient(135deg, #F5F0E8 0%, #E8EDF5 100%);
-      background-attachment: fixed;
+      background: transparent;
       min-height: calc(100dvh - 72px);
       overflow: hidden;
     }
@@ -2403,10 +2406,19 @@
     .profile--guest [data-guest-only] { display: block !important; }
     .profile--guest [data-auth-required] { display: none !important; }
     .profile--guest #profile-account-header { display: none !important; }
-    /* Hide achievements accordion for guests — replaced by flat guest block */
     .profile--guest #achievements-accordion-wrap { display: none !important; }
+    /* Guest profile: fits 100dvh, no scroll */
+    #profile.profile--guest { overflow: hidden; max-height: calc(100dvh - 52px); }
+    /* Compact achievement tiles for guest grid */
+    .guest-achievements-block { margin-bottom: 0; }
+    .guest-achievements-head { margin-bottom: 6px; }
+    .guest-achievements-block .achievement { padding: 7px 3px 6px; border-radius: 10px; }
+    .guest-achievements-block .achievement-icon { font-size: 1.2rem; margin-bottom: 3px; }
+    .guest-achievements-block .achievement-name { font-size: 0.56rem; line-height: 1.2; }
+    .guest-achievements-block .achievement-state { font-size: 0.5rem; margin-top: 2px; }
+    #guest-achievements-grid .achievements-row { gap: 6px; margin-bottom: 0; }
     /* Guest CTA button */
-    .profile-guest-cta { display: block; width: 100%; padding: 14px 20px; background: var(--gold); color: #1a1a2e; border: none; border-radius: 12px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; text-align: center; margin-bottom: 20px; transition: background 0.18s, transform 0.12s; }
+    .profile-guest-cta { display: block; width: 100%; padding: 12px 20px; background: var(--gold); color: #1a1a2e; border: none; border-radius: 12px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; text-align: center; margin-bottom: 12px; transition: background 0.18s, transform 0.12s; }
     .profile-guest-cta:hover { background: #d4b07a; transform: translateY(-1px); }
     .profile-guest-cta:active { transform: translateY(0); }
 
@@ -2922,9 +2934,22 @@
       margin: 18px 0 24px;
     }
     .howto-start-wrap {
-      margin: 20px 0;
+      margin: 20px 0 14px;
     }
     .howto-start-wrap .action-btn { width: 100%; justify-content: center; }
+    /* Gold full-width Start Session button for detail pages */
+    .detail-start-btn {
+      appearance: none; border: none; width: 100%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: var(--bg); border-radius: 999px;
+      padding: 18px 24px;
+      font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px;
+      cursor: pointer; letter-spacing: 0.03em;
+      transition: filter 0.2s ease, transform 0.15s ease;
+      box-shadow: 0 4px 20px rgba(201,169,110,0.3);
+    }
+    .detail-start-btn:hover  { filter: brightness(1.06); transform: translateY(-1px); }
+    .detail-start-btn:active { transform: scale(0.97); }
     .action-btn {
       display: inline-flex;
       align-items: center;

@@ -186,9 +186,15 @@
 
   function renderSimpleDetail(item, containerId, kind) {
     const container = document.getElementById(containerId);
+    const itemIdJs = item.id.replace(/'/g, "\\'");
     container.innerHTML = `
       <h1 class="detail-title">${escapeHtml(item.title)}</h1>
       <p class="detail-desc">${escapeHtml(item.desc)}</p>
+
+      <div class="howto-start-wrap">
+        <button class="detail-start-btn" onclick="openStartSession('${itemIdJs}')">Start Session</button>
+      </div>
+
       <div class="detail-meta">
         <span class="pill accent">${escapeHtml(item.bestFor)}</span>
         <span class="pill diff-${item.difficulty}">${item.difficulty}</span>
@@ -198,13 +204,6 @@
       <div class="detail-section">
         <h3>How to practise</h3>
         <ol>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
-      </div>
-
-      <div class="howto-start-wrap">
-        <button class="action-btn primary" onclick="openStartSession('${item.id.replace(/'/g, "\\'")}')">
-          <svg viewBox="0 0 24 24"><path d="M5 4l14 8-14 8z"/></svg>
-          Start session
-        </button>
       </div>
 
       <div class="detail-section">
@@ -235,7 +234,7 @@
          </button>`;
   }
 
-  /* ─── Tabbed detail (used for both techniques and meditations) ─── */
+  /* ─── Detail view for practices accessed via list — How To only, no tabs ─── */
   function renderRichDetail(item, containerId, kind) {
     const d = (kind === 'meditation' ? MEDITATION_DETAILS : TECHNIQUE_DETAILS)[item.id];
     const container = document.getElementById(containerId);
@@ -243,46 +242,34 @@
     container.innerHTML = `
       <h1 class="detail-title">${escapeHtml(item.title)}</h1>
       <p class="detail-desc">${escapeHtml(item.desc)}</p>
+
+      <div class="howto-start-wrap">
+        <button class="detail-start-btn" onclick="openStartSession('${itemIdJs}')">Start Session</button>
+      </div>
+
       <div class="detail-meta">
         <span class="pill accent">${escapeHtml(item.bestFor)}</span>
         <span class="pill diff-${item.difficulty}">${item.difficulty}</span>
         <span class="pill">${escapeHtml(item.duration)}</span>
       </div>
 
-      <!-- Tabs -->
-      <div class="tabs" role="tablist">
-        <button class="tab active" data-tab="howto"   onclick="switchTab(this, 'howto')">How To</button>
-        <button class="tab"        data-tab="learn"   onclick="switchTab(this, 'learn')">Learn</button>
-        <button class="tab"        data-tab="explore" onclick="switchTab(this, 'explore')">Explore</button>
+      <h3>The method, step by step</h3>
+      <ul>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
+
+      <h3>Tips</h3>
+      <ul>${d.howTo.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+
+      <h3>Beginner → advanced progression</h3>
+      <div class="progressions">
+        ${d.howTo.progressions.map(p => `
+          <div class="progression">
+            <div class="prog-level">${escapeHtml(p.level)}</div>
+            <div class="prog-detail">${escapeHtml(p.detail)}</div>
+          </div>`).join('')}
       </div>
 
-      <!-- Tab 1: HOW TO -->
-      <div class="tab-panel active" data-panel="howto">
-        <h3>The method, step by step</h3>
-        <ul>${item.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>
-
-        <div class="howto-start-wrap">
-          <button class="action-btn primary" onclick="openStartSession('${itemIdJs}')">
-            <svg viewBox="0 0 24 24"><path d="M5 4l14 8-14 8z"/></svg>
-            Start session
-          </button>
-        </div>
-
-        <h3>Tips</h3>
-        <ul>${d.howTo.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
-
-        <h3>Beginner → advanced progression</h3>
-        <div class="progressions">
-          ${d.howTo.progressions.map(p => `
-            <div class="progression">
-              <div class="prog-level">${escapeHtml(p.level)}</div>
-              <div class="prog-detail">${escapeHtml(p.detail)}</div>
-            </div>`).join('')}
-        </div>
-      </div>
-
-      <!-- Tab 2: LEARN -->
-      <div class="tab-panel" data-panel="learn">
+      <!-- Learn / science content (appended below How To) -->
+      <div class="tab-panel active" data-panel="learn">
         <h3>${kind === 'meditation' ? 'Meditation animation' : 'Breathing animation'}</h3>
         <div class="learn-animation">
           ${renderAnimation(d.learn?.animation || 'default')}
@@ -359,34 +346,6 @@
 
         ${d.quiz ? `
           <button type="button" class="level-quiz-btn" onclick="showToast({ icon: '🙏', label: 'Quiz coming soon — this will unlock in the next update', autohide: 3200 })" style="display:block;width:100%;margin-top:22px;padding:13px 16px;background:transparent;border:1.5px solid var(--gold,#c9a24b);color:var(--gold,#c9a24b);border-radius:12px;font-weight:600;font-size:0.95rem;letter-spacing:0.02em;cursor:pointer;">Level 1 Quiz</button>
-        ` : ''}
-      </div>
-
-      <!-- Tab 3: EXPLORE -->
-      <div class="tab-panel" data-panel="explore">
-        <div class="explore-cta">
-          <p class="explore-cta-heading">Go deeper</p>
-          <button class="explore-cta-btn explore-btn-knowledge" onclick="openKnowledgeEntry('${kind}', '${itemIdJs}')">
-            Explore the Knowledge
-          </button>
-          <button class="explore-cta-btn explore-btn-ask" onclick="openAskModal()">
-            Ask an Expert
-          </button>
-        </div>
-
-        ${d.product ? `
-          <div class="practice-product">
-            <p class="practice-product-kicker">Enhance your practice</p>
-            <div class="practice-product-card">
-              ${d.product.badge ? `<span class="practice-product-badge">${escapeHtml(d.product.badge)}</span>` : ''}
-              <h4 class="practice-product-title">${escapeHtml(d.product.title)}</h4>
-              <p class="practice-product-price">${escapeHtml(d.product.price)}</p>
-              <p class="practice-product-desc">${escapeHtml(d.product.desc)}</p>
-              <a class="practice-product-btn" href="${escapeHtml(d.product.url)}" target="_blank" rel="noopener noreferrer" onclick="track('practice_product_click',{practice_id:'${itemIdJs}',product:'${escapeJs(d.product.title)}'})">
-                ${escapeHtml(d.product.ctaLabel || 'Buy on Amazon')}
-              </a>
-            </div>
-          </div>
         ` : ''}
       </div>
     `;
