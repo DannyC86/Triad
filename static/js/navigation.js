@@ -532,6 +532,9 @@
   /* ── Pacer audio ── */
   let audioCtx = null;
   let soundEnabled = localStorage.getItem('triad:soundEnabled') !== 'false';
+
+  const _SOUND_ON_SVG  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+  const _SOUND_OFF_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="2" y1="2" x2="22" y2="22"/></svg>';
   let chimeFired = false;
   let dongFired  = false;
   let prevOrbY   = null;
@@ -579,11 +582,11 @@
   function pacerToggleMute() {
     soundEnabled = !soundEnabled;
     localStorage.setItem('triad:soundEnabled', soundEnabled);
-    const icon = soundEnabled ? '🔔' : '🔕';
+    const svg = soundEnabled ? _SOUND_ON_SVG : _SOUND_OFF_SVG;
     const btn1 = document.getElementById('pacerMuteBtn');
-    if (btn1) btn1.textContent = icon;
+    if (btn1) btn1.innerHTML = svg;
     const btn2 = document.getElementById('proMuteBtn');
-    if (btn2) btn2.textContent = icon;
+    if (btn2) btn2.innerHTML = svg;
   }
 
   let _pacerState = {
@@ -781,7 +784,7 @@
 
     // Sync mute button icon with current sound state
     const muteBtn = document.getElementById('pacerMuteBtn');
-    if (muteBtn) muteBtn.textContent = soundEnabled ? '🔔' : '🔕';
+    if (muteBtn) muteBtn.innerHTML = soundEnabled ? _SOUND_ON_SVG : _SOUND_OFF_SVG;
 
     overlay.classList.add('active');
 
@@ -1167,7 +1170,7 @@
 
     // Sync mute button
     const muteBtn = document.getElementById('proMuteBtn');
-    if (muteBtn) muteBtn.textContent = soundEnabled ? '🔔' : '🔕';
+    if (muteBtn) muteBtn.innerHTML = soundEnabled ? _SOUND_ON_SVG : _SOUND_OFF_SVG;
 
     overlay.classList.add('active');
 
