@@ -628,9 +628,8 @@
 
   /* ─── Breath Pacer — canvas scrolling sine wave ─── */
 
-  const _PACER_CYCLES_VIS  = 1.5;   // sine cycles visible across panel width
-  const _PACER_BASELINE_R  = 0.65;  // Y baseline as fraction of canvas height
-  const _PACER_AMPLITUDE_R = 0.28;  // amplitude as fraction of canvas height
+  const _PACER_BASELINE_R  = 0.5;   // Y baseline — centre of canvas
+  const _PACER_AMPLITUDE_R = 0.35;  // amplitude — 35% above and below centre
 
   let _pacerState = {
     phases: [],
@@ -670,7 +669,7 @@
     const baseline  = H * _PACER_BASELINE_R;
     const amplitude = H * _PACER_AMPLITUDE_R;
     const centreX   = W / 2;
-    const tauScale  = Math.PI * 2 * _PACER_CYCLES_VIS / W;
+    const tauScale  = Math.PI * 2 / W;  // period = W → one full wave across canvas width
     const curveY    = (x) => baseline - amplitude * Math.sin((x + scrollOffset) * tauScale);
 
     // 1. Dotted grid (static, drawn every frame)
@@ -845,12 +844,12 @@
       _pacerUpdateBreath(_pacerState.breathCount);
     }
 
-    // Canvas: scrollOffset = fraction-through-cycle × scroll-width
+    // Canvas: scrollOffset from totalMs — grows continuously, never resets.
+    // Period = W so advancing by W scrolls exactly one full sine cycle (10 s).
+    // Seamless loop: sin((x + N*W)/W * 2π) == sin((x/W)*2π) for any integer N.
     const canvas = document.getElementById('pacerCanvas');
     const W = canvas ? canvas.width : 390;
-    const scrollOffset = cycleDurMs > 0
-      ? (_pacerState.cycleMs / cycleDurMs) * W * _PACER_CYCLES_VIS
-      : 0;
+    const scrollOffset = (_pacerState.totalMs / 10000) * W;
     _pacerDraw(true, scrollOffset);
 
     // Phase label: text + sine opacity (unchanged logic)
