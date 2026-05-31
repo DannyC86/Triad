@@ -1,3 +1,10 @@
+  /* ────── Header ────── */
+
+  function renderHeader({ showUserIcon = true } = {}) {
+    const avatar = document.getElementById('profileIconBtn');
+    if (avatar) avatar.style.display = showUserIcon ? '' : 'none';
+  }
+
   /* ────── Navigation stack ────── */
   let _navStack = [];
 
@@ -80,6 +87,9 @@
       store.visitedMeditationsHub = (store.visitedMeditationsHub || 0) + 1;
       saveStore(store); checkAchievements();
     }
+
+    // Sync header avatar visibility with current auth state
+    renderHeader({ showUserIcon: typeof auth !== 'undefined' && auth.loggedIn });
 
     // Hide FAB unless on a detail view
     updateFab();

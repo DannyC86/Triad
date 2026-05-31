@@ -436,6 +436,8 @@
     // Keep profile section in sync with auth state regardless of navigation
     document.getElementById('profile')?.classList.toggle('profile--guest', !auth.loggedIn);
     renderProfileAccountHeader();
+    // Sync header avatar with current auth state
+    if (typeof renderHeader === 'function') renderHeader({ showUserIcon: auth.loggedIn });
     // Show gear icon only when logged in
     document.getElementById('gearBtn')?.classList.toggle('hidden', !auth.loggedIn);
     // Hide delete row in drawer for guests

@@ -853,8 +853,9 @@ Build my personalised plan.`;
     if (auth.loggedIn) {
       const name = (typeof _triadProfile !== 'undefined' && _triadProfile && _triadProfile.triad_name)
         ? _triadProfile.triad_name
-        : (auth.email || '');
-      authFooter.innerHTML = `<span class="home-auth-link" onclick="navigate('profile')" role="button" tabindex="0">Welcome back, ${escapeHtml(name)} &middot; <span style="text-decoration:underline">View Profile</span></span>`;
+        : null;
+      const greeting = name ? `Welcome back, ${escapeHtml(name)}` : 'Welcome back';
+      authFooter.innerHTML = `<span class="home-auth-link" onclick="navigate('profile')" role="button" tabindex="0">${greeting} &middot; <span style="text-decoration:underline">View Profile</span></span>`;
     } else {
       authFooter.innerHTML = `<span class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</span>`;
     }
@@ -1210,7 +1211,7 @@ Build my personalised plan.`;
     } else {
       el.innerHTML = `
         <div class="profile-hero-welcome">
-          <div class="profile-hero-sub">${escapeHtml(auth.email || '')}</div>
+          <div class="profile-hero-name">Welcome back</div>
           <button class="profile-hero-continue" onclick="navigate('home')">Continue Your Daily Practice</button>
         </div>`;
     }

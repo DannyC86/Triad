@@ -913,3 +913,7 @@
     init();
   }
 })();
+
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 150);
+});
