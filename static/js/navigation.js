@@ -628,8 +628,9 @@
 
   /* ─── Breath Pacer — canvas scrolling sine wave ─── */
 
-  const _PACER_BASELINE_R  = 0.5;   // Y baseline — centre of canvas
-  const _PACER_AMPLITUDE_R = 0.42;  // amplitude — fills canvas more tightly
+  const _PACER_BASELINE_R  = 0.5;    // Y baseline — centre of canvas
+  const _PACER_AMPLITUDE_R = 0.42;   // amplitude — fills canvas more tightly
+  const _PACER_PHASE       = 0.25;   // phase offset: orb at bottom (inhale start) when scrollOffset=0
 
   let _pacerState = {
     phases: [],
@@ -642,6 +643,9 @@
     lastTs: null,
     completedCycles: 0,
     totalCycles: 3,
+    prerollMs: 0,       // ms elapsed during countdown pre-roll
+    prerollLastTs: null,
+    prerollRaf: null,   // rAF handle for pre-roll animation
   };
 
   // Size the canvas to fill its wrapper. Call after overlay becomes visible.
@@ -669,8 +673,9 @@
     const baseline  = H * _PACER_BASELINE_R;
     const amplitude = H * _PACER_AMPLITUDE_R;
     const centreX   = W / 2;
-    const tauScale  = Math.PI * 2 / W;  // period = W → one full wave across canvas width
-    const curveY    = (x) => baseline - amplitude * Math.sin((x + scrollOffset) * tauScale);
+    // phaseOffset shifts the wave so orb (at centreX) sits at bottom when scrollOffset=0
+    const phaseOff  = W * _PACER_PHASE;
+    const curveY    = (x) => baseline - amplitude * Math.sin(((x + scrollOffset + phaseOff) / W) * Math.PI * 2);
 
     // 1. Dotted grid (static, drawn every frame)
     ctx.fillStyle = 'rgba(201,169,110,0.15)';
@@ -740,6 +745,19 @@
     }
   });
 
+  // Pre-roll animation: curve moves at half speed during the 3-2-1 countdown.
+  // TIME and BREATH do not increment — only visual warmup.
+  function _pacerPrerollTick(now) {
+    if (!_pacerState.prerollRaf) return;
+    const dt = _pacerState.prerollLastTs !== null ? now - _pacerState.prerollLastTs : 0;
+    _pacerState.prerollLastTs = now;
+    _pacerState.prerollMs += dt;
+    const canvas = document.getElementById('pacerCanvas');
+    const W = canvas ? canvas.width : 390;
+    _pacerDraw(false, (_pacerState.prerollMs / 10000) * W * 0.5);
+    _pacerState.prerollRaf = requestAnimationFrame(_pacerPrerollTick);
+  }
+
   function openPacer(practiceId) {
     const overlay = document.getElementById('pacerOverlay');
     if (!overlay) return;
@@ -753,6 +771,10 @@
     _pacerState.cycleMs = 0;
     _pacerState.lastTs  = null;
     _pacerState.completedCycles = 0;
+    // Reset pre-roll
+    if (_pacerState.prerollRaf) { cancelAnimationFrame(_pacerState.prerollRaf); _pacerState.prerollRaf = null; }
+    _pacerState.prerollMs = 0;
+    _pacerState.prerollLastTs = null;
 
     // Reset zone-C to idle state for a fresh session
     const _stIdle = document.getElementById('pacerStateIdle');
@@ -844,12 +866,13 @@
       _pacerUpdateBreath(_pacerState.breathCount);
     }
 
-    // Canvas: scrollOffset from totalMs — grows continuously, never resets.
-    // Period = W so advancing by W scrolls exactly one full sine cycle (10 s).
-    // Seamless loop: sin((x + N*W)/W * 2π) == sin((x/W)*2π) for any integer N.
+    // scrollOffset: pre-roll half-speed scroll + full-speed session scroll.
+    // Pre-roll is included so the wave continues seamlessly from where countdown left off.
     const canvas = document.getElementById('pacerCanvas');
     const W = canvas ? canvas.width : 390;
-    const scrollOffset = (_pacerState.totalMs / 10000) * W;
+    const prerollScroll = (_pacerState.prerollMs / 10000) * W * 0.5;
+    const sessionScroll = (_pacerState.totalMs   / 10000) * W;
+    const scrollOffset  = prerollScroll + sessionScroll;
     _pacerDraw(true, scrollOffset);
 
     // Phase label: text + sine opacity (unchanged logic)
@@ -868,7 +891,8 @@
 
   function closePacer() {
     _pacerState.running = false;
-    if (_pacerState.raf) { cancelAnimationFrame(_pacerState.raf); _pacerState.raf = null; }
+    if (_pacerState.raf)        { cancelAnimationFrame(_pacerState.raf);        _pacerState.raf        = null; }
+    if (_pacerState.prerollRaf) { cancelAnimationFrame(_pacerState.prerollRaf); _pacerState.prerollRaf = null; }
     _pacerState.lastTs = null;
     const overlay = document.getElementById('pacerOverlay');
     if (overlay) overlay.classList.remove('active');
@@ -889,6 +913,11 @@
     const stCd   = document.getElementById('pacerStateCountdown');
     if (stIdle) stIdle.style.display = 'none';
     if (stCd)   stCd.style.display   = 'flex';
+
+    // Start pre-roll: curve moves at half speed during countdown (visual warmup only)
+    _pacerState.prerollMs = 0;
+    _pacerState.prerollLastTs = null;
+    _pacerState.prerollRaf = requestAnimationFrame(_pacerPrerollTick);
 
     const numEl  = document.getElementById('pacerCdNum');
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -936,6 +965,9 @@
     const stSess = document.getElementById('pacerStateSession');
     if (stCd)   stCd.style.display   = 'none';
     if (stSess) stSess.style.display  = 'flex';
+
+    // Stop pre-roll — prerollMs is kept so _pacerTick can include it in scrollOffset
+    if (_pacerState.prerollRaf) { cancelAnimationFrame(_pacerState.prerollRaf); _pacerState.prerollRaf = null; }
 
     // Reset phase label
     const pl = document.getElementById('pacerPhaseLabel');
