@@ -630,7 +630,8 @@
 
   const _PACER_BASELINE_R  = 0.5;    // Y baseline — centre of canvas
   const _PACER_AMPLITUDE_R = 0.42;   // amplitude — fills canvas more tightly
-  const _PACER_PHASE       = 0.25;   // phase offset: orb at bottom (inhale start) when scrollOffset=0
+  const _PACER_PHASE       = 0.25;   // phase offset: orb at bottom when scrollOffset = 1×W
+  const _PACER_IDLE_FRAC   = 0.7;    // idle pre-position: 7/10 through cycle = 3s before bottom
 
   let _pacerState = {
     phases: [],
@@ -696,19 +697,17 @@
     ctx.stroke();
     ctx.restore();
 
-    // 2b. Trail: left-of-centre only, bright gold with glow (session only)
-    if (running) {
-      ctx.save();
-      ctx.strokeStyle = '#C9A96E';
-      ctx.lineWidth = 3.5;
-      ctx.shadowColor = 'rgba(201,169,110,0.6)';
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.moveTo(0, curveY(0));
-      for (let x = 2; x <= centreX; x += 2) ctx.lineTo(x, curveY(x));
-      ctx.stroke();
-      ctx.restore();
-    }
+    // 2b. Trail: left-of-centre, bright gold with glow — always drawn (idle + session)
+    ctx.save();
+    ctx.strokeStyle = '#C9A96E';
+    ctx.lineWidth = 3.5;
+    ctx.shadowColor = 'rgba(201,169,110,0.6)';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(0, curveY(0));
+    for (let x = 2; x <= centreX; x += 2) ctx.lineTo(x, curveY(x));
+    ctx.stroke();
+    ctx.restore();
 
     // 3. Orb — fixed at horizontal centre, tracks curve Y
     const orbY = curveY(centreX);
@@ -741,12 +740,16 @@
   window.addEventListener('resize', () => {
     if (document.getElementById('pacerOverlay')?.classList.contains('active')) {
       _pacerResizeCanvas();
-      if (!_pacerState.running) _pacerDraw(false, 0);
+      if (!_pacerState.running && !_pacerState.prerollRaf) {
+        const _rc = document.getElementById('pacerCanvas');
+        _pacerDraw(false, _rc ? _rc.width * _PACER_IDLE_FRAC : 0);
+      }
     }
   });
 
-  // Pre-roll animation: curve moves at half speed during the 3-2-1 countdown.
-  // TIME and BREATH do not increment — only visual warmup.
+  // Pre-roll animation: curve moves at FULL speed during the 3-2-1 countdown.
+  // Starts from idle offset (0.7×W). After ~3000ms arrives exactly at bottom (1.0×W).
+  // TIME and BREATH do not increment — only the visual warms up.
   function _pacerPrerollTick(now) {
     if (!_pacerState.prerollRaf) return;
     const dt = _pacerState.prerollLastTs !== null ? now - _pacerState.prerollLastTs : 0;
@@ -754,7 +757,7 @@
     _pacerState.prerollMs += dt;
     const canvas = document.getElementById('pacerCanvas');
     const W = canvas ? canvas.width : 390;
-    _pacerDraw(false, (_pacerState.prerollMs / 10000) * W * 0.5);
+    _pacerDraw(false, W * _PACER_IDLE_FRAC + (_pacerState.prerollMs / 10000) * W);
     _pacerState.prerollRaf = requestAnimationFrame(_pacerPrerollTick);
   }
 
@@ -809,10 +812,11 @@
 
     overlay.classList.add('active');
 
-    // Size canvas after overlay is visible, then draw idle state
+    // Size canvas after overlay is visible, then draw frozen idle state at 7s position
     requestAnimationFrame(() => {
       _pacerResizeCanvas();
-      _pacerDraw(false, 0);
+      const _ic = document.getElementById('pacerCanvas');
+      _pacerDraw(false, _ic ? _ic.width * _PACER_IDLE_FRAC : 0);
     });
   }
 
@@ -866,13 +870,14 @@
       _pacerUpdateBreath(_pacerState.breathCount);
     }
 
-    // scrollOffset: pre-roll half-speed scroll + full-speed session scroll.
-    // Pre-roll is included so the wave continues seamlessly from where countdown left off.
+    // scrollOffset = idle pre-position (0.7W) + full-speed pre-roll + full-speed session.
+    // idle(0.7W) + preroll(0→0.3W over 3s) + session(0→∞) → seamless from countdown end.
     const canvas = document.getElementById('pacerCanvas');
     const W = canvas ? canvas.width : 390;
-    const prerollScroll = (_pacerState.prerollMs / 10000) * W * 0.5;
+    const idleOffset    = W * _PACER_IDLE_FRAC;
+    const prerollScroll = (_pacerState.prerollMs / 10000) * W;
     const sessionScroll = (_pacerState.totalMs   / 10000) * W;
-    const scrollOffset  = prerollScroll + sessionScroll;
+    const scrollOffset  = idleOffset + prerollScroll + sessionScroll;
     _pacerDraw(true, scrollOffset);
 
     // Phase label: text + sine opacity (unchanged logic)
@@ -954,7 +959,7 @@
       }
     }
 
-    setTimeout(runNext, 400);
+    runNext(); // start immediately — 3 × 1000ms = 3s total, matching pre-roll duration
   }
 
   /* ── Live session launch ──────────────────────────────────────── */
