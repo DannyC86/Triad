@@ -2756,6 +2756,58 @@
     .complete-btn.done:hover { transform: none; }
 
     /* ─── Toast notifications ─── */
+    /* Achievement popup — full width, sits above everything */
+    #achievement-popup-region {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      pointer-events: none;
+      width: calc(100vw - 64px);
+      max-width: 480px;
+    }
+    .achievement-popup {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--gold);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      pointer-events: auto;
+      animation: ach-pop-in 0.4s cubic-bezier(0.2,0.7,0.2,1);
+    }
+    .achievement-popup.fading { animation: ach-pop-out 0.3s ease forwards; }
+    .ach-pop-icon { font-size: 2rem; flex-shrink: 0; }
+    .ach-pop-text { display: flex; flex-direction: column; gap: 3px; }
+    .ach-pop-kicker {
+      font-family: 'DM Sans', sans-serif; font-size: 0.6rem;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gold); font-weight: 600;
+    }
+    .ach-pop-name {
+      font-family: 'DM Sans', sans-serif; font-size: 1.05rem;
+      font-weight: 600; color: var(--text);
+    }
+    .ach-pop-hint {
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    @keyframes ach-pop-in {
+      from { opacity: 0; transform: translateY(-14px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes ach-pop-out {
+      to { opacity: 0; transform: translateY(-8px) scale(0.96); }
+    }
+
     .toast-region {
       position: fixed;
       top: 16px;

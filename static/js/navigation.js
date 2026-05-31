@@ -994,7 +994,7 @@
 
   function _pacerSessionEnd() {
 
-    // Persist the session in the store (same pattern as _sessComplete)
+    // Persist the session in the store
     const item = findPractice(_pacerState.practiceId || 'resonant-breathing');
     store.sessions.unshift({
       id: 's_' + Date.now().toString(36),
@@ -1004,6 +1004,16 @@
       durationMin: 1,
       ts: new Date().toISOString(),
     });
+
+    // Accumulate breathwork stats for this technique
+    const _bwId = _pacerState.practiceId || 'resonant-breathing';
+    const _bwSec = Math.round(_pacerState.phases.reduce((s, p) => s + p.sec, 0) * _pacerState.totalCycles);
+    if (!store.breathwork) store.breathwork = {};
+    if (!store.breathwork[_bwId]) store.breathwork[_bwId] = { totalBreaths: 0, totalSessions: 0, totalDuration: 0 };
+    store.breathwork[_bwId].totalBreaths  += _pacerState.totalCycles;
+    store.breathwork[_bwId].totalSessions += 1;
+    store.breathwork[_bwId].totalDuration += _bwSec;
+
     updateStreakOnComplete();
     saveStore(store);
     checkAchievements();
@@ -1016,18 +1026,23 @@
 
     closePacer(); // removes .active from #pacerOverlay
 
-    const pcTitle  = item ? item.title : 'Resonant Breathing';
+    const pcTitle    = item ? item.title : 'Resonant Breathing';
     const pcTotalSec = Math.round(_pacerState.phases.reduce((s, p) => s + p.sec, 0) * _pacerState.totalCycles);
+    const pcMM = Math.floor(pcTotalSec / 60);
+    const pcSS = pcTotalSec % 60;
+    const pcTimeStr = pcMM + ':' + String(pcSS).padStart(2, '0');
+    const pcTotalBreaths = ((store.breathwork || {})[_bwId] || {}).totalBreaths || _pacerState.totalCycles;
+
     const scTechName = document.getElementById('sessionCompleteTechName');
     const scDuration = document.getElementById('sessionCompleteDuration');
     const scCycles   = document.getElementById('sessionCompleteCycles');
     const scBreaths  = document.getElementById('sessionCompleteBreaths');
     const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
     if (scTechName) scTechName.textContent = pcTitle.toUpperCase();
-    if (scDuration)  scDuration.textContent  = pcTotalSec + ' second session';
-    if (scCycles)    scCycles.textContent    = _pacerState.totalCycles + ' Breathing Cycle' + (_pacerState.totalCycles !== 1 ? 's' : '');
-    if (scBreaths)   scBreaths.textContent   = _pacerState.totalCycles + ' ' + pcTitle + ' Breath' + (_pacerState.totalCycles !== 1 ? 's' : '');
-    if (scLearnBtn)  scLearnBtn.textContent  = 'Learn about ' + pcTitle;
+    if (scDuration)  scDuration.textContent = 'Session Time: ' + pcTimeStr;
+    if (scCycles)    scCycles.textContent   = 'Session Breaths: ' + _pacerState.totalCycles;
+    if (scBreaths)   scBreaths.textContent  = 'Total Resonant Breaths: ' + pcTotalBreaths;
+    if (scLearnBtn)  scLearnBtn.textContent = 'Learn about ' + pcTitle;
 
     // Update completion screen mini-header avatar to reflect auth state
     const scAvatar = document.getElementById('scAvatarBtn');

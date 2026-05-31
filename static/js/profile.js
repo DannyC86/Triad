@@ -658,26 +658,79 @@ Build my personalised plan.`;
 
   function checkAchievements() {
     ACHIEVEMENTS.forEach(a => {
-      if (store.achievements[a.id]) return;       // already unlocked
+      if (store.achievements[a.id]) return;
       if (a.test(store)) {
-        // Pro-tier achievements are gated: criteria-tested but only "unlock" on Pro.
-        // The UI shows them locked with a padlock until tier flips.
-        if (a.tier === 'pro' && store.tier !== 'pro') return;
         store.achievements[a.id] = new Date().toISOString();
-        queueSync({
-          type: 'achievement',
-          data: { achievement_id: a.id, unlocked_at: store.achievements[a.id] }
-        });
+        queueSync({ type: 'achievement', data: { achievement_id: a.id, unlocked_at: store.achievements[a.id] } });
         track('achievement_unlocked', { achievement_id: a.id });
-        showToast({
-          icon: a.icon,
-          kicker: 'Achievement unlocked',
-          label: a.name,
-          autohide: 3400
-        });
+        showAchievementPopup(a);
       }
     });
     saveStore(store);
+  }
+
+  /* ── Achievement popup (full-width, z-index 9999, stacked) ── */
+
+  let _achPopupIndex = 0;
+  let _achPopupResetTimer = null;
+
+  function showAchievementPopup(a) {
+    clearTimeout(_achPopupResetTimer);
+    const delay = _achPopupIndex * 400;
+    _achPopupIndex++;
+    _achPopupResetTimer = setTimeout(() => { _achPopupIndex = 0; }, delay + 5000);
+    setTimeout(() => {
+      if (delay === 0) _showAchievementSparkle();
+      const region = document.getElementById('achievement-popup-region');
+      if (!region) return;
+      const el = document.createElement('div');
+      el.className = 'achievement-popup';
+      el.innerHTML = `
+        <span class="ach-pop-icon">${a.icon}</span>
+        <div class="ach-pop-text">
+          <span class="ach-pop-kicker">Achievement unlocked</span>
+          <span class="ach-pop-name">${escapeHtml(a.name)}</span>
+          <span class="ach-pop-hint">${escapeHtml(a.hint)}</span>
+        </div>`;
+      region.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('fading');
+        setTimeout(() => el.remove(), 300);
+      }, 3400);
+    }, delay);
+  }
+
+  function _showAchievementSparkle() {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:9998;pointer-events:none';
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const cx = canvas.width / 2, cy = canvas.height * 0.35;
+    const COLS = ['#C9A96E','#E4C277','#FBF6EC','#C9A96E','#E4C277','#FBF6EC'];
+    const pts = Array.from({ length: 40 }, () => ({
+      x: cx + (Math.random() - 0.5) * 60,
+      y: cy + (Math.random() - 0.5) * 60,
+      vx: (Math.random() - 0.5) * 9,
+      vy: (Math.random() - 0.5) * 9 - 2,
+      r: 2 + Math.random() * 4,
+      c: COLS[Math.floor(Math.random() * COLS.length)]
+    }));
+    const start = performance.now();
+    (function tick(now) {
+      const t = (now - start) / 1000;
+      if (t >= 1) { canvas.remove(); return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pts.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.18;
+        ctx.globalAlpha = 1 - t;
+        ctx.fillStyle = p.c;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(tick);
+    })(start);
   }
 
   /* Toggle pro/free tier — demo helper. Replays achievement check so newly-eligible
