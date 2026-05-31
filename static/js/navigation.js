@@ -626,12 +626,11 @@
     sessionCancel();
   }
 
-  /* ─── Breath Pacer — curve-based ─── */
+  /* ─── Breath Pacer — canvas scrolling sine wave ─── */
 
-  // SVG coordinate space (viewBox="0 0 500 200")
-  const _PACER_SVG_W = 500;
-  const _PACER_YTOP  = 20;   // y when lungs full (top of curve)
-  const _PACER_YBOT  = 180;  // y when lungs empty (bottom of curve)
+  const _PACER_CYCLES_VIS  = 1.5;   // sine cycles visible across panel width
+  const _PACER_BASELINE_R  = 0.65;  // Y baseline as fraction of canvas height
+  const _PACER_AMPLITUDE_R = 0.28;  // amplitude as fraction of canvas height
 
   let _pacerState = {
     phases: [],
@@ -642,43 +641,105 @@
     totalMs: 0,
     cycleMs: 0,
     lastTs: null,
-    pathLen: 0,
     completedCycles: 0,
     totalCycles: 3,
-    currentPhaseLabel: '',
   };
 
-  // Generates an SVG polyline path from a phases array.
-  // Cosine ease on inhale/exhale produces the smooth S-curve shape.
-  // Phase widths are proportional to their `sec` value — so a 9s exhale
-  // is physically much wider than a 2s inhale: the visual matches the timing.
-  function _pacerBuildPath(phases) {
-    const totalSec = phases.reduce((s, p) => s + p.sec, 0);
-    if (!totalSec) return `M 0 ${_PACER_YBOT}`;
-    const W = _PACER_SVG_W, YTOP = _PACER_YTOP, YBOT = _PACER_YBOT;
-    const SAMPLES = 32; // points per phase — enough for a visually smooth curve
-    const pts = [];
-    let xOff = 0;
-    phases.forEach((phase) => {
-      const phaseW = (phase.sec / totalSec) * W;
-      let yS, yE;
-      if      (phase.type === 'inhale')    { yS = YBOT; yE = YTOP; }
-      else if (phase.type === 'exhale')    { yS = YTOP; yE = YBOT; }
-      else if (phase.type === 'holdFull')  { yS = YTOP; yE = YTOP; }
-      else /* holdEmpty */                 { yS = YBOT; yE = YBOT; }
-      // Skip i=0 for subsequent phases to avoid duplicate junction points
-      const iStart = pts.length === 0 ? 0 : 1;
-      for (let i = iStart; i <= SAMPLES; i++) {
-        const t    = i / SAMPLES;
-        const ease = 0.5 - 0.5 * Math.cos(t * Math.PI); // cosine ease 0→1
-        pts.push({ x: xOff + t * phaseW, y: yS + (yE - yS) * ease });
-      }
-      xOff += phaseW;
-    });
-    let d = `M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`;
-    for (let i = 1; i < pts.length; i++) d += ` L ${pts[i].x.toFixed(2)} ${pts[i].y.toFixed(2)}`;
-    return d;
+  // Size the canvas to fill its wrapper. Call after overlay becomes visible.
+  function _pacerResizeCanvas() {
+    const canvas = document.getElementById('pacerCanvas');
+    if (!canvas) return;
+    const wrap = canvas.parentElement;
+    if (!wrap) return;
+    canvas.width  = wrap.clientWidth;
+    canvas.height = wrap.clientHeight;
   }
+
+  // Draw one frame of the pacer canvas.
+  // running: true = active session (trail + full glow); false = idle (guide + dim orb only)
+  // scrollOffset: how many px the curve has scrolled (increases each tick during session)
+  function _pacerDraw(running, scrollOffset) {
+    const canvas = document.getElementById('pacerCanvas');
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    if (!W || !H) return;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const baseline  = H * _PACER_BASELINE_R;
+    const amplitude = H * _PACER_AMPLITUDE_R;
+    const centreX   = W / 2;
+    const tauScale  = Math.PI * 2 * _PACER_CYCLES_VIS / W;
+    const curveY    = (x) => baseline - amplitude * Math.sin((x + scrollOffset) * tauScale);
+
+    // 1. Dotted grid (static, drawn every frame)
+    ctx.fillStyle = 'rgba(201,169,110,0.15)';
+    const sp = 28;
+    for (let gy = sp / 2; gy < H; gy += sp) {
+      for (let gx = sp / 2; gx < W; gx += sp) {
+        ctx.beginPath(); ctx.arc(gx, gy, 1, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // 2a. Guide: full curve across panel width, dim gold
+    ctx.save();
+    ctx.strokeStyle = 'rgba(201,169,110,0.22)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(0, curveY(0));
+    for (let x = 2; x <= W; x += 2) ctx.lineTo(x, curveY(x));
+    ctx.stroke();
+    ctx.restore();
+
+    // 2b. Trail: left-of-centre only, bright gold with glow (session only)
+    if (running) {
+      ctx.save();
+      ctx.strokeStyle = '#C9A96E';
+      ctx.lineWidth = 3.5;
+      ctx.shadowColor = 'rgba(201,169,110,0.6)';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.moveTo(0, curveY(0));
+      for (let x = 2; x <= centreX; x += 2) ctx.lineTo(x, curveY(x));
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 3. Orb — fixed at horizontal centre, tracks curve Y
+    const orbY = curveY(centreX);
+    const orbR = 9;
+
+    // Outer bloom (dimmer when idle)
+    const bloomAlpha = running ? 0.25 : 0.08;
+    const bloom = ctx.createRadialGradient(centreX, orbY, 0, centreX, orbY, 22);
+    bloom.addColorStop(0, `rgba(201,169,110,${bloomAlpha})`);
+    bloom.addColorStop(1, 'rgba(201,169,110,0)');
+    ctx.beginPath(); ctx.arc(centreX, orbY, 22, 0, Math.PI * 2);
+    ctx.fillStyle = bloom; ctx.fill();
+
+    // Main orb radial gradient
+    const orbGrad = ctx.createRadialGradient(centreX - 2, orbY - 2, 1, centreX, orbY, orbR);
+    orbGrad.addColorStop(0, '#E4C277');
+    orbGrad.addColorStop(1, '#C9A96E');
+    ctx.beginPath(); ctx.arc(centreX, orbY, orbR, 0, Math.PI * 2);
+    ctx.fillStyle = orbGrad; ctx.fill();
+
+    // Inner highlight
+    ctx.save();
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(centreX - 3, orbY - 3, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  // Resize + redraw canvas when overlay is visible and window resizes
+  window.addEventListener('resize', () => {
+    if (document.getElementById('pacerOverlay')?.classList.contains('active')) {
+      _pacerResizeCanvas();
+      if (!_pacerState.running) _pacerDraw(false, 0);
+    }
+  });
 
   function openPacer(practiceId) {
     const overlay = document.getElementById('pacerOverlay');
@@ -692,9 +753,7 @@
     _pacerState.totalMs = 0;
     _pacerState.cycleMs = 0;
     _pacerState.lastTs  = null;
-    _pacerState.pathLen = 0;
     _pacerState.completedCycles = 0;
-    _pacerState.currentPhaseLabel = '';
 
     // Reset zone-C to idle state for a fresh session
     const _stIdle = document.getElementById('pacerStateIdle');
@@ -711,12 +770,6 @@
     _pacerState.phases = (item && item.phases && item.phases.length)
       ? item.phases
       : [{ type: 'inhale', sec: 5 }, { type: 'exhale', sec: 5 }];
-
-    const d = _pacerBuildPath(_pacerState.phases);
-    const guide = document.getElementById('pacerGuide');
-    const trail = document.getElementById('pacerTrail');
-    if (guide) guide.setAttribute('d', d);
-    if (trail) trail.setAttribute('d', d);
 
     const nameEl = document.getElementById('pacerTechName');
     const tierEl = document.getElementById('pacerTechTier');
@@ -735,27 +788,11 @@
 
     overlay.classList.add('active');
 
+    // Size canvas after overlay is visible, then draw idle state
     requestAnimationFrame(() => {
-      if (trail && trail.getTotalLength) {
-        _pacerState.pathLen = trail.getTotalLength();
-        trail.setAttribute('stroke-dasharray',  `${_pacerState.pathLen} ${_pacerState.pathLen}`);
-        trail.setAttribute('stroke-dashoffset', String(_pacerState.pathLen));
-      }
-      _pacerMoveOrb(0);
+      _pacerResizeCanvas();
+      _pacerDraw(false, 0);
     });
-  }
-
-  // Moves the orb to `progress` ∈ [0,1] along the path and reveals the trail.
-  function _pacerMoveOrb(progress) {
-    const trail = document.getElementById('pacerTrail');
-    const orb   = document.getElementById('pacerOrb');
-    if (!trail || !orb || !_pacerState.pathLen) return;
-    const dist = progress * _pacerState.pathLen;
-    // Reveal: dashoffset = L*(1-p) so at p=0 → L (hidden), at p=1 → 0 (full)
-    trail.setAttribute('stroke-dashoffset', String(_pacerState.pathLen - dist));
-    const pt = trail.getPointAtLength(dist);
-    orb.setAttribute('cx', pt.x.toFixed(2));
-    orb.setAttribute('cy', pt.y.toFixed(2));
   }
 
   function _pacerUpdateBreath(n) {
@@ -808,10 +845,15 @@
       _pacerUpdateBreath(_pacerState.breathCount);
     }
 
-    const progress = cycleDurMs > 0 ? _pacerState.cycleMs / cycleDurMs : 0;
+    // Canvas: scrollOffset = fraction-through-cycle × scroll-width
+    const canvas = document.getElementById('pacerCanvas');
+    const W = canvas ? canvas.width : 390;
+    const scrollOffset = cycleDurMs > 0
+      ? (_pacerState.cycleMs / cycleDurMs) * W * _PACER_CYCLES_VIS
+      : 0;
+    _pacerDraw(true, scrollOffset);
 
-    // Phase label: text set on transition, opacity breathing via sine curve each frame.
-    // opacity = sin(phaseProgress * π) → 0 at start, peaks at midpoint, 0 at end.
+    // Phase label: text + sine opacity (unchanged logic)
     const phInfo  = _pacerPhaseProgress(_pacerState.phases, _pacerState.cycleMs);
     const phNames = { inhale: 'INHALE', exhale: 'EXHALE', holdFull: 'HOLD', holdEmpty: 'HOLD' };
     const newLabel = phNames[phInfo.type] || '';
@@ -821,7 +863,6 @@
       pl.style.opacity = Math.sin(phInfo.progress * Math.PI).toFixed(3);
     }
 
-    _pacerMoveOrb(progress);
     _pacerUpdateTime(_pacerState.totalMs / 1000);
     _pacerState.raf = requestAnimationFrame(_pacerTick);
   }
@@ -903,14 +944,12 @@
 
     _pacerState.running = true;
     _pacerState.completedCycles = 0;
-    _pacerState.currentPhaseLabel = '';
     _pacerState.lastTs = null;
     _pacerState.totalMs = 0;
     _pacerState.cycleMs = 0;
     _pacerState.breathCount = 1;
     _pacerUpdateBreath(1);
     _pacerUpdateTime(0);
-    _pacerMoveOrb(0);
 
     _pacerState.raf = requestAnimationFrame(_pacerTick);
   }
