@@ -774,8 +774,8 @@
     .sticky-back-bar:hover { color: var(--text); }
     .sticky-back-bar svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-    /* Push technique/meditation detail content below sticky back bar */
-    #techniques-detail.active, #meditate-detail.active, #plan.active { padding-top: 44px; }
+    /* Push detail content below sticky back bar */
+    #techniques-detail.active, #meditate-detail.active, #plan.active, #library-detail.active { padding-top: 44px; }
 
     .detail-title {
       font-size: 1.7rem;
