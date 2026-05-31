@@ -43,7 +43,7 @@
     #guest-logo-slot {
       width: clamp(180px, 55vw, 280px); height: clamp(180px, 55vw, 280px);
       display: block; flex-shrink: 0;
-      animation: logo-breathe 4s ease-in-out infinite;
+      animation: logoPulse 4s ease-in-out infinite;
     }
     #guest-logo-slot svg { width: 100%; height: 100%; display: block; }
 
@@ -590,6 +590,7 @@ var _introPlayedThisSession = false;
   <div class="pacer-hdr">
     <span class="pacer-hdr-logo" id="pacer-logo-slot"></span>
     <span class="pacer-hdr-wordmark">TRIAD</span>
+    <button id="pacerMuteBtn" onclick="pacerToggleMute()" aria-label="Toggle sound" style="background:transparent;border:none;font-size:16px;cursor:pointer;opacity:0.6;padding:4px 8px;">🔔</button>
   </div>
   <!-- Zone A (cont.): title + tier + stats — fixed height, never resizes -->
   <div class="pacer-top-info">
@@ -994,7 +995,7 @@ var _introPlayedThisSession = false;
 
 <!-- ═════════ Top Header ═════════ -->
 <header class="top-header" id="top-header">
-  <button class="top-header-brand" onclick="navigate('home')" aria-label="Go to home">
+  <button class="top-header-brand" onclick="navTo('home')" aria-label="Go to home">
     <span class="top-header-logo" aria-hidden="true"></span>
     <span class="top-header-wordmark">TRIAD</span>
   </button>
@@ -1017,23 +1018,23 @@ var _introPlayedThisSession = false;
 <!-- ═════════ Bottom Nav ═════════ -->
 <nav class="nav">
   <div class="nav-inner">
-    <button class="nav-btn active" data-section="home" onclick="navigate('home')">
+    <button class="nav-btn active" data-section="home" onclick="navTo('home')">
       <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
       <span>Home</span>
     </button>
-    <button class="nav-btn" data-section="meditate" onclick="navigate('meditate')">
+    <button class="nav-btn" data-section="meditate" onclick="navTo('meditate')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 21c2-5 5-7 7-7s5 2 7 7"/><path d="M3 16l4-2M21 16l-4-2"/></svg>
       <span>Mind</span>
     </button>
-    <button class="nav-btn" data-section="techniques" onclick="navigate('techniques')">
+    <button class="nav-btn" data-section="techniques" onclick="navTo('techniques')">
       <svg viewBox="0 0 24 24"><path d="M12 2c-2 4-4 6-4 9a4 4 0 0 0 8 0c0-3-2-5-4-9z"/><path d="M5 13c0 4 2 7 7 9 5-2 7-5 7-9"/></svg>
       <span>Body</span>
     </button>
-    <button class="nav-btn" data-section="library" onclick="navigate('library')">
+    <button class="nav-btn" data-section="library" onclick="navTo('library')">
       <svg viewBox="0 0 24 24"><path d="M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4z"/><path d="M20 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>
       <span>Spirit</span>
     </button>
-    <button class="nav-btn" data-section="profile" onclick="navigate('profile')">
+    <button class="nav-btn" data-section="profile" onclick="navTo('profile')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
       <span>Profile</span>
     </button>
@@ -1066,5 +1067,6 @@ var _introPlayedThisSession = false;
 <script>(function(){var s=document.getElementById('guest-logo-slot');if(s&&typeof TRIAD_LOGO_SVG!=='undefined')s.innerHTML=TRIAD_LOGO_SVG;})();</script>
 
 
+  <div id="page-transition-overlay"></div>
 </body>
 </html>

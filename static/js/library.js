@@ -555,6 +555,7 @@
 
   function showBookDetail(book) {
     if (!book) return;
+    transitionTo(() => {
     _navPush(hideLibraryDetail);
     _setBackLabel('Back to Books');
     libUiState.detail = { kind: 'book', id: slug(book.title) };
@@ -623,11 +624,13 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
     fetchBookCover(book.title, book.author).then(url => _applyHeroImage(document.getElementById('detail-hero-full'), url));
     populateBundleCovers(book);
+    }); // end transitionTo
   }
 
   /* ─── Person detail ─── */
   function showPersonDetail(person) {
     if (!person) return;
+    transitionTo(() => {
     _navPush(hideLibraryDetail);
     _setBackLabel('Back to People');
     libUiState.detail = { kind: 'person', id: slug(person.name) };
@@ -724,6 +727,7 @@
     detail.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     fetchPersonPhoto(person.name).then(url => _applyHeroImage(document.getElementById('detail-hero-full'), url));
+    }); // end transitionTo
   }
 
   function hideLibraryDetail() {
@@ -740,6 +744,7 @@
   function showPodcastDetail(slugId) {
     const podcast = LIBRARY.podcasts.find(p => slug(p.name) === slugId);
     if (!podcast) return;
+    transitionTo(() => {
     _navPush(hideLibraryDetail);
     _setBackLabel('Back to Podcasts');
     store.openedPodcast = (store.openedPodcast || 0) + 1;
@@ -790,6 +795,7 @@
     det.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     fetchPodcastArtwork(podcast.name).then(url => _applyHeroImage(document.getElementById('detail-hero-full'), url));
+    }); // end transitionTo
   }
 
   /* ─── Knowledge practice detail (Overview / History / Science) ─── */
@@ -797,15 +803,22 @@
     const item    = kind === 'meditation' ? MEDITATIONS.find(m => m.id === id) : TECHNIQUES.find(t => t.id === id);
     const details = kind === 'meditation' ? MEDITATION_DETAILS[id] : TECHNIQUE_DETAILS[id];
     if (!item || !details) return;
-    _navPush(hideLibraryDetail);
-    _setBackLabel(kind === 'meditation' ? 'Back to Meditations' : 'Back to Breathwork');
-    const sourceTab = kind === 'meditation' ? 'meditations' : 'breathwork';
-    libUiState.detail = { kind: 'practice', id, sourceTab };
-    document.getElementById('library-list').style.display = 'none';
-    const det = document.getElementById('library-detail');
-    det.innerHTML = renderKnowledgePracticeDetail(item, details);
-    det.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    transitionTo(() => {
+      _navPush(hideLibraryDetail);
+      _setBackLabel(kind === 'meditation' ? 'Back to Meditations' : 'Back to Breathwork');
+      const sourceTab = kind === 'meditation' ? 'meditations' : 'breathwork';
+      libUiState.detail = { kind: 'practice', id, sourceTab };
+      document.getElementById('library-list').style.display = 'none';
+      const det = document.getElementById('library-detail');
+      det.innerHTML = renderKnowledgePracticeDetail(item, details);
+      det.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (details?.history?.origins || details?.history?.evolution) {
+        store.viewedKnowledgeHistory = (store.viewedKnowledgeHistory || 0) + 1;
+        saveStore(store);
+        checkAchievements();
+      }
+    });
   }
 
   function renderKnowledgePracticeDetail(item, d) {
@@ -915,9 +928,11 @@
   /* Navigate to Knowledge and open a specific practice entry directly */
   function openKnowledgeEntry(kind, id) {
     const tab = kind === 'meditation' ? 'meditations' : 'breathwork';
-    navigate('library', { keepDetail: true });
-    switchLibraryTab(tab);
-    showKnowledgePracticeDetail(kind, id);
+    transitionTo(() => {
+      navigate('library', { keepDetail: true });
+      switchLibraryTab(tab);
+      showKnowledgePracticeDetail(kind, id);
+    });
   }
 
   /* Wraps toggleRead() so the book detail re-renders to reflect the new state */

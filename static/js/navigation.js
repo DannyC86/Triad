@@ -1,3 +1,23 @@
+  /* ────── Page transition ────── */
+  let _inTransition = false;
+  function transitionTo(fn) {
+    if (_inTransition) { fn(); return; }
+    const overlay = document.getElementById('page-transition-overlay');
+    _inTransition = true;
+    overlay.classList.add('fading');
+    setTimeout(() => {
+      fn();
+      setTimeout(() => {
+        overlay.classList.remove('fading');
+        _inTransition = false;
+      }, 50);
+    }, 250);
+  }
+
+  function navTo(target) {
+    transitionTo(() => navigate(target));
+  }
+
   /* ────── Header ────── */
 
   function renderHeader({ showUserIcon = true } = {}) {
@@ -14,9 +34,11 @@
   }
 
   function _navBack() {
-    const fn = _navStack.pop();
-    _updateStickyBack();
-    if (fn) fn();
+    transitionTo(() => {
+      const fn = _navStack.pop();
+      _updateStickyBack();
+      if (fn) fn();
+    });
   }
 
   function _navClear() {
@@ -50,7 +72,7 @@
     const now = Date.now();
     if (now - _lastHomeNav < 400) return;
     _lastHomeNav = now;
-    navigate(target);
+    transitionTo(() => navigate(target));
   }
 
   function navigate(target, opts = {}) {
@@ -502,10 +524,63 @@
 
   /* ─── Breath Pacer — canvas scrolling sine wave ─── */
 
-  const _PACER_BASELINE_R  = 0.5;    // Y baseline — centre of canvas
-  const _PACER_AMPLITUDE_R = 0.42;   // amplitude — fills canvas more tightly
-  const _PACER_PHASE       = 0.25;   // phase offset: orb at bottom when scrollOffset = 1×W
-  const _PACER_IDLE_FRAC   = 0.7;    // idle pre-position: 7/10 through cycle = 3s before bottom
+  const _PACER_BASELINE_R  = 0.5;
+  const _PACER_AMPLITUDE_R = 0.42;
+  const _PACER_PHASE       = 0.25;
+  const _PACER_IDLE_FRAC   = 0.7;
+
+  /* ── Pacer audio ── */
+  let audioCtx = null;
+  let soundEnabled = localStorage.getItem('triad:soundEnabled') !== 'false';
+  let chimeFired = false;
+  let dongFired  = false;
+
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+
+  function playChime() {
+    if (!soundEnabled) return;
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.8);
+  }
+
+  function playDong() {
+    if (!soundEnabled) return;
+    const ctx = getAudioCtx();
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.connect(gain1); gain1.connect(ctx.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(440, ctx.currentTime);
+    gain1.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
+    osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 1.0);
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2); gain2.connect(ctx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(220, ctx.currentTime);
+    gain2.gain.setValueAtTime(0.06, ctx.currentTime);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+    osc2.start(ctx.currentTime); osc2.stop(ctx.currentTime + 1.2);
+  }
+
+  function pacerToggleMute() {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('triad:soundEnabled', soundEnabled);
+    const btn = document.getElementById('pacerMuteBtn');
+    if (btn) btn.textContent = soundEnabled ? '🔔' : '🔕';
+  }
 
   let _pacerState = {
     phases: [],
@@ -684,6 +759,10 @@
       btn.style.cssText = '';
     }
 
+    // Sync mute button icon with current sound state
+    const muteBtn = document.getElementById('pacerMuteBtn');
+    if (muteBtn) muteBtn.textContent = soundEnabled ? '🔔' : '🔕';
+
     overlay.classList.add('active');
 
     // Size canvas after overlay is visible, then draw frozen idle state at 7s position
@@ -742,7 +821,16 @@
       }
       _pacerState.breathCount++;
       _pacerUpdateBreath(_pacerState.breathCount);
+      chimeFired = false;
+      dongFired  = false;
     }
+
+    // Audio cues keyed to cycle progress (0→1 per cycle)
+    const cycleProgress = cycleDurMs > 0 ? _pacerState.cycleMs / cycleDurMs : 0;
+    if (cycleProgress >= 0.25 && !chimeFired) { playChime(); chimeFired = true; }
+    if (cycleProgress < 0.25) chimeFired = false;
+    if (cycleProgress >= 0.75 && !dongFired) { playDong(); dongFired = true; }
+    if (cycleProgress < 0.75) dongFired = false;
 
     // scrollOffset = idle pre-position (0.7W) + full-speed pre-roll + full-speed session.
     // idle(0.7W) + preroll(0→0.3W over 3s) + session(0→∞) → seamless from countdown end.
@@ -852,6 +940,9 @@
     const pl = document.getElementById('pacerPhaseLabel');
     if (pl) { pl.textContent = 'INHALE'; pl.style.opacity = '0'; }
 
+    chimeFired = false;
+    dongFired  = false;
+
     _pacerState.running = true;
     _pacerState.completedCycles = 0;
     _pacerState.lastTs = null;
@@ -947,12 +1038,11 @@
     if (typeof window._hideGuestGate === 'function') window._hideGuestGate();
     if (action === 'technique') {
       const techId = (typeof _sess !== 'undefined' && _sess.practiceId) || 'resonant-breathing';
-      navigate('techniques');
-      showTechniqueDetail(techId);
+      transitionTo(() => { navigate('techniques', { keepDetail: true }); showTechniqueDetail(techId); });
     } else if (action === 'meditate') {
-      navigate('meditate');
+      transitionTo(() => navigate('meditate'));
     } else {
-      navigate('home');
+      transitionTo(() => navigate('home'));
     }
   }
 

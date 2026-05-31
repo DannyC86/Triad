@@ -531,21 +531,23 @@
   // Navigate into the new library tabbed/detail view. Called from related cards on technique/meditation pages.
   function openLibraryEntry(kind, slugId) {
     track('library_item_opened', { type: kind, id: slugId });
-    // keepDetail prevents navigate() from clearing the detail we're about to set
-    navigate('library', { keepDetail: true });
-    if (kind === 'person') {
-      store.openedPerson = (store.openedPerson || 0) + 1;
-      saveStore(store); checkAchievements();
-      const item = LIBRARY.people.find(p => slug(p.name) === slugId);
-      if (item) { showPersonDetail(item); return; }
-      switchLibraryTab('people');
-    } else if (kind === 'book') {
-      store.openedBook = (store.openedBook || 0) + 1;
-      saveStore(store); checkAchievements();
-      const item = LIBRARY.books.find(b => slug(b.title) === slugId);
-      if (item) { showBookDetail(item); return; }
-      switchLibraryTab('books');
-    }
+    transitionTo(() => {
+      // keepDetail prevents navigate() from clearing the detail we're about to set
+      navigate('library', { keepDetail: true });
+      if (kind === 'person') {
+        store.openedPerson = (store.openedPerson || 0) + 1;
+        saveStore(store); checkAchievements();
+        const item = LIBRARY.people.find(p => slug(p.name) === slugId);
+        if (item) { showPersonDetail(item); return; }
+        switchLibraryTab('people');
+      } else if (kind === 'book') {
+        store.openedBook = (store.openedBook || 0) + 1;
+        saveStore(store); checkAchievements();
+        const item = LIBRARY.books.find(b => slug(b.title) === slugId);
+        if (item) { showBookDetail(item); return; }
+        switchLibraryTab('books');
+      }
+    });
   }
 
   // Backwards-compatible alias for legacy callers
@@ -565,17 +567,19 @@
   function showTechniqueDetail(id) {
     const item = TECHNIQUES.find(t => t.id === id);
     if (!item) return;
-    _navPush(hideTechniqueDetail);
-    _setBackLabel('Back to Breathwork');
-    state.techniqueId = id;
-    state.askContext = { kind: 'technique', id, item };
-    document.getElementById('techniques-list').style.display = 'none';
-    const detail = document.getElementById('techniques-detail');
-    renderDetail(item, 'techniques-detail', 'technique');
-    detail.classList.add('active');
-    updateFab();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    track('technique_opened', { practice_id: item.id, title: item.title });
+    transitionTo(() => {
+      _navPush(hideTechniqueDetail);
+      _setBackLabel('Back to Breathwork');
+      state.techniqueId = id;
+      state.askContext = { kind: 'technique', id, item };
+      document.getElementById('techniques-list').style.display = 'none';
+      const detail = document.getElementById('techniques-detail');
+      renderDetail(item, 'techniques-detail', 'technique');
+      detail.classList.add('active');
+      updateFab();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      track('technique_opened', { practice_id: item.id, title: item.title });
+    });
   }
 
   function hideTechniqueDetail() {
@@ -590,17 +594,19 @@
   function showMeditationDetail(id) {
     const item = MEDITATIONS.find(m => m.id === id);
     if (!item) return;
-    _navPush(hideMeditationDetail);
-    _setBackLabel('Back to Meditations');
-    state.meditationId = id;
-    state.askContext = { kind: 'meditation', id, item };
-    document.getElementById('meditate-list').style.display = 'none';
-    const detail = document.getElementById('meditate-detail');
-    renderDetail(item, 'meditate-detail', 'meditation');
-    detail.classList.add('active');
-    updateFab();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    track('meditation_opened', { practice_id: item.id, title: item.title });
+    transitionTo(() => {
+      _navPush(hideMeditationDetail);
+      _setBackLabel('Back to Meditations');
+      state.meditationId = id;
+      state.askContext = { kind: 'meditation', id, item };
+      document.getElementById('meditate-list').style.display = 'none';
+      const detail = document.getElementById('meditate-detail');
+      renderDetail(item, 'meditate-detail', 'meditation');
+      detail.classList.add('active');
+      updateFab();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      track('meditation_opened', { practice_id: item.id, title: item.title });
+    });
   }
 
   function hideMeditationDetail() {

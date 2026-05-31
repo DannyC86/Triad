@@ -80,4 +80,10 @@
         target: 25, label: 'Resonant breaths'
       })
     },
+    {
+      id: 'exploring-breathwork', tier: 'guest', name: 'Exploring Breathwork & Meditation', icon: '📜',
+      hint: 'View the history behind a practice in the Knowledge hub.',
+      test:     s => (s.viewedKnowledgeHistory || 0) >= 1,
+      progress: s => ({ current: Math.min(s.viewedKnowledgeHistory || 0, 1), target: 1, label: 'history viewed' })
+    },
   ];

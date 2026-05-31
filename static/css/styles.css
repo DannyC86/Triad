@@ -126,6 +126,11 @@
       50%       { transform: scale(1.04); }
     }
 
+    @keyframes logoPulse {
+      0%,100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(201,169,110,0.3)); }
+      50% { transform: scale(1.06); filter: drop-shadow(0 0 20px rgba(201,169,110,0.7)); }
+    }
+
     /* ─── Section header (small one — used on Techniques / Meditate / Library / Plan) ─── */
     .section-head {
       display: flex;
@@ -5693,3 +5698,12 @@
     }
     .triad-lab-send:hover { opacity: 0.8; }
     .triad-lab-send:disabled { opacity: 0.45; cursor: default; }
+
+    /* ─── Page transition overlay ─── */
+    #page-transition-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: var(--bg); opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    #page-transition-overlay.fading { opacity: 1; pointer-events: all; }
