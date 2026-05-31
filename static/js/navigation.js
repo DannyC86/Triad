@@ -700,6 +700,14 @@
     const _mzClean = document.getElementById('pacerMidZone');
     if (_mzClean) _mzClean.innerHTML = '';
 
+    // Restore idle UI (close btn, instructions, cue text) for fresh session
+    const _closeBtnReset = document.getElementById('pacerCloseBtn');
+    const _instrReset    = document.getElementById('pacerInstructions');
+    const _idleCopyReset = document.getElementById('pacerIdleCopy');
+    if (_closeBtnReset) _closeBtnReset.style.display = '';
+    if (_instrReset)    _instrReset.style.display    = '';
+    if (_idleCopyReset) _idleCopyReset.style.display = '';
+
     const item = practiceId ? findPractice(practiceId) : null;
     _pacerState.phases = (item && item.phases && item.phases.length)
       ? item.phases
@@ -845,6 +853,12 @@
       setTimeout(() => { if (btn) { btn.style.visibility = 'hidden'; btn.style.pointerEvents = 'none'; } }, 400);
     }
 
+    // Hide idle UI (instructions + cue text) — display:none so they take no space
+    const instr    = document.getElementById('pacerInstructions');
+    const idleCopy = document.getElementById('pacerIdleCopy');
+    if (instr)    instr.style.display    = 'none';
+    if (idleCopy) idleCopy.style.display = 'none';
+
     // Inject countdown into the fixed-height mid-zone
     const midZone = document.getElementById('pacerMidZone');
     if (midZone) midZone.innerHTML = '';
@@ -905,6 +919,10 @@
     const btn = document.getElementById('pacerBreatheBtn');
     if (btn) { btn.style.visibility = 'hidden'; btn.style.opacity = '0'; btn.style.pointerEvents = 'none'; }
 
+    // Hide close button during active session — not tappable while breathing
+    const closeBtn = document.getElementById('pacerCloseBtn');
+    if (closeBtn) closeBtn.style.display = 'none';
+
     // Inject phase label into fixed mid-zone (opacity starts at 0; sine curve animates it)
     const midZone = document.getElementById('pacerMidZone');
     if (midZone) midZone.innerHTML = '';
@@ -962,11 +980,24 @@
     const scTechName = document.getElementById('sessionCompleteTechName');
     const scDuration = document.getElementById('sessionCompleteDuration');
     const scCycles   = document.getElementById('sessionCompleteCycles');
+    const scBreaths  = document.getElementById('sessionCompleteBreaths');
     const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
     if (scTechName) scTechName.textContent = pcTitle.toUpperCase();
     if (scDuration)  scDuration.textContent  = pcTotalSec + ' second session';
     if (scCycles)    scCycles.textContent    = _pacerState.totalCycles + ' Breathing Cycle' + (_pacerState.totalCycles !== 1 ? 's' : '');
+    if (scBreaths)   scBreaths.textContent   = _pacerState.totalCycles + ' ' + pcTitle + ' Breath' + (_pacerState.totalCycles !== 1 ? 's' : '');
     if (scLearnBtn)  scLearnBtn.textContent  = 'Learn about ' + pcTitle;
+
+    // Update completion screen mini-header avatar to reflect auth state
+    const scAvatar = document.getElementById('scAvatarBtn');
+    if (scAvatar && typeof auth !== 'undefined' && auth.loggedIn) {
+      const initial = ((auth.email || 'U')[0] || 'U').toUpperCase();
+      scAvatar.classList.add('logged-in');
+      scAvatar.innerHTML = `<span>${initial}</span>`;
+    }
+
+    // Ensure global header avatar is in sync for when overlay dismisses
+    renderHeader({ showUserIcon: typeof auth !== 'undefined' && auth.loggedIn });
 
     document.getElementById('sessionView').classList.remove('active');
     document.getElementById('sessionComplete').classList.add('active');

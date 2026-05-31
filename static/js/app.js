@@ -813,6 +813,8 @@
     if (headerLogo) headerLogo.innerHTML = TRIAD_LOGO_SVG;
     var completionLogo = document.getElementById('completion-logo-slot');
     if (completionLogo) completionLogo.innerHTML = TRIAD_LOGO_SVG;
+    var scLogo = document.getElementById('sc-logo-slot');
+    if (scLogo) scLogo.innerHTML = TRIAD_LOGO_SVG;
     var pacerLogo = document.getElementById('pacer-logo-slot');
     if (pacerLogo) pacerLogo.innerHTML = TRIAD_LOGO_SVG;
   })();
@@ -833,19 +835,19 @@
     // Children (#intro-svg-wrap, #intro-title, etc.) keep their own animations.
     intro.style.animation = 'none';
 
-    // At 5.5s both transitions start simultaneously — 600ms each, no gap between them
+    // At 5.5s both transitions start simultaneously — 1.8s each, calm ease-in
     setTimeout(function() {
-      intro.style.transition = 'opacity 0.6s ease-in-out';
+      intro.style.transition = 'opacity 1.8s ease-in';
       intro.style.opacity = '0';
       if (home) {
-        home.style.transition = 'opacity 0.6s ease-in-out';
+        home.style.transition = 'opacity 1.8s ease-in';
         home.style.opacity = '1';
       }
       setTimeout(function() {
         if (intro.parentNode) intro.remove();
         if (home) { home.style.transition = ''; home.style.opacity = ''; }
         if (homeContainer) homeContainer.style.pointerEvents = '';
-      }, 700);
+      }, 2100);
     }, 5500);
   })();
 
