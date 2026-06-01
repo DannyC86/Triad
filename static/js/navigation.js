@@ -1059,7 +1059,9 @@
 
     document.getElementById('sessionView').classList.remove('active');
     document.getElementById('sessionComplete').classList.add('active');
-    document.getElementById('sessionOverlay').classList.add('active');
+    const _sovA = document.getElementById('sessionOverlay');
+    _sovA.classList.add('active');
+    _sovA.classList.add('completion-active');
 
     try { localStorage.setItem('triad:onboarded', 'true'); } catch(e) {}
   }
@@ -1067,7 +1069,9 @@
   // Button handler for the completion screen's three navigation pills.
   // Called from onclick in index.html — must remain a named global function.
   function _sessionCompleteGo(action) {
-    document.getElementById('sessionOverlay').classList.remove('active');
+    const _sovB = document.getElementById('sessionOverlay');
+    _sovB.classList.remove('active');
+    _sovB.classList.remove('completion-active');
     if (typeof _sess !== 'undefined') {
       _sess.running = false; _sess.paused = false; _sess.countdown = false;
     }
@@ -1428,6 +1432,8 @@
 
     document.getElementById('sessionView').classList.remove('active');
     document.getElementById('sessionComplete').classList.add('active');
-    document.getElementById('sessionOverlay').classList.add('active');
+    const _sovC = document.getElementById('sessionOverlay');
+    _sovC.classList.add('active');
+    _sovC.classList.add('completion-active');
   }
 

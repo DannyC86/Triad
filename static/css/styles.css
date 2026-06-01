@@ -296,6 +296,7 @@
        no auth footer, no profile icon, no bottom navigation. */
     body.first-breath-mode .home-auth-footer,
     body.first-breath-mode .top-header-avatar,
+    body.first-breath-mode .top-header,
     body.first-breath-mode .nav { display: none !important; }
     .first-breath-gate-eyebrow {
       font-size: 0.66rem;
@@ -5361,6 +5362,7 @@
     .gear-btn:hover { color: var(--text); border-color: var(--text-soft); }
     .gear-btn svg { width: 16px; height: 16px; }
     .gear-btn.hidden { display: none !important; }
+    body:has(#sessionOverlay.completion-active.active) .top-header { display: none; }
 
     /* Settings drawer */
     .settings-drawer-backdrop {
