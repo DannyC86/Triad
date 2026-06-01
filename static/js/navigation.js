@@ -1484,6 +1484,7 @@
   /* ═══════════════════ MINDFULNESS OF BREATH SESSION ═══════════════════ */
 
   const _MOB_SESSION_SECS = 30;
+  const _MOB_SESSION_MS   = 30000;
   const _MOB_PROMPTS = [
     'Settle in…',
     'Notice your breath…',
@@ -1501,9 +1502,11 @@
   let _mobPromptIdx     = 0;
   let _mobPromptTimer   = null;
   let _mobLineRaf       = null;
-  let _mobLineY         = 0;
-  let _mobLineInited    = false;
+  let _mobTracePoints   = [];
+  let _mobCurrentY      = 0;
   let _mobIsHolding     = false;
+  let _mobCanvasW       = 0;
+  let _mobCanvasH       = 0;
 
   function openMobSession() {
     _mobBreaths      = [];
@@ -1512,13 +1515,15 @@
     _mobTimerStart   = null;
     _mobTimerRunning = false;
     _mobPromptIdx    = 0;
-    _mobLineY        = 0;
-    _mobLineInited   = false;
+    _mobTracePoints  = [];
+    _mobCurrentY     = 0;
     _mobIsHolding    = false;
+    _mobCanvasW      = 0;
+    _mobCanvasH      = 0;
 
     _mobClearTimers();
 
-    // Reset page-2 dynamic elements to initial state
+    // Reset page-2 dynamic elements
     const timerEl = document.getElementById('mobTimer');
     if (timerEl) timerEl.textContent = '00:00';
     const promptEl = document.getElementById('mobPrompt');
@@ -1529,11 +1534,13 @@
     if (holdLbl) holdLbl.textContent = 'Hold';
     const bcEl = document.getElementById('mobBreathCount');
     if (bcEl) bcEl.textContent = 'Breaths: 0';
+    const cdEl = document.getElementById('mobCountdown');
+    if (cdEl) cdEl.style.display = 'none';
 
     _mobShowPage(1);
     document.getElementById('mobOverlay').classList.add('active');
 
-    // One-shot static draw on page 1 canvas (ambient guide line at rest)
+    // Static ambient draw on page-1 canvas
     requestAnimationFrame(() => {
       const c1 = document.getElementById('mobWaveCanvas1');
       if (!c1) return;
@@ -1546,6 +1553,8 @@
 
   function closeMobSession() {
     _mobClearTimers();
+    const cdEl = document.getElementById('mobCountdown');
+    if (cdEl) cdEl.style.display = 'none';
     document.getElementById('mobOverlay')?.classList.remove('active');
   }
 
@@ -1559,89 +1568,51 @@
   }
 
   function _mobClearTimers() {
-    if (_mobTimerInterval) { clearInterval(_mobTimerInterval);   _mobTimerInterval = null; }
-    if (_mobPromptTimer)   { clearInterval(_mobPromptTimer);     _mobPromptTimer   = null; }
-    if (_mobLineRaf)       { cancelAnimationFrame(_mobLineRaf);  _mobLineRaf       = null; }
+    if (_mobTimerInterval) { clearInterval(_mobTimerInterval);  _mobTimerInterval = null; }
+    if (_mobPromptTimer)   { clearInterval(_mobPromptTimer);    _mobPromptTimer   = null; }
+    if (_mobLineRaf)       { cancelAnimationFrame(_mobLineRaf); _mobLineRaf       = null; }
     _mobTimerRunning = false;
   }
 
-  /* Breath-reactive line — runs on mobWaveCanvas2 during page 2 */
-  function _mobStartBreathLine() {
-    if (_mobLineRaf) { cancelAnimationFrame(_mobLineRaf); _mobLineRaf = null; }
-    _mobLineInited = false;
-    function frame() {
-      _mobLineRaf = requestAnimationFrame(frame);
-      const canvas = document.getElementById('mobWaveCanvas2');
-      if (!canvas) return;
-      const W = canvas.clientWidth;
-      const H = canvas.clientHeight;
-      if (!W || !H) return;
-      if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
-      const baseline = H * 0.85;
-      const topline  = H * 0.1;
-      if (!_mobLineInited) { _mobLineY = baseline; _mobLineInited = true; }
-      const target = _mobIsHolding ? topline : baseline;
-      const diff   = target - _mobLineY;
-      if (Math.abs(diff) > 0.5) _mobLineY += diff * 0.08;
-      else _mobLineY = target;
-      _mobDrawBreathLine(canvas.getContext('2d'), W, H);
-    }
-    _mobLineRaf = requestAnimationFrame(frame);
-  }
-
-  function _mobDrawBreathLine(ctx, W, H) {
-    ctx.clearRect(0, 0, W, H);
-
-    // Dotted grid
-    ctx.fillStyle = 'rgba(201,169,110,0.15)';
-    const sp = 28;
-    for (let gy = sp / 2; gy < H; gy += sp)
-      for (let gx = sp / 2; gx < W; gx += sp) {
-        ctx.beginPath(); ctx.arc(gx, gy, 1, 0, Math.PI * 2); ctx.fill();
-      }
-
-    const baseline = H * 0.85;
-    const range    = H * 0.75; // baseline(0.85) - topline(0.1) = 0.75
-    const progress = range > 0 ? Math.max(0, Math.min(1, (baseline - _mobLineY) / range)) : 0;
-
-    const alpha = 0.4 + progress * 0.6;
-    const lw    = 2.5 + progress * 1.5;
-    const glow  = progress * 14;
-
-    // Horizontal breath line
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(0, _mobLineY);
-    ctx.lineTo(W, _mobLineY);
-    ctx.strokeStyle = `rgba(201,169,110,${alpha.toFixed(2)})`;
-    ctx.lineWidth   = lw;
-    ctx.shadowColor = 'rgba(201,169,110,0.6)';
-    ctx.shadowBlur  = glow;
-    ctx.stroke();
-    ctx.restore();
-
-    // Orb sitting on the line at centre
-    const orbX   = W / 2;
-    const orbY   = _mobLineY;
-    const orbR   = 7 + progress * 3;
-    const bloomR = 18 + progress * 8;
-
-    const bloom = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, bloomR);
-    bloom.addColorStop(0, `rgba(228,194,119,${(0.3 + progress * 0.4).toFixed(2)})`);
-    bloom.addColorStop(1, 'rgba(228,194,119,0)');
-    ctx.beginPath();
-    ctx.arc(orbX, orbY, bloomR, 0, Math.PI * 2);
-    ctx.fillStyle = bloom;
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(orbX, orbY, orbR, 0, Math.PI * 2);
-    ctx.fillStyle = '#C9A96E';
-    ctx.fill();
-  }
-
-  /* Begin Meditation button → page 2 */
+  /* "Begin Meditation" → 3-2-1 countdown → session */
   function _mobGoToPage2() {
+    const cdEl  = document.getElementById('mobCountdown');
+    const numEl = document.getElementById('mobCdNum');
+    if (!cdEl || !numEl) { _mobStartSession(); return; }
+
+    cdEl.style.display = 'flex';
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function showNum(n, onDone) {
+      numEl.style.transition = 'none';
+      numEl.style.opacity = '0';
+      numEl.textContent = String(n);
+      // Double rAF ensures reset is committed before animating
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        numEl.style.transition = 'opacity 0.3s ease';
+        numEl.style.opacity = '1';
+        setTimeout(() => {
+          numEl.style.opacity = '0';
+          setTimeout(onDone, 300);
+        }, reduced ? 400 : 700);
+      }));
+    }
+
+    function tick(n) {
+      if (n < 1) { cdEl.style.display = 'none'; _mobStartSession(); return; }
+      showNum(n, () => tick(n - 1));
+    }
+    tick(3);
+  }
+
+  /* Called after countdown — shows page 2 and starts everything */
+  function _mobStartSession() {
+    _mobTracePoints = [];
+    _mobCurrentY    = 0;
+    _mobIsHolding   = false;
+    _mobCanvasW     = 0;
+    _mobCanvasH     = 0;
+
     _mobShowPage(2);
 
     _mobTimerRunning = true;
@@ -1654,7 +1625,128 @@
       _mobCrossfadePrompt(_MOB_PROMPTS[_mobPromptIdx]);
     }, 12000);
 
-    _mobStartBreathLine();
+    _mobStartTrace();
+  }
+
+  /* Breath-trace rAF loop — draws continuous record on mobWaveCanvas2 */
+  function _mobStartTrace() {
+    if (_mobLineRaf) { cancelAnimationFrame(_mobLineRaf); _mobLineRaf = null; }
+
+    function frame() {
+      _mobLineRaf = requestAnimationFrame(frame);
+      const canvas = document.getElementById('mobWaveCanvas2');
+      if (!canvas) return;
+      const W = canvas.clientWidth;
+      const H = canvas.clientHeight;
+      if (!W || !H) return;
+
+      // Resize canvas if needed; clear trace on dimension change
+      if (canvas.width !== W || canvas.height !== H) {
+        if (_mobCanvasW && _mobCanvasH) _mobTracePoints = [];
+        canvas.width = W; canvas.height = H;
+        _mobCanvasW = W; _mobCanvasH = H;
+        _mobCurrentY = H * 0.85;
+      }
+
+      // First-frame init
+      if (_mobCurrentY <= 0) { _mobCurrentY = H * 0.85; _mobCanvasW = W; _mobCanvasH = H; }
+
+      // Ease currentY toward hold/rest target
+      const baseline = H * 0.85;
+      const topline  = H * 0.12;
+      const target   = _mobIsHolding ? topline : baseline;
+      const ease     = _mobIsHolding ? 0.018 : 0.014;
+      const diff     = target - _mobCurrentY;
+      if (Math.abs(diff) > 0.3) _mobCurrentY += diff * ease;
+      else _mobCurrentY = target;
+
+      // Append trace point keyed to session elapsed time → x position
+      if (_mobTimerRunning && _mobTimerStart !== null) {
+        const elapsedMs = _mobTimerElapsed * 1000 + (performance.now() - _mobTimerStart);
+        const x = Math.min((elapsedMs / _MOB_SESSION_MS) * W, W);
+        _mobTracePoints.push({ x, y: _mobCurrentY });
+        if (_mobTracePoints.length > 2000) _mobTracePoints.shift();
+      }
+
+      _mobDrawTrace(canvas.getContext('2d'), W, H);
+    }
+
+    _mobLineRaf = requestAnimationFrame(frame);
+  }
+
+  function _mobDrawTrace(ctx, W, H) {
+    ctx.clearRect(0, 0, W, H);
+
+    // Dotted grid
+    ctx.fillStyle = 'rgba(201,169,110,0.15)';
+    const sp = 28;
+    for (let gy = sp / 2; gy < H; gy += sp)
+      for (let gx = sp / 2; gx < W; gx += sp) {
+        ctx.beginPath(); ctx.arc(gx, gy, 1, 0, Math.PI * 2); ctx.fill();
+      }
+
+    // Baseline guide
+    ctx.beginPath();
+    ctx.moveTo(0, H * 0.85);
+    ctx.lineTo(W, H * 0.85);
+    ctx.strokeStyle = 'rgba(201,169,110,0.12)';
+    ctx.lineWidth = 1;
+    ctx.shadowBlur = 0;
+    ctx.stroke();
+
+    // Breath trace line (left → right across session)
+    if (_mobTracePoints.length > 1) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(_mobTracePoints[0].x, _mobTracePoints[0].y);
+      for (let i = 1; i < _mobTracePoints.length; i++) {
+        ctx.lineTo(_mobTracePoints[i].x, _mobTracePoints[i].y);
+      }
+      ctx.strokeStyle = '#C9A96E';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = 'rgba(201,169,110,0.5)';
+      ctx.shadowBlur = 8;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Orb — fixed at horizontal centre, Y tracks breath
+    const orbX    = W / 2;
+    const orbY    = _mobCurrentY;
+    const topY    = H * 0.12;
+    const botY    = H * 0.85;
+    const range   = botY - topY;
+    const progress = range > 0 ? Math.max(0, Math.min(1, (botY - orbY) / range)) : 0;
+
+    // Bloom
+    const bloomR = 20 + progress * 8;
+    const bloom  = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, bloomR);
+    bloom.addColorStop(0, `rgba(228,194,119,${(0.25 + progress * 0.4).toFixed(2)})`);
+    bloom.addColorStop(1, 'rgba(228,194,119,0)');
+    ctx.beginPath();
+    ctx.arc(orbX, orbY, bloomR, 0, Math.PI * 2);
+    ctx.fillStyle = bloom;
+    ctx.fill();
+
+    // Core orb
+    ctx.beginPath();
+    ctx.arc(orbX, orbY, 7 + progress * 3, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(201,169,110,${(0.7 + progress * 0.3).toFixed(2)})`;
+    ctx.fill();
+
+    // Vertical dashed guide: orb → baseline
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(orbX, orbY);
+    ctx.lineTo(orbX, H * 0.85);
+    ctx.strokeStyle = `rgba(201,169,110,${(0.15 + progress * 0.2).toFixed(2)})`;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 6]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
   }
 
   function _mobTimerTick() {
@@ -1705,7 +1797,7 @@
     _mobIsHolding = false;
     if (_mobHoldTs !== null) {
       const dur = (performance.now() - _mobHoldTs) / 1000;
-      if (dur >= 0.5) {
+      if (dur >= 0.3) {
         _mobBreaths.push(dur);
         const bcEl = document.getElementById('mobBreathCount');
         if (bcEl) bcEl.textContent = 'Breaths: ' + _mobBreaths.length;
@@ -1796,7 +1888,7 @@
         _mobTimerRunning = true;
         _mobTimerStart   = performance.now();
       }
-      _mobStartBreathLine();
+      _mobStartTrace();
     }
   }
 

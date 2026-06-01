@@ -5855,6 +5855,18 @@
     }
     .mob-overlay.active { display: flex; }
 
+    .mob-countdown {
+      position: absolute; inset: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg);
+    }
+    .mob-cd-num {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 700; color: var(--gold);
+      font-size: clamp(72px, 16vw, 96px);
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+
     .mob-page {
       display: flex; flex-direction: column;
       align-items: center; height: 100%;
@@ -5890,6 +5902,9 @@
     .mob-wave-canvas {
       width: 100%; height: clamp(140px, 30vw, 180px);
       display: block; flex-shrink: 0; margin-top: 24px;
+    }
+    #mobWaveCanvas2 {
+      height: clamp(180px, 35vh, 260px);
     }
     .mob-instructions {
       list-style: none; margin: 20px 0 0; padding: 0;
