@@ -515,6 +515,40 @@
       openMobSession();
       return;
     }
+    _showSessionIntro(practiceId);
+  }
+
+  function _showSessionIntro(practiceId) {
+    const practice = findPractice(practiceId);
+    const popup   = document.getElementById('sessionIntroPopup');
+    if (!popup || !practice) { _launchSession(practiceId); return; }
+
+    document.getElementById('siTitle').textContent = practice.title || '';
+    document.getElementById('siDesc').textContent  = practice.desc  || '';
+    const listEl = document.getElementById('siSteps');
+    if (listEl) {
+      listEl.innerHTML = (practice.steps || [])
+        .map(s => `<li>${s}</li>`).join('');
+    }
+
+    popup.dataset.practiceId = practiceId;
+    popup.classList.remove('hiding');
+    popup.style.display = 'flex';
+  }
+
+  function _closeSessionIntro() {
+    const popup = document.getElementById('sessionIntroPopup');
+    if (!popup) return;
+    const practiceId = popup.dataset.practiceId;
+    popup.classList.add('hiding');
+    setTimeout(() => {
+      popup.style.display = 'none';
+      popup.classList.remove('hiding');
+      _launchSession(practiceId);
+    }, 350);
+  }
+
+  function _launchSession(practiceId) {
     const practice = findPractice(practiceId);
     if (practice && practice.phases && practice.phases.length) {
       openPacer(practiceId);
@@ -1195,22 +1229,6 @@
       const c = document.getElementById('proCanvas');
       _pacerDrawToCanvas(c, false, c ? c.width * _PACER_IDLE_FRAC : 0);
     });
-
-    // Show pre-session instructions popup
-    const popup = document.getElementById('pacerIntroPopup');
-    const titleEl = document.getElementById('pacerIntroTitle');
-    if (popup) {
-      if (titleEl) titleEl.textContent = (item && item.title) ? item.title : 'Resonant Breathing';
-      popup.classList.remove('hiding');
-      popup.style.display = 'flex';
-    }
-  }
-
-  function _closePacerIntro() {
-    const popup = document.getElementById('pacerIntroPopup');
-    if (!popup) return;
-    popup.classList.add('hiding');
-    setTimeout(() => { popup.style.display = 'none'; popup.classList.remove('hiding'); }, 400);
   }
 
   function proSelectTile(tile) {

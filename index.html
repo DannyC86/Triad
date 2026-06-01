@@ -1121,6 +1121,16 @@ var _introPlayedThisSession = false;
 <!-- ═════════ Offline indicator ═════════ -->
 <div id="offline-pill">Offline — your progress is saved locally</div>
 
+<!-- ═════════ Universal session intro popup ═════════ -->
+<div class="session-intro-popup" id="sessionIntroPopup" style="display:none" role="dialog" aria-modal="true">
+  <div class="session-intro-card">
+    <div class="session-intro-title" id="siTitle"></div>
+    <p class="session-intro-desc" id="siDesc"></p>
+    <ul class="pacer-intro-list" id="siSteps"></ul>
+    <button class="btn-gold session-intro-ok" onclick="_closeSessionIntro()">Begin</button>
+  </div>
+</div>
+
 <!-- ═════════ Top Header ═════════ -->
 <header class="top-header" id="top-header">
   <button class="top-header-brand" onclick="navTo('home')" aria-label="Go to home">
