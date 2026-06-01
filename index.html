@@ -360,6 +360,18 @@ var _introPlayedThisSession = false;
     <!-- Main profile view -->
     <div id="profile-main-view">
 
+      <!-- Bonsai Garden entry point (shown when unlocked) -->
+      <div class="bonsai-profile-card" id="bonsaiProfileCard" style="display:none">
+        <button class="bonsai-profile-btn" onclick="openBonsaiScreen()">
+          <span class="bonsai-profile-icon">🌳</span>
+          <div class="bonsai-profile-text">
+            <span class="bonsai-profile-title">Bonsai Garden</span>
+            <span class="bonsai-profile-sub" id="bonsaiProfileSub">Tap to tend your tree</span>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+
       <!-- Account header (JS-rendered by renderProfileAccountHeader) -->
       <div id="profile-account-header"></div>
 
@@ -448,18 +460,6 @@ var _introPlayedThisSession = false;
 
       <!-- Pro banner removed — element kept hidden for legacy JS calls -->
       <div id="profile-pro-banner" style="display:none"></div>
-
-      <!-- Bonsai Garden entry point (shown when unlocked) -->
-      <div class="bonsai-profile-card" id="bonsaiProfileCard" style="display:none">
-        <button class="bonsai-profile-btn" onclick="openBonsaiScreen()">
-          <span class="bonsai-profile-icon">🌳</span>
-          <div class="bonsai-profile-text">
-            <span class="bonsai-profile-title">Bonsai Garden</span>
-            <span class="bonsai-profile-sub" id="bonsaiProfileSub">Tap to tend your tree</span>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
 
       <!-- SECTION 6: Triad Lab -->
       <div class="triad-lab" data-auth-required>
