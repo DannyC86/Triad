@@ -297,6 +297,19 @@
   opacity: 1; transform: translateX(-50%) translateY(0);
 }
 
+/* ─── Dev button ──────────────────────────────────────────────────────────── */
+
+.bonsai-dev-btn {
+  display: block; margin: 8px auto 0;
+  background: transparent;
+  border: 1px dashed rgba(201,169,110,0.4);
+  border-radius: 999px; padding: 8px 20px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--text-muted); cursor: pointer; opacity: 0.6;
+  letter-spacing: .04em;
+}
+.bonsai-dev-btn:hover { opacity: 1; }
+
 /* ─── Dark mode adjustments ───────────────────────────────────────────────── */
 
 [data-theme="dark"] .bonsai-water-btn {

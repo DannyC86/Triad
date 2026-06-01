@@ -375,6 +375,39 @@ function _bonsaiShowToast(msg) {
   }, 3000);
 }
 
+// ─── Dev / test helpers ───────────────────────────────────────────────────────
+
+function bonsaiDevWater() {
+  const data = _bonsaiLoad();
+  const b = data.active;
+  if (!b) return;
+
+  b.watersInCycle++;
+  b.totalWaters++;
+  b.lastWateredDate = _todayStr();
+
+  if (b.watersInCycle >= 3) {
+    b.cycle++;
+    b.watersInCycle = 0;
+    if (b.cycle >= 10) {
+      b.completedAt = new Date().toISOString();
+    }
+  }
+
+  _bonsaiSave(data);
+
+  if (b.cycle >= 10) {
+    stopBonsaiAnimation();
+    const activeView = document.getElementById('bonsaiActiveView');
+    if (activeView) activeView.style.display = 'none';
+    _bonsaiShowCompleteView(data);
+  } else {
+    _bonsaiShowActiveView(data);
+    const statusEl = document.getElementById('bonsaiWaterStatus');
+    if (statusEl) statusEl.textContent = `[DEV] Cycle ${b.cycle}/10 · Water ${b.watersInCycle}/3`;
+  }
+}
+
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
 function _escapeHtml(str) {
