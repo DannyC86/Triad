@@ -94,6 +94,9 @@
     [data-theme="dark"] .toast              { background: rgba(10,15,30,0.97); }
     [data-theme="dark"] .usage-toast        { background: rgba(10,15,30,0.97); }
     [data-theme="dark"] *:focus-visible     { outline-color: var(--text-soft); }
+    [data-theme="dark"] .nav-btn            { background: rgba(255,255,255,0.06); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+    [data-theme="dark"] .nav-btn.active     { background: rgba(201,169,110,0.15); box-shadow: 0 2px 8px rgba(201,169,110,0.25); }
+    [data-theme="dark"] .nav-btn:hover      { background: rgba(255,255,255,0.1); }
     /* logo uses currentColor — no filter needed */
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1319,20 +1322,22 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 1px;
-      padding: 2px 4px;
+      gap: 3px;
+      padding: 8px 4px;
       min-height: 0;
-      background: transparent;
+      background: rgba(255,255,255,0.55);
       border: none;
+      border-radius: 14px;
       color: var(--text-muted);
       font-size: 0.58rem;
       letter-spacing: 0.06em;
       cursor: pointer;
-      transition: color 0.2s ease;
+      transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
       font-family: inherit;
       font-weight: 400;
-      border-radius: var(--radius-sm);
       line-height: 1;
+      margin: 6px 3px;
+      box-shadow: 0 1px 4px rgba(26,26,46,0.08);
     }
     .nav-btn svg {
       width: 20px;
@@ -1344,11 +1349,19 @@
       stroke-linejoin: round;
       transition: transform 0.2s ease;
     }
-    .nav-btn:hover { color: var(--navy); }
+    .nav-btn:hover {
+      color: var(--navy);
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 2px 8px rgba(26,26,46,0.12);
+    }
     .nav-btn:hover svg { transform: translateY(-1px); }
-    .nav-btn:not(:last-child) { box-shadow: inset -1px 0 0 var(--border); }
+    .nav-btn:not(:last-child) { box-shadow: 0 1px 4px rgba(26,26,46,0.08); }
 
-    .nav-btn.active { color: var(--gold); }
+    .nav-btn.active {
+      color: var(--gold);
+      background: rgba(201,169,110,0.12);
+      box-shadow: 0 2px 8px rgba(201,169,110,0.2);
+    }
     .nav-btn.active svg { filter: none; }
 
     .nav-btn[data-section="home"]       { --nav-color: var(--gold); }
@@ -1356,7 +1369,13 @@
     .nav-btn[data-section="meditate"]   { --nav-color: var(--gold); }
     .nav-btn[data-section="library"]    { --nav-color: var(--gold); }
 
-    /* Mind / Body / Spirit icons larger than Home / Profile */
+    /* Mind / Body / Spirit — slightly larger cards */
+    .nav-btn[data-section="meditate"],
+    .nav-btn[data-section="techniques"],
+    .nav-btn[data-section="library"] {
+      flex: 1.25;
+      padding: 10px 4px;
+    }
     .nav-btn[data-section="meditate"]   svg,
     .nav-btn[data-section="techniques"] svg,
     .nav-btn[data-section="library"]    svg { width: 24px; height: 24px; }
