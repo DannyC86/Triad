@@ -1677,6 +1677,44 @@
     }
     .pro-cancel-btn:hover { opacity: 0.8; }
 
+    /* ─── Pre-session instructions popup (pro pacer) ─── */
+    .pacer-intro-popup {
+      position: absolute; inset: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(244,236,221,0.88);
+      backdrop-filter: blur(10px);
+      opacity: 1; transition: opacity 0.4s ease;
+      pointer-events: auto;
+    }
+    [data-theme="dark"] .pacer-intro-popup { background: rgba(10,15,30,0.88); }
+    .pacer-intro-popup.hiding { opacity: 0; pointer-events: none; }
+    .pacer-intro-card {
+      background: var(--bg); border-radius: var(--radius-lg);
+      padding: 32px 28px; width: calc(100% - 48px);
+      max-width: 360px; text-align: center;
+      box-shadow: 0 8px 40px rgba(26,26,46,0.12);
+    }
+    .pacer-intro-title {
+      font-family: 'Cormorant Garamond', serif; font-weight: 400;
+      font-size: 22px; color: var(--gold); letter-spacing: .08em;
+      margin-bottom: 20px;
+    }
+    .pacer-intro-list {
+      list-style: none; padding: 0; margin: 0 0 16px;
+      text-align: left; display: inline-block;
+    }
+    .pacer-intro-list li {
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      color: var(--text-soft); line-height: 2.2;
+      padding-left: 20px; position: relative;
+    }
+    .pacer-intro-list li::before { content: '•'; color: var(--gold); position: absolute; left: 0; }
+    .pacer-intro-hint {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 15px; color: var(--text-muted); margin-bottom: 24px;
+    }
+    .pacer-intro-ok { width: 100%; padding: 16px 24px; font-size: 15px; border-radius: var(--radius-lg); }
+
     /* Settings cog buttons — both pacers */
     .pacer-settings-btn {
       background: transparent; border: none;

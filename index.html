@@ -629,7 +629,6 @@ var _introPlayedThisSession = false;
       </div>
       <p class="pacer-idle-copy">If you're ready, sit straight, relax…</p>
       <button class="pacer-breathe-btn" id="pacerBreatheBtn" onclick="togglePacer()">and Breathe</button>
-      <button class="pro-cancel-btn" id="guestCancelBtn" onclick="closePacer()">Cancel</button>
     </div>
     <!-- State 2: Countdown -->
     <div class="pacer-state" id="pacerStateCountdown" style="display:none">
@@ -638,7 +637,6 @@ var _introPlayedThisSession = false;
     <!-- State 3: Session -->
     <div class="pacer-state" id="pacerStateSession" style="display:none">
       <div class="pacer-phase-label" id="pacerPhaseLabel" style="opacity:0">INHALE</div>
-      <button class="pro-cancel-btn" id="guestSessionCancelBtn" onclick="confirmCancelGuestSession()">Cancel</button>
     </div>
   </div>
 </div>
@@ -693,6 +691,20 @@ var _introPlayedThisSession = false;
       <div class="pacer-phase-label" id="proPhaseLabel" style="opacity:0">INHALE</div>
       <button class="pro-end-btn" id="proEndBtn" style="display:none" onclick="proEndSession()">End Session</button>
       <button class="pro-cancel-btn" id="sessionCancelBtn" onclick="confirmCancelProSession()">Cancel</button>
+    </div>
+  </div>
+  <!-- Pre-session instructions popup -->
+  <div class="pacer-intro-popup" id="pacerIntroPopup" style="display:none">
+    <div class="pacer-intro-card">
+      <div class="pacer-intro-title" id="pacerIntroTitle">Resonant Breathing</div>
+      <ul class="pacer-intro-list">
+        <li>5 Second Nose Inhale</li>
+        <li>No hold</li>
+        <li>Straight into 5 second nose exhale</li>
+        <li>Repeat</li>
+      </ul>
+      <p class="pacer-intro-hint">If you're ready, sit straight, relax…</p>
+      <button class="btn-gold pacer-intro-ok" id="pacerIntroOk" onclick="_closePacerIntro()">OK, let's go</button>
     </div>
   </div>
 </div>

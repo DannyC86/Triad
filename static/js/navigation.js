@@ -573,22 +573,34 @@
   function playDong() {
     if (!soundEnabled) return;
     const ctx = getAudioCtx();
+
+    // Primary water drop — fast pitch fall
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
-    osc1.connect(gain1); gain1.connect(ctx.destination);
+    const filter1 = ctx.createBiquadFilter();
+    osc1.connect(filter1); filter1.connect(gain1); gain1.connect(ctx.destination);
     osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(440, ctx.currentTime);
-    gain1.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
-    osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 1.0);
+    osc1.frequency.setValueAtTime(600, ctx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.18);
+    filter1.type = 'lowpass';
+    filter1.frequency.setValueAtTime(800, ctx.currentTime);
+    filter1.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.2);
+    gain1.gain.setValueAtTime(0, ctx.currentTime);
+    gain1.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 0.005);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 0.35);
+
+    // Soft resonant tail
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
     osc2.connect(gain2); gain2.connect(ctx.destination);
     osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(220, ctx.currentTime);
-    gain2.gain.setValueAtTime(0.06, ctx.currentTime);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-    osc2.start(ctx.currentTime); osc2.stop(ctx.currentTime + 1.2);
+    osc2.frequency.setValueAtTime(120, ctx.currentTime + 0.05);
+    osc2.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.5);
+    gain2.gain.setValueAtTime(0, ctx.currentTime + 0.05);
+    gain2.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.08);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc2.start(ctx.currentTime + 0.05); osc2.stop(ctx.currentTime + 0.6);
   }
 
   function pacerToggleMute() {
@@ -1085,7 +1097,7 @@
       const techId = (typeof _sess !== 'undefined' && _sess.practiceId) || 'resonant-breathing';
       transitionTo(() => { navigate('techniques', { keepDetail: true }); showTechniqueDetail(techId); });
     } else if (action === 'meditate') {
-      transitionTo(() => navigate('meditate'));
+      transitionTo(() => { navigate('meditate'); showMeditationDetail('mindfulness-of-breath'); });
     } else {
       transitionTo(() => navigate('home'));
     }
@@ -1183,6 +1195,22 @@
       const c = document.getElementById('proCanvas');
       _pacerDrawToCanvas(c, false, c ? c.width * _PACER_IDLE_FRAC : 0);
     });
+
+    // Show pre-session instructions popup
+    const popup = document.getElementById('pacerIntroPopup');
+    const titleEl = document.getElementById('pacerIntroTitle');
+    if (popup) {
+      if (titleEl) titleEl.textContent = (item && item.title) ? item.title : 'Resonant Breathing';
+      popup.classList.remove('hiding');
+      popup.style.display = 'flex';
+    }
+  }
+
+  function _closePacerIntro() {
+    const popup = document.getElementById('pacerIntroPopup');
+    if (!popup) return;
+    popup.classList.add('hiding');
+    setTimeout(() => { popup.style.display = 'none'; popup.classList.remove('hiding'); }, 400);
   }
 
   function proSelectTile(tile) {
@@ -1850,9 +1878,9 @@
       `<p class="mob3-reflection">How do you feel? Stay present. Would you like to explore more?</p>` +
       `<div class="mob3-stats">${rowsHTML}</div>` +
       `<div class="mob3-actions">` +
-        `<button class="mob3-btn" onclick="closeMobSession();navigate('meditate');showMeditationDetail('mindfulness-of-breath')">Learn about Mindfulness</button>` +
-        `<button class="mob3-btn" onclick="closeMobSession();navTo('meditate')">Try another meditation</button>` +
-        `<button class="mob3-btn" onclick="closeMobSession();navTo('home')">Explore the App</button>` +
+        `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>{navigate('meditate');showMeditationDetail('mindfulness-of-breath')})">Learn about Mindfulness</button>` +
+        `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>navigate('meditate'))">Try another meditation</button>` +
+        `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>navigate('home'))">Explore the App</button>` +
       `</div>`;
   }
 
