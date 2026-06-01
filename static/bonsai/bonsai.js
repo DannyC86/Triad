@@ -142,7 +142,11 @@ function openBonsaiScreen() {
   const albumBtn = document.getElementById('bonsaiAlbumBtn');
   if (albumBtn) albumBtn.style.display = data.album.length > 0 ? '' : 'none';
 
-  if (!data.active) {
+  const isLoggedIn = typeof auth !== 'undefined' && auth.loggedIn;
+
+  if (!isLoggedIn && !data.active) {
+    _bonsaiShowLoginPrompt();
+  } else if (!data.active) {
     _bonsaiShowPlantView(data);
   } else if (data.active.cycle >= 10) {
     _bonsaiShowCompleteView(data);
@@ -294,7 +298,43 @@ function _bonsaiShowActiveView(data) {
 
 // ─── Water ────────────────────────────────────────────────────────────────────
 
+function _bonsaiShowLoginPrompt() {
+  const plantView = document.getElementById('bonsaiPlantView');
+  plantView.style.display = 'flex';
+
+  const content = document.querySelector('#bonsaiPlantView .bonsai-plant-content');
+  if (content) {
+    content.innerHTML = `
+      <div class="bonsai-login-prompt">
+        <div class="bonsai-login-icon">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+            <polygon points="75,100 125,100 100,143.301" fill="rgba(201,169,110,0.15)"/>
+            <circle cx="75" cy="100" r="50" fill="none" stroke="#C9A96E" stroke-width="1.5"/>
+            <circle cx="125" cy="100" r="50" fill="none" stroke="#C9A96E" stroke-width="1.5"/>
+            <circle cx="100" cy="100" r="90" fill="none" stroke="#C9A96E" stroke-width="2"/>
+            <polygon points="75,100 125,100 100,143.301" fill="none" stroke="#E4C277" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h2 class="bonsai-plant-title">Sign in to grow</h2>
+        <p class="bonsai-plant-sub">
+          Your bonsai needs a home. Create an account so your tree
+          can grow across days — and live on when complete.
+        </p>
+        <button class="bonsai-action-btn" onclick="closeBonsaiScreen(); openAuthModal();">
+          Sign Up / Log In
+        </button>
+        <p class="bonsai-login-note">Your pot and seeds will be waiting.</p>
+      </div>
+    `;
+  }
+}
+
 function bonsaiWater() {
+  const isLoggedIn = typeof auth !== 'undefined' && auth.loggedIn;
+  if (!isLoggedIn) {
+    _bonsaiShowToast('Sign in to water your bonsai 🌱');
+    return;
+  }
   const data = _bonsaiLoad();
   const b = data.active;
   if (!b) return;
