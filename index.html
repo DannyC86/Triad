@@ -675,6 +675,7 @@ var _introPlayedThisSession = false;
       </div>
       <div class="pro-tile-label" id="proTileLabel">1 min</div>
       <button class="pacer-breathe-btn pro-begin-btn" id="proBeginBtn" onclick="_proStartCountdown()">Begin</button>
+      <button class="pro-cancel-btn" id="preCancelBtn" onclick="closeProPacer()">Cancel</button>
     </div>
     <!-- State 2: countdown -->
     <div class="pacer-state" id="proCountdown" style="display:none">
@@ -685,6 +686,7 @@ var _introPlayedThisSession = false;
     <div class="pacer-state" id="proSessionActive" style="display:none">
       <div class="pacer-phase-label" id="proPhaseLabel" style="opacity:0">INHALE</div>
       <button class="pro-end-btn" id="proEndBtn" style="display:none" onclick="proEndSession()">End Session</button>
+      <button class="pro-cancel-btn" id="sessionCancelBtn" onclick="confirmCancelProSession()">Cancel</button>
     </div>
   </div>
 </div>

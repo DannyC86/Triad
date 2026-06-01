@@ -1619,6 +1619,22 @@
       background: transparent; cursor: pointer;
     }
 
+    .pro-cancel-btn {
+      display: block;
+      margin: 8px 16px 0 auto;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+    .pro-cancel-btn:hover { opacity: 0.8; }
+
     /* Mute toggle buttons — both pacers */
     #pacerMuteBtn, #proMuteBtn {
       background: transparent; border: none;

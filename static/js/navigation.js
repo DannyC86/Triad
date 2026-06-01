@@ -1367,6 +1367,12 @@
     if (overlay) overlay.classList.remove('active');
   }
 
+  function confirmCancelProSession() {
+    const endBtn = document.querySelector('#quitSessionModal .action-btn.secondary');
+    if (endBtn) endBtn.onclick = function() { closeQuitModal(); closeProPacer(); };
+    openQuitModal();
+  }
+
   function proEndSession() {
     _proPacerState.running = false;
     if (_proPacerState.raf) { cancelAnimationFrame(_proPacerState.raf); _proPacerState.raf = null; }
