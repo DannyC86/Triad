@@ -1279,7 +1279,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      z-index: 50;
+      z-index: 600;
       background: var(--nav-bg, rgba(245, 240, 232, 0.96));
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -1355,7 +1355,7 @@
       left: 0;
       right: 0;
       height: 52px;
-      z-index: 50;
+      z-index: 600;
       background: var(--bg);
       border-bottom: 1px solid var(--border);
       display: flex;
@@ -5363,6 +5363,9 @@
     .gear-btn svg { width: 16px; height: 16px; }
     .gear-btn.hidden { display: none !important; }
     body:has(#sessionOverlay.completion-active.active) .top-header { display: none; }
+    body:has(#sessionOverlay.completion-active.active) .nav { display: none; }
+    body:has(#pacerOverlay.active) .nav { display: none; }
+    body:has(#pacerOverlayPro.active) .nav { display: none; }
 
     /* Settings drawer */
     .settings-drawer-backdrop {
