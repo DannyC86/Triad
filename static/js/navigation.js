@@ -1554,6 +1554,7 @@
   let _mobLineRaf       = null;
   let _mobTracePoints   = [];
   let _mobCurrentY      = 0;
+  let _mobOrbVelocity   = 0;
   let _mobIsHolding     = false;
   let _mobCanvasW       = 0;
   let _mobCanvasH       = 0;
@@ -1567,6 +1568,7 @@
     _mobPromptIdx    = 0;
     _mobTracePoints  = [];
     _mobCurrentY     = 0;
+    _mobOrbVelocity  = 0;
     _mobIsHolding    = false;
     _mobCanvasW      = 0;
     _mobCanvasH      = 0;
@@ -1659,6 +1661,7 @@
   function _mobStartSession() {
     _mobTracePoints = [];
     _mobCurrentY    = 0;
+    _mobOrbVelocity = 0;
     _mobIsHolding   = false;
     _mobCanvasW     = 0;
     _mobCanvasH     = 0;
@@ -1679,6 +1682,13 @@
   }
 
   /* Breath-trace rAF loop — draws continuous record on mobWaveCanvas2 */
+  /* Physics constants for orb movement */
+  const _MOB_RISE_FORCE    = -0.8;
+  const _MOB_FALL_FORCE    =  0.4;
+  const _MOB_MAX_RISE_SPD  = -6;
+  const _MOB_MAX_FALL_SPD  =  3;
+  const _MOB_DAMPING       =  0.88;
+
   function _mobStartTrace() {
     if (_mobLineRaf) { cancelAnimationFrame(_mobLineRaf); _mobLineRaf = null; }
 
@@ -1686,29 +1696,40 @@
       _mobLineRaf = requestAnimationFrame(frame);
       const canvas = document.getElementById('mobWaveCanvas2');
       if (!canvas) return;
-      const W = canvas.clientWidth;
-      const H = canvas.clientHeight;
+      const W = canvas.offsetWidth;
+      const H = canvas.offsetHeight;
       if (!W || !H) return;
 
-      // Resize canvas if needed; clear trace on dimension change
+      // Sync canvas pixel buffer to rendered size
       if (canvas.width !== W || canvas.height !== H) {
         if (_mobCanvasW && _mobCanvasH) _mobTracePoints = [];
         canvas.width = W; canvas.height = H;
         _mobCanvasW = W; _mobCanvasH = H;
-        _mobCurrentY = H * 0.85;
+        _mobCurrentY = H * 0.78;
+        _mobOrbVelocity = 0;
       }
 
-      // First-frame init
-      if (_mobCurrentY <= 0) { _mobCurrentY = H * 0.85; _mobCanvasW = W; _mobCanvasH = H; }
+      const BASELINE_Y = H * 0.78;
+      const TOP_Y      = H * 0.12;
 
-      // Ease currentY toward hold/rest target (slightly faster for organic feel)
-      const baseline = H * 0.85;
-      const topline  = H * 0.12;
-      const target   = _mobIsHolding ? topline : baseline;
-      const ease     = _mobIsHolding ? 0.025 : 0.020;
-      const diff     = target - _mobCurrentY;
-      if (Math.abs(diff) > 0.3) _mobCurrentY += diff * ease;
-      else _mobCurrentY = target;
+      // First-frame init
+      if (_mobCurrentY <= 0) { _mobCurrentY = BASELINE_Y; _mobCanvasW = W; _mobCanvasH = H; }
+
+      // Velocity-based physics
+      if (_mobIsHolding) {
+        _mobOrbVelocity += _MOB_RISE_FORCE;
+        _mobOrbVelocity  = Math.max(_mobOrbVelocity, _MOB_MAX_RISE_SPD);
+      } else {
+        _mobOrbVelocity += _MOB_FALL_FORCE;
+        _mobOrbVelocity  = Math.min(_mobOrbVelocity, _MOB_MAX_FALL_SPD);
+      }
+      _mobOrbVelocity *= _MOB_DAMPING;
+      _mobCurrentY    += _mobOrbVelocity;
+      _mobCurrentY     = Math.max(TOP_Y, Math.min(BASELINE_Y, _mobCurrentY));
+      if (_mobCurrentY >= BASELINE_Y && !_mobIsHolding) {
+        _mobCurrentY = BASELINE_Y;
+        _mobOrbVelocity = 0;
+      }
 
       // Compute current elapsed session time
       const now       = performance.now();
@@ -1723,8 +1744,8 @@
       }
 
       // Prune points that have scrolled off the left edge
-      const orbX      = W * 0.72;
-      const scrollSpd = W / _MOB_SESSION_MS; // px per ms
+      const orbX      = W * 0.5;
+      const scrollSpd = W / _MOB_SESSION_MS;
       while (_mobTracePoints.length > 1 &&
              (orbX - (elapsedMs - _mobTracePoints[0].t) * scrollSpd) < -20) {
         _mobTracePoints.shift();
@@ -1739,7 +1760,14 @@
   function _mobDrawTrace(ctx, W, H, elapsedMs) {
     ctx.clearRect(0, 0, W, H);
 
-    // Dotted grid (static — doesn't scroll)
+    const BASELINE_Y = H * 0.78;
+    const TOP_Y      = H * 0.12;
+    const orbX       = W * 0.5;
+    const orbY       = _mobCurrentY;
+    const range      = BASELINE_Y - TOP_Y;
+    const progress   = range > 0 ? Math.max(0, Math.min(1, (BASELINE_Y - orbY) / range)) : 0;
+
+    // Dotted grid (static)
     ctx.fillStyle = 'rgba(201,169,110,0.15)';
     const sp = 28;
     for (let gy = sp / 2; gy < H; gy += sp)
@@ -1749,25 +1777,20 @@
 
     // Baseline guide (static)
     ctx.beginPath();
-    ctx.moveTo(0, H * 0.85);
-    ctx.lineTo(W, H * 0.85);
+    ctx.moveTo(0, BASELINE_Y);
+    ctx.lineTo(W, BASELINE_Y);
     ctx.strokeStyle = 'rgba(201,169,110,0.12)';
     ctx.lineWidth = 1;
     ctx.shadowBlur = 0;
     ctx.stroke();
 
-    // Orb fixed at 72% horizontal
-    const orbX      = W * 0.72;
-    const orbY      = _mobCurrentY;
+    // Scrolling breath trace
     const scrollSpd = W / _MOB_SESSION_MS;
-
-    // Map stored points to current screen positions
     const pts = _mobTracePoints.map(p => ({
       x: orbX - (elapsedMs - p.t) * scrollSpd,
       y: p.y
     })).filter(p => p.x >= -10);
 
-    // Smooth bezier trace
     if (pts.length > 1) {
       ctx.save();
       ctx.beginPath();
@@ -1777,19 +1800,18 @@
         const midY = (pts[i].y + pts[i + 1].y) / 2;
         ctx.quadraticCurveTo(pts[i].x, pts[i].y, midX, midY);
       }
-      const last = pts[pts.length - 1];
-      ctx.lineTo(last.x, last.y);
-      ctx.strokeStyle = '#C9A96E';
-      ctx.lineWidth = 2.5;
+      ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+      ctx.strokeStyle = `rgba(201,169,110,${(0.35 + progress * 0.55).toFixed(2)})`;
+      ctx.lineWidth   = 2 + progress * 2;
       ctx.shadowColor = 'rgba(201,169,110,0.5)';
-      ctx.shadowBlur = 8;
+      ctx.shadowBlur  = 8;
       ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
+      ctx.lineCap  = 'round';
       ctx.stroke();
       ctx.restore();
     }
 
-    // Left-edge fade — masks trace scrolling off
+    // Left-edge fade
     const isDark   = document.documentElement.getAttribute('data-theme') === 'dark';
     const bgSolid  = isDark ? 'rgba(10,15,30,1)'  : 'rgba(244,236,221,1)';
     const bgClear  = isDark ? 'rgba(10,15,30,0)'  : 'rgba(244,236,221,0)';
@@ -1799,31 +1821,27 @@
     ctx.fillStyle = fadeGrad;
     ctx.fillRect(0, 0, 40, H);
 
-    // Orb on top
-    const topY    = H * 0.12;
-    const botY    = H * 0.85;
-    const range   = botY - topY;
-    const progress = range > 0 ? Math.max(0, Math.min(1, (botY - orbY) / range)) : 0;
-
-    const bloomR = 20 + progress * 8;
+    // Bloom
+    const bloomR = 16 + progress * 14;
     const bloom  = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, bloomR);
-    bloom.addColorStop(0, `rgba(228,194,119,${(0.25 + progress * 0.4).toFixed(2)})`);
+    bloom.addColorStop(0, `rgba(228,194,119,${(0.2 + progress * 0.5).toFixed(2)})`);
     bloom.addColorStop(1, 'rgba(228,194,119,0)');
     ctx.beginPath();
     ctx.arc(orbX, orbY, bloomR, 0, Math.PI * 2);
     ctx.fillStyle = bloom;
     ctx.fill();
 
+    // Core orb
     ctx.beginPath();
-    ctx.arc(orbX, orbY, 7 + progress * 3, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(201,169,110,${(0.7 + progress * 0.3).toFixed(2)})`;
+    ctx.arc(orbX, orbY, 7 + progress * 8, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(201,169,110,${(0.6 + progress * 0.4).toFixed(2)})`;
     ctx.fill();
 
     // Vertical dashed guide: orb → baseline
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(orbX, orbY);
-    ctx.lineTo(orbX, H * 0.85);
+    ctx.lineTo(orbX, BASELINE_Y);
     ctx.strokeStyle = `rgba(201,169,110,${(0.15 + progress * 0.2).toFixed(2)})`;
     ctx.lineWidth = 1;
     ctx.setLineDash([3, 6]);
@@ -1958,7 +1976,8 @@
       _mobTimerStart    = null;
       _mobTimerRunning  = false;
     }
-    _mobIsHolding = false;
+    _mobIsHolding   = false;
+    _mobOrbVelocity = 0;
     if (_mobLineRaf) { cancelAnimationFrame(_mobLineRaf); _mobLineRaf = null; }
   }
 
