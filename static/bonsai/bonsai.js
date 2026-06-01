@@ -494,6 +494,58 @@ function closeBonsaiAlbum() {
   openBonsaiScreen();
 }
 
+// ─── Rewards popup ───────────────────────────────────────────────────────────
+
+function openBonsaiRewardsPopup() {
+  const existing = document.getElementById('bonsaiRewardsPopup');
+  if (existing) existing.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'bonsaiRewardsPopup';
+  popup.className = 'bonsai-rewards-popup';
+  popup.innerHTML = `
+    <div class="bonsai-rewards-card">
+      <div class="bonsai-rewards-title">Your Rewards</div>
+      <div class="bonsai-rewards-subtitle">Collected from your practice</div>
+
+      <div class="bonsai-rewards-items">
+        <div class="bonsai-rewards-item">
+          <div class="bonsai-rewards-item-icon">🪴</div>
+          <div>
+            <div class="bonsai-rewards-item-name">Bonsai Pot</div>
+            <div class="bonsai-rewards-item-sub">Earned from first breath</div>
+          </div>
+        </div>
+        <div class="bonsai-rewards-divider"></div>
+        <div class="bonsai-rewards-item">
+          <div class="bonsai-rewards-item-icon">🌱</div>
+          <div>
+            <div class="bonsai-rewards-item-name">Starter Seeds</div>
+            <div class="bonsai-rewards-item-sub">Earned from first meditation</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="bonsai-rewards-hint">
+        Visit your <strong>Bonsai Garden</strong> in Profile to begin growing.
+      </p>
+
+      <button class="bonsai-action-btn" onclick="
+        document.getElementById('bonsaiRewardsPopup').remove();
+        closeMobSession();
+        transitionTo(() => navigate('profile'));
+      ">Go to Garden</button>
+
+      <button class="bonsai-rewards-dismiss" onclick="
+        document.getElementById('bonsaiRewardsPopup').remove();
+      ">Maybe later</button>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+  requestAnimationFrame(() => { popup.style.opacity = '1'; });
+}
+
 // ─── Toast ────────────────────────────────────────────────────────────────────
 
 function _bonsaiShowToast(msg) {

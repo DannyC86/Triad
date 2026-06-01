@@ -2027,7 +2027,7 @@
       `<div class="mob3-stats">${rowsHTML}</div>` +
       `<div class="mob3-actions">` +
         `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>{navigate('meditate');showMeditationDetail('mindfulness-of-breath')})">Learn about Mindfulness</button>` +
-        `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>navigate('meditate'))">Try another meditation</button>` +
+        `<button class="mob3-btn" onclick="openBonsaiRewardsPopup()">Get Rewards</button>` +
         `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>navigate('home'))">Explore the App</button>` +
       `</div>`;
   }
