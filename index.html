@@ -698,6 +698,52 @@ var _introPlayedThisSession = false;
 </div>
 
 
+<!-- ═════════ Mindfulness of Breath Session Overlay ═════════ -->
+<div class="mob-overlay" id="mobOverlay">
+
+  <!-- PAGE 1: INTRO -->
+  <div id="mobPage1" class="mob-page">
+    <div class="mob-hdr">
+      <span class="mob-hdr-logo" id="mob-logo-slot"></span>
+      <span class="mob-hdr-wordmark">TRIAD</span>
+      <button class="pacer-settings-btn" onclick="openSettingsDrawer()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </div>
+    <div class="mob-content">
+      <h1 class="mob-title">Mindfulness of Breath</h1>
+      <p class="mob-subtitle">A simple practice of noticing your breath.</p>
+      <canvas id="mobWaveCanvas1" class="mob-wave-canvas"></canvas>
+      <ul class="mob-instructions">
+        <li>Sit comfortably</li>
+        <li>Relax your shoulders</li>
+        <li>Let your breath move naturally</li>
+        <li>Notice the sensations of breathing</li>
+      </ul>
+      <p class="mob-hint">Hold the button to meditate. Release to pause.</p>
+    </div>
+    <div class="mob-bottom">
+      <button class="mob-begin-btn" onclick="_mobGoToPage2()">Begin Meditation</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2: MEDITATION SESSION -->
+  <div id="mobPage2" class="mob-page" style="display:none">
+    <div class="mob-timer" id="mobTimer">00:00</div>
+    <canvas id="mobWaveCanvas2" class="mob-wave-canvas"></canvas>
+    <div class="mob-prompt" id="mobPrompt">Settle in&#x2026;</div>
+    <div class="mob-hold-wrap">
+      <button class="mob-hold-btn" id="mobHoldBtn"
+        onmousedown="_mobHoldDown(event)" onmouseup="_mobHoldUp(event)" onmouseleave="_mobHoldCancel()"
+        ontouchstart="_mobHoldDown(event)" ontouchend="_mobHoldUp(event)" ontouchcancel="_mobHoldCancel()">
+        <span id="mobHoldLabel">Hold</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PAGE 3: COMPLETION (populated by JS) -->
+  <div id="mobPage3" class="mob-page mob-page3" style="display:none"></div>
+
+</div>
+
 <!-- ═════════ Session Engine Overlay ═════════ -->
 <div class="session-overlay" id="sessionOverlay">
 

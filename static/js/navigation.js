@@ -511,6 +511,10 @@
   // Wired here at navigation.js (was line 603) — the "Start session" button in
   // renderRichDetail calls openStartSession(practiceId).
   function openStartSession(practiceId) {
+    if (practiceId === 'mindfulness-of-breath') {
+      openMobSession();
+      return;
+    }
     const practice = findPractice(practiceId);
     if (practice && practice.phases && practice.phases.length) {
       openPacer(practiceId);
@@ -1465,5 +1469,248 @@
       if (_proPacerState.lastTs !== null) _proPacerState.lastTs += elapsed;
       _proPacerState.raf = requestAnimationFrame(_proTick);
     }
+  }
+
+  /* ═══════════════════ MINDFULNESS OF BREATH SESSION ═══════════════════ */
+
+  const _MOB_SESSION_SECS = 120;
+  const _MOB_PROMPTS = [
+    'Settle in…',
+    'Notice your breath…',
+    'Feel the rise and fall…',
+    'Let thoughts pass like clouds…',
+    'Stay with the breath…'
+  ];
+
+  let _mobBreaths       = [];
+  let _mobHoldTs        = null;
+  let _mobTimerInterval = null;
+  let _mobTimerElapsed  = 0;
+  let _mobTimerStart    = null;
+  let _mobTimerRunning  = false;
+  let _mobPromptIdx     = 0;
+  let _mobPromptTimer   = null;
+  let _mobWaveRaf       = null;
+  let _mobWaveOffset    = 0;
+  let _mobWaveLastTs    = null;
+  let _mobActiveCanvas  = 'mobWaveCanvas1';
+
+  function openMobSession() {
+    _mobBreaths      = [];
+    _mobHoldTs       = null;
+    _mobTimerElapsed = 0;
+    _mobTimerStart   = null;
+    _mobTimerRunning = false;
+    _mobPromptIdx    = 0;
+    _mobWaveOffset   = 0;
+    _mobWaveLastTs   = null;
+    _mobActiveCanvas = 'mobWaveCanvas1';
+
+    _mobClearTimers();
+
+    // Reset page-2 dynamic elements to initial state
+    const timerEl = document.getElementById('mobTimer');
+    if (timerEl) timerEl.textContent = '00:00';
+    const promptEl = document.getElementById('mobPrompt');
+    if (promptEl) { promptEl.style.opacity = '1'; promptEl.textContent = _MOB_PROMPTS[0]; }
+    const holdBtn = document.getElementById('mobHoldBtn');
+    if (holdBtn) holdBtn.classList.remove('pressed');
+    const holdLbl = document.getElementById('mobHoldLabel');
+    if (holdLbl) holdLbl.textContent = 'Hold';
+
+    _mobShowPage(1);
+    document.getElementById('mobOverlay').classList.add('active');
+    _mobStartWave();
+  }
+
+  function closeMobSession() {
+    _mobClearTimers();
+    document.getElementById('mobOverlay')?.classList.remove('active');
+  }
+
+  function _mobShowPage(n) {
+    const p1 = document.getElementById('mobPage1');
+    const p2 = document.getElementById('mobPage2');
+    const p3 = document.getElementById('mobPage3');
+    if (p1) p1.style.display = n === 1 ? 'flex' : 'none';
+    if (p2) p2.style.display = n === 2 ? 'flex' : 'none';
+    if (p3) p3.style.display = n === 3 ? 'flex' : 'none';
+  }
+
+  function _mobClearTimers() {
+    if (_mobTimerInterval) { clearInterval(_mobTimerInterval);  _mobTimerInterval = null; }
+    if (_mobPromptTimer)   { clearInterval(_mobPromptTimer);    _mobPromptTimer   = null; }
+    if (_mobWaveRaf)       { cancelAnimationFrame(_mobWaveRaf); _mobWaveRaf       = null; }
+    _mobTimerRunning = false;
+    _mobWaveLastTs   = null;
+  }
+
+  /* Ambient wave — 1 full sine cycle per 30 s */
+  function _mobStartWave() {
+    if (_mobWaveRaf) { cancelAnimationFrame(_mobWaveRaf); _mobWaveRaf = null; }
+    _mobWaveLastTs = null;
+    function frame(now) {
+      _mobWaveRaf = requestAnimationFrame(frame);
+      const canvas = document.getElementById(_mobActiveCanvas);
+      if (!canvas) return;
+      const W = canvas.clientWidth;
+      const H = canvas.clientHeight;
+      if (!W || !H) return;
+      if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
+      if (_mobWaveLastTs === null) { _mobWaveLastTs = now; return; }
+      const dt = now - _mobWaveLastTs;
+      _mobWaveLastTs = now;
+      _mobWaveOffset += (dt / 30000) * W;
+      _pacerDrawToCanvas(canvas, _mobActiveCanvas === 'mobWaveCanvas2', _mobWaveOffset);
+    }
+    _mobWaveRaf = requestAnimationFrame(frame);
+  }
+
+  /* Begin Meditation button → page 2 */
+  function _mobGoToPage2() {
+    _mobActiveCanvas = 'mobWaveCanvas2';
+    _mobShowPage(2);
+
+    _mobTimerRunning = true;
+    _mobTimerStart   = performance.now();
+    _mobTimerInterval = setInterval(_mobTimerTick, 100);
+
+    _mobShowPromptNow(_MOB_PROMPTS[0]);
+    _mobPromptTimer = setInterval(() => {
+      _mobPromptIdx = (_mobPromptIdx + 1) % _MOB_PROMPTS.length;
+      _mobCrossfadePrompt(_MOB_PROMPTS[_mobPromptIdx]);
+    }, 12000);
+  }
+
+  function _mobTimerTick() {
+    if (!_mobTimerRunning || _mobTimerStart === null) return;
+    const elapsed = _mobTimerElapsed + (performance.now() - _mobTimerStart) / 1000;
+    const secs    = Math.min(Math.floor(elapsed), _MOB_SESSION_SECS);
+    const mm      = String(Math.floor(secs / 60)).padStart(2, '0');
+    const ss      = String(secs % 60).padStart(2, '0');
+    const el      = document.getElementById('mobTimer');
+    if (el) el.textContent = mm + ':' + ss;
+    if (elapsed >= _MOB_SESSION_SECS) {
+      _mobTimerRunning = false;
+      clearInterval(_mobTimerInterval); _mobTimerInterval = null;
+      if (el) el.textContent = '02:00';
+      _mobGoToPage3();
+    }
+  }
+
+  function _mobShowPromptNow(text) {
+    const el = document.getElementById('mobPrompt');
+    if (!el) return;
+    el.textContent = text; el.style.opacity = '1';
+  }
+
+  function _mobCrossfadePrompt(text) {
+    const el = document.getElementById('mobPrompt');
+    if (!el) return;
+    el.style.transition = 'opacity 0.6s ease';
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = text; el.style.opacity = '1'; }, 600);
+  }
+
+  /* Hold button handlers */
+  function _mobHoldDown(e) {
+    if (e) e.preventDefault();
+    document.getElementById('mobHoldBtn')?.classList.add('pressed');
+    const lbl = document.getElementById('mobHoldLabel');
+    if (lbl) lbl.textContent = '…';
+    _mobHoldTs = performance.now();
+  }
+
+  function _mobHoldUp(e) {
+    if (e) e.preventDefault();
+    document.getElementById('mobHoldBtn')?.classList.remove('pressed');
+    const lbl = document.getElementById('mobHoldLabel');
+    if (lbl) lbl.textContent = 'Hold';
+    if (_mobHoldTs !== null) {
+      const dur = (performance.now() - _mobHoldTs) / 1000;
+      if (dur >= 0.5) _mobBreaths.push(dur);
+      _mobHoldTs = null;
+    }
+  }
+
+  function _mobHoldCancel() {
+    document.getElementById('mobHoldBtn')?.classList.remove('pressed');
+    const lbl = document.getElementById('mobHoldLabel');
+    if (lbl) lbl.textContent = 'Hold';
+    _mobHoldTs = null;
+  }
+
+  /* Timer complete → page 3 */
+  function _mobGoToPage3() {
+    if (_mobPromptTimer)   { clearInterval(_mobPromptTimer);    _mobPromptTimer   = null; }
+    if (_mobWaveRaf)       { cancelAnimationFrame(_mobWaveRaf); _mobWaveRaf       = null; }
+    _mobHoldTs = null;
+    _mobBuildPage3();
+    _mobShowPage(3);
+    _mobSaveSession();
+  }
+
+  function _mobBuildPage3() {
+    const b  = _mobBreaths;
+    const n  = b.length;
+    const f  = (v) => v.toFixed(1) + 's';
+    const dash = '—';
+    const avg  = n ? f(b.reduce((a, x) => a + x, 0) / n) : dash;
+    const hi   = n ? Math.max(...b) : null;
+    const lo   = n ? Math.min(...b) : null;
+    const rows = [
+      ['Session Time',      '2:00'],
+      ['Breaths Recorded',  String(n)],
+      ['Average Breath',    avg],
+      ['Longest Breath',    n ? f(hi)      : dash],
+      ['Shortest Breath',   n ? f(lo)      : dash],
+      ['Breath Variability', n > 1 ? f(hi - lo) : dash]
+    ];
+    const rowsHTML = rows.map(([l, v]) =>
+      `<div class="mob3-stat-row"><span class="mob3-stat-label">${l}</span><span class="mob3-stat-value">${v}</span></div>`
+    ).join('');
+    document.getElementById('mobPage3').innerHTML =
+      `<div class="mob3-title">Mindfulness of Breath</div>` +
+      `<div class="mob3-congrats">Congratulations</div>` +
+      `<p class="mob3-reflection">How do you feel? Stay present. Would you like to explore more?</p>` +
+      `<div class="mob3-stats">${rowsHTML}</div>` +
+      `<div class="mob3-actions">` +
+        `<button class="mob3-btn" onclick="closeMobSession();navigate('meditate');showMeditationDetail('mindfulness-of-breath')">Learn about Mindfulness</button>` +
+        `<button class="mob3-btn" onclick="closeMobSession();navTo('meditate')">Try another meditation</button>` +
+        `<button class="mob3-btn" onclick="closeMobSession();navTo('home')">Explore the App</button>` +
+      `</div>`;
+  }
+
+  function _mobSaveSession() {
+    if (typeof loadStore !== 'function' || typeof saveStore !== 'function') return;
+    const s = loadStore();
+    if (!s.meditation) s.meditation = {};
+    const m = s.meditation['mindfulness-of-breath'] || {};
+    m.totalDuration = (m.totalDuration || 0) + 120;
+    m.totalSessions = (m.totalSessions || 0) + 1;
+    m.totalBreaths  = (m.totalBreaths  || 0) + _mobBreaths.length;
+    s.meditation['mindfulness-of-breath'] = m;
+    saveStore(s);
+  }
+
+  /* Pause / resume for settings drawer (page 2 only) */
+  function _mobPause() {
+    if (_mobTimerRunning && _mobTimerStart !== null) {
+      _mobTimerElapsed += (performance.now() - _mobTimerStart) / 1000;
+      _mobTimerStart    = null;
+      _mobTimerRunning  = false;
+    }
+    if (_mobWaveRaf) { cancelAnimationFrame(_mobWaveRaf); _mobWaveRaf = null; _mobWaveLastTs = null; }
+  }
+
+  function _mobResume() {
+    const overlay = document.getElementById('mobOverlay');
+    if (!overlay || !overlay.classList.contains('active')) return;
+    const p2 = document.getElementById('mobPage2');
+    if (p2 && p2.style.display !== 'none' && !_mobTimerRunning && _mobTimerElapsed < _MOB_SESSION_SECS) {
+      _mobTimerRunning = true;
+      _mobTimerStart   = performance.now();
+    }
+    _mobStartWave();
   }
 

@@ -1822,12 +1822,14 @@ Build my personalised plan.`;
     updateThemeToggle();
     if (typeof _updateSoundToggle === 'function') _updateSoundToggle();
     if (typeof _pacerPause === 'function') _pacerPause();
+    if (typeof _mobPause === 'function') _mobPause();
   }
 
   function closeSettingsDrawer() {
     document.getElementById('settingsDrawer')?.classList.remove('open');
     document.getElementById('settingsDrawerBackdrop')?.classList.remove('open');
     if (typeof _pacerResume === 'function') _pacerResume();
+    if (typeof _mobResume === 'function') _mobResume();
   }
 
   /* ════════════════ MISSION ENGINE ════════════════ */

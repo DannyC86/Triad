@@ -5839,6 +5839,152 @@
     .triad-lab-send:hover { opacity: 0.8; }
     .triad-lab-send:disabled { opacity: 0.45; cursor: default; }
 
+    /* ═══════════════════ MINDFULNESS OF BREATH SESSION OVERLAY ═══════════════════ */
+    .mob-overlay {
+      position: fixed; inset: 0; z-index: 250;
+      background: var(--bg); display: none;
+      flex-direction: column; overflow: hidden; height: 100dvh;
+    }
+    .mob-overlay.active { display: flex; }
+
+    .mob-page {
+      display: flex; flex-direction: column;
+      align-items: center; height: 100%;
+      padding: 0 24px; overflow: hidden;
+      box-sizing: border-box; width: 100%;
+    }
+    .mob-hdr {
+      display: flex; align-items: center;
+      height: 48px; padding: 0; flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      width: 100%; box-sizing: border-box;
+    }
+    .mob-hdr-logo { width: 22px; height: 22px; flex-shrink: 0; display: flex; align-items: center; }
+    .mob-hdr-logo svg { width: 100%; height: 100%; display: block; }
+    .mob-hdr-wordmark {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: 0.88rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--text); margin-left: 8px; flex: 1;
+    }
+    .mob-content {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; width: 100%; min-height: 0;
+    }
+    .mob-title {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(24px, 6vw, 36px);
+      color: var(--text); text-align: center; margin: 24px 0 0;
+    }
+    .mob-subtitle {
+      font-family: 'DM Sans', sans-serif; color: var(--text-soft);
+      font-size: 15px; text-align: center; font-style: italic; margin: 8px 0 0;
+    }
+    .mob-wave-canvas {
+      width: 100%; height: clamp(140px, 30vw, 180px);
+      display: block; flex-shrink: 0; margin-top: 24px;
+    }
+    .mob-instructions {
+      list-style: none; margin: 20px 0 0; padding: 0;
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      color: var(--text-soft); line-height: 1.8; align-self: flex-start;
+    }
+    .mob-instructions li::before { content: '\2022  '; color: var(--gold); }
+    .mob-hint {
+      font-family: 'DM Sans', sans-serif; font-style: italic;
+      color: var(--text-muted); font-size: 13px;
+      text-align: center; margin: 16px 0 0;
+    }
+    .mob-bottom {
+      width: 100%; flex-shrink: 0; padding-top: 16px;
+      margin-bottom: 48px; margin-top: auto;
+    }
+    .mob-begin-btn {
+      width: 100%; border-radius: 16px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: var(--btn-text-on-gold); border: none; cursor: pointer;
+      font-family: 'Cormorant Garamond', serif; font-size: 16px;
+      padding: 18px 24px;
+      box-shadow: 0 4px 20px rgba(201,169,110,0.35);
+      transition: box-shadow 0.2s ease, transform 0.1s ease;
+    }
+    .mob-begin-btn:hover  { box-shadow: 0 8px 32px rgba(201,169,110,0.55); }
+    .mob-begin-btn:active { transform: scale(0.98); }
+
+    /* Page 2 */
+    .mob-timer {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(48px, 10vw, 64px);
+      color: var(--gold); letter-spacing: .08em;
+      text-align: center; margin-top: 32px; flex-shrink: 0;
+    }
+    .mob-prompt {
+      font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+      font-size: clamp(18px, 4vw, 24px);
+      color: var(--text-soft); text-align: center;
+      margin-top: 20px; flex-shrink: 0;
+      transition: opacity 0.6s ease;
+    }
+    .mob-hold-wrap {
+      flex: 1; display: flex; align-items: flex-end;
+      justify-content: center; padding-bottom: 48px; width: 100%;
+    }
+    .mob-hold-btn {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      box-shadow: 0 4px 20px rgba(201,169,110,0.4);
+      border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 11px;
+      color: var(--btn-text-on-gold); letter-spacing: .2em; text-transform: uppercase;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      touch-action: none;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mob-hold-btn.pressed { transform: scale(1.22); box-shadow: 0 8px 40px rgba(201,169,110,0.7); }
+
+    /* Page 3 */
+    .mob-page3 { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .mob3-title {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(20px, 5vw, 28px); color: var(--gold);
+      text-transform: uppercase; letter-spacing: .2em;
+      text-align: center; margin-top: 32px;
+    }
+    .mob3-congrats {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: 20px; color: var(--text); text-align: center; margin-top: 8px;
+    }
+    .mob3-reflection {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: clamp(15px, 3.5vw, 18px); color: var(--text-soft);
+      text-align: center; padding: 0 16px; margin-top: 12px; line-height: 1.7;
+    }
+    .mob3-stats {
+      width: 100%; background: var(--bg-section);
+      border-radius: var(--radius); padding: 20px 24px;
+      margin-top: 20px; box-sizing: border-box;
+    }
+    .mob3-stat-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .mob3-stat-row:last-child { border-bottom: none; }
+    .mob3-stat-label { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-soft); }
+    .mob3-stat-value { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); }
+    .mob3-actions {
+      width: 100%; display: flex; flex-direction: column;
+      gap: 10px; margin-top: 24px; margin-bottom: 32px;
+    }
+    .mob3-btn {
+      width: 100%; border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: var(--btn-text-on-gold); border: none; cursor: pointer;
+      font-family: 'Cormorant Garamond', serif; font-size: 16px;
+      padding: 18px 24px; box-shadow: 0 4px 20px rgba(201,169,110,0.35);
+      transition: filter 0.2s ease, transform 0.1s ease;
+    }
+    .mob3-btn:hover  { filter: brightness(1.06); }
+    .mob3-btn:active { transform: scale(0.98); }
+
     /* ─── Page transition overlay ─── */
     #page-transition-overlay {
       position: fixed; inset: 0; z-index: 500;
