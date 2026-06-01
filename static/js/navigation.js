@@ -1701,33 +1701,45 @@
       // First-frame init
       if (_mobCurrentY <= 0) { _mobCurrentY = H * 0.85; _mobCanvasW = W; _mobCanvasH = H; }
 
-      // Ease currentY toward hold/rest target
+      // Ease currentY toward hold/rest target (slightly faster for organic feel)
       const baseline = H * 0.85;
       const topline  = H * 0.12;
       const target   = _mobIsHolding ? topline : baseline;
-      const ease     = _mobIsHolding ? 0.018 : 0.014;
+      const ease     = _mobIsHolding ? 0.025 : 0.020;
       const diff     = target - _mobCurrentY;
       if (Math.abs(diff) > 0.3) _mobCurrentY += diff * ease;
       else _mobCurrentY = target;
 
-      // Append trace point keyed to session elapsed time → x position
+      // Compute current elapsed session time
+      const now       = performance.now();
+      const elapsedMs = (_mobTimerRunning && _mobTimerStart !== null)
+        ? _mobTimerElapsed * 1000 + (now - _mobTimerStart)
+        : _mobTimerElapsed * 1000;
+
+      // Append point with session-elapsed timestamp
       if (_mobTimerRunning && _mobTimerStart !== null) {
-        const elapsedMs = _mobTimerElapsed * 1000 + (performance.now() - _mobTimerStart);
-        const x = Math.min((elapsedMs / _MOB_SESSION_MS) * W, W);
-        _mobTracePoints.push({ x, y: _mobCurrentY });
+        _mobTracePoints.push({ t: elapsedMs, y: _mobCurrentY });
         if (_mobTracePoints.length > 2000) _mobTracePoints.shift();
       }
 
-      _mobDrawTrace(canvas.getContext('2d'), W, H);
+      // Prune points that have scrolled off the left edge
+      const orbX      = W * 0.72;
+      const scrollSpd = W / _MOB_SESSION_MS; // px per ms
+      while (_mobTracePoints.length > 1 &&
+             (orbX - (elapsedMs - _mobTracePoints[0].t) * scrollSpd) < -20) {
+        _mobTracePoints.shift();
+      }
+
+      _mobDrawTrace(canvas.getContext('2d'), W, H, elapsedMs);
     }
 
     _mobLineRaf = requestAnimationFrame(frame);
   }
 
-  function _mobDrawTrace(ctx, W, H) {
+  function _mobDrawTrace(ctx, W, H, elapsedMs) {
     ctx.clearRect(0, 0, W, H);
 
-    // Dotted grid
+    // Dotted grid (static — doesn't scroll)
     ctx.fillStyle = 'rgba(201,169,110,0.15)';
     const sp = 28;
     for (let gy = sp / 2; gy < H; gy += sp)
@@ -1735,7 +1747,7 @@
         ctx.beginPath(); ctx.arc(gx, gy, 1, 0, Math.PI * 2); ctx.fill();
       }
 
-    // Baseline guide
+    // Baseline guide (static)
     ctx.beginPath();
     ctx.moveTo(0, H * 0.85);
     ctx.lineTo(W, H * 0.85);
@@ -1744,14 +1756,29 @@
     ctx.shadowBlur = 0;
     ctx.stroke();
 
-    // Breath trace line (left → right across session)
-    if (_mobTracePoints.length > 1) {
+    // Orb fixed at 72% horizontal
+    const orbX      = W * 0.72;
+    const orbY      = _mobCurrentY;
+    const scrollSpd = W / _MOB_SESSION_MS;
+
+    // Map stored points to current screen positions
+    const pts = _mobTracePoints.map(p => ({
+      x: orbX - (elapsedMs - p.t) * scrollSpd,
+      y: p.y
+    })).filter(p => p.x >= -10);
+
+    // Smooth bezier trace
+    if (pts.length > 1) {
       ctx.save();
       ctx.beginPath();
-      ctx.moveTo(_mobTracePoints[0].x, _mobTracePoints[0].y);
-      for (let i = 1; i < _mobTracePoints.length; i++) {
-        ctx.lineTo(_mobTracePoints[i].x, _mobTracePoints[i].y);
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length - 1; i++) {
+        const midX = (pts[i].x + pts[i + 1].x) / 2;
+        const midY = (pts[i].y + pts[i + 1].y) / 2;
+        ctx.quadraticCurveTo(pts[i].x, pts[i].y, midX, midY);
       }
+      const last = pts[pts.length - 1];
+      ctx.lineTo(last.x, last.y);
       ctx.strokeStyle = '#C9A96E';
       ctx.lineWidth = 2.5;
       ctx.shadowColor = 'rgba(201,169,110,0.5)';
@@ -1762,15 +1789,22 @@
       ctx.restore();
     }
 
-    // Orb — fixed at horizontal centre, Y tracks breath
-    const orbX    = W / 2;
-    const orbY    = _mobCurrentY;
+    // Left-edge fade — masks trace scrolling off
+    const isDark   = document.documentElement.getAttribute('data-theme') === 'dark';
+    const bgSolid  = isDark ? 'rgba(10,15,30,1)'  : 'rgba(244,236,221,1)';
+    const bgClear  = isDark ? 'rgba(10,15,30,0)'  : 'rgba(244,236,221,0)';
+    const fadeGrad = ctx.createLinearGradient(0, 0, 40, 0);
+    fadeGrad.addColorStop(0, bgSolid);
+    fadeGrad.addColorStop(1, bgClear);
+    ctx.fillStyle = fadeGrad;
+    ctx.fillRect(0, 0, 40, H);
+
+    // Orb on top
     const topY    = H * 0.12;
     const botY    = H * 0.85;
     const range   = botY - topY;
     const progress = range > 0 ? Math.max(0, Math.min(1, (botY - orbY) / range)) : 0;
 
-    // Bloom
     const bloomR = 20 + progress * 8;
     const bloom  = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, bloomR);
     bloom.addColorStop(0, `rgba(228,194,119,${(0.25 + progress * 0.4).toFixed(2)})`);
@@ -1780,7 +1814,6 @@
     ctx.fillStyle = bloom;
     ctx.fill();
 
-    // Core orb
     ctx.beginPath();
     ctx.arc(orbX, orbY, 7 + progress * 3, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(201,169,110,${(0.7 + progress * 0.3).toFixed(2)})`;
