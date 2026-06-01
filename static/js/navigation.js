@@ -159,11 +159,17 @@
   const _CARD_ORDER_INDEX = new Map(_CARD_ORDER.map((id, i) => [id, i]));
   const _LOCK_ICON_SVG = '<svg class="card-lock-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   function _practiceLevel(id) { return _LEVEL_BY_ID[id] || 1; }
-  function _practiceLocked(id) { return _practiceLevel(id) > 1; }
+
+  function isPracticeUnlocked(item) {
+    const appLvl = item.appLevel !== undefined ? item.appLevel : 1;
+    if (appLvl === 0) return true;
+    const unlockedLevel = (loadStore().unlockedLevel) || 0;
+    return appLvl <= unlockedLevel;
+  }
 
   // Locked cards don't navigate — gently explain why instead.
   function lockedToast() {
-    showToast({ icon: '🔒', label: 'This practice unlocks as you progress through Triad', autohide: 2600 });
+    showToast({ icon: '🔒', label: 'Complete your achievements to unlock this practice', autohide: 2600 });
   }
 
   function renderCardGrid(items, gridId, openFn) {
@@ -175,14 +181,12 @@
     });
     grid.innerHTML = sorted.map(item => {
       const level  = _practiceLevel(item.id);
-      // Per-item `locked` flag (set on the card data) wins; otherwise fall back to level gating.
-      const locked = (item.locked !== undefined) ? item.locked : level > 1;
+      const locked = !isPracticeUnlocked(item);
       const click  = locked ? ` onclick="lockedToast()"` : ` onclick="${openFn}('${item.id}')"`;
       const aria   = locked ? ' aria-disabled="true"' : '';
-      const dim    = locked ? ' style="opacity:0.5"' : '';
       const badge  = `<div class="card-level-badge lv-${level}">${locked ? _LOCK_ICON_SVG : ''}<span>Level ${level}</span></div>`;
       return `
-      <button class="card${locked ? ' locked' : ''}"${aria}${click}${dim}>
+      <button class="card${locked ? ' card--locked' : ''}"${aria}${click}>
         ${badge}
         <div class="card-title">${escapeHtml(item.title)}</div>
         <div class="card-desc">${escapeHtml(item.desc)}</div>

@@ -667,6 +667,133 @@ Build my personalised plan.`;
       }
     });
     saveStore(store);
+    checkLevelUnlocks();
+  }
+
+  const _GUEST_ACHIEVEMENT_IDS = [
+    'first-breath', 'first-stillness', 'first-page', 'first-teacher', 'first-listen',
+    'going-deeper', 'into-stillness', 'joined-triad', 'committed-breather',
+    'committed-stillness', 'collector'
+  ];
+
+  function checkLevelUnlocks() {
+    const s = loadStore();
+    const earned = s.achievements || {};
+    const currentLevel = s.unlockedLevel || 0;
+
+    // Levels 1 + 2 unlock together when all 11 guest achievements are earned
+    const allGuestDone = _GUEST_ACHIEVEMENT_IDS.every(id => !!earned[id]);
+    if (allGuestDone && currentLevel < 2) {
+      s.unlockedLevel = 2;
+      saveStore(s);
+      // Re-render card grids to reflect new unlock state
+      if (typeof renderCardGrid === 'function' && typeof TECHNIQUES !== 'undefined' && typeof MEDITATIONS !== 'undefined') {
+        renderCardGrid(TECHNIQUES, 'techniques-grid', 'showTechniqueDetail');
+        renderCardGrid(MEDITATIONS, 'meditate-grid', 'showMeditationDetail');
+      }
+      setTimeout(() => showLevelUnlockScreen(2), 600);
+      return;
+    }
+
+    // Level 3: one L2 breathwork session + one L2 meditation session + resonant-breather achievement
+    if (currentLevel >= 2 && currentLevel < 3) {
+      const bw  = s.breathwork || {};
+      const med = s.meditation || {};
+      const LEVEL2_BW  = ['wim-hof-method', 'diaphragmatic-breathing'];
+      const LEVEL2_MED = ['loving-kindness', 'trataka', 'visualization', 'gap-watching', 'chakra-visualization'];
+      const hasL2BW    = LEVEL2_BW.some(id  => (bw[id]?.totalSessions  || 0) >= 1);
+      const hasL2Med   = LEVEL2_MED.some(id => (med[id]?.totalSessions || 0) >= 1);
+      const hasResonant = !!earned['resonant-breather'];
+      if (hasL2BW && hasL2Med && hasResonant) {
+        s.unlockedLevel = 3;
+        saveStore(s);
+        if (typeof renderCardGrid === 'function' && typeof TECHNIQUES !== 'undefined' && typeof MEDITATIONS !== 'undefined') {
+          renderCardGrid(TECHNIQUES, 'techniques-grid', 'showTechniqueDetail');
+          renderCardGrid(MEDITATIONS, 'meditate-grid', 'showMeditationDetail');
+        }
+        setTimeout(() => showLevelUnlockScreen(3), 600);
+      }
+    }
+  }
+
+  function showLevelUnlockScreen(level) {
+    const screen = document.getElementById('levelUnlockScreen');
+    if (!screen) return;
+
+    // Collect newly accessible items
+    const allItems = [
+      ...(typeof TECHNIQUES  !== 'undefined' ? TECHNIQUES  : []),
+      ...(typeof MEDITATIONS !== 'undefined' ? MEDITATIONS : [])
+    ];
+    // Level 2 screen lists appLevel:1 items (newly accessible)
+    // Level 3 screen lists appLevel:2 items (newly accessible)
+    const showLevel = level === 2 ? 1 : 2;
+    const newItems  = allItems.filter(i => i.appLevel === showLevel).map(i => i.title);
+
+    const LEVEL_DATA = {
+      2: { label: 'LEVEL 2', subtitle: 'Your practice deepens.' },
+      3: { label: 'LEVEL 3', subtitle: 'The advanced path opens.' }
+    };
+    const data = LEVEL_DATA[level] || LEVEL_DATA[2];
+
+    document.getElementById('lusLevel').textContent    = data.label;
+    document.getElementById('lusSubtitle').textContent = data.subtitle;
+
+    const listEl = document.getElementById('lusNewList');
+    if (listEl) listEl.innerHTML = newItems.map(n => `<span class="lus-new-item">${escapeHtml(n)}</span>`).join('');
+
+    const emblemEl = document.getElementById('lusEmblem');
+    if (emblemEl && typeof TRIAD_LOGO_SVG !== 'undefined') emblemEl.innerHTML = TRIAD_LOGO_SVG;
+
+    _spawnLusParticles();
+
+    screen.style.display   = 'flex';
+    screen.style.opacity   = '0';
+    screen.style.transition = 'none';
+    requestAnimationFrame(() => {
+      screen.style.transition = 'opacity 0.6s ease';
+      screen.style.opacity    = '1';
+    });
+
+    document.getElementById('lusBtn').onclick = () => {
+      screen.style.opacity = '0';
+      setTimeout(() => { screen.style.display = 'none'; }, 600);
+    };
+  }
+
+  function _spawnLusParticles() {
+    const container = document.getElementById('lusParticles');
+    if (!container) return;
+    container.innerHTML = '';
+    const colours = ['#C9A96E', '#E4C277', '#F4ECDD', '#9B59FF', '#00FFCC'];
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    for (let i = 0; i < 60; i++) {
+      const p   = document.createElement('div');
+      const size = 4 + Math.random() * 6;
+      const x0  = Math.random() * W;
+      const y0  = Math.random() * H;
+      const dx  = (Math.random() - 0.5) * 200;
+      const dy  = (Math.random() - 0.5) * 200;
+      const dur = 1000 + Math.random() * 1500;
+      const del = Math.random() * 500;
+      p.style.cssText = `position:absolute;width:${size}px;height:${size}px;border-radius:50%;background:${colours[Math.floor(Math.random()*colours.length)]};left:${x0}px;top:${y0}px;pointer-events:none;`;
+      container.appendChild(p);
+      const start = performance.now() + del;
+      function animP(el, x, y, vx, vy, duration, startTime) {
+        function frame(now) {
+          const t = (now - startTime) / duration;
+          if (t < 0) { requestAnimationFrame(frame); return; }
+          if (t >= 1) { el.remove(); return; }
+          const ease = 1 - t;
+          el.style.transform = `translate(${vx * t}px, ${vy * t}px) scale(${ease})`;
+          el.style.opacity   = String(ease);
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+      animP(p, x0, y0, dx, dy, dur, start);
+    }
   }
 
   /* ── Achievement popup (full-width, z-index 9999, stacked) ── */

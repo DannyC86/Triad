@@ -41,8 +41,9 @@
       visitedMeditationsHub: 0,
       hasAccount: 0,
       missions: {},
-      breathwork: {},  // { [techniqueId]: { totalBreaths, totalSessions, totalDuration } }
-      meditation: {},  // { [meditationId]: { totalDuration } }
+      breathwork: {},     // { [techniqueId]: { totalBreaths, totalSessions, totalDuration } }
+      meditation: {},     // { [meditationId]: { totalDuration } }
+      unlockedLevel: 0,   // 0 = only appLevel:0 accessible; 2 = L1+L2; 3 = all
       mastery: {
         body:   { points: 0, level: 0, rank: 'Unranked' },
         mind:   { points: 0, level: 0, rank: 'Unranked' },

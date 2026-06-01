@@ -1121,6 +1121,20 @@ var _introPlayedThisSession = false;
 <!-- ═════════ Offline indicator ═════════ -->
 <div id="offline-pill">Offline — your progress is saved locally</div>
 
+<!-- ═════════ Level unlock celebration screen ═════════ -->
+<div class="level-unlock-screen" id="levelUnlockScreen" style="display:none">
+  <div class="lus-particles" id="lusParticles"></div>
+  <div class="lus-content">
+    <div class="lus-emblem" id="lusEmblem"></div>
+    <div class="lus-level" id="lusLevel">LEVEL 2</div>
+    <div class="lus-title">Unlocked</div>
+    <div class="lus-subtitle" id="lusSubtitle"></div>
+    <div class="lus-new-label">New practices available</div>
+    <div class="lus-new-list" id="lusNewList"></div>
+    <button class="btn-gold lus-btn" id="lusBtn">Explore</button>
+  </div>
+</div>
+
 <!-- ═════════ Universal session intro popup ═════════ -->
 <div class="session-intro-popup" id="sessionIntroPopup" style="display:none" role="dialog" aria-modal="true">
   <div class="session-intro-card">

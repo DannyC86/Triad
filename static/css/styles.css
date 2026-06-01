@@ -774,6 +774,15 @@
     }
     .card.locked::before { opacity: 0.2; }
 
+    /* appLevel-based lock (pointer-events active so toast fires) */
+    .card--locked {
+      opacity: 0.45;
+      filter: grayscale(60%);
+      position: relative;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
     /* ─── Detail view ─── */
     .detail-view { display: none; }
     .detail-view.active { display: block; animation: section-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
@@ -6083,6 +6092,58 @@
     }
     .mob3-btn:hover  { filter: brightness(1.06); }
     .mob3-btn:active { transform: scale(0.98); }
+
+    /* ═══════════ Level unlock celebration screen ═══════════ */
+    .level-unlock-screen {
+      position: fixed; inset: 0; z-index: 900;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 40px 28px;
+      overflow: hidden;
+    }
+    .lus-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .lus-content {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 400px;
+    }
+    .lus-emblem {
+      width: 100px; height: 100px; margin: 0 auto 24px;
+      animation: lusEmblemPulse 3s infinite ease-in-out;
+    }
+    .lus-emblem svg { width: 100%; height: 100%; display: block; }
+    @keyframes lusEmblemPulse {
+      0%,100% { filter: drop-shadow(0 0 8px rgba(201,169,110,0.4)); transform: scale(1); }
+      50%     { filter: drop-shadow(0 0 24px rgba(201,169,110,0.8)); transform: scale(1.05); }
+    }
+    .lus-level {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: 12px; letter-spacing: .5em; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .lus-title {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(42px, 10vw, 64px); color: var(--text); margin-bottom: 8px;
+    }
+    .lus-subtitle {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 18px; color: var(--text-soft); margin-bottom: 28px;
+    }
+    .lus-new-label {
+      font-family: 'DM Sans', sans-serif; font-size: 11px;
+      letter-spacing: .3em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 16px;
+    }
+    .lus-new-list {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin-bottom: 36px;
+    }
+    .lus-new-item {
+      font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text);
+      border: 1px solid var(--gold); border-radius: 999px; padding: 6px 16px;
+      background: rgba(201,169,110,0.08);
+    }
+    .lus-btn { width: 100%; max-width: 320px; border-radius: 999px; padding: 18px 24px; }
 
     /* ─── Page transition overlay ─── */
     #page-transition-overlay {

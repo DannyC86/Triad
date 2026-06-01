@@ -5,6 +5,7 @@
   const TECHNIQUES = [
     {
       id: "physiological-sigh",
+      appLevel: 1,
       locked: true,
       title: "Physiological Sigh",
       desc: "A double-inhale and long exhale — the fastest reset available, in about 15 seconds.",
@@ -27,6 +28,7 @@
     },
     {
       id: "4-7-8-breathing",
+      appLevel: 1,
       locked: true,
       title: "4-7-8 Breathing",
       desc: "Dr Andrew Weil's natural tranquiliser — a 4-second inhale, 7-second hold, 8-second exhale.",
@@ -50,6 +52,7 @@
     },
     {
       id: "box-breathing",
+      appLevel: 1,
       locked: true,
       title: "Box Breathing",
       desc: "The Navy SEAL favourite — equal counts of 4 in, 4 hold, 4 out, 4 hold. Quiet, controlled, focused.",
@@ -73,6 +76,7 @@
     },
     {
       id: "buteyko-method",
+      appLevel: 1,
       locked: true,
       title: "Buteyko Method",
       desc: "Restore tolerance to CO₂ through gentle nasal under-breathing — the antidote to chronic over-breathing.",
@@ -96,6 +100,7 @@
     },
     {
       id: "wim-hof-method",
+      appLevel: 2,
       locked: true,
       title: "The Wim Hof Method",
       desc: "Powerful breaths, deliberate retentions, and (optionally) cold — voluntary access to the autonomic nervous system.",
@@ -119,6 +124,7 @@
     },
     {
       id: "nadi-shodhana",
+      appLevel: 1,
       locked: true,
       title: "Nadi Shodhana",
       desc: "Alternate-nostril breathing — the yogi's tool for balancing nervous system and hemispheres.",
@@ -142,6 +148,7 @@
     },
     {
       id: "kapalabhati",
+      appLevel: 1,
       locked: true,
       title: "Kapalabhati",
       desc: "Skull-shining breath — sharp, rhythmic abdominal exhales that energise and clear the mind.",
@@ -165,6 +172,7 @@
     },
     {
       id: "bhramari",
+      appLevel: 1,
       locked: true,
       title: "Bhramari",
       desc: "Humming bee breath — a soft hum on the exhale that floods the body with nitric oxide and calm.",
@@ -188,6 +196,7 @@
     },
     {
       id: "ujjayi",
+      appLevel: 1,
       locked: true,
       title: "Ujjayi",
       desc: "Ocean breath — a soft throat constriction creating an audible inner wave that anchors attention.",
@@ -211,6 +220,7 @@
     },
     {
       id: "kumbhaka",
+      appLevel: 3,
       locked: true,
       title: "Kumbhaka",
       desc: "Deliberate breath retention — the advanced art of pausing prana to refine awareness.",
@@ -234,6 +244,7 @@
     },
     {
       id: "diaphragmatic-breathing",
+      appLevel: 2,
       locked: true,
       title: "Diaphragmatic Breathing",
       desc: "Deep belly breathing designed to maximise oxygen exchange and lower cortisol.",
@@ -257,6 +268,7 @@
     },
     {
       id: "extended-exhale",
+      appLevel: 3,
       locked: true,
       title: "Extended Exhale",
       desc: "A down-regulation protocol stretching the exhalation phase to trigger instant calm.",
@@ -280,6 +292,7 @@
     },
     {
       id: "resonant-breathing",
+      appLevel: 0,
       locked: false,
       tier: "Apprentice",
       phases: [ { type: 'inhale', sec: 5 }, { type: 'exhale', sec: 5 } ],
@@ -305,6 +318,7 @@
     },
     {
       id: "tummo",
+      appLevel: 3,
       locked: true,
       title: "Tummo",
       desc: "Inner fire breathing from Tibetan Vajrayana tradition. Generates internal heat and altered states.",
@@ -328,6 +342,7 @@
     },
     {
       id: "sama-vritti",
+      appLevel: 1,
       locked: true,
       title: "Sama Vritti",
       desc: "Equal ratio breathing. Four counts in, four counts out. Balance through symmetry.",
@@ -351,6 +366,7 @@
     },
     {
       id: "uddiyana-bandha",
+      appLevel: 3,
       locked: true,
       title: "Uddiyana Bandha",
       desc: "Abdominal lock. Advanced pranayama combining breath retention with deep core engagement.",
@@ -374,6 +390,7 @@
     },
     {
       id: "advanced-buteyko",
+      appLevel: 3,
       locked: true,
       title: "Advanced Buteyko",
       desc: "Extended CO₂ tolerance training protocols for athletes and advanced practitioners.",
@@ -397,6 +414,7 @@
     },
     {
       id: "holotropic-breathwork",
+      appLevel: 3,
       locked: true,
       title: "Holotropic Breathwork",
       desc: "Stanislav Grof's transformative method using accelerated breathing to access non-ordinary states.",
@@ -423,6 +441,7 @@
   const MEDITATIONS = [
     {
       id: "mindfulness-of-breath",
+      appLevel: 0,
       locked: false,
       title: "Mindfulness of Breath",
       desc: "Anapanasati — gentle attention to the natural breath, returning whenever the mind wanders.",
@@ -446,6 +465,7 @@
     },
     {
       id: "body-scan",
+      appLevel: 1,
       locked: true,
       title: "Body Scan",
       desc: "Systematic head-to-toe attention to physical sensation — the gateway to interoception.",
@@ -469,6 +489,7 @@
     },
     {
       id: "loving-kindness",
+      appLevel: 2,
       locked: true,
       title: "Loving-Kindness (Metta)",
       desc: "Five-stage cultivation of benevolence — toward self, loved ones, strangers, the difficult, and all beings.",
@@ -493,6 +514,7 @@
     },
     {
       id: "yoga-nidra",
+      appLevel: 1,
       locked: true,
       title: "Yoga Nidra (NSDR)",
       desc: "Non-Sleep Deep Rest — guided descent into the hypnagogic state for profound restoration.",
@@ -516,6 +538,7 @@
     },
     {
       id: "trataka",
+      appLevel: 2,
       locked: true,
       title: "Trataka",
       desc: "Candle gazing — unwavering visual focus followed by inner visualisation. A classical concentration practice.",
@@ -539,6 +562,7 @@
     },
     {
       id: "open-awareness",
+      appLevel: 3,
       locked: true,
       title: "Open Awareness",
       desc: "Resting as awareness itself, without object — the non-dual practice of recognising what's already here.",
@@ -562,6 +586,7 @@
     },
     {
       id: "gratitude-meditation",
+      appLevel: 1,
       locked: true,
       title: "Gratitude Meditation",
       desc: "Active cognitive reframing targeting positive states and neurochemical rewires.",
@@ -585,6 +610,7 @@
     },
     {
       id: "box-visualization",
+      appLevel: 1,
       locked: true,
       title: "Box Visualization",
       desc: "A high-focus mental projection tracking a geometric anchor to lock down wandering thoughts.",
@@ -608,6 +634,7 @@
     },
     {
       id: "soundscape-meditation",
+      appLevel: 1,
       locked: true,
       title: "Soundscape Meditation",
       desc: "Using external auditory frequencies to anchor presence and clear background noise.",
@@ -631,6 +658,7 @@
     },
     {
       id: "visualization",
+      appLevel: 2,
       locked: true,
       title: "Visualization",
       desc: "Directed mental imagery for performance, healing, and manifestation. Used by elite athletes worldwide.",
@@ -654,6 +682,7 @@
     },
     {
       id: "mantra-japa",
+      appLevel: 1,
       locked: true,
       title: "Mantra (Japa)",
       desc: "Sacred sound repetition from the Vedic tradition. The vibration of mantra settles the mind.",
@@ -677,6 +706,7 @@
     },
     {
       id: "gap-watching",
+      appLevel: 2,
       locked: true,
       title: "Gap Watching",
       desc: "Observing the space between thoughts. Eckhart Tolle's direct path to present-moment awareness.",
@@ -700,6 +730,7 @@
     },
     {
       id: "self-inquiry",
+      appLevel: 3,
       locked: true,
       title: "Self-Inquiry",
       desc: "Who am I? Ramana Maharshi's direct path to awareness through questioning the nature of self.",
@@ -723,6 +754,7 @@
     },
     {
       id: "chakra-visualization",
+      appLevel: 2,
       locked: true,
       title: "Chakra Visualization",
       desc: "Energy centre activation through focused imagery. Bridges ancient yogic anatomy with modern bodywork.",
@@ -746,6 +778,7 @@
     },
     {
       id: "void-meditation",
+      appLevel: 3,
       locked: true,
       title: "Void Meditation (Shunyata)",
       desc: "Resting as pure emptiness. The Heart Sutra's teaching on the nature of reality.",
