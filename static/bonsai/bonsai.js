@@ -65,7 +65,15 @@ function _bonsaiPlantingCeremony() {
   screen.innerHTML =
     `<div class="bonsai-ceremony-particles" id="ceremonyParticles"></div>` +
     `<div class="bonsai-ceremony-content">` +
-      `<div class="bonsai-ceremony-icon">🌳</div>` +
+      `<div class="bonsai-ceremony-icon">` +
+        `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="80" height="80">` +
+          `<polygon points="75,100 125,100 100,143.301" fill="rgba(201,169,110,0.15)"/>` +
+          `<circle cx="75" cy="100" r="50" fill="none" stroke="#C9A96E" stroke-width="1.5"/>` +
+          `<circle cx="125" cy="100" r="50" fill="none" stroke="#C9A96E" stroke-width="1.5"/>` +
+          `<circle cx="100" cy="100" r="90" fill="none" stroke="#C9A96E" stroke-width="2"/>` +
+          `<polygon points="75,100 125,100 100,143.301" fill="none" stroke="#E4C277" stroke-width="1.5"/>` +
+        `</svg>` +
+      `</div>` +
       `<h2 class="bonsai-ceremony-title">Your garden awaits</h2>` +
       `<p class="bonsai-ceremony-sub">You have a pot. You have seeds.<br>It's time to begin.</p>` +
       `<button class="bonsai-ceremony-btn" onclick="this.closest('.bonsai-ceremony-screen').remove();openBonsaiScreen();">` +

@@ -39,7 +39,19 @@ function _bonsaiRender(canvas, cycle, watersInCycle, elapsed) {
   const H   = canvas.height / dpr;
   if (!W || !H) return;
 
-  ctx.clearRect(0, 0, W, H);
+  // Background
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  ctx.fillStyle = isDark
+    ? '#111827'
+    : (getComputedStyle(document.documentElement).getPropertyValue('--bg-section').trim() || '#F0EBE0');
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle gold vignette
+  const vignette = ctx.createRadialGradient(W / 2, H / 2, H / 4, W / 2, H / 2, H / 1.4);
+  vignette.addColorStop(0, 'rgba(201,169,110,0)');
+  vignette.addColorStop(1, 'rgba(201,169,110,0.08)');
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, W, H);
 
   const cx     = W / 2;
   const soilY  = H * 0.74;
