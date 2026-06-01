@@ -32,65 +32,31 @@ function _todayStr() {
 
 // ─── Unlock (wired from navigation.js on breath completion) ──────────────────
 
-function bonsaiUnlockOnFirstBreath() {
-  const data = _bonsaiLoad();
-  if (!data.unlocked) {
-    data.unlocked = true;
-    _bonsaiSave(data);
-    _bonsaiShowUnlockToast();
-  }
-}
+// ─── Auto-award (called on session completion) ────────────────────────────────
 
-function _bonsaiShowUnlockToast() {
-  const toast = document.createElement('div');
-  toast.className = 'bonsai-toast';
-  toast.innerHTML = '🌱 Bonsai Garden unlocked! Visit your Profile to begin.';
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add('show'), 100);
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 400);
-  }, 3500);
-}
-
-// ─── Claim rewards ────────────────────────────────────────────────────────────
-
-function bonsaiClaimPot() {
+function bonsaiAwardPot() {
   const data = _bonsaiLoad();
   if (data.hasPot) return;
   data.hasPot   = true;
   data.pots     = ['standard'];
   data.unlocked = true;
   _bonsaiSave(data);
-
-  const wrap = document.getElementById('bonsaiClaimPotWrap');
-  if (wrap) {
-    wrap.style.transition = 'opacity 0.4s';
-    wrap.style.opacity    = '0';
-    setTimeout(() => { wrap.style.display = 'none'; }, 400);
-  }
-
   if (typeof checkAchievements === 'function') checkAchievements();
-  _bonsaiShowToast('🪴 Pot claimed! Complete a meditation to get your seeds.');
+  _bonsaiShowToast('🪴 You earned a Bonsai Pot! Visit your garden to begin.');
   bonsaiUpdateProfileCard();
 }
 
-function bonsaiClaimSeeds() {
+function bonsaiAwardSeeds() {
   const data = _bonsaiLoad();
   if (data.hasSeeds) return;
+  if (!data.hasPot) return;
   data.hasSeeds = true;
   data.seeds    = ['standard'];
   _bonsaiSave(data);
-
-  const wrap = document.getElementById('bonsaiClaimSeedsWrap');
-  if (wrap) {
-    wrap.style.transition = 'opacity 0.4s';
-    wrap.style.opacity    = '0';
-    setTimeout(() => { wrap.style.display = 'none'; }, 400);
-  }
-
   if (typeof checkAchievements === 'function') checkAchievements();
-  setTimeout(() => _bonsaiPlantingCeremony(), 600);
+  _bonsaiShowToast('🌱 You earned Starter Seeds! Time to plant your bonsai.');
+  setTimeout(() => _bonsaiPlantingCeremony(), 1500);
+  bonsaiUpdateProfileCard();
 }
 
 function _bonsaiPlantingCeremony() {

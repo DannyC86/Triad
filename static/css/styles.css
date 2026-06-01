@@ -329,6 +329,9 @@
     /* Pacer overlays — hide nav only (header stays) */
     body:has(#pacerOverlay.active) .nav,
     body:has(#pacerOverlayPro.active) .nav { display: none !important; }
+    /* Bonsai overlay — hide nav and top header (has its own header) */
+    body:has(#bonsaiOverlay.active) .nav,
+    body:has(#bonsaiOverlay.active) .top-header { display: none !important; }
     .first-breath-gate-eyebrow {
       font-size: 0.66rem;
       letter-spacing: 0.22em;

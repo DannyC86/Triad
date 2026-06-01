@@ -850,14 +850,6 @@ var _introPlayedThisSession = false;
       <button class="sc-btn" onclick="_sessionCompleteGo('meditate')">Try a meditation (2 mins)</button>
       <button class="sc-btn" onclick="_sessionCompleteGo('home')">Explore the App</button>
     </div>
-    <div class="bonsai-claim-wrap" id="bonsaiClaimPotWrap" style="display:none">
-      <div class="bonsai-claim-card">
-        <div class="bonsai-claim-icon">🪴</div>
-        <div class="bonsai-claim-title">You've earned a Bonsai Pot!</div>
-        <div class="bonsai-claim-sub">Complete your first meditation to receive seeds and begin growing.</div>
-        <button class="bonsai-claim-btn" onclick="bonsaiClaimPot()">Claim your Pot</button>
-      </div>
-    </div>
   </div>
 
 </div>
@@ -1266,6 +1258,9 @@ var _introPlayedThisSession = false;
       <span class="bonsai-hdr-title">Bonsai Garden</span>
       <button class="bonsai-album-btn" onclick="openBonsaiAlbum()" id="bonsaiAlbumBtn" aria-label="Album">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      </button>
+      <button class="bonsai-close-btn" onclick="closeBonsaiScreen()" aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
 

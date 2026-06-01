@@ -26,14 +26,16 @@
   font-size: 20px; color: var(--text); letter-spacing: .06em;
 }
 .bonsai-back-btn,
-.bonsai-album-btn {
+.bonsai-album-btn,
+.bonsai-close-btn {
   background: transparent; border: none;
   color: var(--text-soft); cursor: pointer;
   padding: 8px; opacity: 0.75;
   display: flex; align-items: center; justify-content: center;
 }
 .bonsai-back-btn:hover,
-.bonsai-album-btn:hover { opacity: 1; }
+.bonsai-album-btn:hover,
+.bonsai-close-btn:hover { opacity: 1; }
 
 /* ─── Views (shared) ──────────────────────────────────────────────────────── */
 
