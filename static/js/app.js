@@ -1,4 +1,4 @@
-  const APP_VERSION = 'v2.5';
+  const APP_VERSION = 'v1.2';
 
   /* ════════════════ DATA ════════════════ */
 
@@ -782,9 +782,9 @@
   // Sync theme toggle UI with saved preference
   updateThemeToggle();
 
-  // Render version number
-  const _vEl = document.getElementById('app-version');
-  if (_vEl) _vEl.textContent = APP_VERSION;
+  // Render version number on splash only
+  const _splashVer = document.getElementById('intro-version');
+  if (_splashVer) _splashVer.textContent = APP_VERSION;
 
   // Paint guest state immediately, then hydrate from /auth/me asynchronously
   updateAuthUi();

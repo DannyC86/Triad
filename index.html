@@ -16,8 +16,7 @@
     body.first-breath-mode .home-header        { display: none; }
     body.first-breath-mode .top-header-avatar  { display: none !important; }
 
-    /* FIX 2: hide version number (sign-in link removed from gate HTML) */
-    body.first-breath-mode .app-version        { display: none; }
+
 
     /* FIX 3: cream background, full-screen, no scroll */
     body.first-breath-mode #home {
@@ -84,7 +83,7 @@
     <div id="intro-title">TRIAD</div>
     <div id="intro-slogan">Mind &middot; Body &middot; Spirit &middot; Aligned</div>
   </div>
-  <div id="intro-version">v1.1</div>
+  <div id="intro-version">v1.2</div>
 </div>
 <script>
 var _introPlayedThisSession = false;
@@ -176,7 +175,6 @@ var _introPlayedThisSession = false;
       <div class="home-auth-footer" id="home-auth-footer">
         <span class="home-auth-link" onclick="openAuthModal('signup')" role="button" tabindex="0">Sign Up / Log In</span>
       </div>
-      <span class="app-version" id="app-version"></span>
     </div>
     <!-- Hidden element kept for renderHomeSummary() JS compatibility -->
     <div id="home-summary-body" style="display:none"></div>
