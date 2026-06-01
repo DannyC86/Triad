@@ -5,6 +5,12 @@ __pycache__/
 .env.local
 venv/
 .venv/
+node_modules/
+curl
+mkdir
+skills/
+package.json
+package-lock.json
 
 # Local SQLite databases — user accounts, sessions, etc.
 users.db
