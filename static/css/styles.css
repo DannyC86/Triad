@@ -317,6 +317,18 @@
     body.first-breath-mode .top-header-avatar,
     body.first-breath-mode .top-header,
     body.first-breath-mode .nav { display: none !important; }
+
+    /* Completion / congratulations screen — hide header + nav */
+    body:has(#sessionOverlay.completion-active.active) .top-header,
+    body:has(#sessionOverlay.completion-active.active) .nav { display: none !important; }
+
+    /* MOB overlay (all pages) — hide header + nav */
+    body:has(#mobOverlay.active) .top-header,
+    body:has(#mobOverlay.active) .nav { display: none !important; }
+
+    /* Pacer overlays — hide nav only (header stays) */
+    body:has(#pacerOverlay.active) .nav,
+    body:has(#pacerOverlayPro.active) .nav { display: none !important; }
     .first-breath-gate-eyebrow {
       font-size: 0.66rem;
       letter-spacing: 0.22em;
@@ -5428,10 +5440,6 @@
     .gear-btn:hover { color: var(--text); border-color: var(--text-soft); }
     .gear-btn svg { width: 16px; height: 16px; }
     .gear-btn.hidden { display: none !important; }
-    body:has(#sessionOverlay.completion-active.active) .top-header { display: none; }
-    body:has(#sessionOverlay.completion-active.active) .nav { display: none; }
-    body:has(#pacerOverlay.active) .nav { display: none; }
-    body:has(#pacerOverlayPro.active) .nav { display: none; }
 
     /* Settings drawer */
     .settings-drawer-backdrop {
@@ -5930,8 +5938,9 @@
       transition: opacity 0.6s ease;
     }
     .mob-hold-wrap {
-      flex: 1; display: flex; align-items: flex-end;
-      justify-content: center; padding-bottom: 48px; width: 100%;
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      padding-bottom: 24px; width: 100%;
     }
     .mob-hold-btn {
       width: 80px; height: 80px; border-radius: 50%;

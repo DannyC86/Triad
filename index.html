@@ -631,6 +631,7 @@ var _introPlayedThisSession = false;
       </div>
       <p class="pacer-idle-copy">If you're ready, sit straight, relax…</p>
       <button class="pacer-breathe-btn" id="pacerBreatheBtn" onclick="togglePacer()">and Breathe</button>
+      <button class="pro-cancel-btn" id="guestCancelBtn" onclick="closePacer()">Cancel</button>
     </div>
     <!-- State 2: Countdown -->
     <div class="pacer-state" id="pacerStateCountdown" style="display:none">
@@ -639,6 +640,7 @@ var _introPlayedThisSession = false;
     <!-- State 3: Session -->
     <div class="pacer-state" id="pacerStateSession" style="display:none">
       <div class="pacer-phase-label" id="pacerPhaseLabel" style="opacity:0">INHALE</div>
+      <button class="pro-cancel-btn" id="guestSessionCancelBtn" onclick="confirmCancelGuestSession()">Cancel</button>
     </div>
   </div>
 </div>
@@ -722,6 +724,7 @@ var _introPlayedThisSession = false;
     </div>
     <div class="mob-bottom">
       <button class="mob-begin-btn" onclick="_mobGoToPage2()">Begin Meditation</button>
+      <button class="pro-cancel-btn" id="mobCancelBtn1" onclick="closeMobSession()">Cancel</button>
     </div>
   </div>
 
@@ -737,6 +740,7 @@ var _introPlayedThisSession = false;
         ontouchstart="_mobHoldDown(event)" ontouchend="_mobHoldUp(event)" ontouchcancel="_mobHoldCancel()">
         <span id="mobHoldLabel">Hold</span>
       </button>
+      <button class="pro-cancel-btn" id="mobCancelBtn2" onclick="confirmCancelMob()">Cancel</button>
     </div>
   </div>
 

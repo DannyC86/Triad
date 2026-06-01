@@ -1373,6 +1373,16 @@
     openQuitModal();
   }
 
+  function confirmCancelGuestSession() {
+    const endBtn = document.querySelector('#quitSessionModal .action-btn.secondary');
+    if (endBtn) endBtn.onclick = function() { closeQuitModal(); closePacer(); };
+    openQuitModal();
+  }
+
+  function confirmCancelMob() {
+    if (confirm('End meditation?')) { closeMobSession(); }
+  }
+
   function proEndSession() {
     _proPacerState.running = false;
     if (_proPacerState.raf) { cancelAnimationFrame(_proPacerState.raf); _proPacerState.raf = null; }
