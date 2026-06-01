@@ -5917,6 +5917,11 @@
       color: var(--gold); letter-spacing: .08em;
       text-align: center; margin-top: 32px; flex-shrink: 0;
     }
+    .mob-breath-count {
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      color: var(--text-soft); text-align: center;
+      margin-top: 6px; flex-shrink: 0;
+    }
     .mob-prompt {
       font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
       font-size: clamp(18px, 4vw, 24px);

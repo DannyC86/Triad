@@ -1473,7 +1473,7 @@
 
   /* ═══════════════════ MINDFULNESS OF BREATH SESSION ═══════════════════ */
 
-  const _MOB_SESSION_SECS = 120;
+  const _MOB_SESSION_SECS = 30;
   const _MOB_PROMPTS = [
     'Settle in…',
     'Notice your breath…',
@@ -1490,10 +1490,10 @@
   let _mobTimerRunning  = false;
   let _mobPromptIdx     = 0;
   let _mobPromptTimer   = null;
-  let _mobWaveRaf       = null;
-  let _mobWaveOffset    = 0;
-  let _mobWaveLastTs    = null;
-  let _mobActiveCanvas  = 'mobWaveCanvas1';
+  let _mobLineRaf       = null;
+  let _mobLineY         = 0;
+  let _mobLineInited    = false;
+  let _mobIsHolding     = false;
 
   function openMobSession() {
     _mobBreaths      = [];
@@ -1502,9 +1502,9 @@
     _mobTimerStart   = null;
     _mobTimerRunning = false;
     _mobPromptIdx    = 0;
-    _mobWaveOffset   = 0;
-    _mobWaveLastTs   = null;
-    _mobActiveCanvas = 'mobWaveCanvas1';
+    _mobLineY        = 0;
+    _mobLineInited   = false;
+    _mobIsHolding    = false;
 
     _mobClearTimers();
 
@@ -1517,10 +1517,21 @@
     if (holdBtn) holdBtn.classList.remove('pressed');
     const holdLbl = document.getElementById('mobHoldLabel');
     if (holdLbl) holdLbl.textContent = 'Hold';
+    const bcEl = document.getElementById('mobBreathCount');
+    if (bcEl) bcEl.textContent = 'Breaths: 0';
 
     _mobShowPage(1);
     document.getElementById('mobOverlay').classList.add('active');
-    _mobStartWave();
+
+    // One-shot static draw on page 1 canvas (ambient guide line at rest)
+    requestAnimationFrame(() => {
+      const c1 = document.getElementById('mobWaveCanvas1');
+      if (!c1) return;
+      const W = c1.clientWidth; const H = c1.clientHeight;
+      if (!W || !H) return;
+      c1.width = W; c1.height = H;
+      _pacerDrawToCanvas(c1, false, W * 0.3);
+    });
   }
 
   function closeMobSession() {
@@ -1538,37 +1549,89 @@
   }
 
   function _mobClearTimers() {
-    if (_mobTimerInterval) { clearInterval(_mobTimerInterval);  _mobTimerInterval = null; }
-    if (_mobPromptTimer)   { clearInterval(_mobPromptTimer);    _mobPromptTimer   = null; }
-    if (_mobWaveRaf)       { cancelAnimationFrame(_mobWaveRaf); _mobWaveRaf       = null; }
+    if (_mobTimerInterval) { clearInterval(_mobTimerInterval);   _mobTimerInterval = null; }
+    if (_mobPromptTimer)   { clearInterval(_mobPromptTimer);     _mobPromptTimer   = null; }
+    if (_mobLineRaf)       { cancelAnimationFrame(_mobLineRaf);  _mobLineRaf       = null; }
     _mobTimerRunning = false;
-    _mobWaveLastTs   = null;
   }
 
-  /* Ambient wave — 1 full sine cycle per 30 s */
-  function _mobStartWave() {
-    if (_mobWaveRaf) { cancelAnimationFrame(_mobWaveRaf); _mobWaveRaf = null; }
-    _mobWaveLastTs = null;
-    function frame(now) {
-      _mobWaveRaf = requestAnimationFrame(frame);
-      const canvas = document.getElementById(_mobActiveCanvas);
+  /* Breath-reactive line — runs on mobWaveCanvas2 during page 2 */
+  function _mobStartBreathLine() {
+    if (_mobLineRaf) { cancelAnimationFrame(_mobLineRaf); _mobLineRaf = null; }
+    _mobLineInited = false;
+    function frame() {
+      _mobLineRaf = requestAnimationFrame(frame);
+      const canvas = document.getElementById('mobWaveCanvas2');
       if (!canvas) return;
       const W = canvas.clientWidth;
       const H = canvas.clientHeight;
       if (!W || !H) return;
       if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
-      if (_mobWaveLastTs === null) { _mobWaveLastTs = now; return; }
-      const dt = now - _mobWaveLastTs;
-      _mobWaveLastTs = now;
-      _mobWaveOffset += (dt / 30000) * W;
-      _pacerDrawToCanvas(canvas, _mobActiveCanvas === 'mobWaveCanvas2', _mobWaveOffset);
+      const baseline = H * 0.85;
+      const topline  = H * 0.1;
+      if (!_mobLineInited) { _mobLineY = baseline; _mobLineInited = true; }
+      const target = _mobIsHolding ? topline : baseline;
+      const diff   = target - _mobLineY;
+      if (Math.abs(diff) > 0.5) _mobLineY += diff * 0.08;
+      else _mobLineY = target;
+      _mobDrawBreathLine(canvas.getContext('2d'), W, H);
     }
-    _mobWaveRaf = requestAnimationFrame(frame);
+    _mobLineRaf = requestAnimationFrame(frame);
+  }
+
+  function _mobDrawBreathLine(ctx, W, H) {
+    ctx.clearRect(0, 0, W, H);
+
+    // Dotted grid
+    ctx.fillStyle = 'rgba(201,169,110,0.15)';
+    const sp = 28;
+    for (let gy = sp / 2; gy < H; gy += sp)
+      for (let gx = sp / 2; gx < W; gx += sp) {
+        ctx.beginPath(); ctx.arc(gx, gy, 1, 0, Math.PI * 2); ctx.fill();
+      }
+
+    const baseline = H * 0.85;
+    const range    = H * 0.75; // baseline(0.85) - topline(0.1) = 0.75
+    const progress = range > 0 ? Math.max(0, Math.min(1, (baseline - _mobLineY) / range)) : 0;
+
+    const alpha = 0.4 + progress * 0.6;
+    const lw    = 2.5 + progress * 1.5;
+    const glow  = progress * 14;
+
+    // Horizontal breath line
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, _mobLineY);
+    ctx.lineTo(W, _mobLineY);
+    ctx.strokeStyle = `rgba(201,169,110,${alpha.toFixed(2)})`;
+    ctx.lineWidth   = lw;
+    ctx.shadowColor = 'rgba(201,169,110,0.6)';
+    ctx.shadowBlur  = glow;
+    ctx.stroke();
+    ctx.restore();
+
+    // Orb sitting on the line at centre
+    const orbX   = W / 2;
+    const orbY   = _mobLineY;
+    const orbR   = 7 + progress * 3;
+    const bloomR = 18 + progress * 8;
+
+    const bloom = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, bloomR);
+    bloom.addColorStop(0, `rgba(228,194,119,${(0.3 + progress * 0.4).toFixed(2)})`);
+    bloom.addColorStop(1, 'rgba(228,194,119,0)');
+    ctx.beginPath();
+    ctx.arc(orbX, orbY, bloomR, 0, Math.PI * 2);
+    ctx.fillStyle = bloom;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(orbX, orbY, orbR, 0, Math.PI * 2);
+    ctx.fillStyle = '#C9A96E';
+    ctx.fill();
   }
 
   /* Begin Meditation button → page 2 */
   function _mobGoToPage2() {
-    _mobActiveCanvas = 'mobWaveCanvas2';
     _mobShowPage(2);
 
     _mobTimerRunning = true;
@@ -1580,6 +1643,8 @@
       _mobPromptIdx = (_mobPromptIdx + 1) % _MOB_PROMPTS.length;
       _mobCrossfadePrompt(_MOB_PROMPTS[_mobPromptIdx]);
     }, 12000);
+
+    _mobStartBreathLine();
   }
 
   function _mobTimerTick() {
@@ -1593,7 +1658,7 @@
     if (elapsed >= _MOB_SESSION_SECS) {
       _mobTimerRunning = false;
       clearInterval(_mobTimerInterval); _mobTimerInterval = null;
-      if (el) el.textContent = '02:00';
+      if (el) el.textContent = '00:30';
       _mobGoToPage3();
     }
   }
@@ -1618,6 +1683,7 @@
     document.getElementById('mobHoldBtn')?.classList.add('pressed');
     const lbl = document.getElementById('mobHoldLabel');
     if (lbl) lbl.textContent = '…';
+    _mobIsHolding = true;
     _mobHoldTs = performance.now();
   }
 
@@ -1626,9 +1692,14 @@
     document.getElementById('mobHoldBtn')?.classList.remove('pressed');
     const lbl = document.getElementById('mobHoldLabel');
     if (lbl) lbl.textContent = 'Hold';
+    _mobIsHolding = false;
     if (_mobHoldTs !== null) {
       const dur = (performance.now() - _mobHoldTs) / 1000;
-      if (dur >= 0.5) _mobBreaths.push(dur);
+      if (dur >= 0.5) {
+        _mobBreaths.push(dur);
+        const bcEl = document.getElementById('mobBreathCount');
+        if (bcEl) bcEl.textContent = 'Breaths: ' + _mobBreaths.length;
+      }
       _mobHoldTs = null;
     }
   }
@@ -1637,33 +1708,35 @@
     document.getElementById('mobHoldBtn')?.classList.remove('pressed');
     const lbl = document.getElementById('mobHoldLabel');
     if (lbl) lbl.textContent = 'Hold';
+    _mobIsHolding = false;
     _mobHoldTs = null;
   }
 
   /* Timer complete → page 3 */
   function _mobGoToPage3() {
-    if (_mobPromptTimer)   { clearInterval(_mobPromptTimer);    _mobPromptTimer   = null; }
-    if (_mobWaveRaf)       { cancelAnimationFrame(_mobWaveRaf); _mobWaveRaf       = null; }
-    _mobHoldTs = null;
+    if (_mobPromptTimer) { clearInterval(_mobPromptTimer);    _mobPromptTimer = null; }
+    if (_mobLineRaf)     { cancelAnimationFrame(_mobLineRaf); _mobLineRaf     = null; }
+    _mobIsHolding = false;
+    _mobHoldTs    = null;
     _mobBuildPage3();
     _mobShowPage(3);
     _mobSaveSession();
   }
 
   function _mobBuildPage3() {
-    const b  = _mobBreaths;
-    const n  = b.length;
-    const f  = (v) => v.toFixed(1) + 's';
+    const b    = _mobBreaths;
+    const n    = b.length;
+    const f    = (v) => v.toFixed(1) + 's';
     const dash = '—';
     const avg  = n ? f(b.reduce((a, x) => a + x, 0) / n) : dash;
     const hi   = n ? Math.max(...b) : null;
     const lo   = n ? Math.min(...b) : null;
     const rows = [
-      ['Session Time',      '2:00'],
-      ['Breaths Recorded',  String(n)],
-      ['Average Breath',    avg],
-      ['Longest Breath',    n ? f(hi)      : dash],
-      ['Shortest Breath',   n ? f(lo)      : dash],
+      ['Session Time',       '0:30'],
+      ['Breaths Recorded',   String(n)],
+      ['Average Breath',     avg],
+      ['Longest Breath',     n ? f(hi)          : dash],
+      ['Shortest Breath',    n ? f(lo)          : dash],
       ['Breath Variability', n > 1 ? f(hi - lo) : dash]
     ];
     const rowsHTML = rows.map(([l, v]) =>
@@ -1686,31 +1759,34 @@
     const s = loadStore();
     if (!s.meditation) s.meditation = {};
     const m = s.meditation['mindfulness-of-breath'] || {};
-    m.totalDuration = (m.totalDuration || 0) + 120;
+    m.totalDuration = (m.totalDuration || 0) + 30;
     m.totalSessions = (m.totalSessions || 0) + 1;
     m.totalBreaths  = (m.totalBreaths  || 0) + _mobBreaths.length;
     s.meditation['mindfulness-of-breath'] = m;
     saveStore(s);
   }
 
-  /* Pause / resume for settings drawer (page 2 only) */
+  /* Pause / resume for settings drawer */
   function _mobPause() {
     if (_mobTimerRunning && _mobTimerStart !== null) {
       _mobTimerElapsed += (performance.now() - _mobTimerStart) / 1000;
       _mobTimerStart    = null;
       _mobTimerRunning  = false;
     }
-    if (_mobWaveRaf) { cancelAnimationFrame(_mobWaveRaf); _mobWaveRaf = null; _mobWaveLastTs = null; }
+    _mobIsHolding = false;
+    if (_mobLineRaf) { cancelAnimationFrame(_mobLineRaf); _mobLineRaf = null; }
   }
 
   function _mobResume() {
     const overlay = document.getElementById('mobOverlay');
     if (!overlay || !overlay.classList.contains('active')) return;
     const p2 = document.getElementById('mobPage2');
-    if (p2 && p2.style.display !== 'none' && !_mobTimerRunning && _mobTimerElapsed < _MOB_SESSION_SECS) {
-      _mobTimerRunning = true;
-      _mobTimerStart   = performance.now();
+    if (p2 && p2.style.display !== 'none') {
+      if (!_mobTimerRunning && _mobTimerElapsed < _MOB_SESSION_SECS) {
+        _mobTimerRunning = true;
+        _mobTimerStart   = performance.now();
+      }
+      _mobStartBreathLine();
     }
-    _mobStartWave();
   }
 
