@@ -1120,6 +1120,13 @@
     try { localStorage.setItem('triad:onboarded', 'true'); } catch(e) {}
 
     if (typeof bonsaiUnlockOnFirstBreath === 'function') bonsaiUnlockOnFirstBreath();
+
+    // Show pot claim card only on first breath (hasPot not yet set)
+    try {
+      const _bData = JSON.parse(localStorage.getItem('triad:bonsai') || '{}');
+      const _potWrap = document.getElementById('bonsaiClaimPotWrap');
+      if (_potWrap) _potWrap.style.display = _bData.hasPot ? 'none' : 'block';
+    } catch(e) {}
   }
 
   // Button handler for the completion screen's three navigation pills.
@@ -1568,6 +1575,13 @@
     _sovC.classList.add('completion-active');
 
     if (typeof bonsaiUnlockOnFirstBreath === 'function') bonsaiUnlockOnFirstBreath();
+
+    // Show pot claim card only if not yet claimed
+    try {
+      const _bData = JSON.parse(localStorage.getItem('triad:bonsai') || '{}');
+      const _potWrap = document.getElementById('bonsaiClaimPotWrap');
+      if (_potWrap) _potWrap.style.display = _bData.hasPot ? 'none' : 'block';
+    } catch(e) {}
   }
 
   /* ── Pacer pause / resume for settings drawer ──────────────────── */
@@ -2019,6 +2033,21 @@
     const rowsHTML = rows.map(([l, v]) =>
       `<div class="mob3-stat-row"><span class="mob3-stat-label">${l}</span><span class="mob3-stat-value">${v}</span></div>`
     ).join('');
+    let _seedsClaimHTML = '';
+    try {
+      const _bMob = JSON.parse(localStorage.getItem('triad:bonsai') || '{}');
+      if (_bMob.hasPot && !_bMob.hasSeeds) {
+        _seedsClaimHTML =
+          `<div class="bonsai-claim-wrap" id="bonsaiClaimSeedsWrap">` +
+            `<div class="bonsai-claim-card">` +
+              `<div class="bonsai-claim-icon">🌱</div>` +
+              `<div class="bonsai-claim-title">You've earned Starter Seeds!</div>` +
+              `<div class="bonsai-claim-sub">You now have everything you need. Visit your Bonsai Garden to begin growing.</div>` +
+              `<button class="bonsai-claim-btn" onclick="bonsaiClaimSeeds()">Claim your Seeds</button>` +
+            `</div>` +
+          `</div>`;
+      }
+    } catch(e) {}
     document.getElementById('mobPage3').innerHTML =
       `<div class="mob3-title">Mindfulness of Breath</div>` +
       `<div class="mob3-congrats">Congratulations</div>` +
@@ -2028,7 +2057,8 @@
         `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>{navigate('meditate');showMeditationDetail('mindfulness-of-breath')})">Learn about Mindfulness</button>` +
         `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>navigate('meditate'))">Try another meditation</button>` +
         `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>navigate('home'))">Explore the App</button>` +
-      `</div>`;
+      `</div>` +
+      _seedsClaimHTML;
   }
 
   function _mobSaveSession() {

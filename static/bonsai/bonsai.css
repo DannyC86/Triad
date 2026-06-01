@@ -297,6 +297,91 @@
   opacity: 1; transform: translateX(-50%) translateY(0);
 }
 
+/* ─── Claim reward cards ──────────────────────────────────────────────────── */
+
+.bonsai-claim-wrap {
+  width: 100%; max-width: 380px; margin: 20px auto 0;
+  transition: opacity 0.4s ease;
+}
+.bonsai-claim-card {
+  background: var(--bg-section);
+  border: 1.5px solid rgba(201,169,110,0.3);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px; text-align: center;
+  box-shadow: 0 4px 20px rgba(201,169,110,0.10);
+}
+.bonsai-claim-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+.bonsai-claim-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 400;
+  font-size: 20px; color: var(--text); margin-bottom: 8px;
+}
+.bonsai-claim-sub {
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: var(--text-soft); line-height: 1.6; margin-bottom: 18px;
+}
+.bonsai-claim-btn {
+  display: inline-block; padding: 14px 32px;
+  border: none; border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: var(--btn-text-on-gold);
+  font-family: 'Cormorant Garamond', serif; font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(201,169,110,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.bonsai-claim-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201,169,110,0.50);
+}
+
+/* ─── Planting ceremony screen ────────────────────────────────────────────── */
+
+.bonsai-ceremony-screen {
+  position: fixed; inset: 0; z-index: 9000;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.5s ease;
+}
+.bonsai-ceremony-particles {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+@keyframes ceremonyParticle {
+  0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+}
+.bonsai-ceremony-content {
+  text-align: center; padding: 40px 28px; position: relative; z-index: 1;
+}
+.bonsai-ceremony-icon { font-size: 64px; margin-bottom: 20px; display: block; }
+.bonsai-ceremony-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 300;
+  font-size: clamp(32px, 8vw, 48px); color: var(--text);
+  margin: 0 0 12px;
+}
+.bonsai-ceremony-sub {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 18px; color: var(--text-soft); line-height: 1.6;
+  margin-bottom: 36px;
+}
+.bonsai-ceremony-btn {
+  display: block; width: 100%; max-width: 280px; margin: 0 auto 12px;
+  padding: 18px 24px; border: none; border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: var(--btn-text-on-gold);
+  font-family: 'Cormorant Garamond', serif; font-size: 16px; cursor: pointer;
+  box-shadow: 0 4px 24px rgba(201,169,110,0.40);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.bonsai-ceremony-btn:hover { transform: translateY(-1px); }
+.bonsai-ceremony-skip {
+  background: transparent; border: none;
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  color: var(--text-muted); cursor: pointer;
+  letter-spacing: .08em; text-transform: uppercase; margin-top: 4px;
+  display: block; width: 100%;
+}
+.bonsai-ceremony-skip:hover { color: var(--text-soft); }
+
 /* ─── Dev button ──────────────────────────────────────────────────────────── */
 
 .bonsai-dev-btn {

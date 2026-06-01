@@ -70,6 +70,26 @@
       }
     },
 
+    /* ── Bonsai achievements ── */
+    {
+      id: 'bonsai-pot', tier: 'guest', name: 'First Pot', icon: '🪴',
+      hint: 'Claim your bonsai pot after completing your first breath session.',
+      test:     s => JSON.parse(localStorage.getItem('triad:bonsai') || '{}').hasPot === true,
+      progress: s => ({
+        current: JSON.parse(localStorage.getItem('triad:bonsai') || '{}').hasPot ? 1 : 0,
+        target: 1, label: 'pot claimed'
+      })
+    },
+    {
+      id: 'bonsai-seeds', tier: 'guest', name: 'Starter Seeds', icon: '🌱',
+      hint: 'Claim your starter seeds after completing your first meditation.',
+      test:     s => JSON.parse(localStorage.getItem('triad:bonsai') || '{}').hasSeeds === true,
+      progress: s => ({
+        current: JSON.parse(localStorage.getItem('triad:bonsai') || '{}').hasSeeds ? 1 : 0,
+        target: 1, label: 'seeds claimed'
+      })
+    },
+
     /* ── Practice achievement ── */
     {
       id: 'resonant-breather', tier: 'guest', name: 'Resonant Breather', icon: '〰️',

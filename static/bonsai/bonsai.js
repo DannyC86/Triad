@@ -4,11 +4,22 @@
 
 function _bonsaiLoad() {
   try {
-    return JSON.parse(localStorage.getItem('triad:bonsai') || 'null') ||
-      { unlocked: false, active: null, album: [], seeds: ['standard'], pots: ['standard'] };
+    return JSON.parse(localStorage.getItem('triad:bonsai') || 'null') || _bonsaiDefaults();
   } catch(e) {
-    return { unlocked: false, active: null, album: [], seeds: ['standard'], pots: ['standard'] };
+    return _bonsaiDefaults();
   }
+}
+
+function _bonsaiDefaults() {
+  return {
+    unlocked: false,
+    hasPot: false,
+    hasSeeds: false,
+    active: null,
+    album: [],
+    seeds: [],
+    pots: [],
+  };
 }
 
 function _bonsaiSave(data) {
@@ -40,6 +51,90 @@ function _bonsaiShowUnlockToast() {
     toast.classList.remove('show');
     setTimeout(() => toast.remove(), 400);
   }, 3500);
+}
+
+// ─── Claim rewards ────────────────────────────────────────────────────────────
+
+function bonsaiClaimPot() {
+  const data = _bonsaiLoad();
+  if (data.hasPot) return;
+  data.hasPot   = true;
+  data.pots     = ['standard'];
+  data.unlocked = true;
+  _bonsaiSave(data);
+
+  const wrap = document.getElementById('bonsaiClaimPotWrap');
+  if (wrap) {
+    wrap.style.transition = 'opacity 0.4s';
+    wrap.style.opacity    = '0';
+    setTimeout(() => { wrap.style.display = 'none'; }, 400);
+  }
+
+  if (typeof checkAchievements === 'function') checkAchievements();
+  _bonsaiShowToast('🪴 Pot claimed! Complete a meditation to get your seeds.');
+  bonsaiUpdateProfileCard();
+}
+
+function bonsaiClaimSeeds() {
+  const data = _bonsaiLoad();
+  if (data.hasSeeds) return;
+  data.hasSeeds = true;
+  data.seeds    = ['standard'];
+  _bonsaiSave(data);
+
+  const wrap = document.getElementById('bonsaiClaimSeedsWrap');
+  if (wrap) {
+    wrap.style.transition = 'opacity 0.4s';
+    wrap.style.opacity    = '0';
+    setTimeout(() => { wrap.style.display = 'none'; }, 400);
+  }
+
+  if (typeof checkAchievements === 'function') checkAchievements();
+  setTimeout(() => _bonsaiPlantingCeremony(), 600);
+}
+
+function _bonsaiPlantingCeremony() {
+  const screen = document.createElement('div');
+  screen.className = 'bonsai-ceremony-screen';
+  screen.innerHTML =
+    `<div class="bonsai-ceremony-particles" id="ceremonyParticles"></div>` +
+    `<div class="bonsai-ceremony-content">` +
+      `<div class="bonsai-ceremony-icon">🌳</div>` +
+      `<h2 class="bonsai-ceremony-title">Your garden awaits</h2>` +
+      `<p class="bonsai-ceremony-sub">You have a pot. You have seeds.<br>It's time to begin.</p>` +
+      `<button class="bonsai-ceremony-btn" onclick="this.closest('.bonsai-ceremony-screen').remove();openBonsaiScreen();">` +
+        `Begin Growing` +
+      `</button>` +
+      `<button class="bonsai-ceremony-skip" onclick="this.closest('.bonsai-ceremony-screen').remove();">` +
+        `Later` +
+      `</button>` +
+    `</div>`;
+  document.body.appendChild(screen);
+
+  // Spawn particles
+  const container = screen.querySelector('.bonsai-ceremony-particles');
+  const colours   = ['#C9A96E', '#E4C277', '#7A9E5E', '#F4ECDD', '#5C8A3C'];
+  for (let i = 0; i < 50; i++) {
+    const p = document.createElement('div');
+    const size     = 4 + Math.random() * 8;
+    const x        = Math.random() * 100;
+    const delay    = Math.random() * 1.5;
+    const duration = 2 + Math.random() * 2;
+    const dx       = (Math.random() - 0.5) * 200;
+    const dy       = -(50 + Math.random() * 200);
+    p.style.cssText =
+      `position:absolute;` +
+      `width:${size}px;height:${size}px;` +
+      `border-radius:50%;` +
+      `background:${colours[Math.floor(Math.random() * colours.length)]};` +
+      `left:${x}%;bottom:40%;` +
+      `opacity:0;` +
+      `animation:ceremonyParticle ${duration}s ${delay}s forwards ease-out;` +
+      `--dx:${dx}px;--dy:${dy}px;`;
+    container.appendChild(p);
+  }
+
+  requestAnimationFrame(() => { screen.style.opacity = '1'; });
 }
 
 // ─── Profile card ─────────────────────────────────────────────────────────────
@@ -74,7 +169,7 @@ function openBonsaiScreen() {
   if (albumBtn) albumBtn.style.display = data.album.length > 0 ? '' : 'none';
 
   if (!data.active) {
-    _bonsaiShowPlantView();
+    _bonsaiShowPlantView(data);
   } else if (data.active.cycle >= 10) {
     _bonsaiShowCompleteView(data);
   } else {
@@ -90,7 +185,8 @@ function closeBonsaiScreen() {
 
 // ─── Plant view ───────────────────────────────────────────────────────────────
 
-function _bonsaiShowPlantView() {
+function _bonsaiShowPlantView(data) {
+  if (!data) data = _bonsaiLoad();
   const view = document.getElementById('bonsaiPlantView');
   if (!view) return;
   view.style.display = 'flex';
@@ -98,16 +194,41 @@ function _bonsaiShowPlantView() {
   const nameInput = document.getElementById('bonsaiNameInput');
   if (nameInput) nameInput.value = '';
 
-  requestAnimationFrame(() => {
-    const previewEl = document.getElementById('bonsaiPotPreview');
-    if (!previewEl) return;
-    previewEl.innerHTML = '';
-    const c = document.createElement('canvas');
-    c.width  = 120;
-    c.height = 100;
-    previewEl.appendChild(c);
-    drawPot(c.getContext('2d'), 60, 78, 'standard');
-  });
+  // State-aware content
+  const titleEl   = view.querySelector('.bonsai-plant-title');
+  const subEl     = view.querySelector('.bonsai-plant-sub');
+  const btnEl     = view.querySelector('.bonsai-action-btn');
+  const nameWrap  = view.querySelector('.bonsai-name-wrap');
+  const hasBoth   = data.hasPot && data.hasSeeds;
+
+  if (!data.hasPot) {
+    if (titleEl)  titleEl.textContent   = 'Your garden is empty';
+    if (subEl)    subEl.textContent     = 'Complete your first breath session to earn a pot, then your first meditation to earn seeds.';
+    if (btnEl)    btnEl.style.display   = 'none';
+    if (nameWrap) nameWrap.style.display = 'none';
+  } else if (!data.hasSeeds) {
+    if (titleEl)  titleEl.textContent   = 'You have your pot!';
+    if (subEl)    subEl.textContent     = 'Complete your first meditation to earn your starter seeds.';
+    if (btnEl)    btnEl.style.display   = 'none';
+    if (nameWrap) nameWrap.style.display = 'none';
+  } else {
+    if (titleEl)  titleEl.textContent   = 'Plant your seed';
+    if (subEl)    subEl.textContent     = 'Your standard bonsai seed is ready. Water it daily and watch it grow over 30 days.';
+    if (btnEl)    btnEl.style.display   = 'block';
+    if (nameWrap) nameWrap.style.display = 'block';
+  }
+
+  if (hasBoth) {
+    requestAnimationFrame(() => {
+      const previewEl = document.getElementById('bonsaiPotPreview');
+      if (!previewEl) return;
+      previewEl.innerHTML = '';
+      const c = document.createElement('canvas');
+      c.width = 120; c.height = 100;
+      previewEl.appendChild(c);
+      drawPot(c.getContext('2d'), 60, 78, 'standard');
+    });
+  }
 }
 
 function bonsaiPlant() {
@@ -301,7 +422,7 @@ function bonsaiSaveToAlbum() {
   const albumBtn = document.getElementById('bonsaiAlbumBtn');
   if (albumBtn) albumBtn.style.display = '';
 
-  _bonsaiShowPlantView();
+  _bonsaiShowPlantView(_bonsaiLoad());
 }
 
 function bonsaiStartNew() {
@@ -314,7 +435,7 @@ function bonsaiStartNew() {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
-  _bonsaiShowPlantView();
+  _bonsaiShowPlantView(_bonsaiLoad());
 }
 
 // ─── Album ────────────────────────────────────────────────────────────────────
