@@ -1257,6 +1257,13 @@
   }
 
   function _proStartCountdown() {
+    // Dismiss intro card simultaneously with countdown start
+    const introPopup = document.getElementById('pacerIntroPopup');
+    if (introPopup && introPopup.style.display !== 'none') {
+      introPopup.classList.add('hiding');
+      setTimeout(() => { introPopup.style.display = 'none'; introPopup.classList.remove('hiding'); }, 400);
+    }
+
     const selDiv = document.getElementById('proSessionSelect');
     const cdDiv  = document.getElementById('proCountdown');
     if (selDiv) selDiv.style.display = 'none';
