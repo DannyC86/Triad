@@ -97,7 +97,7 @@
 
     // Per-section render hooks
     if (target === 'home')    renderHomeSummary();
-    if (target === 'profile') renderProfile();
+    if (target === 'profile') { renderProfile(); if (typeof bonsaiUpdateProfileCard === 'function') bonsaiUpdateProfileCard(); }
     if (target === 'plan')    { _navPush(() => navigate('profile')); _setBackLabel('Back to Profile'); }
 
     // Achievement triggers for Knowledge hub visits
@@ -1118,6 +1118,8 @@
     _sovA.classList.add('completion-active');
 
     try { localStorage.setItem('triad:onboarded', 'true'); } catch(e) {}
+
+    if (typeof bonsaiUnlockOnFirstBreath === 'function') bonsaiUnlockOnFirstBreath();
   }
 
   // Button handler for the completion screen's three navigation pills.
@@ -1159,6 +1161,33 @@
     prerollLastTs: null,
     prerollRaf: null,
   };
+
+  let _proIntroRaf = null;
+  let _proIntroMs  = 0;
+  let _proIntroLastTs = null;
+
+  function _proIntroStartWave() {
+    const canvas = document.getElementById('proIntroCanvas');
+    if (!canvas) return;
+    canvas.width  = canvas.clientWidth  || 320;
+    canvas.height = canvas.clientHeight || 160;
+    _proIntroMs = 0;
+    _proIntroLastTs = null;
+    function tick(now) {
+      if (!_proIntroRaf) return;
+      const dt = _proIntroLastTs !== null ? now - _proIntroLastTs : 0;
+      _proIntroLastTs = now;
+      _proIntroMs += dt;
+      const W = canvas.width;
+      _pacerDrawToCanvas(canvas, false, W * _PACER_IDLE_FRAC + (_proIntroMs / 30000) * W);
+      _proIntroRaf = requestAnimationFrame(tick);
+    }
+    _proIntroRaf = requestAnimationFrame(tick);
+  }
+
+  function _proIntroStopWave() {
+    if (_proIntroRaf) { cancelAnimationFrame(_proIntroRaf); _proIntroRaf = null; }
+  }
 
   function _proResizeCanvas() {
     const canvas = document.getElementById('proCanvas');
@@ -1228,11 +1257,46 @@
 
     overlay.classList.add('active');
 
-    requestAnimationFrame(() => {
-      _proResizeCanvas();
-      const c = document.getElementById('proCanvas');
-      _pacerDrawToCanvas(c, false, c ? c.width * _PACER_IDLE_FRAC : 0);
-    });
+    // Show intro screen, hide session zones
+    const introScreen = document.getElementById('proIntroScreen');
+    const zoneA = document.getElementById('proZoneA');
+    const zoneB = document.getElementById('proZoneB');
+    const zoneC = document.getElementById('proZoneC');
+    if (introScreen) introScreen.style.display = 'flex';
+    if (zoneA) zoneA.style.display = 'none';
+    if (zoneB) zoneB.style.display = 'none';
+    if (zoneC) zoneC.style.display = 'none';
+
+    // Populate intro from technique data
+    const introTitle    = document.getElementById('proIntroTitle');
+    const introSubtitle = document.getElementById('proIntroSubtitle');
+    const introList     = document.getElementById('proIntroList');
+    if (introTitle)    introTitle.textContent    = item && item.title ? item.title : 'Resonant Breathing';
+    if (introSubtitle) introSubtitle.textContent = item && item.desc  ? item.desc  : '';
+    const steps = (item && item.steps) ? item.steps : [];
+    if (introList && steps.length) {
+      introList.innerHTML = steps.map(s => `<li>${s}</li>`).join('');
+    }
+
+    // Wire begin button
+    const beginBtn = document.getElementById('proIntroBeginBtn');
+    if (beginBtn) {
+      beginBtn.onclick = () => {
+        if (introScreen) introScreen.style.display = 'none';
+        if (zoneA) zoneA.style.display = '';
+        if (zoneB) zoneB.style.display = '';
+        if (zoneC) zoneC.style.display = '';
+        _proIntroStopWave();
+        requestAnimationFrame(() => {
+          _proResizeCanvas();
+          const c = document.getElementById('proCanvas');
+          _pacerDrawToCanvas(c, false, c ? c.width * _PACER_IDLE_FRAC : 0);
+        });
+      };
+    }
+
+    // Start ambient wave on intro canvas
+    requestAnimationFrame(() => _proIntroStartWave());
   }
 
   function proSelectTile(tile) {
@@ -1257,13 +1321,6 @@
   }
 
   function _proStartCountdown() {
-    // Dismiss intro card simultaneously with countdown start
-    const introPopup = document.getElementById('pacerIntroPopup');
-    if (introPopup && introPopup.style.display !== 'none') {
-      introPopup.classList.add('hiding');
-      setTimeout(() => { introPopup.style.display = 'none'; introPopup.classList.remove('hiding'); }, 400);
-    }
-
     const selDiv = document.getElementById('proSessionSelect');
     const cdDiv  = document.getElementById('proCountdown');
     if (selDiv) selDiv.style.display = 'none';
@@ -1419,6 +1476,7 @@
     _proPacerState.running = false;
     if (_proPacerState.raf)        { cancelAnimationFrame(_proPacerState.raf);        _proPacerState.raf        = null; }
     if (_proPacerState.prerollRaf) { cancelAnimationFrame(_proPacerState.prerollRaf); _proPacerState.prerollRaf = null; }
+    _proIntroStopWave();
     _proPacerState.lastTs = null;
     const overlay = document.getElementById('pacerOverlayPro');
     if (overlay) overlay.classList.remove('active');
@@ -1508,6 +1566,8 @@
     const _sovC = document.getElementById('sessionOverlay');
     _sovC.classList.add('active');
     _sovC.classList.add('completion-active');
+
+    if (typeof bonsaiUnlockOnFirstBreath === 'function') bonsaiUnlockOnFirstBreath();
   }
 
   /* ── Pacer pause / resume for settings drawer ──────────────────── */

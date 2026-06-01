@@ -1,0 +1,307 @@
+/* ══════════════════════════════════════════════════════════════
+   Bonsai Garden — self-contained stylesheet
+   Uses only Triad CSS variables (no new global vars)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ─── Overlay ─────────────────────────────────────────────────────────────── */
+
+.bonsai-overlay {
+  position: fixed; inset: 0; z-index: 450;
+  background: var(--bg);
+  display: none; flex-direction: column;
+  overflow: hidden; height: 100dvh;
+}
+.bonsai-overlay.active { display: flex; }
+
+/* ─── Header ──────────────────────────────────────────────────────────────── */
+
+.bonsai-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg); flex-shrink: 0;
+}
+.bonsai-hdr-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 400;
+  font-size: 20px; color: var(--text); letter-spacing: .06em;
+}
+.bonsai-back-btn,
+.bonsai-album-btn {
+  background: transparent; border: none;
+  color: var(--text-soft); cursor: pointer;
+  padding: 8px; opacity: 0.75;
+  display: flex; align-items: center; justify-content: center;
+}
+.bonsai-back-btn:hover,
+.bonsai-album-btn:hover { opacity: 1; }
+
+/* ─── Views (shared) ──────────────────────────────────────────────────────── */
+
+.bonsai-view {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; padding: 24px 20px 32px;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+
+/* ─── Plant view ──────────────────────────────────────────────────────────── */
+
+.bonsai-plant-content {
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; text-align: center;
+}
+.bonsai-pot-preview {
+  margin: 28px auto 8px;
+  width: 120px; height: 100px;
+  display: flex; align-items: center; justify-content: center;
+}
+.bonsai-plant-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 400;
+  font-size: 26px; color: var(--text);
+  margin: 4px 0 10px;
+}
+.bonsai-plant-sub {
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: var(--text-soft); line-height: 1.65;
+  margin-bottom: 28px; max-width: 300px;
+}
+.bonsai-name-wrap { margin-bottom: 28px; width: 100%; }
+.bonsai-name-input {
+  width: 100%; max-width: 280px;
+  padding: 14px 18px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-section);
+  font-family: 'Cormorant Garamond', serif; font-size: 18px;
+  color: var(--text); text-align: center;
+  outline: none; box-sizing: border-box;
+}
+.bonsai-name-input::placeholder { color: var(--text-muted); }
+.bonsai-name-input:focus { border-color: var(--gold); }
+
+/* ─── Action buttons ──────────────────────────────────────────────────────── */
+
+.bonsai-action-btn {
+  display: block; width: 100%; max-width: 320px; margin: 0 auto 12px;
+  padding: 18px 24px; border: none; border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: var(--btn-text-on-gold);
+  font-family: 'Cormorant Garamond', serif; font-size: 17px;
+  cursor: pointer; letter-spacing: .04em;
+  box-shadow: 0 4px 20px rgba(201,169,110,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.bonsai-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(201,169,110,0.48);
+}
+.bonsai-action-btn:active { transform: scale(0.98); }
+.bonsai-action-btn--secondary {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--text-soft);
+  box-shadow: none;
+}
+.bonsai-action-btn--secondary:hover {
+  box-shadow: none; border-color: var(--text-soft);
+}
+
+/* ─── Active view ─────────────────────────────────────────────────────────── */
+
+.bonsai-info-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  width: 100%; margin-bottom: 12px;
+}
+.bonsai-name-display {
+  font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--text);
+}
+.bonsai-cycle-display {
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: var(--gold); font-weight: 600; letter-spacing: .04em;
+}
+.bonsai-canvas {
+  width: 100%; max-width: 340px;
+  height: clamp(220px, 45vw, 300px);
+  border-radius: var(--radius);
+  display: block;
+}
+.bonsai-canvas--complete {
+  max-width: 300px;
+  height: clamp(220px, 50vw, 300px);
+}
+
+/* ─── Progress ────────────────────────────────────────────────────────────── */
+
+.bonsai-progress-wrap {
+  width: 100%; max-width: 320px; margin: 16px 0 4px;
+}
+.bonsai-water-dots {
+  display: flex; gap: 10px; justify-content: center; margin-bottom: 14px;
+}
+.bonsai-water-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--gold); background: transparent;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+.bonsai-water-dot.filled {
+  background: var(--gold);
+  transform: scale(1.1);
+}
+.bonsai-cycle-bar {
+  height: 4px; background: var(--border); border-radius: 2px;
+  overflow: hidden; margin-bottom: 8px;
+}
+.bonsai-cycle-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  border-radius: 2px; transition: width 0.7s ease;
+  width: 0%;
+}
+.bonsai-progress-label {
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  color: var(--text-muted); text-align: center; letter-spacing: .04em;
+}
+
+/* ─── Water button ────────────────────────────────────────────────────────── */
+
+.bonsai-water-btn {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; padding: 20px 44px; margin-top: 18px;
+  border: none; border-radius: 999px;
+  background: linear-gradient(135deg, #4A90D9, #2E6DB8);
+  color: #fff; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  letter-spacing: .08em; text-transform: uppercase;
+  box-shadow: 0 4px 20px rgba(74,144,217,0.40);
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+}
+.bonsai-water-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(74,144,217,0.55);
+}
+.bonsai-water-btn:active:not(:disabled) { transform: scale(0.97); }
+.bonsai-water-btn:disabled { cursor: not-allowed; }
+.bonsai-water-btn.watering {
+  animation: bonsaiWaterPulse 0.6s ease;
+}
+@keyframes bonsaiWaterPulse {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.16); box-shadow: 0 8px 32px rgba(74,144,217,0.65); }
+  100% { transform: scale(1); }
+}
+.bonsai-water-status {
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: var(--text-soft); margin-top: 10px;
+  text-align: center; min-height: 20px;
+}
+
+/* ─── Complete view ───────────────────────────────────────────────────────── */
+
+.bonsai-complete-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 400;
+  font-size: 28px; color: var(--text);
+  text-align: center; margin: 20px 0 8px;
+}
+.bonsai-complete-sub {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 18px; color: var(--gold);
+  text-align: center; margin-bottom: 28px;
+}
+.bonsai-complete-actions {
+  width: 100%; max-width: 320px;
+}
+
+/* ─── Album ───────────────────────────────────────────────────────────────── */
+
+.bonsai-album-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 400;
+  font-size: 26px; color: var(--text);
+  margin-bottom: 20px; text-align: center;
+  width: 100%;
+}
+.bonsai-album-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; width: 100%;
+}
+.bonsai-album-item { text-align: center; }
+.bonsai-album-img {
+  width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  display: block;
+}
+.bonsai-album-img--placeholder {
+  background: var(--bg-section);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+}
+.bonsai-album-item-name {
+  font-family: 'Cormorant Garamond', serif; font-size: 15px;
+  color: var(--text); margin-top: 6px;
+}
+.bonsai-album-item-date {
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: var(--text-muted); margin-top: 2px;
+}
+.bonsai-album-empty {
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: var(--text-soft); text-align: center; line-height: 1.8;
+  width: 100%; padding: 32px 0;
+}
+.bonsai-back-from-album {
+  margin-top: 24px; background: transparent; border: none;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: var(--text-soft); cursor: pointer; letter-spacing: .04em;
+  opacity: 0.8;
+}
+.bonsai-back-from-album:hover { opacity: 1; }
+
+/* ─── Profile card ────────────────────────────────────────────────────────── */
+
+.bonsai-profile-card {
+  margin: 12px 0; border-radius: var(--radius);
+  background: var(--bg-section); border: 1px solid var(--border);
+  overflow: hidden;
+}
+.bonsai-profile-btn {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; padding: 16px 18px;
+  background: transparent; border: none;
+  cursor: pointer; text-align: left;
+}
+.bonsai-profile-btn:hover { background: rgba(201,169,110,0.06); }
+.bonsai-profile-icon { font-size: 24px; flex-shrink: 0; }
+.bonsai-profile-text { flex: 1; min-width: 0; }
+.bonsai-profile-title {
+  display: block;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px;
+  color: var(--text);
+}
+.bonsai-profile-sub {
+  display: block;
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  color: var(--text-soft); margin-top: 2px;
+}
+.bonsai-profile-btn svg { color: var(--text-muted); flex-shrink: 0; }
+
+/* ─── Toast ───────────────────────────────────────────────────────────────── */
+
+.bonsai-toast {
+  position: fixed; bottom: 90px; left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--text); color: var(--bg);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  padding: 12px 20px; border-radius: 999px;
+  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+  z-index: 9999; white-space: nowrap; pointer-events: none;
+  max-width: calc(100vw - 40px);
+}
+.bonsai-toast.show {
+  opacity: 1; transform: translateX(-50%) translateY(0);
+}
+
+/* ─── Dark mode adjustments ───────────────────────────────────────────────── */
+
+[data-theme="dark"] .bonsai-water-btn {
+  background: linear-gradient(135deg, #3A7BC8, #2558A0);
+}
+[data-theme="dark"] .bonsai-profile-btn:hover {
+  background: rgba(201,169,110,0.08);
+}

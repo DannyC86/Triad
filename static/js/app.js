@@ -854,6 +854,8 @@
     if (proLogo) proLogo.innerHTML = TRIAD_LOGO_SVG;
     var mobLogo = document.getElementById('mob-logo-slot');
     if (mobLogo) mobLogo.innerHTML = TRIAD_LOGO_SVG;
+    var proIntroLogo = document.getElementById('pro-intro-logo-slot');
+    if (proIntroLogo) proIntroLogo.innerHTML = TRIAD_LOGO_SVG;
   })();
 
   // Intro animation — crossfade splash directly to guest homepage (no white flash)

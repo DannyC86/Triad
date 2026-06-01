@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
   <script>(function(){var t=localStorage.getItem('triad:theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="/static/bonsai/bonsai.css">
   <style>
     /* ── Guest welcome screen (first-breath-mode) ── */
 
@@ -448,6 +449,18 @@ var _introPlayedThisSession = false;
       <!-- Pro banner removed — element kept hidden for legacy JS calls -->
       <div id="profile-pro-banner" style="display:none"></div>
 
+      <!-- Bonsai Garden entry point (shown when unlocked) -->
+      <div class="bonsai-profile-card" id="bonsaiProfileCard" style="display:none">
+        <button class="bonsai-profile-btn" onclick="openBonsaiScreen()">
+          <span class="bonsai-profile-icon">🌳</span>
+          <div class="bonsai-profile-text">
+            <span class="bonsai-profile-title">Bonsai Garden</span>
+            <span class="bonsai-profile-sub" id="bonsaiProfileSub">Tap to tend your tree</span>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+
       <!-- SECTION 6: Triad Lab -->
       <div class="triad-lab" data-auth-required>
         <div class="triad-lab-kicker">⚗️ TRIAD LAB — Beta Features</div>
@@ -649,8 +662,34 @@ var _introPlayedThisSession = false;
     <span class="pacer-hdr-wordmark">TRIAD</span>
     <button id="proSettingsBtn" class="pacer-settings-btn" onclick="openSettingsDrawer()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
+  <!-- Pre-session intro screen -->
+  <div class="pro-intro-screen" id="proIntroScreen">
+    <div class="mob-hdr">
+      <span class="mob-hdr-logo" id="pro-intro-logo-slot"></span>
+      <span class="mob-hdr-wordmark">TRIAD</span>
+      <button class="pacer-settings-btn" onclick="openSettingsDrawer()" aria-label="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <div class="mob-content">
+      <h1 class="mob-title" id="proIntroTitle">Resonant Breathing</h1>
+      <p class="mob-subtitle" id="proIntroSubtitle">Equal-duration pacing to sync heart rate variability.</p>
+      <canvas id="proIntroCanvas" class="mob-wave-canvas"></canvas>
+      <ul class="mob-instructions" id="proIntroList">
+        <li>5 Second Nose Inhale</li>
+        <li>No hold</li>
+        <li>Straight into 5 second nose exhale</li>
+        <li>Repeat</li>
+      </ul>
+      <p class="mob-hint">Sit straight, relax, and breathe naturally.</p>
+    </div>
+    <div class="mob-bottom">
+      <button class="mob-begin-btn" id="proIntroBeginBtn">Begin Session</button>
+      <button class="pro-cancel-btn" onclick="closeProPacer()">Cancel</button>
+    </div>
+  </div>
   <!-- Technique info + stats -->
-  <div class="pacer-top-info">
+  <div class="pacer-top-info" id="proZoneA">
     <div class="pacer-tech-name" id="proTechName"></div>
     <div class="pacer-topbar">
       <div class="pacer-stat">
@@ -664,11 +703,11 @@ var _introPlayedThisSession = false;
     </div>
   </div>
   <!-- Chart -->
-  <div class="pacer-chart-wrap">
+  <div class="pacer-chart-wrap" id="proZoneB">
     <canvas id="proCanvas"></canvas>
   </div>
   <!-- Zone C: state machine -->
-  <div class="pacer-zone-c">
+  <div class="pacer-zone-c" id="proZoneC">
     <!-- State 1: session selection -->
     <div class="pacer-state" id="proSessionSelect">
       <div class="pro-select-title">Select your session</div>
@@ -691,19 +730,6 @@ var _introPlayedThisSession = false;
       <div class="pacer-phase-label" id="proPhaseLabel" style="opacity:0">INHALE</div>
       <button class="pro-end-btn" id="proEndBtn" style="display:none" onclick="proEndSession()">End Session</button>
       <button class="pro-cancel-btn" id="sessionCancelBtn" onclick="confirmCancelProSession()">Cancel</button>
-    </div>
-  </div>
-  <!-- Pre-session instructions popup -->
-  <div class="pacer-intro-popup" id="pacerIntroPopup" style="display:none">
-    <div class="pacer-intro-card">
-      <div class="pacer-intro-title" id="pacerIntroTitle">Resonant Breathing</div>
-      <ul class="pacer-intro-list">
-        <li>5 Second Nose Inhale</li>
-        <li>No hold</li>
-        <li>Straight into 5 second nose exhale</li>
-        <li>Repeat</li>
-      </ul>
-      <p class="pacer-intro-hint">If you're ready, sit straight, relax…</p>
     </div>
   </div>
 </div>
@@ -1220,5 +1246,76 @@ var _introPlayedThisSession = false;
 
 
   <div id="page-transition-overlay"></div>
+
+  <!-- ═════════ Bonsai Garden Overlay ═════════ -->
+  <div class="bonsai-overlay" id="bonsaiOverlay">
+
+    <!-- Header -->
+    <div class="bonsai-hdr">
+      <button class="bonsai-back-btn" onclick="closeBonsaiScreen()" aria-label="Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <span class="bonsai-hdr-title">Bonsai Garden</span>
+      <button class="bonsai-album-btn" onclick="openBonsaiAlbum()" id="bonsaiAlbumBtn" aria-label="Album">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      </button>
+    </div>
+
+    <!-- VIEW 1: NO ACTIVE BONSAI — PLANT A SEED -->
+    <div class="bonsai-view" id="bonsaiPlantView">
+      <div class="bonsai-plant-content">
+        <div class="bonsai-pot-preview" id="bonsaiPotPreview"></div>
+        <h2 class="bonsai-plant-title">Plant your seed</h2>
+        <p class="bonsai-plant-sub">Your standard bonsai seed is ready to plant.<br>Water it daily and watch it grow over 30 days.</p>
+        <div class="bonsai-name-wrap">
+          <input type="text" class="bonsai-name-input" id="bonsaiNameInput" placeholder="Name your bonsai…" maxlength="24">
+        </div>
+        <button class="bonsai-action-btn" onclick="bonsaiPlant()">🌱 Plant Seed</button>
+      </div>
+    </div>
+
+    <!-- VIEW 2: ACTIVE BONSAI -->
+    <div class="bonsai-view" id="bonsaiActiveView" style="display:none">
+      <div class="bonsai-info-row">
+        <span class="bonsai-name-display" id="bonsaiNameDisplay">My Bonsai</span>
+        <span class="bonsai-cycle-display" id="bonsaiCycleDisplay">Cycle 0/10</span>
+      </div>
+      <canvas class="bonsai-canvas" id="bonsaiCanvas"></canvas>
+      <div class="bonsai-progress-wrap">
+        <div class="bonsai-water-dots" id="bonsaiWaterDots"></div>
+        <div class="bonsai-cycle-bar">
+          <div class="bonsai-cycle-fill" id="bonsaiCycleFill"></div>
+        </div>
+        <div class="bonsai-progress-label" id="bonsaiProgressLabel">3 waters to first growth</div>
+      </div>
+      <button class="bonsai-water-btn" id="bonsaiWaterBtn" onclick="bonsaiWater()">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6 8 4 12 4 15a8 8 0 0 0 16 0c0-3-2-7-8-13z"/></svg>
+        <span>Water</span>
+      </button>
+      <div class="bonsai-water-status" id="bonsaiWaterStatus"></div>
+    </div>
+
+    <!-- VIEW 3: COMPLETE BONSAI -->
+    <div class="bonsai-view" id="bonsaiCompleteView" style="display:none">
+      <canvas class="bonsai-canvas bonsai-canvas--complete" id="bonsaiCompleteCanvas"></canvas>
+      <h2 class="bonsai-complete-title">Your bonsai is complete!</h2>
+      <p class="bonsai-complete-sub" id="bonsaiCompleteName"></p>
+      <div class="bonsai-complete-actions">
+        <button class="bonsai-action-btn" onclick="bonsaiSaveToAlbum()">📸 Save to Album</button>
+        <button class="bonsai-action-btn bonsai-action-btn--secondary" onclick="bonsaiStartNew()">Plant a new seed</button>
+      </div>
+    </div>
+
+    <!-- ALBUM VIEW -->
+    <div class="bonsai-view" id="bonsaiAlbumView" style="display:none">
+      <h2 class="bonsai-album-title">Your Garden</h2>
+      <div class="bonsai-album-grid" id="bonsaiAlbumGrid"></div>
+      <button class="bonsai-back-from-album" onclick="closeBonsaiAlbum()">← Back to Garden</button>
+    </div>
+
+  </div>
+
+  <script src="/static/bonsai/bonsai-draw.js"></script>
+  <script src="/static/bonsai/bonsai.js"></script>
 </body>
 </html>
