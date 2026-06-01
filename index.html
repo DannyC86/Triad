@@ -59,10 +59,10 @@
     }
     .guest-cta-btn {
       appearance: none; border: none;
-      padding: clamp(14px, 4vw, 18px) 32px; border-radius: 50px;
-      background: linear-gradient(135deg, #C9A96E, #E8C87A);
-      color: #fff; font-size: clamp(0.9rem, 2.5vw, 1rem); font-weight: 600;
-      font-family: inherit; cursor: pointer;
+      padding: 18px 24px; border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: var(--btn-text-on-gold); font-size: 16px;
+      font-family: 'Cormorant Garamond', serif; cursor: pointer;
       width: 100%; max-width: 320px; margin-top: 32px;
       box-shadow: 0 4px 24px rgba(201,169,110,0.35);
       transition: transform 0.2s ease, filter 0.2s ease;
@@ -71,7 +71,7 @@
     .guest-cta-btn:active { transform: translateY(0); }
     .guest-cta-note {
       font-size: clamp(0.68rem, 2vw, 0.78rem); color: var(--text-muted);
-      margin-top: 10px; text-align: center;
+      margin-top: 8px; text-align: center;
     }
   </style>
 </head>
@@ -517,6 +517,15 @@ var _introPlayedThisSession = false;
     </div>
   </div>
   <div class="settings-drawer-section">
+    <div class="settings-drawer-label">Sound</div>
+    <div class="theme-switch" id="settings-sound-switch"
+         onclick="pacerToggleMute(); _updateSoundToggle();" role="switch" tabindex="0"
+         onkeydown="if(event.key==='Enter'||event.key===' '){ pacerToggleMute(); _updateSoundToggle(); }">
+      <span class="theme-switch-opt" id="settings-sound-on">On</span>
+      <span class="theme-switch-opt" id="settings-sound-off">Off</span>
+    </div>
+  </div>
+  <div class="settings-drawer-section">
     <button class="settings-drawer-link" onclick="closeSettingsDrawer(); openPrivacyModal()">Privacy &amp; Legal</button>
   </div>
   <div class="settings-drawer-section" id="settings-drawer-delete-wrap">
@@ -590,12 +599,11 @@ var _introPlayedThisSession = false;
   <div class="pacer-hdr">
     <span class="pacer-hdr-logo" id="pacer-logo-slot"></span>
     <span class="pacer-hdr-wordmark">TRIAD</span>
-    <button id="pacerMuteBtn" onclick="pacerToggleMute()" aria-label="Toggle sound"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+    <button id="pacerSettingsBtn" class="pacer-settings-btn" onclick="openSettingsDrawer()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
-  <!-- Zone A (cont.): title + tier + stats — fixed height, never resizes -->
+  <!-- Zone A (cont.): title + stats — fixed height, never resizes -->
   <div class="pacer-top-info">
     <div class="pacer-tech-name" id="pacerTechName">RESONANT BREATHING</div>
-    <div class="pacer-tech-tier" id="pacerTechTier">APPRENTICE</div>
     <div class="pacer-topbar">
       <div class="pacer-stat">
         <div class="pacer-stat-label">BREATH</div>
@@ -616,16 +624,16 @@ var _introPlayedThisSession = false;
     <!-- State 1: Idle -->
     <div class="pacer-state" id="pacerStateIdle">
       <div class="pacer-instructions">
-        <div class="pacer-instr-line">5 Seconds Inhale — with nose</div>
-        <div class="pacer-instr-line">5 Seconds Exhale — with nose</div>
-        <div class="pacer-instr-line">Slow Rounded Breathing</div>
+        <div class="pacer-instr-line">5 Second Nose Inhale</div>
+        <div class="pacer-instr-line">No hold</div>
+        <div class="pacer-instr-line">Straight into 5 second nose exhale</div>
+        <div class="pacer-instr-line">Repeat</div>
       </div>
       <p class="pacer-idle-copy">If you're ready, sit straight, relax…</p>
       <button class="pacer-breathe-btn" id="pacerBreatheBtn" onclick="togglePacer()">and Breathe</button>
     </div>
     <!-- State 2: Countdown -->
     <div class="pacer-state" id="pacerStateCountdown" style="display:none">
-      <div class="pacer-cd-label">settle in</div>
       <div class="pacer-cd-num" id="pacerCdNum"></div>
     </div>
     <!-- State 3: Session -->
@@ -641,12 +649,11 @@ var _introPlayedThisSession = false;
   <div class="pacer-hdr">
     <span class="pacer-hdr-logo" id="pro-logo-slot"></span>
     <span class="pacer-hdr-wordmark">TRIAD</span>
-    <button id="proMuteBtn" onclick="pacerToggleMute()" aria-label="Toggle sound"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+    <button id="proSettingsBtn" class="pacer-settings-btn" onclick="openSettingsDrawer()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
   <!-- Technique info + stats -->
   <div class="pacer-top-info">
     <div class="pacer-tech-name" id="proTechName"></div>
-    <div class="pacer-tech-tier" id="proTechTier"></div>
     <div class="pacer-topbar">
       <div class="pacer-stat">
         <span class="pacer-stat-label">BREATH</span>
@@ -679,7 +686,6 @@ var _introPlayedThisSession = false;
     </div>
     <!-- State 2: countdown -->
     <div class="pacer-state" id="proCountdown" style="display:none">
-      <div class="pacer-cd-label">settle in</div>
       <div class="pacer-cd-num" id="proCountdownNum"></div>
     </div>
     <!-- State 3: session active -->

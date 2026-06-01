@@ -1582,10 +1582,10 @@
     }
     .pacer-breathe-btn {
       appearance: none; border: none;
-      padding: 9px clamp(28px,9vw,44px); border-radius: 50px;
+      padding: 18px 24px; border-radius: 999px;
       background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-      color: #fff; font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: clamp(1rem,2.5vw,1.2rem); font-weight: 500;
+      color: var(--btn-text-on-gold); font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 16px; font-weight: 500;
       cursor: pointer; letter-spacing: 0.04em;
       box-shadow: 0 4px 20px rgba(201,169,110,0.32);
       transition: transform 0.2s ease, filter 0.2s ease, opacity 0.4s ease;
@@ -1594,15 +1594,10 @@
     .pacer-breathe-btn:active { transform: scale(0.97); }
 
     /* State 2: countdown */
-    .pacer-cd-label {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-style: italic; color: var(--gold);
-      font-size: 20px; letter-spacing: .08em; text-align: center;
-    }
     .pacer-cd-num {
       font-family: 'Cormorant Garamond', Georgia, serif;
       font-weight: 700; color: var(--gold);
-      font-size: 64px; line-height: 1; text-align: center;
+      font-size: clamp(72px,16vw,96px); line-height: 1; text-align: center;
     }
 
     /* State 3: session phase label — opacity animated by JS sine curve */
@@ -1670,15 +1665,14 @@
     }
     .pro-cancel-btn:hover { opacity: 0.8; }
 
-    /* Mute toggle buttons — both pacers */
-    #pacerMuteBtn, #proMuteBtn {
+    /* Settings cog buttons — both pacers */
+    .pacer-settings-btn {
       background: transparent; border: none;
       color: var(--text-soft); cursor: pointer;
-      padding: 8px; opacity: 0.7;
+      padding: 8px; opacity: 0.7; margin-left: auto;
       display: flex; align-items: center; justify-content: center;
     }
-    #pacerMuteBtn:hover, #proMuteBtn:hover { opacity: 1; }
-    #proMuteBtn { margin-left: auto; }
+    .pacer-settings-btn:hover { opacity: 1; }
 
     /* Prevent scrollbar on pro pacer overlay */
     #pacerOverlayPro { overflow: hidden; }
@@ -3067,7 +3061,7 @@
     .detail-start-btn {
       appearance: none; border: none; width: 100%;
       background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-      color: var(--bg); border-radius: 999px;
+      color: var(--btn-text-on-gold); border-radius: 999px;
       padding: 18px 24px;
       font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px;
       cursor: pointer; letter-spacing: 0.03em;

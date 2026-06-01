@@ -1820,11 +1820,14 @@ Build my personalised plan.`;
     document.getElementById('settingsDrawer')?.classList.add('open');
     document.getElementById('settingsDrawerBackdrop')?.classList.add('open');
     updateThemeToggle();
+    if (typeof _updateSoundToggle === 'function') _updateSoundToggle();
+    if (typeof _pacerPause === 'function') _pacerPause();
   }
 
   function closeSettingsDrawer() {
     document.getElementById('settingsDrawer')?.classList.remove('open');
     document.getElementById('settingsDrawerBackdrop')?.classList.remove('open');
+    if (typeof _pacerResume === 'function') _pacerResume();
   }
 
   /* ════════════════ MISSION ENGINE ════════════════ */

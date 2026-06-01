@@ -532,6 +532,14 @@
   /* ── Pacer audio ── */
   let audioCtx = null;
   let soundEnabled = localStorage.getItem('triad:soundEnabled') !== 'false';
+  let _pacerPausedAt = null;
+
+  function _updateSoundToggle() {
+    const onOpt  = document.getElementById('settings-sound-on');
+    const offOpt = document.getElementById('settings-sound-off');
+    if (onOpt)  onOpt.classList.toggle('active',  soundEnabled);
+    if (offOpt) offOpt.classList.toggle('active', !soundEnabled);
+  }
 
   const _SOUND_ON_SVG  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
   const _SOUND_OFF_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="2" y1="2" x2="22" y2="22"/></svg>';
@@ -582,11 +590,7 @@
   function pacerToggleMute() {
     soundEnabled = !soundEnabled;
     localStorage.setItem('triad:soundEnabled', soundEnabled);
-    const svg = soundEnabled ? _SOUND_ON_SVG : _SOUND_OFF_SVG;
-    const btn1 = document.getElementById('pacerMuteBtn');
-    if (btn1) btn1.innerHTML = svg;
-    const btn2 = document.getElementById('proMuteBtn');
-    if (btn2) btn2.innerHTML = svg;
+    _updateSoundToggle();
   }
 
   let _pacerState = {
@@ -781,10 +785,6 @@
       btn.textContent = 'and Breathe';
       btn.style.cssText = '';
     }
-
-    // Sync mute button icon with current sound state
-    const muteBtn = document.getElementById('pacerMuteBtn');
-    if (muteBtn) muteBtn.innerHTML = soundEnabled ? _SOUND_ON_SVG : _SOUND_OFF_SVG;
 
     overlay.classList.add('active');
 
@@ -1172,10 +1172,6 @@
     const pl = document.getElementById('proPhaseLabel');
     if (pl) { pl.textContent = 'INHALE'; pl.style.opacity = '0'; }
 
-    // Sync mute button
-    const muteBtn = document.getElementById('proMuteBtn');
-    if (muteBtn) muteBtn.innerHTML = soundEnabled ? _SOUND_ON_SVG : _SOUND_OFF_SVG;
-
     overlay.classList.add('active');
 
     requestAnimationFrame(() => {
@@ -1441,5 +1437,33 @@
     const _sovC = document.getElementById('sessionOverlay');
     _sovC.classList.add('active');
     _sovC.classList.add('completion-active');
+  }
+
+  /* ── Pacer pause / resume for settings drawer ──────────────────── */
+
+  function _pacerPause() {
+    if (_pacerState.running && _pacerState.raf) {
+      cancelAnimationFrame(_pacerState.raf);
+      _pacerState.raf = null;
+    }
+    if (_proPacerState.running && _proPacerState.raf) {
+      cancelAnimationFrame(_proPacerState.raf);
+      _proPacerState.raf = null;
+    }
+    _pacerPausedAt = performance.now();
+  }
+
+  function _pacerResume() {
+    if (_pacerPausedAt === null) return;
+    const elapsed = performance.now() - _pacerPausedAt;
+    _pacerPausedAt = null;
+    if (_pacerState.running && !_pacerState.raf) {
+      if (_pacerState.lastTs !== null) _pacerState.lastTs += elapsed;
+      _pacerState.raf = requestAnimationFrame(_pacerTick);
+    }
+    if (_proPacerState.running && !_proPacerState.raf) {
+      if (_proPacerState.lastTs !== null) _proPacerState.lastTs += elapsed;
+      _proPacerState.raf = requestAnimationFrame(_proTick);
+    }
   }
 
