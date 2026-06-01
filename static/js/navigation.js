@@ -1683,11 +1683,11 @@
 
   /* Breath-trace rAF loop — draws continuous record on mobWaveCanvas2 */
   /* Physics constants for orb movement */
-  const _MOB_RISE_FORCE    = -0.8;
-  const _MOB_FALL_FORCE    =  0.4;
-  const _MOB_MAX_RISE_SPD  = -6;
-  const _MOB_MAX_FALL_SPD  =  3;
-  const _MOB_DAMPING       =  0.88;
+  const _MOB_RISE_FORCE    = -0.28;
+  const _MOB_FALL_FORCE    =  0.18;
+  const _MOB_MAX_RISE_SPD  = -2.5;
+  const _MOB_MAX_FALL_SPD  =  1.8;
+  const _MOB_DAMPING       =  0.92;
 
   function _mobStartTrace() {
     if (_mobLineRaf) { cancelAnimationFrame(_mobLineRaf); _mobLineRaf = null; }
@@ -1719,9 +1719,16 @@
       if (_mobIsHolding) {
         _mobOrbVelocity += _MOB_RISE_FORCE;
         _mobOrbVelocity  = Math.max(_mobOrbVelocity, _MOB_MAX_RISE_SPD);
+        // Soft ceiling — resistance increases exponentially near TOP_Y
+        const ceilingProximity  = 1 - ((_mobCurrentY - TOP_Y) / (BASELINE_Y - TOP_Y));
+        const ceilingResistance = Math.pow(Math.max(0, ceilingProximity), 2.5);
+        _mobOrbVelocity *= (1 - ceilingResistance * 0.7);
       } else {
         _mobOrbVelocity += _MOB_FALL_FORCE;
         _mobOrbVelocity  = Math.min(_mobOrbVelocity, _MOB_MAX_FALL_SPD);
+        // Soft floor — extra damping as orb approaches baseline
+        const floorProximity = (_mobCurrentY - TOP_Y) / (BASELINE_Y - TOP_Y);
+        if (floorProximity > 0.85) _mobOrbVelocity *= 0.85;
       }
       _mobOrbVelocity *= _MOB_DAMPING;
       _mobCurrentY    += _mobOrbVelocity;
