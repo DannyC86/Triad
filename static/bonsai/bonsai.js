@@ -564,3 +564,55 @@ function _escapeHtml(str) {
 function _escapeAttr(str) {
   return String(str ?? '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
+
+// Triple tap easter egg on homepage logo
+let _logoTapCount = 0;
+let _logoTapTimer = null;
+
+function _bonsaiInitLogoEgg() {
+  const logo = document.getElementById('homeLogo');
+  if (!logo) return;
+  logo.addEventListener('click', () => {
+    _logoTapCount++;
+    clearTimeout(_logoTapTimer);
+    if (_logoTapCount >= 3) {
+      _logoTapCount = 0;
+      _bonsaiShowGardenEgg();
+    } else {
+      _logoTapTimer = setTimeout(() => {
+        _logoTapCount = 0;
+      }, 600);
+    }
+  });
+}
+
+function _bonsaiShowGardenEgg() {
+  const existing = document.getElementById('bonsaiEggPopup');
+  if (existing) existing.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'bonsaiEggPopup';
+  popup.className = 'bonsai-egg-popup';
+  popup.innerHTML = `
+    <div class="bonsai-egg-card">
+      <div class="bonsai-egg-icon">🌳</div>
+      <div class="bonsai-egg-title">Go to Garden</div>
+      <div class="bonsai-egg-sub">Your bonsai awaits.</div>
+      <button class="bonsai-action-btn" onclick="
+        document.getElementById('bonsaiEggPopup').remove();
+        openBonsaiScreen();
+      ">OK</button>
+      <button class="bonsai-rewards-dismiss" onclick="
+        document.getElementById('bonsaiEggPopup').remove();
+      ">Dismiss</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+  requestAnimationFrame(() => { popup.style.opacity = '1'; });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _bonsaiInitLogoEgg);
+} else {
+  _bonsaiInitLogoEgg();
+}

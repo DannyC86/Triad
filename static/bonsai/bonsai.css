@@ -508,3 +508,30 @@
 [data-theme="dark"] .bonsai-profile-btn:hover {
   background: rgba(201,169,110,0.08);
 }
+
+.bonsai-egg-popup {
+  position: fixed; inset: 0; z-index: 9500;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(26,26,46,0.45);
+  backdrop-filter: blur(6px);
+  opacity: 0; transition: opacity 0.3s ease;
+  padding: 24px;
+}
+.bonsai-egg-card {
+  background: var(--bg); border-radius: var(--radius-lg);
+  padding: 32px 28px; width: 100%; max-width: 300px;
+  text-align: center;
+  box-shadow: 0 12px 48px rgba(26,26,46,0.18);
+  border: 1px solid rgba(201,169,110,0.25);
+}
+.bonsai-egg-icon {
+  font-size: 48px; margin-bottom: 12px; display: block;
+}
+.bonsai-egg-title {
+  font-family: 'Cormorant Garamond', serif; font-weight: 400;
+  font-size: 24px; color: var(--text); margin-bottom: 6px;
+}
+.bonsai-egg-sub {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 15px; color: var(--text-soft); margin-bottom: 24px;
+}
