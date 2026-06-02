@@ -1,8 +1,7 @@
 /* ═══════════════════════════════════════════════════════
-   bonsai-draw.js — Mosaic/impasto painterly bonsai
+   bonsai-draw.js — Image stages 1-8, SVG-style 9-10, canvas 11-29
    ═══════════════════════════════════════════════════════ */
 
-// Seeded random for consistent look per bonsai
 function _seededRand(seed) {
   let s = seed;
   return function() {
@@ -11,293 +10,483 @@ function _seededRand(seed) {
   };
 }
 
-// Draw a single mosaic block — slightly rotated rectangle with painterly edge
-function _mosaicBlock(ctx, x, y, w, h, colour, rotation, alpha) {
-  ctx.save();
-  ctx.globalAlpha = alpha || 0.92;
-  ctx.translate(x, y);
-  ctx.rotate(rotation || 0);
-  ctx.fillStyle = colour;
-  // Slightly irregular shape — offset corners for painterly feel
-  ctx.beginPath();
-  ctx.moveTo(-w/2 + 1, -h/2);
-  ctx.lineTo(w/2, -h/2 + 1);
-  ctx.lineTo(w/2 - 1, h/2);
-  ctx.lineTo(-w/2, h/2 - 1);
-  ctx.closePath();
-  ctx.fill();
-  // Subtle highlight edge
-  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-  ctx.lineWidth = 0.5;
-  ctx.stroke();
-  ctx.restore();
-}
-
-// Draw a cluster of mosaic blocks forming a shape
-function _mosaicCluster(ctx, cx, cy, radius, colours, density, rand) {
-  const count = Math.floor(density * radius * 0.8);
-  for (let i = 0; i < count; i++) {
-    const angle = rand() * Math.PI * 2;
-    const dist = rand() * radius;
-    const x = cx + Math.cos(angle) * dist;
-    const y = cy + Math.sin(angle) * dist * 0.75;
-    const w = 8 + rand() * 14;
-    const h = 6 + rand() * 10;
-    const rot = (rand() - 0.5) * 0.6;
-    const col = colours[Math.floor(rand() * colours.length)];
-    _mosaicBlock(ctx, x, y, w, h, col, rot, 0.85 + rand() * 0.15);
-  }
-}
-
-// Trunk segment as mosaic blocks
-function _mosaicTrunk(ctx, points, width, rand) {
-  const trunkColours = [
-    '#8B8FA8', '#7A7E96', '#9B9FB8', '#6B7080',
-    '#A8ACBF', '#5C6070', '#B0B4C8'
-  ];
-  for (let i = 0; i < points.length - 1; i++) {
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    const dx = p2.x - p1.x;
-    const dy = p2.y - p1.y;
-    const len = Math.sqrt(dx*dx + dy*dy);
-    const steps = Math.ceil(len / 6);
-    const segWidth = width * (1 - i / (points.length * 1.2));
-    for (let j = 0; j < steps; j++) {
-      const t = j / steps;
-      const x = p1.x + dx * t + (rand() - 0.5) * segWidth * 0.4;
-      const y = p1.y + dy * t + (rand() - 0.5) * 4;
-      const w = segWidth * (0.7 + rand() * 0.6);
-      const h = 5 + rand() * 8;
-      const rot = Math.atan2(dy, dx) + (rand() - 0.5) * 0.4;
-      const col = trunkColours[Math.floor(rand() * trunkColours.length)];
-      _mosaicBlock(ctx, x, y, w, h, col, rot, 0.88 + rand() * 0.12);
-    }
-  }
-}
-
-// THE MAIN DRAW FUNCTION
+// ── MAIN DRAW FUNCTION ──
 function drawBonsai(canvas, cycle, watersInCycle, animated) {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const ctx = canvas.getContext('2d');
   const W = canvas.offsetWidth || 300;
-  const H = canvas.offsetHeight || 280;
+  const H = canvas.offsetHeight || 300;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = W * dpr;
   canvas.height = H * dpr;
-  const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  const rand = _seededRand(canvas.id ? canvas.id.charCodeAt(0) * 137 : 42);
-
-  // ── BACKGROUND ──
-  // Soft warm gradient like the reference
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#F2C4B8');   // soft pink top
-  bg.addColorStop(0.45, '#F5DDD8');
-  bg.addColorStop(0.6, '#F0EBE0'); // cream bottom
-  bg.addColorStop(1, '#E8E2D8');
-  ctx.fillStyle = bg;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#F5F0E8';
   ctx.fillRect(0, 0, W, H);
 
-  // Ground shadow line
-  const groundY = H * 0.88;
-  const groundGrad = ctx.createLinearGradient(0, groundY, 0, groundY + 12);
-  groundGrad.addColorStop(0, 'rgba(180,160,140,0.4)');
-  groundGrad.addColorStop(1, 'rgba(180,160,140,0)');
-  ctx.fillStyle = groundGrad;
-  ctx.fillRect(0, groundY, W, 12);
+  if (cycle >= 1 && cycle <= 8) {
+    _drawBonsaiImage(canvas, ctx, cycle, W, H);
+  } else if (cycle === 9 || cycle === 10) {
+    _drawBonsaiSVGStage(ctx, cycle, W, H, watersInCycle);
+  } else if (cycle === 0) {
+    _drawEmptyPot(ctx, W, H);
+  } else {
+    _drawBonsaiCanvas(ctx, cycle, watersInCycle, W, H, animated);
+  }
+}
 
-  if (cycle === 0) {
-    // ── CYCLE 0: Just the pot with soil ──
-    _drawPotMosaic(ctx, W/2, groundY, W, rand);
-    _drawSoil(ctx, W/2, groundY - 18, rand);
-    return;
+// ── IMAGE RENDERER (cycles 1-8) ──
+function _drawBonsaiImage(canvas, ctx, cycle, W, H) {
+  const img = new Image();
+  img.onload = function() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#F5F0E8';
+    ctx.fillRect(0, 0, W, H);
+    const scale = Math.min(W / img.width, H / img.height) * 0.92;
+    const iw = img.width * scale;
+    const ih = img.height * scale;
+    const ix = (W - iw) / 2;
+    const iy = (H - ih) / 2;
+    ctx.drawImage(img, ix, iy, iw, ih);
+  };
+  img.onerror = function() {
+    _drawBonsaiCanvas(ctx, cycle, 0, W, H, false);
+  };
+  img.src = `/static/bonsai/images/stage-${cycle}.png`;
+}
+
+// ── EMPTY POT (cycle 0) ──
+function _drawEmptyPot(ctx, W, H) {
+  const cx = W / 2;
+  const potY = H * 0.72;
+  const potW = W * 0.7;
+  const potH = H * 0.22;
+
+  // Wooden stand
+  ctx.fillStyle = '#C47D3A';
+  ctx.beginPath();
+  ctx.ellipse(cx, potY + potH * 0.6, potW * 0.45, potH * 0.12, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Pot body
+  ctx.fillStyle = '#C8C4BE';
+  ctx.beginPath();
+  ctx.ellipse(cx, potY, potW * 0.5, potH * 0.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Soil
+  ctx.fillStyle = '#3D2B1A';
+  ctx.beginPath();
+  ctx.ellipse(cx, potY - potH * 0.05, potW * 0.44, potH * 0.35, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// ── SVG-STYLE ILLUSTRATION (cycles 9-10) ──
+function _drawBonsaiSVGStage(ctx, cycle, W, H, watersInCycle) {
+  const cx = W / 2;
+  const potY = H * 0.78;
+  const potW = W * 0.72;
+  const potH = H * 0.2;
+
+  ctx.fillStyle = '#F5F0E8';
+  ctx.fillRect(0, 0, W, H);
+
+  // Wooden stand
+  ctx.fillStyle = '#C47D3A';
+  _roundRect(ctx, cx - potW*0.38, potY + potH*0.52, potW*0.76, potH*0.28, 6);
+  ctx.fill();
+  for (let i = 0; i < 4; i++) {
+    const lx = cx - potW*0.28 + i * potW*0.185;
+    ctx.fillStyle = '#A86830';
+    ctx.fillRect(lx, potY + potH*0.72, 8, potH*0.22);
   }
 
-  // ── POT (always drawn) ──
-  _drawPotMosaic(ctx, W/2, groundY, W, rand);
+  // Pot shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.beginPath();
+  ctx.ellipse(cx, potY + potH*0.55, potW*0.42, potH*0.12, 0, 0, Math.PI*2);
+  ctx.fill();
 
-  // Trunk base x
-  const trunkBaseX = W / 2 - W * 0.04;
-  const trunkBaseY = groundY - 18;
+  // Pot body
+  const potGrad = ctx.createLinearGradient(cx - potW/2, potY, cx + potW/2, potY);
+  potGrad.addColorStop(0, '#D8D4CE');
+  potGrad.addColorStop(0.4, '#E8E4DE');
+  potGrad.addColorStop(1, '#C0BCB6');
+  ctx.fillStyle = potGrad;
+  ctx.beginPath();
+  ctx.ellipse(cx, potY, potW*0.48, potH*0.48, 0, 0, Math.PI*2);
+  ctx.fill();
 
-  // ── GROWTH STAGES ──
+  // Pot rim highlight
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(cx, potY - potH*0.1, potW*0.46, potH*0.32, 0, Math.PI*1.1, Math.PI*1.9);
+  ctx.stroke();
 
-  // Trunk height grows with cycle
-  const maxTrunkH = H * 0.62;
-  const trunkHeight = maxTrunkH * Math.min(1, cycle / 8);
-
-  // S-curve trunk control points (matching reference image)
-  const trunkPoints = [];
-  const segments = 12;
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments;
-    // S-curve: start center, curve right, then left, then right at top
-    const sway = Math.sin(t * Math.PI * 1.8) * W * 0.12
-                 + Math.sin(t * Math.PI * 0.9 + 1) * W * 0.08;
-    trunkPoints.push({
-      x: trunkBaseX + sway,
-      y: trunkBaseY - trunkHeight * t
-    });
+  // Soil
+  ctx.fillStyle = '#3D2B1A';
+  ctx.beginPath();
+  ctx.ellipse(cx, potY - potH*0.04, potW*0.42, potH*0.32, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#6B4423';
+  for (let p = 0; p < 20; p++) {
+    const px = cx + (Math.sin(p*137.5)*potW*0.35);
+    const py = potY - potH*0.04 + (Math.cos(p*137.5)*potH*0.22);
+    ctx.beginPath();
+    ctx.arc(px, py, 2 + Math.sin(p)*1.5, 0, Math.PI*2);
+    ctx.fill();
   }
 
-  // Trunk width tapers
-  const trunkWidth = (16 + W * 0.04) * Math.min(1, cycle / 5);
+  // Trunk
+  const trunkBase = { x: cx - W*0.02, y: potY - potH*0.35 };
+  const trunkTop  = { x: cx + W*0.05,  y: H * (cycle === 9 ? 0.28 : 0.22) };
 
-  if (cycle >= 1) {
-    _mosaicTrunk(ctx, trunkPoints, trunkWidth, rand);
+  const trunkGrad = ctx.createLinearGradient(trunkBase.x, trunkBase.y, trunkTop.x, trunkTop.y);
+  trunkGrad.addColorStop(0,   '#8B6914');
+  trunkGrad.addColorStop(0.4, '#7A6020');
+  trunkGrad.addColorStop(0.7, '#6B7838');
+  trunkGrad.addColorStop(1,   '#5A6830');
+
+  ctx.strokeStyle = trunkGrad;
+  ctx.lineWidth = cycle === 9 ? 14 : 18;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(trunkBase.x, trunkBase.y);
+  ctx.bezierCurveTo(
+    trunkBase.x - W*0.08, trunkBase.y - H*0.12,
+    trunkBase.x + W*0.12, trunkBase.y - H*0.24,
+    trunkTop.x, trunkTop.y
+  );
+  ctx.stroke();
+
+  // Trunk texture
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 1;
+  for (let t = 0; t < 5; t++) {
+    const tt = 0.2 + t * 0.15;
+    const tx = trunkBase.x + (trunkTop.x - trunkBase.x) * tt + (t%2===0?3:-3);
+    const ty = trunkBase.y + (trunkTop.y - trunkBase.y) * tt;
+    ctx.beginPath();
+    ctx.moveTo(tx - 4, ty - 8);
+    ctx.lineTo(tx + 4, ty + 8);
+    ctx.stroke();
   }
 
-  // ── FOLIAGE COLOURS ──
-  const foliageColours = [
-    '#6B8F71', '#5C7A62', '#7FA882', '#4A6B52', // sage greens
-    '#8FB89A', '#3D5C44', '#9BC4A0',             // lighter greens
-    '#7A9E8A', '#527A5C',                         // teal greens
-    '#C4784A', '#D4895A', '#B86840',             // orange accents
-    '#8FA878', '#6B8C7A'                         // olive
+  // Exposed roots
+  ctx.strokeStyle = '#8B6914';
+  ctx.lineWidth = 3;
+  for (let r = 0; r < 4; r++) {
+    const rx = trunkBase.x + (r - 1.5) * 12;
+    ctx.beginPath();
+    ctx.moveTo(rx, trunkBase.y + 4);
+    ctx.quadraticCurveTo(rx + (r-1.5)*8, trunkBase.y + 20, rx + (r-2)*20, trunkBase.y + 35);
+    ctx.stroke();
+  }
+
+  // Branches
+  const branchData = cycle === 9 ? [
+    { sx: 0.35, ex: -0.18, ey: -0.06, w: 5 },
+    { sx: 0.55, ex:  0.16, ey: -0.08, w: 5 },
+    { sx: 0.75, ex: -0.12, ey: -0.05, w: 4 },
+  ] : [
+    { sx: 0.25, ex: -0.22, ey: -0.08, w: 6 },
+    { sx: 0.40, ex:  0.20, ey: -0.10, w: 6 },
+    { sx: 0.60, ex: -0.15, ey: -0.06, w: 5 },
+    { sx: 0.75, ex:  0.18, ey: -0.07, w: 4 },
   ];
 
-  const orangeColours = ['#C4784A','#D4895A','#B86840','#E09060','#C86030'];
-  const topGreenColours = ['#6B8F71','#5C7A62','#7FA882','#8FB89A','#4A6B52','#9BC4A0'];
-  const tealColours = ['#7A9E8A','#527A5C','#6B8C7A','#8FB0A0'];
+  branchData.forEach(b => {
+    const bx = trunkBase.x + (trunkTop.x - trunkBase.x) * b.sx;
+    const by = trunkBase.y + (trunkTop.y - trunkBase.y) * b.sx;
+    ctx.strokeStyle = '#8B6914';
+    ctx.lineWidth = b.w;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(bx, by);
+    ctx.quadraticCurveTo(
+      bx + b.ex*W*0.5, by + b.ey*H*0.5,
+      bx + b.ex*W,     by + b.ey*H
+    );
+    ctx.stroke();
+  });
 
-  // ── FOLIAGE CLUSTERS — grow with cycle ──
-  const topX = trunkPoints[trunkPoints.length - 1].x;
-  const topY = trunkPoints[trunkPoints.length - 1].y;
+  // Foliage clusters
+  const foliagePositions = cycle === 9 ? [
+    { x: cx + W*0.08, y: H*0.18, r: W*0.18 },
+    { x: cx - W*0.12, y: H*0.22, r: W*0.15 },
+    { x: cx + W*0.18, y: H*0.26, r: W*0.13 },
+    { x: cx - W*0.06, y: H*0.14, r: W*0.14 },
+    { x: cx + W*0.02, y: H*0.30, r: W*0.12 },
+    { x: cx - W*0.18, y: H*0.30, r: W*0.11 },
+  ] : [
+    { x: cx + W*0.10, y: H*0.14, r: W*0.20 },
+    { x: cx - W*0.14, y: H*0.18, r: W*0.18 },
+    { x: cx + W*0.22, y: H*0.22, r: W*0.16 },
+    { x: cx - W*0.04, y: H*0.10, r: W*0.17 },
+    { x: cx + W*0.04, y: H*0.26, r: W*0.15 },
+    { x: cx - W*0.20, y: H*0.26, r: W*0.14 },
+    { x: cx + W*0.18, y: H*0.32, r: W*0.13 },
+    { x: cx - W*0.10, y: H*0.32, r: W*0.12 },
+    { x: cx + W*0.06, y: H*0.20, r: W*0.14 },
+  ];
 
-  if (cycle >= 2) {
-    // Main top canopy — grows from small to large
-    const canopySize = 20 + (cycle - 2) * 9;
-    const canopyDensity = 1.5 + (cycle - 2) * 0.4;
-
-    // Top right cluster (largest in reference)
-    _mosaicCluster(ctx, topX + W*0.06, topY - canopySize*0.3,
-      canopySize, topGreenColours, canopyDensity, rand);
-
-    if (cycle >= 4) {
-      // Top left cluster
-      _mosaicCluster(ctx, topX - W*0.1, topY - canopySize*0.1,
-        canopySize * 0.8, tealColours, canopyDensity * 0.9, rand);
+  const greens = ['#5A8A3C','#6B9E4A','#4A7830','#7AB050','#3D6B28'];
+  foliagePositions.forEach((fp) => {
+    for (let l = 0; l < 5; l++) {
+      const angle = (l / 5) * Math.PI * 2;
+      const lx = fp.x + Math.cos(angle) * fp.r * 0.3;
+      const ly = fp.y + Math.sin(angle) * fp.r * 0.21;
+      const leafGrad = ctx.createRadialGradient(lx-2, ly-2, 0, lx, ly, fp.r*0.7);
+      leafGrad.addColorStop(0, greens[l % greens.length]);
+      leafGrad.addColorStop(1, '#2D5018');
+      ctx.fillStyle = leafGrad;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.arc(lx, ly, fp.r * (0.6 + l*0.08), 0, Math.PI * 2);
+      ctx.fill();
     }
+    ctx.globalAlpha = 1.0;
+  });
+}
 
-    if (cycle >= 6) {
-      // Upper right secondary
-      _mosaicCluster(ctx, topX + W*0.15, topY + canopySize*0.2,
-        canopySize * 0.7, topGreenColours, canopyDensity * 0.8, rand);
+// ── CANVAS DRAWING (cycles 11-29) — extends the organic style of 9-10 ──
+function _drawBonsaiCanvas(ctx, cycle, watersInCycle, W, H, animated) {
+  const cx = W / 2;
+  const potY = H * 0.78;
+  const potW = W * 0.72;
+  const potH = H * 0.2;
+
+  ctx.fillStyle = '#F5F0E8';
+  ctx.fillRect(0, 0, W, H);
+
+  // Wooden stand
+  ctx.fillStyle = '#C47D3A';
+  _roundRect(ctx, cx - potW*0.38, potY + potH*0.52, potW*0.76, potH*0.28, 6);
+  ctx.fill();
+  for (let i = 0; i < 4; i++) {
+    const lx = cx - potW*0.28 + i * potW*0.185;
+    ctx.fillStyle = '#A86830';
+    ctx.fillRect(lx, potY + potH*0.72, 8, potH*0.22);
+  }
+
+  // Pot shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.beginPath();
+  ctx.ellipse(cx, potY + potH*0.55, potW*0.42, potH*0.12, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Pot body
+  const potGrad = ctx.createLinearGradient(cx - potW/2, potY, cx + potW/2, potY);
+  potGrad.addColorStop(0, '#D8D4CE');
+  potGrad.addColorStop(0.4, '#E8E4DE');
+  potGrad.addColorStop(1, '#C0BCB6');
+  ctx.fillStyle = potGrad;
+  ctx.beginPath();
+  ctx.ellipse(cx, potY, potW*0.48, potH*0.48, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(cx, potY - potH*0.1, potW*0.46, potH*0.32, 0, Math.PI*1.1, Math.PI*1.9);
+  ctx.stroke();
+
+  // Soil
+  ctx.fillStyle = '#3D2B1A';
+  ctx.beginPath();
+  ctx.ellipse(cx, potY - potH*0.04, potW*0.42, potH*0.32, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#6B4423';
+  for (let p = 0; p < 20; p++) {
+    const px = cx + (Math.sin(p*137.5)*potW*0.35);
+    const py = potY - potH*0.04 + (Math.cos(p*137.5)*potH*0.22);
+    ctx.beginPath();
+    ctx.arc(px, py, 2 + Math.sin(p)*1.5, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Scale parameters
+  const progress = Math.min(1, (cycle - 10) / 19);
+  const trunkWidth = 18 + (cycle - 10) * 0.5;
+  const canopySpread = 1 + progress * 0.5;
+  const topHeight = 0.22 - progress * 0.08; // canopy rises slightly as tree matures
+
+  const trunkBase = { x: cx - W*0.02, y: potY - potH*0.35 };
+  const trunkTop  = { x: cx + W*0.05, y: H * Math.max(0.14, topHeight) };
+
+  // Trunk
+  const trunkGrad = ctx.createLinearGradient(trunkBase.x, trunkBase.y, trunkTop.x, trunkTop.y);
+  trunkGrad.addColorStop(0,   '#8B6914');
+  trunkGrad.addColorStop(0.4, '#7A6020');
+  trunkGrad.addColorStop(0.7, '#6B7838');
+  trunkGrad.addColorStop(1,   '#5A6830');
+  ctx.strokeStyle = trunkGrad;
+  ctx.lineWidth = trunkWidth;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(trunkBase.x, trunkBase.y);
+  ctx.bezierCurveTo(
+    trunkBase.x - W*0.08, trunkBase.y - H*0.12,
+    trunkBase.x + W*0.12, trunkBase.y - H*0.24,
+    trunkTop.x, trunkTop.y
+  );
+  ctx.stroke();
+
+  // Trunk texture
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 1;
+  const textureLines = 5 + Math.floor(progress * 5);
+  for (let t = 0; t < textureLines; t++) {
+    const tt = 0.1 + t * (0.8 / textureLines);
+    const tx = trunkBase.x + (trunkTop.x - trunkBase.x) * tt + (t%2===0?3:-3);
+    const ty = trunkBase.y + (trunkTop.y - trunkBase.y) * tt;
+    ctx.beginPath();
+    ctx.moveTo(tx - 5, ty - 10);
+    ctx.lineTo(tx + 5, ty + 10);
+    ctx.stroke();
+  }
+
+  // Exposed roots — more prominent as tree matures
+  const rootCount = 4 + Math.floor(progress * 4);
+  ctx.lineWidth = 3 + progress * 2;
+  for (let r = 0; r < rootCount; r++) {
+    ctx.strokeStyle = r % 2 === 0 ? '#8B6914' : '#7A5C10';
+    const rx = trunkBase.x + (r - rootCount/2 + 0.5) * 10;
+    ctx.beginPath();
+    ctx.moveTo(rx, trunkBase.y + 4);
+    ctx.quadraticCurveTo(rx + (r - rootCount/2)*8, trunkBase.y + 22, rx + (r - rootCount/2)*22, trunkBase.y + 40);
+    ctx.stroke();
+  }
+
+  // Branches — more branches as cycle increases
+  const baseBranches = [
+    { sx: 0.25, ex: -0.22, ey: -0.08, w: 6 },
+    { sx: 0.40, ex:  0.20, ey: -0.10, w: 6 },
+    { sx: 0.60, ex: -0.15, ey: -0.06, w: 5 },
+    { sx: 0.75, ex:  0.18, ey: -0.07, w: 4 },
+  ];
+  const extraBranches = [
+    { sx: 0.15, ex: -0.16, ey: -0.05, w: 4 },
+    { sx: 0.50, ex:  0.24, ey: -0.12, w: 5 },
+    { sx: 0.70, ex: -0.20, ey: -0.09, w: 4 },
+    { sx: 0.85, ex:  0.14, ey: -0.06, w: 3 },
+  ];
+  const branchCount = 4 + Math.floor(progress * 4);
+  const allBranches = [...baseBranches, ...extraBranches].slice(0, branchCount);
+
+  allBranches.forEach(b => {
+    const bx = trunkBase.x + (trunkTop.x - trunkBase.x) * b.sx;
+    const by = trunkBase.y + (trunkTop.y - trunkBase.y) * b.sx;
+    ctx.strokeStyle = '#8B6914';
+    ctx.lineWidth = b.w;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(bx, by);
+    ctx.quadraticCurveTo(
+      bx + b.ex*W*0.5*canopySpread, by + b.ey*H*0.5,
+      bx + b.ex*W*canopySpread,     by + b.ey*H
+    );
+    ctx.stroke();
+  });
+
+  // Foliage — density grows with cycle
+  const foliageCount = 9 + Math.floor((cycle - 10) * 1.5);
+  const spread = canopySpread;
+
+  // Generate foliage positions using golden angle distribution
+  const foliagePositions = [];
+  const basePositions = [
+    { x: cx + W*0.10, y: H*0.14, r: W*0.20 },
+    { x: cx - W*0.14, y: H*0.18, r: W*0.18 },
+    { x: cx + W*0.22, y: H*0.22, r: W*0.16 },
+    { x: cx - W*0.04, y: H*0.10, r: W*0.17 },
+    { x: cx + W*0.04, y: H*0.26, r: W*0.15 },
+    { x: cx - W*0.20, y: H*0.26, r: W*0.14 },
+    { x: cx + W*0.18, y: H*0.32, r: W*0.13 },
+    { x: cx - W*0.10, y: H*0.32, r: W*0.12 },
+    { x: cx + W*0.06, y: H*0.20, r: W*0.14 },
+  ];
+
+  for (let i = 0; i < foliageCount; i++) {
+    if (i < basePositions.length) {
+      // Scale base positions outward as tree grows
+      const bp = basePositions[i];
+      const dx = bp.x - cx;
+      const dy = bp.y - H*0.5;
+      foliagePositions.push({
+        x: cx + dx * spread,
+        y: H*0.5 + dy * spread,
+        r: bp.r * (1 + progress * 0.4),
+      });
+    } else {
+      // Extra clusters fill in gaps using golden angle
+      const angle = i * 2.399963; // golden angle
+      const dist = W * 0.12 * Math.sqrt(i - basePositions.length + 1);
+      foliagePositions.push({
+        x: cx + Math.cos(angle) * dist * spread,
+        y: H*0.2 + Math.sin(angle) * dist * 0.6,
+        r: W * (0.10 + progress * 0.03),
+      });
     }
   }
 
-  // Mid trunk branch clusters (left side orange — matches reference)
-  if (cycle >= 3) {
-    const midIdx = Math.floor(trunkPoints.length * 0.45);
-    const midPt = trunkPoints[midIdx];
-    const leftBranchSize = 14 + (cycle - 3) * 7;
-
-    // Orange left cluster (distinctive feature from reference)
-    _mosaicCluster(ctx, midPt.x - W*0.14, midPt.y + 8,
-      leftBranchSize, orangeColours, 1.2 + (cycle-3)*0.3, rand);
-
-    if (cycle >= 5) {
-      // Green above the orange
-      _mosaicCluster(ctx, midPt.x - W*0.1, midPt.y - leftBranchSize*0.5,
-        leftBranchSize * 0.7, tealColours, 1.0, rand);
+  const greens = ['#5A8A3C','#6B9E4A','#4A7830','#7AB050','#3D6B28'];
+  foliagePositions.forEach((fp) => {
+    for (let l = 0; l < 5; l++) {
+      const angle = (l / 5) * Math.PI * 2;
+      const lx = fp.x + Math.cos(angle) * fp.r * 0.3;
+      const ly = fp.y + Math.sin(angle) * fp.r * 0.21;
+      const leafGrad = ctx.createRadialGradient(lx-2, ly-2, 0, lx, ly, fp.r*0.7);
+      leafGrad.addColorStop(0, greens[l % greens.length]);
+      leafGrad.addColorStop(1, '#2D5018');
+      ctx.fillStyle = leafGrad;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.arc(lx, ly, fp.r * (0.6 + l*0.08), 0, Math.PI * 2);
+      ctx.fill();
     }
-  }
+    ctx.globalAlpha = 1.0;
+  });
 
-  // Lower branch clusters (cycle 5+)
-  if (cycle >= 5) {
-    const lowIdx = Math.floor(trunkPoints.length * 0.3);
-    const lowPt = trunkPoints[lowIdx];
-    const lowSize = 12 + (cycle - 5) * 8;
-
-    // Right side lower orange/warm cluster
-    _mosaicCluster(ctx, lowPt.x + W*0.1, lowPt.y + 4,
-      lowSize, orangeColours, 1.0 + (cycle-5)*0.3, rand);
-  }
-
-  // Full canopy at cycle 8+ — additional density
-  if (cycle >= 8) {
-    // Extra top density
-    _mosaicCluster(ctx, topX, topY - 30, 35, topGreenColours, 2.5, rand);
-    // Fill gaps
-    _mosaicCluster(ctx, topX - W*0.05, topY - 15, 25, tealColours, 1.8, rand);
-  }
-
-  // Cycle 10: COMPLETE — add blossom accent blocks
-  if (cycle >= 10) {
+  // Near-mature trees (cycle 20+) get a few blossom accents
+  if (cycle >= 20) {
+    const blossomAlpha = Math.min(1, (cycle - 20) / 9);
+    const rand = _seededRand(cycle * 31 + 7);
     const blossomColours = ['#FFB7C5','#FFCCD5','#FF9BAD','#FFA8B8'];
-    const topPt = trunkPoints[trunkPoints.length - 1];
-    // Scatter a few pink blossom blocks at top
-    for (let b = 0; b < 12; b++) {
-      const bx = topPt.x + (rand()-0.5) * 60;
-      const by = topPt.y - rand() * 40;
-      _mosaicBlock(ctx, bx, by, 8+rand()*8, 6+rand()*6,
-        blossomColours[Math.floor(rand()*blossomColours.length)],
-        (rand()-0.5)*0.8, 0.9);
+    for (let b = 0; b < Math.floor(blossomAlpha * 18); b++) {
+      const bx = foliagePositions[b % foliagePositions.length].x + (rand()-0.5)*40;
+      const by = foliagePositions[b % foliagePositions.length].y - rand()*20;
+      ctx.globalAlpha = 0.75 + rand()*0.25;
+      ctx.fillStyle = blossomColours[Math.floor(rand()*blossomColours.length)];
+      ctx.beginPath();
+      ctx.arc(bx, by, 3 + rand()*4, 0, Math.PI*2);
+      ctx.fill();
     }
-  }
-
-  // Waters-in-cycle adds a few extra blocks as subtle feedback
-  if (watersInCycle > 0 && cycle < 10) {
-    const topPt = trunkPoints[trunkPoints.length - 1];
-    for (let w = 0; w < watersInCycle * 3; w++) {
-      const wx = topPt.x + (rand()-0.5) * 30;
-      const wy = topPt.y - rand() * 20;
-      _mosaicBlock(ctx, wx, wy, 6+rand()*8, 5+rand()*6,
-        topGreenColours[Math.floor(rand()*topGreenColours.length)],
-        (rand()-0.5)*0.5, 0.7);
-    }
+    ctx.globalAlpha = 1.0;
   }
 }
 
-// ── POT ──
-function _drawPotMosaic(ctx, cx, groundY, W, rand) {
-  const potW = W * 0.32;
-  const potH = W * 0.09;
-  const potY = groundY - potH * 0.5;
-
-  // Pot colours — red/terracotta mosaic matching reference
-  const potColours = ['#C0392B','#E74C3C','#A93226','#D44233','#8B1A1A'];
-  const rimColours = ['#C84B3A','#D45548','#B03428'];
-
-  // Pot body — mosaic blocks
-  const cols = Math.ceil(potW / 10);
-  const rows = Math.ceil(potH / 8);
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const bx = cx - potW/2 + c * (potW/cols) + (rand()-0.5)*3;
-      const by = potY + r * (potH/rows) + (rand()-0.5)*2;
-      const bw = potW/cols * (0.85 + rand()*0.3);
-      const bh = potH/rows * (0.85 + rand()*0.3);
-      const col = potColours[Math.floor(rand()*potColours.length)];
-      _mosaicBlock(ctx, bx + bw/2, by + bh/2, bw, bh, col,
-        (rand()-0.5)*0.15, 0.92);
-    }
-  }
-
-  // Pot rim — slightly lighter strip at top
-  for (let c = 0; c < cols + 2; c++) {
-    const bx = cx - potW/2 - 4 + c * ((potW+8)/(cols+1));
-    const col = rimColours[Math.floor(rand()*rimColours.length)];
-    _mosaicBlock(ctx, bx, potY - 2, (potW+8)/(cols+1)*0.9, 5, col,
-      (rand()-0.5)*0.1, 0.95);
-  }
-}
-
-// ── SOIL ──
-function _drawSoil(ctx, cx, y, rand) {
-  const soilColours = ['#6B4423','#7A5030','#5C3818','#8B5E3C'];
-  for (let i = 0; i < 8; i++) {
-    const sx = cx + (rand()-0.5)*30;
-    const sy = y + (rand()-0.5)*6;
-    _mosaicBlock(ctx, sx, sy, 10+rand()*12, 5+rand()*5,
-      soilColours[Math.floor(rand()*soilColours.length)],
-      (rand()-0.5)*0.3, 0.8);
-  }
+// ── ROUNDED RECT HELPER ──
+function _roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
 }
 
 // ── POT PREVIEW (plant screen) ──
 function drawPot(ctx, cx, cy, type) {
-  const rand = _seededRand(99);
   const W = ctx.canvas.width;
-  _drawPotMosaic(ctx, cx, cy + 20, W, rand);
+  const H = ctx.canvas.height;
+  _drawEmptyPot(ctx, W, H);
 }
