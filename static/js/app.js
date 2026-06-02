@@ -867,6 +867,10 @@
     var homeContainer = document.querySelector('#home .home-container');
     if (homeContainer) homeContainer.style.pointerEvents = 'none';
 
+    // Hide persistent header and nav while intro is visible
+    document.querySelector('.top-header')?.style.setProperty('display', 'none');
+    document.querySelector('.nav')?.style.setProperty('display', 'none');
+
     // Keep home invisible behind splash so nothing bleeds through during fade
     if (home) home.style.opacity = '0';
 
@@ -886,6 +890,9 @@
         if (intro.parentNode) intro.remove();
         if (home) { home.style.transition = ''; home.style.opacity = ''; }
         if (homeContainer) homeContainer.style.pointerEvents = '';
+        // Restore header and nav after intro is gone
+        document.querySelector('.top-header')?.style.removeProperty('display');
+        document.querySelector('.nav')?.style.removeProperty('display');
       }, 2100);
     }, 5500);
   })();

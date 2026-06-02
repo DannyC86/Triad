@@ -571,6 +571,27 @@
   const _PACER_PHASE       = 0.25;
   const _PACER_IDLE_FRAC   = 0.7;
 
+  /* ── Wake Lock — keeps screen on during active sessions ── */
+  let _wakeLock = null;
+
+  async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+      try {
+        _wakeLock = await navigator.wakeLock.request('screen');
+      } catch (e) { console.log('Wake lock failed:', e); }
+    }
+  }
+
+  function releaseWakeLock() {
+    if (_wakeLock) { _wakeLock.release(); _wakeLock = null; }
+  }
+
+  document.addEventListener('visibilitychange', async () => {
+    if (_wakeLock !== null && document.visibilityState === 'visible') {
+      await requestWakeLock();
+    }
+  });
+
   /* ── Pacer audio ── */
   let audioCtx = null;
   let soundEnabled = localStorage.getItem('triad:soundEnabled') !== 'false';
@@ -594,52 +615,44 @@
     return audioCtx;
   }
 
-  function playChime() {
+  /* Soft meditation bowl tone — replaces all sci-fi/electronic sounds */
+  function createBowlTone(frequency, duration) {
     if (!soundEnabled) return;
     const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
+    const gainNode = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.value = 1200;
+
+    osc.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(frequency * 0.98, ctx.currentTime + duration);
+
+    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.12);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
     osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.8);
+    osc.stop(ctx.currentTime + duration);
   }
 
-  function playDong() {
-    if (!soundEnabled) return;
-    const ctx = getAudioCtx();
-
-    // Primary water drop — fast pitch fall
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    const filter1 = ctx.createBiquadFilter();
-    osc1.connect(filter1); filter1.connect(gain1); gain1.connect(ctx.destination);
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(600, ctx.currentTime);
-    osc1.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.18);
-    filter1.type = 'lowpass';
-    filter1.frequency.setValueAtTime(800, ctx.currentTime);
-    filter1.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.2);
-    gain1.gain.setValueAtTime(0, ctx.currentTime);
-    gain1.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 0.005);
-    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-    osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 0.35);
-
-    // Soft resonant tail
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.connect(gain2); gain2.connect(ctx.destination);
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(120, ctx.currentTime + 0.05);
-    osc2.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.5);
-    gain2.gain.setValueAtTime(0, ctx.currentTime + 0.05);
-    gain2.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.08);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-    osc2.start(ctx.currentTime + 0.05); osc2.stop(ctx.currentTime + 0.6);
+  /* 500ms debounce guard — prevents double-fire at cycle boundaries */
+  let _soundPlaying = false;
+  function _playGuarded(fn) {
+    if (_soundPlaying) return;
+    _soundPlaying = true;
+    fn();
+    setTimeout(() => { _soundPlaying = false; }, 500);
   }
+
+  function playChime() { _playGuarded(() => createBowlTone(285, 3.0)); }  // exhale start
+  function playDong()  { _playGuarded(() => createBowlTone(396, 2.5)); }  // inhale start
 
   function pacerToggleMute() {
     soundEnabled = !soundEnabled;
@@ -951,6 +964,7 @@
     if (_pacerState.raf)        { cancelAnimationFrame(_pacerState.raf);        _pacerState.raf        = null; }
     if (_pacerState.prerollRaf) { cancelAnimationFrame(_pacerState.prerollRaf); _pacerState.prerollRaf = null; }
     _pacerState.lastTs = null;
+    releaseWakeLock();
     const overlay = document.getElementById('pacerOverlay');
     if (overlay) overlay.classList.remove('active');
   }
@@ -1042,6 +1056,7 @@
     _pacerState.breathCount = 1;
     _pacerUpdateBreath(1);
     _pacerUpdateTime(0);
+    requestWakeLock();
 
     _pacerState.raf = requestAnimationFrame(_pacerTick);
   }
@@ -1074,6 +1089,8 @@
     saveStore(store);
     checkAchievements();
     refreshStreakBadge();
+
+    createBowlTone(528, 4.0);
 
     // Route to the existing #sessionOverlay completion screen.
     // _sess.practiceId is set so sessionReturn() navigates back correctly.
@@ -1135,9 +1152,13 @@
     if (typeof window._hideGuestGate === 'function') window._hideGuestGate();
     if (action === 'technique') {
       const techId = (typeof _sess !== 'undefined' && _sess.practiceId) || 'resonant-breathing';
-      transitionTo(() => { navigate('techniques', { keepDetail: true }); showTechniqueDetail(techId); });
+      transitionTo(() => {
+        navigate('library', { keepDetail: true });
+        switchLibraryTab('breathwork');
+        showKnowledgePracticeDetail('technique', techId);
+      });
     } else if (action === 'meditate') {
-      transitionTo(() => { navigate('meditate'); showMeditationDetail('mindfulness-of-breath'); });
+      transitionTo(() => { navigate('meditate'); openMobSession(); });
     } else {
       transitionTo(() => navigate('home'));
     }
@@ -1394,6 +1415,7 @@
     if (breathEl) breathEl.textContent = '1';
     const timerEl = document.getElementById('proTimer');
     if (timerEl) timerEl.textContent = '0:00';
+    requestWakeLock();
 
     _proPacerState.raf = requestAnimationFrame(_proTick);
   }
@@ -1478,6 +1500,7 @@
     if (_proPacerState.prerollRaf) { cancelAnimationFrame(_proPacerState.prerollRaf); _proPacerState.prerollRaf = null; }
     _proIntroStopWave();
     _proPacerState.lastTs = null;
+    releaseWakeLock();
     const overlay = document.getElementById('pacerOverlayPro');
     if (overlay) overlay.classList.remove('active');
   }
@@ -1529,6 +1552,8 @@
     saveStore(store);
     checkAchievements();
     refreshStreakBadge();
+
+    createBowlTone(528, 4.0);
 
     _sess.practiceId = bwId;
     _sess.running = false; _sess.paused = false; _sess.countdown = false; _sess.raf = null;
@@ -1671,6 +1696,7 @@
 
   function closeMobSession() {
     _mobClearTimers();
+    releaseWakeLock();
     const cdEl = document.getElementById('mobCountdown');
     if (cdEl) cdEl.style.display = 'none';
     document.getElementById('mobOverlay')?.classList.remove('active');
@@ -1731,6 +1757,7 @@
     _mobIsHolding   = false;
     _mobCanvasW     = 0;
     _mobCanvasH     = 0;
+    requestWakeLock();
 
     _mobShowPage(2);
 

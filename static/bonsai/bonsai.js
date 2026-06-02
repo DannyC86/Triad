@@ -41,7 +41,6 @@ function bonsaiAwardPot() {
   data.pots     = ['standard'];
   data.unlocked = true;
   _bonsaiSave(data);
-  _bonsaiShowToast('🪴 You earned a Bonsai Pot! Visit your garden to begin.');
   bonsaiUpdateProfileCard();
 }
 
@@ -52,7 +51,6 @@ function bonsaiAwardSeeds() {
   data.hasSeeds = true;
   data.seeds    = ['standard'];
   _bonsaiSave(data);
-  _bonsaiShowToast('🌱 You earned Starter Seeds! Time to plant your bonsai.');
   setTimeout(() => _bonsaiPlantingCeremony(), 1500);
   bonsaiUpdateProfileCard();
 }

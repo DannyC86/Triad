@@ -234,11 +234,13 @@
     if (_sess.raf) { cancelAnimationFrame(_sess.raf); _sess.raf = null; }
     _sessClearHoldCount();
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (typeof releaseWakeLock === 'function') releaseWakeLock();
   }
 
   function _sessComplete() {
     _sessStop();
     speakPhase('Session complete. Well done.');
+    if (typeof createBowlTone === 'function') createBowlTone(528, 4.0);
     const totalMs = performance.now() - _sess.sessionStart;
     const totalMin = Math.round(totalMs / 60000);
     const totalSec = Math.round(totalMs / 1000);
@@ -355,6 +357,7 @@
     _sess.running = true;
     _sess.paused = false;
     _sess.sessionStart = performance.now();
+    if (typeof requestWakeLock === 'function') requestWakeLock();
 
     _sessUpdateCycleCount();
     _sessUpdatePhaseLabel();

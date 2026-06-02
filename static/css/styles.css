@@ -6149,3 +6149,47 @@
       transition: opacity 0.25s ease;
     }
     #page-transition-overlay.fading { opacity: 1; pointer-events: all; }
+
+    /* ─── Fix 2: Welcome hint ─── */
+    .welcome-hint {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-soft);
+      text-align: center;
+      margin-top: 10px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── Fix 3/4: Glass overlay card for pre-session steps ─── */
+    .pre-breath-steps-overlay {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(201,169,110,0.2);
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 20px 18px;
+      margin: 0 0 20px 0;
+    }
+    [data-theme="dark"] .pre-breath-steps-overlay {
+      background: rgba(255,255,255,0.04);
+    }
+    /* Remove inner margins that would double-space inside the overlay */
+    .pre-breath-steps-overlay .mob-instructions { margin-top: 0; }
+    .pre-breath-steps-overlay .mob-hint { margin-top: 12px; }
+    .pre-breath-steps-overlay .session-intro-title { margin-bottom: 6px; }
+    .pre-breath-steps-overlay .session-intro-desc { margin-bottom: 12px; }
+    .pre-breath-steps-overlay .pacer-intro-list { margin-bottom: 0; }
+
+    /* ─── Fix 10: Rewards section in profile ─── */
+    .rewards-section {
+      margin: 24px 0 0 0;
+    }
+    .rewards-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      margin: 0 0 14px 0;
+      padding: 0 var(--side-pad, 20px);
+    }

@@ -178,7 +178,7 @@ var _introPlayedThisSession = false;
         <div class="guest-slogan">MIND &middot; BODY &middot; SPIRIT &middot; ALIGNED</div>
         <div class="guest-welcome-heading">Welcome</div>
         <button class="guest-cta-btn" id="first-breath-gate-btn" type="button" onclick="transitionTo(() => openPacer('resonant-breathing'))">Take your First Breath</button>
-        <div class="guest-cta-note">Takes 30 seconds</div>
+        <p class="welcome-hint">It only takes 30 seconds</p>
       </div>
 
       <div class="home-auth-footer" id="home-auth-footer">
@@ -368,18 +368,6 @@ var _introPlayedThisSession = false;
     <!-- Main profile view -->
     <div id="profile-main-view">
 
-      <!-- Bonsai Garden entry point (shown when unlocked) -->
-      <div class="bonsai-profile-card" id="bonsaiProfileCard" style="display:none">
-        <button class="bonsai-profile-btn" onclick="openBonsaiScreen()">
-          <span class="bonsai-profile-icon">🌳</span>
-          <div class="bonsai-profile-text">
-            <span class="bonsai-profile-title">Bonsai Garden</span>
-            <span class="bonsai-profile-sub" id="bonsaiProfileSub">Tap to tend your tree</span>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
-
       <!-- Account header (JS-rendered by renderProfileAccountHeader) -->
       <div id="profile-account-header"></div>
 
@@ -408,6 +396,21 @@ var _introPlayedThisSession = false;
       <div class="guest-achievements-block" data-guest-only>
         <div class="guest-achievements-head">Achievements</div>
         <div id="guest-achievements-grid"></div>
+      </div>
+
+      <!-- Rewards section — Bonsai Garden lives here -->
+      <div class="rewards-section">
+        <div class="rewards-heading">Rewards</div>
+        <div class="bonsai-profile-card" id="bonsaiProfileCard" style="display:none">
+          <button class="bonsai-profile-btn" onclick="openBonsaiScreen()">
+            <span class="bonsai-profile-icon">🌳</span>
+            <div class="bonsai-profile-text">
+              <span class="bonsai-profile-title">Bonsai Garden</span>
+              <span class="bonsai-profile-sub" id="bonsaiProfileSub">Tap to tend your tree</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
       </div>
 
       <!-- SECTION 4: Active missions (or prompt card) -->
@@ -762,13 +765,15 @@ var _introPlayedThisSession = false;
       <h1 class="mob-title">Mindfulness of Breath</h1>
       <p class="mob-subtitle">A simple practice of noticing your breath.</p>
       <canvas id="mobWaveCanvas1" class="mob-wave-canvas"></canvas>
-      <ul class="mob-instructions">
-        <li>Sit comfortably</li>
-        <li>Relax your shoulders</li>
-        <li>Let your breath move naturally</li>
-        <li>Notice the sensations of breathing</li>
-      </ul>
-      <p class="mob-hint">Hold the button to meditate. Release to pause.</p>
+      <div class="pre-breath-steps-overlay">
+        <ul class="mob-instructions">
+          <li>Sit comfortably</li>
+          <li>Relax your shoulders</li>
+          <li>Let your breath move naturally</li>
+          <li>Notice the sensations of breathing</li>
+        </ul>
+        <p class="mob-hint">Hold the button to meditate. Release to pause.</p>
+      </div>
     </div>
     <div class="mob-bottom">
       <button class="mob-begin-btn" onclick="_mobGoToPage2()">Begin Meditation</button>
@@ -1172,9 +1177,11 @@ var _introPlayedThisSession = false;
 <!-- ═════════ Universal session intro popup ═════════ -->
 <div class="session-intro-popup" id="sessionIntroPopup" style="display:none" role="dialog" aria-modal="true">
   <div class="session-intro-card">
-    <div class="session-intro-title" id="siTitle"></div>
-    <p class="session-intro-desc" id="siDesc"></p>
-    <ul class="pacer-intro-list" id="siSteps"></ul>
+    <div class="pre-breath-steps-overlay">
+      <div class="session-intro-title" id="siTitle"></div>
+      <p class="session-intro-desc" id="siDesc"></p>
+      <ul class="pacer-intro-list" id="siSteps"></ul>
+    </div>
     <button class="btn-gold session-intro-ok" onclick="_closeSessionIntro()">Begin</button>
   </div>
 </div>
