@@ -1567,7 +1567,6 @@
     _sovC.classList.add('active');
     _sovC.classList.add('completion-active');
 
-    if (typeof bonsaiAwardPot === 'function') bonsaiAwardPot();
   }
 
   /* ── Pacer pause / resume for settings drawer ──────────────────── */
@@ -2068,4 +2067,8 @@
       _mobStartTrace();
     }
   }
+
+window.addEventListener('load', function() {
+  if (typeof bonsaiUpdateProfileCard === 'function') bonsaiUpdateProfileCard();
+});
 
