@@ -114,8 +114,9 @@ function _bonsaiPlantingCeremony() {
 function bonsaiUpdateProfileCard() {
   const data = _bonsaiLoad();
   const card = document.getElementById('bonsaiProfileCard');
-  if (!card) return;
-  card.style.display = data.unlocked ? 'block' : 'none';
+  if (card) card.style.display = 'block';
+  const homeIcon = document.getElementById('bonsaiHomeIcon');
+  if (homeIcon) homeIcon.style.display = 'flex';
   const sub = document.getElementById('bonsaiProfileSub');
   if (!sub) return;
   if (data.active) {
