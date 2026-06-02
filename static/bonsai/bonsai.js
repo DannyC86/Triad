@@ -131,8 +131,12 @@ function bonsaiUpdateProfileCard() {
 // ─── Open / close overlay ─────────────────────────────────────────────────────
 
 function openBonsaiScreen() {
+  console.log('[Bonsai] openBonsaiScreen called');
+  console.log('[Bonsai] overlay element:', document.getElementById('bonsaiOverlay'));
+  console.log('[Bonsai] overlay classes before:', document.getElementById('bonsaiOverlay')?.className);
   stopBonsaiAnimation();
   document.getElementById('bonsaiOverlay').classList.add('active');
+  console.log('[Bonsai] overlay classes after:', document.getElementById('bonsaiOverlay')?.className);
   const data = _bonsaiLoad();
 
   ['bonsaiPlantView', 'bonsaiActiveView', 'bonsaiCompleteView', 'bonsaiAlbumView']
