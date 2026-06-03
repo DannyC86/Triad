@@ -51,7 +51,9 @@ function bonsaiAwardSeeds() {
   data.hasSeeds = true;
   data.seeds    = ['standard'];
   _bonsaiSave(data);
-  setTimeout(() => _bonsaiPlantingCeremony(), 1500);
+  if (!window._mobIsOnboarding) {
+    setTimeout(() => _bonsaiPlantingCeremony(), 1500);
+  }
   bonsaiUpdateProfileCard();
 }
 
@@ -493,18 +495,20 @@ function openBonsaiRewardsPopup() {
       </div>
 
       <p class="bonsai-rewards-hint">
-        Visit your <strong>Bonsai Garden</strong> in Profile to begin growing.
+        Your <strong>Bonsai Garden</strong> is waiting in Profile.
       </p>
 
       <button class="bonsai-action-btn" onclick="
         document.getElementById('bonsaiRewardsPopup').remove();
-        closeMobSession();
-        transitionTo(() => navigate('profile'));
-      ">Go to Garden</button>
+        if (typeof closeMobSession === 'function') closeMobSession();
+        transitionTo(() => { navigate('meditate'); if (typeof showMeditationDetail === 'function') showMeditationDetail('mindfulness-of-breath'); });
+      ">Go to Mindfulness of Breath</button>
 
       <button class="bonsai-rewards-dismiss" onclick="
         document.getElementById('bonsaiRewardsPopup').remove();
-      ">Maybe later</button>
+        if (typeof closeMobSession === 'function') closeMobSession();
+        transitionTo(() => navigate('profile'));
+      ">Go to Garden</button>
     </div>
   `;
 

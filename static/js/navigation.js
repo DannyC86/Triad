@@ -540,6 +540,40 @@
     popup.style.display = 'flex';
   }
 
+  let _siSelectedDuration = 1;
+
+  function _siShowLengthSelect() {
+    const p1 = document.getElementById('siPhase1');
+    const p2 = document.getElementById('siPhase2');
+    if (p1) p1.style.display = 'none';
+    if (p2) p2.style.display = 'block';
+  }
+
+  function siSelectDuration(tile) {
+    document.querySelectorAll('.si-tile').forEach(t => t.classList.remove('selected'));
+    tile.classList.add('selected');
+    _siSelectedDuration = parseInt(tile.dataset.duration, 10);
+  }
+
+  function _closeSessionIntroWithDuration() {
+    _closeSessionIntro();
+  }
+
+  function _closeSessionIntroCancel() {
+    const popup = document.getElementById('sessionIntroPopup');
+    if (!popup) return;
+    popup.classList.add('hiding');
+    setTimeout(() => {
+      popup.style.display = 'none';
+      popup.classList.remove('hiding');
+      // Reset phases back to phase 1
+      const p1 = document.getElementById('siPhase1');
+      const p2 = document.getElementById('siPhase2');
+      if (p1) p1.style.display = 'block';
+      if (p2) p2.style.display = 'none';
+    }, 350);
+  }
+
   function _closeSessionIntro() {
     const popup = document.getElementById('sessionIntroPopup');
     if (!popup) return;
@@ -548,6 +582,10 @@
     setTimeout(() => {
       popup.style.display = 'none';
       popup.classList.remove('hiding');
+      const p1 = document.getElementById('siPhase1');
+      const p2 = document.getElementById('siPhase2');
+      if (p1) p1.style.display = 'block';
+      if (p2) p2.style.display = 'none';
       _launchSession(practiceId);
     }, 350);
   }
@@ -1158,6 +1196,8 @@
         showKnowledgePracticeDetail('technique', techId);
       });
     } else if (action === 'meditate') {
+      _mobIsOnboarding = true;
+      window._mobIsOnboarding = true;
       transitionTo(() => { navigate('meditate'); openMobSession(); });
     } else {
       transitionTo(() => navigate('home'));
@@ -1253,13 +1293,22 @@
     if (breathEl) breathEl.textContent = '1';
     if (timerEl)  timerEl.textContent  = '0:00';
 
-    // Reset zone-C to session select state
-    const selDiv = document.getElementById('proSessionSelect');
-    const cdDiv  = document.getElementById('proCountdown');
-    const actDiv = document.getElementById('proSessionActive');
-    if (selDiv) selDiv.style.display = 'flex';
-    if (cdDiv)  cdDiv.style.display  = 'none';
-    if (actDiv) actDiv.style.display = 'none';
+    // Reset zone-C to overview state (skip intro screen)
+    const overviewDiv  = document.getElementById('proOverviewState');
+    const lengthDiv    = document.getElementById('proLengthState');
+    const cdDiv        = document.getElementById('proCountdown');
+    const actDiv       = document.getElementById('proSessionActive');
+    if (overviewDiv) overviewDiv.style.display = 'flex';
+    if (lengthDiv)   lengthDiv.style.display   = 'none';
+    if (cdDiv)       cdDiv.style.display       = 'none';
+    if (actDiv)      actDiv.style.display      = 'none';
+
+    // Populate overview glass card
+    const overviewDesc = document.getElementById('proOverviewDesc');
+    const overviewList = document.getElementById('proInstructions');
+    if (overviewDesc) overviewDesc.textContent = item && item.desc ? item.desc : 'Equal-duration pacing to sync heart rate variability.';
+    const steps = (item && item.steps) ? item.steps : ['5 Second Nose Inhale','No hold','Straight into 5 second nose exhale','Repeat'];
+    if (overviewList) overviewList.innerHTML = steps.map(s => `<li>${s}</li>`).join('');
 
     // Reset tile selection to default (1 min)
     document.querySelectorAll('#proTilesRow .pro-tile').forEach(t => t.classList.remove('selected'));
@@ -1267,6 +1316,10 @@
     if (firstTile) firstTile.classList.add('selected');
     const labelEl = document.getElementById('proTileLabel');
     if (labelEl) labelEl.textContent = '1 min';
+
+    // Calculate initial selectedCycles for 1 min
+    const cycleSecs0 = _proPacerState.phases.reduce((s, p) => s + p.sec, 0);
+    _proPacerState.selectedCycles = cycleSecs0 > 0 ? Math.max(1, Math.round(60 / cycleSecs0)) : 6;
 
     // Hide End Session button
     const endBtn = document.getElementById('proEndBtn');
@@ -1278,56 +1331,40 @@
 
     overlay.classList.add('active');
 
-    // Show intro screen, hide session zones
+    // Show zones directly (no intro screen)
     const introScreen = document.getElementById('proIntroScreen');
     const zoneA = document.getElementById('proZoneA');
     const zoneB = document.getElementById('proZoneB');
     const zoneC = document.getElementById('proZoneC');
-    if (introScreen) introScreen.style.display = 'flex';
-    if (zoneA) zoneA.style.display = 'none';
-    if (zoneB) zoneB.style.display = 'none';
-    if (zoneC) zoneC.style.display = 'none';
+    if (introScreen) introScreen.style.display = 'none';
+    if (zoneA) zoneA.style.display = '';
+    if (zoneB) zoneB.style.display = '';
+    if (zoneC) zoneC.style.display = '';
 
-    // Populate intro from technique data
-    const introTitle    = document.getElementById('proIntroTitle');
-    const introSubtitle = document.getElementById('proIntroSubtitle');
-    const introList     = document.getElementById('proIntroList');
-    if (introTitle)    introTitle.textContent    = item && item.title ? item.title : 'Resonant Breathing';
-    if (introSubtitle) introSubtitle.textContent = item && item.desc  ? item.desc  : '';
-    const steps = (item && item.steps) ? item.steps : [];
-    if (introList && steps.length) {
-      introList.innerHTML = steps.map(s => `<li>${s}</li>`).join('');
-    }
-
-    // Wire begin button
-    const beginBtn = document.getElementById('proIntroBeginBtn');
-    if (beginBtn) {
-      beginBtn.onclick = () => {
-        if (introScreen) introScreen.style.display = 'none';
-        if (zoneA) zoneA.style.display = '';
-        if (zoneB) zoneB.style.display = '';
-        if (zoneC) zoneC.style.display = '';
-        _proIntroStopWave();
-        requestAnimationFrame(() => {
-          _proResizeCanvas();
-          const c = document.getElementById('proCanvas');
-          _pacerDrawToCanvas(c, false, c ? c.width * _PACER_IDLE_FRAC : 0);
-        });
-      };
-    }
-
-    // Start ambient wave on intro canvas
-    requestAnimationFrame(() => _proIntroStartWave());
+    // Draw ambient wave in chart
+    requestAnimationFrame(() => {
+      _proResizeCanvas();
+      const c = document.getElementById('proCanvas');
+      _pacerDrawToCanvas(c, false, c ? c.width * _PACER_IDLE_FRAC : 0);
+    });
   }
 
   function proSelectTile(tile) {
     document.querySelectorAll('#proTilesRow .pro-tile').forEach(t => t.classList.remove('selected'));
     tile.classList.add('selected');
     const dur = parseInt(tile.dataset.duration, 10);
-    _proPacerState.selectedCycles = parseInt(tile.dataset.cycles, 10);
     _proPacerState.isInfinite = dur === 0;
+    const cycleSecs = _proPacerState.phases.reduce((s, p) => s + p.sec, 0);
+    _proPacerState.selectedCycles = (!dur || !cycleSecs) ? 6 : Math.max(1, Math.round((dur * 60) / cycleSecs));
     const labelEl = document.getElementById('proTileLabel');
     if (labelEl) labelEl.textContent = dur === 0 ? 'Infinite' : dur + ' min';
+  }
+
+  function _proShowLengthSelect() {
+    const overviewDiv = document.getElementById('proOverviewState');
+    const lengthDiv   = document.getElementById('proLengthState');
+    if (overviewDiv) overviewDiv.style.display = 'none';
+    if (lengthDiv)   lengthDiv.style.display   = 'flex';
   }
 
   function _proPrerollTick(now) {
@@ -1342,10 +1379,12 @@
   }
 
   function _proStartCountdown() {
-    const selDiv = document.getElementById('proSessionSelect');
-    const cdDiv  = document.getElementById('proCountdown');
-    if (selDiv) selDiv.style.display = 'none';
-    if (cdDiv)  cdDiv.style.display  = 'flex';
+    const overviewDiv = document.getElementById('proOverviewState');
+    const lengthDiv   = document.getElementById('proLengthState');
+    const cdDiv       = document.getElementById('proCountdown');
+    if (overviewDiv) overviewDiv.style.display = 'none';
+    if (lengthDiv)   lengthDiv.style.display   = 'none';
+    if (cdDiv)       cdDiv.style.display       = 'flex';
 
     _proPacerState.prerollMs = 0;
     _proPacerState.prerollLastTs = null;
@@ -1506,19 +1545,42 @@
   }
 
   function confirmCancelProSession() {
-    const endBtn = document.querySelector('#quitSessionModal .action-btn.secondary');
-    if (endBtn) endBtn.onclick = function() { closeQuitModal(); closeProPacer(); };
+    const continueBtn = document.getElementById('quitContinueBtn');
+    const endBtn      = document.getElementById('quitEndBtn');
+    const bodyEl      = document.getElementById('quitSessionBody');
+    if (continueBtn) continueBtn.textContent = 'Continue Breathing';
+    if (endBtn) {
+      endBtn.textContent = 'End Session';
+      endBtn.onclick = function() { closeQuitModal(); closeProPacer(); };
+    }
+    if (bodyEl) bodyEl.textContent = "You're partway through. Take a breath — are you sure you want to stop?";
     openQuitModal();
   }
 
   function confirmCancelGuestSession() {
-    const endBtn = document.querySelector('#quitSessionModal .action-btn.secondary');
-    if (endBtn) endBtn.onclick = function() { closeQuitModal(); closePacer(); };
+    const continueBtn = document.getElementById('quitContinueBtn');
+    const endBtn      = document.getElementById('quitEndBtn');
+    const bodyEl      = document.getElementById('quitSessionBody');
+    if (continueBtn) continueBtn.textContent = 'Continue Breathing';
+    if (endBtn) {
+      endBtn.textContent = 'End Session';
+      endBtn.onclick = function() { closeQuitModal(); closePacer(); };
+    }
+    if (bodyEl) bodyEl.textContent = "You're partway through. Take a breath — are you sure you want to stop?";
     openQuitModal();
   }
 
   function confirmCancelMob() {
-    if (confirm('End meditation?')) { closeMobSession(); }
+    const continueBtn = document.getElementById('quitContinueBtn');
+    const endBtn      = document.getElementById('quitEndBtn');
+    const bodyEl      = document.getElementById('quitSessionBody');
+    if (continueBtn) continueBtn.textContent = 'Continue Meditation';
+    if (endBtn) {
+      endBtn.textContent = 'End Meditation';
+      endBtn.onclick = function() { closeQuitModal(); closeMobSession(); };
+    }
+    if (bodyEl) bodyEl.textContent = "You're partway through. Stay present — are you sure you want to stop?";
+    openQuitModal();
   }
 
   function proEndSession() {
@@ -1626,6 +1688,11 @@
 
   const _MOB_SESSION_SECS = 30;
   const _MOB_SESSION_MS   = 30000;
+
+  let _mobSelectedSecs = 60;   // user-chosen session length (general mode)
+  let _mobSessionSecs  = 30;   // active session length (set at start)
+  let _mobIsOnboarding = false; // true when launched from first-breath completion
+
   const _MOB_PROMPTS = [
     'Settle in…',
     'Notice your breath…',
@@ -1663,8 +1730,24 @@
     _mobIsHolding    = false;
     _mobCanvasW      = 0;
     _mobCanvasH      = 0;
+    _mobSelectedSecs = 60;
 
     _mobClearTimers();
+
+    // Show/hide cancel buttons based on onboarding mode
+    const c1 = document.getElementById('mobCancelBtn1');
+    const c1b = document.getElementById('mobCancelBtn1b');
+    const c2 = document.getElementById('mobCancelBtn2');
+    if (c1)  c1.style.display  = _mobIsOnboarding ? 'none' : '';
+    if (c1b) c1b.style.display = _mobIsOnboarding ? 'none' : '';
+    if (c2)  c2.style.display  = _mobIsOnboarding ? 'none' : '';
+
+    // Update page 1 button — "Begin Meditation" in onboarding, "Pick Meditation Length" otherwise
+    const beginBtn1 = document.getElementById('mobBeginBtn1');
+    if (beginBtn1) {
+      beginBtn1.textContent = _mobIsOnboarding ? 'Begin Meditation' : 'Pick Meditation Length';
+      beginBtn1.onclick = _mobIsOnboarding ? _mobGoToPage2Direct : _mobGoToLengthSelect;
+    }
 
     // Reset page-2 dynamic elements
     const timerEl = document.getElementById('mobTimer');
@@ -1697,18 +1780,22 @@
   function closeMobSession() {
     _mobClearTimers();
     releaseWakeLock();
+    _mobIsOnboarding = false;
+    window._mobIsOnboarding = false;
     const cdEl = document.getElementById('mobCountdown');
     if (cdEl) cdEl.style.display = 'none';
     document.getElementById('mobOverlay')?.classList.remove('active');
   }
 
   function _mobShowPage(n) {
-    const p1 = document.getElementById('mobPage1');
-    const p2 = document.getElementById('mobPage2');
-    const p3 = document.getElementById('mobPage3');
-    if (p1) p1.style.display = n === 1 ? 'flex' : 'none';
-    if (p2) p2.style.display = n === 2 ? 'flex' : 'none';
-    if (p3) p3.style.display = n === 3 ? 'flex' : 'none';
+    const p1  = document.getElementById('mobPage1');
+    const p1b = document.getElementById('mobPage1b');
+    const p2  = document.getElementById('mobPage2');
+    const p3  = document.getElementById('mobPage3');
+    if (p1)  p1.style.display  = n === 1   ? 'flex' : 'none';
+    if (p1b) p1b.style.display = n === 1.5 ? 'flex' : 'none';
+    if (p2)  p2.style.display  = n === 2   ? 'flex' : 'none';
+    if (p3)  p3.style.display  = n === 3   ? 'flex' : 'none';
   }
 
   function _mobClearTimers() {
@@ -1718,8 +1805,24 @@
     _mobTimerRunning = false;
   }
 
-  /* "Begin Meditation" → 3-2-1 countdown → session */
-  function _mobGoToPage2() {
+  /* "Pick Meditation Length" → show length select page */
+  function _mobGoToLengthSelect() {
+    _mobShowPage(1.5);
+  }
+
+  /* Length confirmed → start countdown (general flow) */
+  function _mobConfirmLength() {
+    _mobGoToPage2Direct();
+  }
+
+  function mobSelectTile(el) {
+    document.querySelectorAll('.mob-tile').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+    _mobSelectedSecs = parseInt(el.dataset.secs, 10);
+  }
+
+  /* Countdown → session (used by both onboarding and general) */
+  function _mobGoToPage2Direct() {
     const cdEl  = document.getElementById('mobCountdown');
     const numEl = document.getElementById('mobCdNum');
     if (!cdEl || !numEl) { _mobStartSession(); return; }
@@ -1731,7 +1834,6 @@
       numEl.style.transition = 'none';
       numEl.style.opacity = '0';
       numEl.textContent = String(n);
-      // Double rAF ensures reset is committed before animating
       requestAnimationFrame(() => requestAnimationFrame(() => {
         numEl.style.transition = 'opacity 0.3s ease';
         numEl.style.opacity = '1';
@@ -1749,6 +1851,9 @@
     tick(3);
   }
 
+  /* Legacy alias */
+  function _mobGoToPage2() { _mobGoToPage2Direct(); }
+
   /* Called after countdown — shows page 2 and starts everything */
   function _mobStartSession() {
     _mobTracePoints = [];
@@ -1757,6 +1862,8 @@
     _mobIsHolding   = false;
     _mobCanvasW     = 0;
     _mobCanvasH     = 0;
+    // Set active session duration: onboarding uses fixed 30s, general uses selected
+    _mobSessionSecs = _mobIsOnboarding ? _MOB_SESSION_SECS : _mobSelectedSecs;
     requestWakeLock();
 
     _mobShowPage(2);
@@ -1845,7 +1952,7 @@
 
       // Prune points that have scrolled off the left edge
       const orbX      = W * 0.5;
-      const scrollSpd = W / _MOB_SESSION_MS;
+      const scrollSpd = W / (_mobSessionSecs * 1000);
       while (_mobTracePoints.length > 1 &&
              (orbX - (elapsedMs - _mobTracePoints[0].t) * scrollSpd) < -20) {
         _mobTracePoints.shift();
@@ -1953,15 +2060,17 @@
   function _mobTimerTick() {
     if (!_mobTimerRunning || _mobTimerStart === null) return;
     const elapsed = _mobTimerElapsed + (performance.now() - _mobTimerStart) / 1000;
-    const secs    = Math.min(Math.floor(elapsed), _MOB_SESSION_SECS);
+    const secs    = Math.min(Math.floor(elapsed), _mobSessionSecs);
     const mm      = String(Math.floor(secs / 60)).padStart(2, '0');
     const ss      = String(secs % 60).padStart(2, '0');
     const el      = document.getElementById('mobTimer');
     if (el) el.textContent = mm + ':' + ss;
-    if (elapsed >= _MOB_SESSION_SECS) {
+    if (elapsed >= _mobSessionSecs) {
       _mobTimerRunning = false;
       clearInterval(_mobTimerInterval); _mobTimerInterval = null;
-      if (el) el.textContent = '00:30';
+      const endMm = String(Math.floor(_mobSessionSecs / 60)).padStart(2, '0');
+      const endSs = String(_mobSessionSecs % 60).padStart(2, '0');
+      if (el) el.textContent = endMm + ':' + endSs;
       _mobGoToPage3();
     }
   }
@@ -2035,8 +2144,10 @@
     const avg  = n ? f(b.reduce((a, x) => a + x, 0) / n) : dash;
     const hi   = n ? Math.max(...b) : null;
     const lo   = n ? Math.min(...b) : null;
+    const mm   = String(Math.floor(_mobSessionSecs / 60)).padStart(2, '0');
+    const ss   = String(_mobSessionSecs % 60).padStart(2, '0');
     const rows = [
-      ['Session Time',       '0:30'],
+      ['Session Time',       mm + ':' + ss],
       ['Breaths Recorded',   String(n)],
       ['Average Breath',     avg],
       ['Longest Breath',     n ? f(hi)          : dash],
@@ -2046,16 +2157,29 @@
     const rowsHTML = rows.map(([l, v]) =>
       `<div class="mob3-stat-row"><span class="mob3-stat-label">${l}</span><span class="mob3-stat-value">${v}</span></div>`
     ).join('');
-    document.getElementById('mobPage3').innerHTML =
-      `<div class="mob3-title">Mindfulness of Breath</div>` +
-      `<div class="mob3-congrats">Congratulations</div>` +
-      `<p class="mob3-reflection">How do you feel? Stay present. Would you like to explore more?</p>` +
-      `<div class="mob3-stats">${rowsHTML}</div>` +
-      `<div class="mob3-actions">` +
-        `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>{navigate('meditate');showMeditationDetail('mindfulness-of-breath')})">Learn about Mindfulness</button>` +
-        `<button class="mob3-btn" onclick="openBonsaiRewardsPopup()">Get Rewards</button>` +
-        `<button class="mob3-btn" onclick="closeMobSession();transitionTo(()=>navigate('home'))">Explore the App</button>` +
-      `</div>`;
+
+    if (_mobIsOnboarding) {
+      // ONBOARDING REWARDS SCREEN: show rewards, no congrats heading
+      document.getElementById('mobPage3').innerHTML =
+        `<div class="mob3-title">Your Rewards</div>` +
+        `<div class="mob3-rewards-list">` +
+          `<div class="mob3-reward-item"><div class="mob3-reward-icon">🪴</div><div><div class="mob3-reward-name">Bonsai Pot</div><div class="mob3-reward-sub">Earned from your first breath session</div></div></div>` +
+          `<div class="mob3-reward-item"><div class="mob3-reward-icon">🌱</div><div><div class="mob3-reward-name">Starter Seeds</div><div class="mob3-reward-sub">Earned from your first meditation</div></div></div>` +
+        `</div>` +
+        `<div class="mob3-actions">` +
+          `<button class="mob3-btn btn-primary" onclick="closeMobSession();transitionTo(()=>{navigate('meditate');showMeditationDetail('mindfulness-of-breath')})">Go to Mindfulness of Breath</button>` +
+        `</div>`;
+    } else {
+      // GENERAL MEDITATION CONGRATS: stats + 3 buttons, no large heading
+      document.getElementById('mobPage3').innerHTML =
+        `<div class="mob3-title">Mindfulness of Breath</div>` +
+        `<div class="mob3-stats">${rowsHTML}</div>` +
+        `<div class="mob3-actions">` +
+          `<button class="mob3-btn btn-primary" onclick="closeMobSession();transitionTo(()=>{navigate('library',{keepDetail:true});switchLibraryTab('meditations');showKnowledgePracticeDetail('meditation','mindfulness-of-breath')})">Learn about Mindfulness</button>` +
+          `<button class="mob3-btn btn-secondary" onclick="closeMobSession();transitionTo(()=>{navigate('profile');document.querySelector('.rewards-section')?.scrollIntoView({behavior:'smooth'})})">Get Rewards</button>` +
+          `<button class="mob3-btn btn-secondary" onclick="closeMobSession();transitionTo(()=>navigate('home'))">Home</button>` +
+        `</div>`;
+    }
   }
 
   function _mobSaveSession() {
@@ -2063,7 +2187,7 @@
     const s = loadStore();
     if (!s.meditation) s.meditation = {};
     const m = s.meditation['mindfulness-of-breath'] || {};
-    m.totalDuration = (m.totalDuration || 0) + 30;
+    m.totalDuration = (m.totalDuration || 0) + _mobSessionSecs;
     m.totalSessions = (m.totalSessions || 0) + 1;
     m.totalBreaths  = (m.totalBreaths  || 0) + _mobBreaths.length;
     s.meditation['mindfulness-of-breath'] = m;

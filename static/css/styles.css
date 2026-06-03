@@ -6150,7 +6150,136 @@
     }
     #page-transition-overlay.fading { opacity: 1; pointer-events: all; }
 
-    /* ─── Fix 2: Welcome hint ─── */
+    /* ══════════════ v2.1 GLOBAL BUTTON SYSTEM ══════════════ */
+    .btn-primary {
+      display: block; width: 100%; max-width: 360px;
+      margin: 0 auto; padding: 16px 24px;
+      border: none; border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: #fff; font-family: 'DM Sans', sans-serif;
+      font-size: 16px; font-weight: 700; letter-spacing: 0.02em;
+      text-align: center; cursor: pointer;
+      transition: filter 0.2s ease, transform 0.1s ease;
+    }
+    .btn-primary:hover  { filter: brightness(1.06); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      display: block; width: 100%; max-width: 360px;
+      margin: 0 auto; padding: 16px 24px;
+      border: 1.5px solid var(--gold); border-radius: 999px;
+      background: #faf8f4;
+      color: var(--gold); font-family: 'DM Sans', sans-serif;
+      font-size: 16px; font-weight: 400; letter-spacing: 0.02em;
+      text-align: center; cursor: pointer;
+      transition: filter 0.2s ease, transform 0.1s ease;
+    }
+    .btn-secondary:hover  { filter: brightness(1.04); }
+    .btn-secondary:active { transform: scale(0.98); }
+    [data-theme="dark"] .btn-secondary { background: rgba(255,255,255,0.06); }
+
+    .btn-cancel {
+      display: block; margin: 12px auto 0;
+      background: none; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      color: var(--text-soft); cursor: pointer; padding: 8px 16px;
+    }
+    .btn-cancel:hover { opacity: 0.7; }
+
+    /* ── Pre-session glass card ── */
+    .pre-session-glass {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(201,169,110,0.2);
+      border-radius: 16px;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      padding: 20px 18px; margin: 0 0 16px 0; width: 100%;
+    }
+    [data-theme="dark"] .pre-session-glass { background: rgba(255,255,255,0.04); }
+    .pre-session-glass .mob-instructions { margin-top: 0; }
+    .pre-session-glass .mob-hint { margin-top: 12px; }
+
+    /* ── Duration tile selectors (breath & meditation) ── */
+    .mob-duration-tiles {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; padding: 12px 0 4px;
+    }
+    .mob-tile {
+      padding: 11px 18px; border-radius: 999px;
+      border: 1.5px solid var(--gold);
+      background: transparent; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .mob-tile.selected {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: #fff; border-color: transparent;
+    }
+    .si-tiles-row {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; padding: 12px 0 16px;
+    }
+    .si-tile {
+      padding: 10px 16px; border-radius: 999px;
+      border: 1.5px solid var(--gold);
+      background: transparent; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .si-tile.selected {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: #fff; border-color: transparent;
+    }
+    .si-length-title, .mob-length-title {
+      font-family: 'Cormorant Garamond', serif; font-weight: 400;
+      font-size: 20px; color: var(--text-soft); text-align: center;
+      margin-bottom: 4px; letter-spacing: 0.05em;
+    }
+
+    /* ── Pro pacer zone C overview state ── */
+    .pro-overview-desc {
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      color: var(--text-muted); text-align: center; font-style: italic;
+      margin: 0 0 12px; line-height: 1.55;
+    }
+    #proOverviewState .mob-instructions { margin-top: 0; }
+
+    /* ── sc-btn (session complete) apply btn-* styles ── */
+    .sc-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; padding: 0 0 env(safe-area-inset-bottom, 8px); }
+    .sc-btn.btn-primary, .sc-btn.btn-secondary { margin: 0; }
+    .sc-btn { /* legacy fallback */
+      width: 100%; padding: 16px 20px; border-radius: 999px; border: none;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: #fff; font-family: 'DM Sans', sans-serif; font-size: 15px;
+      font-weight: 700; cursor: pointer;
+    }
+
+    /* ── mob3 buttons apply btn-* ── */
+    .mob3-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; padding: 0 0 16px; }
+    .mob3-btn.btn-secondary { margin: 0; }
+
+    /* ── Rewards inline list (mob page 3 onboarding) ── */
+    .mob3-rewards-list { width: 100%; margin: 12px 0 20px; }
+    .mob3-reward-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .mob3-reward-item:last-child { border-bottom: none; }
+    .mob3-reward-icon { font-size: 28px; flex-shrink: 0; }
+    .mob3-reward-name { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); }
+    .mob3-reward-sub { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Achievements scrollable ── */
+    #guest-achievements-grid { overflow-y: auto; max-height: 380px; -webkit-overflow-scrolling: touch; }
+    #profile-achievement-preview .achievements-grid { overflow-y: auto; max-height: 380px; -webkit-overflow-scrolling: touch; }
+
+    /* ── mob-hdr full-width border fix ── */
+    .mob-hdr { margin-left: -24px; margin-right: -24px; padding-left: 24px; padding-right: 24px; width: calc(100% + 48px); }
+
+    /* ── Quit modal meditation variant ── */
+    #quitSessionModal .btn-primary { margin-bottom: 0; }
+    #quitSessionModal .btn-secondary { margin-top: 0; }
+
+    /* ── Fix 2: Welcome hint ─── */
     .welcome-hint {
       font-family: 'DM Sans', sans-serif;
       font-size: 13px;
