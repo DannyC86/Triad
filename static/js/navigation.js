@@ -1171,6 +1171,7 @@
     );
 
     try { localStorage.setItem('triad:onboarded', 'true'); } catch(e) {}
+    try { localStorage.setItem('triad:onboarding:step', 'meditation'); } catch(e) {}
     try { localStorage.setItem('triad:breath:count', '1'); } catch(e) {}
     _mobIsOnboarding = true;
     window._mobIsOnboarding = true;
@@ -1197,7 +1198,12 @@
         showKnowledgePracticeDetail('technique', techId);
       });
     } else if (action === 'meditate') {
-      transitionTo(() => { navigate('meditate'); showMeditationDetail('mindfulness-of-breath'); });
+      const _isOnboarding = _mobIsOnboarding || localStorage.getItem('triad:onboarding:step') === 'meditation';
+      if (_isOnboarding) {
+        transitionTo(() => openMobSession('mindfulness-of-breath'));
+      } else {
+        transitionTo(() => { navigate('meditate'); showMeditationDetail('mindfulness-of-breath'); });
+      }
     } else {
       transitionTo(() => navigate('home'));
     }
@@ -1680,7 +1686,8 @@
 
   let _mobSelectedSecs = 60;   // user-chosen session length (general mode)
   let _mobSessionSecs  = 30;   // active session length (set at start)
-  let _mobIsOnboarding = false; // true when launched from first-breath completion
+  let _mobIsOnboarding = localStorage.getItem('triad:onboarding:step') === 'meditation';
+  if (_mobIsOnboarding) window._mobIsOnboarding = true;
 
   const _MOB_PROMPTS = [
     'Settle in…',
@@ -1769,6 +1776,7 @@
   function closeMobSession() {
     _mobClearTimers();
     releaseWakeLock();
+    try { localStorage.removeItem('triad:onboarding:step'); } catch(e) {}
     _mobIsOnboarding = false;
     window._mobIsOnboarding = false;
     const cdEl = document.getElementById('mobCountdown');
