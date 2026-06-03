@@ -36,7 +36,7 @@ import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_login import (
     LoginManager, UserMixin, login_user, logout_user, login_required, current_user,
 )
@@ -343,6 +343,11 @@ def index():
 @app.route("/favicon.ico")
 def favicon():
     return send_from_directory(".", "logo.svg", mimetype="image/svg+xml")
+
+
+@app.route("/journey-map")
+def journey_map():
+    return render_template("journey-map.html")
 
 
 @app.route("/config")
