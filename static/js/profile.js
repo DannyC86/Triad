@@ -2517,13 +2517,18 @@ function openRewardsPage() {
   const page = document.getElementById('rewards-page');
   if (!page) return;
   page.style.display = 'flex';
-  const bonsaiUnlocked = localStorage.getItem('triad:bonsai:pot') === 'true'
-    || typeof bonsaiState !== 'undefined';
+
+  // Correct unlock check — reads from the actual triad:bonsai JSON blob
+  let bonsaiUnlocked = false;
+  try {
+    const bonsaiData = JSON.parse(localStorage.getItem('triad:bonsai') || 'null');
+    bonsaiUnlocked = bonsaiData && bonsaiData.hasPot === true;
+  } catch(e) {}
+
   const bonsaiItem = document.getElementById('rewardItemBonsai');
   const emptyState = document.getElementById('rewardsEmpty');
   if (bonsaiItem) bonsaiItem.style.display = bonsaiUnlocked ? 'block' : 'none';
   if (emptyState) emptyState.style.display = bonsaiUnlocked ? 'none' : 'block';
-  // Sub text is kept current by bonsaiUpdateProfileCard() in bonsai.js
 }
 
 function closeRewardsPage() {
