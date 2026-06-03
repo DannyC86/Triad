@@ -1194,10 +1194,7 @@
         showKnowledgePracticeDetail('technique', techId);
       });
     } else if (action === 'meditate') {
-      const _isFirstVisit = localStorage.getItem('triad:onboarded') !== 'true';
-      _mobIsOnboarding = _isFirstVisit;
-      window._mobIsOnboarding = _isFirstVisit;
-      transitionTo(() => { navigate('meditate'); openMobSession(); });
+      transitionTo(() => { navigate('meditate'); showMeditationDetail('mindfulness-of-breath'); });
     } else {
       transitionTo(() => navigate('home'));
     }

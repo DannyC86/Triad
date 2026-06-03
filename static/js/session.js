@@ -3,6 +3,36 @@
   /* ─── Audio guidance ─── */
   let _audioEnabled = localStorage.getItem('triad:audio') === '1';
 
+  let _soundLock = false;
+  function _playBowlTone(frequency, duration) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 1200;
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(frequency * 0.98, ctx.currentTime + duration);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + duration);
+    } catch(e) { console.log('Audio unavailable:', e); }
+  }
+  function playSessionSound(freq, duration) {
+    if (!_audioEnabled) return;
+    if (_soundLock) return;
+    _soundLock = true;
+    _playBowlTone(freq, duration);
+    setTimeout(() => { _soundLock = false; }, 600);
+  }
+
   // To upgrade to ElevenLabs: replace speakPhase() body with:
   // fetch ElevenLabs /v1/text-to-speech/{voice_id} with text
   // play returned audio blob
@@ -222,6 +252,8 @@
       _sessUpdatePhaseLabel();
       const _newPhase = _sess.phases[nextIdx];
       speakPhase(_newPhase.label);
+      if (_newPhase.type === 'IN')   playSessionSound(396, 2.5);
+      else if (_newPhase.type === 'OUT') playSessionSound(285, 3.0);
       if (_newPhase.type === 'HOLD') _sessStartHoldCount(_newPhase.dur);
     }
     _sess.raf = requestAnimationFrame(_sessTick);
@@ -240,7 +272,7 @@
   function _sessComplete() {
     _sessStop();
     speakPhase('Session complete. Well done.');
-    if (typeof createBowlTone === 'function') createBowlTone(528, 4.0);
+    playSessionSound(528, 4.0);
     const totalMs = performance.now() - _sess.sessionStart;
     const totalMin = Math.round(totalMs / 60000);
     const totalSec = Math.round(totalMs / 1000);
@@ -362,6 +394,8 @@
     const _p0 = _sess.phases[0];
     setTimeout(() => {
       speakPhase(_p0.label);
+      if (_p0.type === 'IN')   playSessionSound(396, 2.5);
+      else if (_p0.type === 'OUT') playSessionSound(285, 3.0);
       if (_p0.type === 'HOLD') _sessStartHoldCount(_p0.dur);
     }, 450);
 
