@@ -299,7 +299,6 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 18px;
       padding: 8px 24px;
       width: 100%;
       max-width: 380px;
@@ -307,6 +306,10 @@
       flex: 1;                       /* claim the central vertical space */
     }
     .first-breath-gate[hidden] { display: none; }
+    .guest-slogan { margin-bottom: 4px; }
+    .guest-welcome-heading { margin-bottom: 24px; }
+    .first-breath-gate .btn-primary { margin-bottom: 0; }
+    .welcome-hint { margin-top: 8px; }
     /* The 3-card home menu is `display: flex` via .home-cards, which beats the
        UA [hidden]{display:none} in the cascade. Restore the hide behavior with
        a specific attribute selector. */
@@ -354,23 +357,6 @@
       max-width: 320px;
       margin: 0 0 6px;
     }
-    .first-breath-gate-btn {
-      appearance: none;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 999px;
-      background: var(--text);
-      color: var(--bg);
-      font: inherit;
-      font-size: 0.95rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      cursor: pointer;
-      transition: transform 0.2s ease, filter 0.2s ease;
-      box-shadow: 0 4px 16px rgba(26,26,46,0.18);
-    }
-    .first-breath-gate-btn:hover  { transform: translateY(-1px); filter: brightness(1.06); }
-    .first-breath-gate-btn:active { transform: translateY(0); }
     .first-breath-gate-note {
       font-size: 0.72rem;
       letter-spacing: 0.12em;
@@ -1575,18 +1561,33 @@
 
     /* Zone C: fixed 200px — state content swaps, nothing above ever moves */
     .pacer-zone-c {
-      flex-shrink: 0; height: 200px; overflow: hidden; width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: auto;
+      width: 100%;
       box-sizing: border-box;
-      border-top: 1px solid var(--border);
-      background: color-mix(in srgb, var(--bg) 90%, var(--border) 10%);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding-top: 16px;
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 16px max(16px, env(safe-area-inset-bottom));
+      background: transparent;
+      border-top: none;
+      z-index: 10;
     }
     /* Each state fills zone-c; only one is display:flex at a time */
     .pacer-state {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      width: 100%; height: 100%; padding: 0 24px; box-sizing: border-box; gap: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      height: auto;
+      padding: 0;
+      box-sizing: border-box;
+      gap: 8px;
     }
 
     /* State 1: idle content */
@@ -1758,7 +1759,7 @@
     /* Landscape: shrink fixed zones so the chart remains visible */
     @media (orientation: landscape) and (max-height: 500px) {
       .pacer-zone-c, #proZoneC {
-        height: 160px; min-height: 160px;
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
       }
       .pro-tile { width: 75px; height: 52px; font-size: 15px; }
       .pro-select-title { font-size: 13px; margin-bottom: 8px; }
@@ -6192,13 +6193,17 @@
 
     /* ── Pre-session glass card ── */
     .pre-session-glass {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(201,169,110,0.2);
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(201,169,110,0.3);
       border-radius: 16px;
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      padding: 16px 18px; margin: 0 0 12px 0; width: 100%;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 16px 18px;
+      margin: 0 0 10px 0;
+      width: 100%;
+      box-sizing: border-box;
     }
-    [data-theme="dark"] .pre-session-glass { background: rgba(255,255,255,0.04); }
+    [data-theme="dark"] .pre-session-glass { background: rgba(30,28,24,0.82); }
     .pre-session-glass .mob-instructions { margin-top: 0; }
     .pre-session-glass .mob-hint { margin-top: 12px; }
 
@@ -6289,7 +6294,7 @@
       font-size: 13px;
       color: var(--text-soft);
       text-align: center;
-      margin-top: 10px;
+      margin-top: 8px;
       letter-spacing: 0.02em;
     }
 
