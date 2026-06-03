@@ -369,23 +369,52 @@ function _bonsaiShowCompleteView(data) {
   const nameEl = document.getElementById('bonsaiCompleteName');
   if (nameEl) nameEl.textContent = b.name;
 
-  requestAnimationFrame(() => {
-    const canvas = document.getElementById('bonsaiCompleteCanvas');
-    if (!canvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width  = (canvas.offsetWidth  || 280) * dpr;
-    canvas.height = (canvas.offsetHeight || 280) * dpr;
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    drawBonsai(canvas, 11, 3, true);
-  });
+  const video = document.getElementById('bonsaiCompleteVideo');
+  const canvas = document.getElementById('bonsaiCompleteCanvas');
+
+  if (video) {
+    video.style.display = 'block';
+    if (canvas) canvas.style.display = 'none';
+    video.currentTime = 0;
+    video.loop = false;
+
+    video.onended = function() {
+      video.style.display = 'none';
+      if (canvas) {
+        canvas.style.display = 'block';
+        requestAnimationFrame(() => {
+          const dpr = window.devicePixelRatio || 1;
+          canvas.width  = (canvas.offsetWidth  || 280) * dpr;
+          canvas.height = (canvas.offsetHeight || 280) * dpr;
+          const ctx = canvas.getContext('2d');
+          ctx.scale(dpr, dpr);
+          drawBonsai(canvas, 11, 3, true);
+        });
+      }
+    };
+
+    video.play().catch(() => {
+      video.style.display = 'none';
+      if (canvas) {
+        canvas.style.display = 'block';
+        requestAnimationFrame(() => {
+          const dpr = window.devicePixelRatio || 1;
+          canvas.width  = (canvas.offsetWidth  || 280) * dpr;
+          canvas.height = (canvas.offsetHeight || 280) * dpr;
+          const ctx = canvas.getContext('2d');
+          ctx.scale(dpr, dpr);
+          drawBonsai(canvas, 11, 3, true);
+        });
+      }
+    });
+  }
 }
 
 function bonsaiSaveToAlbum() {
   stopBonsaiAnimation();
   const data = _bonsaiLoad();
   const b = data.active;
-  if (!b || b.cycle < 10) return;
+  if (!b || b.cycle < 11) return;
 
   const canvas = document.getElementById('bonsaiCompleteCanvas');
   const imageData = canvas ? canvas.toDataURL('image/png') : '';
