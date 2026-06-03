@@ -1195,7 +1195,7 @@
     );
 
     try { localStorage.setItem('triad:onboarded', 'true'); } catch(e) {}
-    try { localStorage.setItem('triad:onboarding:step', 'meditation'); } catch(e) {}
+    try { if (localStorage.getItem('triad:mob:complete') !== 'true') localStorage.setItem('triad:onboarding:step', 'meditation'); } catch(e) {}
     try { localStorage.setItem('triad:breath:count', '1'); } catch(e) {}
     _mobIsOnboarding = true;
     window._mobIsOnboarding = true;
@@ -1710,7 +1710,8 @@
 
   let _mobSelectedSecs = 60;   // user-chosen session length (general mode)
   let _mobSessionSecs  = 30;   // active session length (set at start)
-  let _mobIsOnboarding = localStorage.getItem('triad:onboarding:step') === 'meditation';
+  let _mobIsOnboarding = localStorage.getItem('triad:onboarding:step') === 'meditation'
+    && localStorage.getItem('triad:mob:complete') !== 'true';
   if (_mobIsOnboarding) window._mobIsOnboarding = true;
 
   const _MOB_PROMPTS = [
@@ -1801,6 +1802,7 @@
     _mobClearTimers();
     releaseWakeLock();
     try { localStorage.removeItem('triad:onboarding:step'); } catch(e) {}
+    try { localStorage.setItem('triad:mob:complete', 'true'); } catch(e) {}
     _mobIsOnboarding = false;
     window._mobIsOnboarding = false;
     const cdEl = document.getElementById('mobCountdown');
