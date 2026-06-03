@@ -645,6 +645,7 @@ var _introPlayedThisSession = false;
   <div class="pacer-zone-c">
     <!-- State 1: Idle -->
     <div class="pacer-state" id="pacerStateIdle">
+      <p class="pacer-idle-copy">If you're ready, sit straight, relax…</p>
       <div class="pre-session-glass">
         <div class="pacer-instructions">
           <div class="pacer-instr-line">5 Second Nose Inhale</div>
@@ -652,7 +653,6 @@ var _introPlayedThisSession = false;
           <div class="pacer-instr-line">Straight into 5 second nose exhale</div>
           <div class="pacer-instr-line">Repeat</div>
         </div>
-        <p class="pacer-idle-copy">If you're ready, sit straight, relax…</p>
       </div>
       <button class="btn-primary" id="pacerBreatheBtn" onclick="togglePacer()">and Breathe</button>
     </div>
@@ -732,15 +732,15 @@ var _introPlayedThisSession = false;
     </div>
     <!-- State 1b: length selection -->
     <div class="pacer-state" id="proLengthState" style="display:none">
-      <div class="mob-length-title">Session length</div>
+      <div class="mob-length-title pro-length-title">How long?</div>
       <div class="pro-tiles-row" id="proTilesRow">
-        <div class="pro-tile selected" data-duration="1" onclick="proSelectTile(this)">1 min</div>
+        <div class="pro-tile" data-duration="1" onclick="proSelectTile(this)">1 min</div>
         <div class="pro-tile" data-duration="2" onclick="proSelectTile(this)">2 min</div>
-        <div class="pro-tile" data-duration="5" onclick="proSelectTile(this)">5 min</div>
+        <div class="pro-tile selected" data-duration="5" onclick="proSelectTile(this)">5 min</div>
         <div class="pro-tile" data-duration="10" onclick="proSelectTile(this)">10 min</div>
         <div class="pro-tile" data-duration="20" onclick="proSelectTile(this)">20 min</div>
       </div>
-      <div class="pro-tile-label" id="proTileLabel">1 min</div>
+      <div class="pro-tile-label" id="proTileLabel">5 min</div>
       <button class="btn-primary" id="proBeginBtn" onclick="_proStartCountdown()">Begin Session</button>
       <button class="btn-cancel" onclick="closeProPacer()">Cancel</button>
     </div>

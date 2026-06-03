@@ -1171,6 +1171,9 @@
     );
 
     try { localStorage.setItem('triad:onboarded', 'true'); } catch(e) {}
+    try { localStorage.setItem('triad:breath:count', '1'); } catch(e) {}
+    _mobIsOnboarding = true;
+    window._mobIsOnboarding = true;
 
     if (typeof bonsaiAwardPot === 'function') bonsaiAwardPot();
   }
@@ -1289,13 +1292,13 @@
     if (breathEl) breathEl.textContent = '1';
     if (timerEl)  timerEl.textContent  = '0:00';
 
-    // Reset zone-C to overview state (skip intro screen)
+    // Go directly to length selector (skip overview)
     const overviewDiv  = document.getElementById('proOverviewState');
     const lengthDiv    = document.getElementById('proLengthState');
     const cdDiv        = document.getElementById('proCountdown');
     const actDiv       = document.getElementById('proSessionActive');
-    if (overviewDiv) overviewDiv.style.display = 'flex';
-    if (lengthDiv)   lengthDiv.style.display   = 'none';
+    if (overviewDiv) overviewDiv.style.display = 'none';
+    if (lengthDiv)   lengthDiv.style.display   = 'flex';
     if (cdDiv)       cdDiv.style.display       = 'none';
     if (actDiv)      actDiv.style.display      = 'none';
 
@@ -1306,16 +1309,17 @@
     const steps = (item && item.steps) ? item.steps : ['5 Second Nose Inhale','No hold','Straight into 5 second nose exhale','Repeat'];
     if (overviewList) overviewList.innerHTML = steps.map(s => `<li>${s}</li>`).join('');
 
-    // Reset tile selection to default (1 min)
+    // Reset tile selection to default (5 min)
     document.querySelectorAll('#proTilesRow .pro-tile').forEach(t => t.classList.remove('selected'));
-    const firstTile = document.querySelector('#proTilesRow .pro-tile');
-    if (firstTile) firstTile.classList.add('selected');
+    const defaultTile = document.querySelector('#proTilesRow .pro-tile[data-duration="5"]');
+    if (defaultTile) defaultTile.classList.add('selected');
     const labelEl = document.getElementById('proTileLabel');
-    if (labelEl) labelEl.textContent = '1 min';
+    if (labelEl) labelEl.textContent = '5 min';
 
-    // Calculate initial selectedCycles for 1 min
+    // Calculate initial selectedCycles for 5 min
     const cycleSecs0 = _proPacerState.phases.reduce((s, p) => s + p.sec, 0);
-    _proPacerState.selectedCycles = cycleSecs0 > 0 ? Math.max(1, Math.round(60 / cycleSecs0)) : 6;
+    _proPacerState.isInfinite = false;
+    _proPacerState.selectedCycles = cycleSecs0 > 0 ? Math.max(1, Math.round(300 / cycleSecs0)) : 30;
 
     // Hide End Session button
     const endBtn = document.getElementById('proEndBtn');
@@ -1434,6 +1438,10 @@
 
     const endBtn = document.getElementById('proEndBtn');
     if (endBtn) endBtn.style.display = _proPacerState.isInfinite ? 'block' : 'none';
+
+    const _breathCount = parseInt(localStorage.getItem('triad:breath:count') || '0', 10);
+    const cancelBtn = document.getElementById('sessionCancelBtn');
+    if (cancelBtn) cancelBtn.style.display = _breathCount === 1 ? 'none' : '';
 
     chimeFired = false;
     dongFired  = false;
@@ -1612,6 +1620,11 @@
     refreshStreakBadge();
 
     createBowlTone(528, 4.0);
+
+    try {
+      const _cnt = parseInt(localStorage.getItem('triad:breath:count') || '0', 10);
+      if (_cnt > 0) localStorage.setItem('triad:breath:count', String(_cnt + 1));
+    } catch(e) {}
 
     _sess.practiceId = bwId;
     _sess.running = false; _sess.paused = false; _sess.countdown = false; _sess.raf = null;
@@ -2141,6 +2154,7 @@
         `</div>` +
         `<div class="mob3-actions">` +
           `<button class="mob3-btn btn-primary" onclick="closeMobSession();transitionTo(()=>{navigate('meditate');showMeditationDetail('mindfulness-of-breath')})">Go to Mindfulness of Breath</button>` +
+          `<button class="mob3-btn btn-secondary" onclick="closeMobSession();transitionTo(()=>navigate('home'))">Explore the App</button>` +
         `</div>`;
     } else {
       // GENERAL MEDITATION CONGRATS: stats + 3 buttons, no large heading
