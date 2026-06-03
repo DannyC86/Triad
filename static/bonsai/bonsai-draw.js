@@ -24,10 +24,8 @@ function drawBonsai(canvas, cycle, watersInCycle, animated) {
   ctx.fillStyle = '#F5F0E8';
   ctx.fillRect(0, 0, W, H);
 
-  if (cycle >= 1 && cycle <= 8) {
+  if (cycle >= 1 && cycle <= 11) {
     _drawBonsaiImage(canvas, ctx, cycle, W, H);
-  } else if (cycle === 9 || cycle === 10) {
-    _drawBonsaiSVGStage(ctx, cycle, W, H, watersInCycle);
   } else if (cycle === 0) {
     _drawEmptyPot(ctx, W, H);
   } else {

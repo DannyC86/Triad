@@ -117,7 +117,7 @@ function bonsaiUpdateProfileCard() {
   if (homeIcon) homeIcon.style.display = 'flex';
   let subText;
   if (data.active) {
-    subText = `Cycle ${data.active.cycle}/10 · ${data.active.watersInCycle}/3 waters`;
+    subText = `Cycle ${data.active.cycle}/11 · ${data.active.watersInCycle}/3 waters`;
   } else if (data.album.length > 0) {
     subText = `${data.album.length} tree${data.album.length > 1 ? 's' : ''} grown · Plant a new seed`;
   } else {
@@ -149,7 +149,7 @@ function openBonsaiScreen() {
 
   if (!data.active) {
     _bonsaiShowPlantView(data);
-  } else if (data.active.cycle >= 10) {
+  } else if (data.active.cycle >= 11) {
     _bonsaiShowCompleteView(data);
   } else {
     _bonsaiShowActiveView(data);
@@ -255,7 +255,7 @@ function _bonsaiShowActiveView(data) {
   const nameEl   = document.getElementById('bonsaiNameDisplay');
   const cycleEl  = document.getElementById('bonsaiCycleDisplay');
   if (nameEl)  nameEl.textContent  = b.name;
-  if (cycleEl) cycleEl.textContent = `Cycle ${b.cycle}/10`;
+  if (cycleEl) cycleEl.textContent = `Cycle ${b.cycle}/11`;
 
   // Water dots
   const dotsEl = document.getElementById('bonsaiWaterDots');
@@ -273,7 +273,7 @@ function _bonsaiShowActiveView(data) {
   const labelEl = document.getElementById('bonsaiProgressLabel');
   if (labelEl) {
     const watersLeft = 3 - b.watersInCycle;
-    const cyclesLeft = 10 - b.cycle;
+    const cyclesLeft = 11 - b.cycle;
     labelEl.textContent = b.cycle === 0
       ? `${watersLeft} water${watersLeft !== 1 ? 's' : ''} to first growth`
       : `${watersLeft} water${watersLeft !== 1 ? 's' : ''} · ${cyclesLeft} cycle${cyclesLeft !== 1 ? 's' : ''} to complete`;
@@ -327,7 +327,7 @@ function bonsaiWater() {
   if (cycleAdvanced) {
     b.cycle++;
     b.watersInCycle = 0;
-    if (b.cycle >= 10) {
+    if (b.cycle >= 11) {
       b.completedAt = new Date().toISOString();
     }
   }
@@ -335,7 +335,7 @@ function bonsaiWater() {
   _bonsaiSave(data);
   _bonsaiWaterAnimation();
 
-  if (b.cycle >= 10) {
+  if (b.cycle >= 11) {
     stopBonsaiAnimation();
     ['bonsaiActiveView'].forEach(id => {
       const el = document.getElementById(id);
@@ -347,7 +347,7 @@ function bonsaiWater() {
     const statusEl = document.getElementById('bonsaiWaterStatus');
     if (statusEl) {
       statusEl.textContent = cycleAdvanced
-        ? `✨ Your bonsai grew! Cycle ${b.cycle}/10`
+        ? `✨ Your bonsai grew! Cycle ${b.cycle}/11`
         : `Watered! ${3 - b.watersInCycle} more until next growth.`;
     }
   }
@@ -379,7 +379,7 @@ function _bonsaiShowCompleteView(data) {
     canvas.height = (canvas.offsetHeight || 280) * dpr;
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
-    drawBonsai(canvas, 10, 3, true);
+    drawBonsai(canvas, 11, 3, true);
   });
 }
 
@@ -551,14 +551,14 @@ function bonsaiDevWater() {
   if (b.watersInCycle >= 3) {
     b.cycle++;
     b.watersInCycle = 0;
-    if (b.cycle >= 10) {
+    if (b.cycle >= 11) {
       b.completedAt = new Date().toISOString();
     }
   }
 
   _bonsaiSave(data);
 
-  if (b.cycle >= 10) {
+  if (b.cycle >= 11) {
     stopBonsaiAnimation();
     const activeView = document.getElementById('bonsaiActiveView');
     if (activeView) activeView.style.display = 'none';
@@ -566,7 +566,7 @@ function bonsaiDevWater() {
   } else {
     _bonsaiShowActiveView(data);
     const statusEl = document.getElementById('bonsaiWaterStatus');
-    if (statusEl) statusEl.textContent = `[DEV] Cycle ${b.cycle}/10 · Water ${b.watersInCycle}/3`;
+    if (statusEl) statusEl.textContent = `[DEV] Cycle ${b.cycle}/11 · Water ${b.watersInCycle}/3`;
   }
 }
 
