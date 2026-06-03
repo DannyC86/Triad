@@ -1370,7 +1370,7 @@ Build my personalised plan.`;
         <div class="profile-hero-welcome">
           <div class="profile-hero-name">Welcome back, ${escapeHtml(triadName)}</div>
           <div class="profile-hero-sub">${escapeHtml(auth.email || '')}</div>
-          <button class="profile-hero-continue" onclick="navigate('home')">Continue Your Daily Practice</button>
+          <button class="btn-primary" onclick="navigate('home')">Continue Your Daily Practice</button>
         </div>`;
     } else if (!_triadOnboardDismissed) {
       const suggestion = _triadNameSuggestion || '…';
@@ -1383,8 +1383,8 @@ Build my personalised plan.`;
             <button class="triad-refresh-btn" onclick="refreshTriadSuggestion()" title="Generate another">↻</button>
           </div>
           <div class="triad-onboard-actions">
-            <button class="triad-claim-btn" onclick="claimCurrentTriadName()">Claim this name</button>
-            <button class="triad-later-btn" onclick="dismissTriadOnboarding()">I'll do this later</button>
+            <button class="btn-primary" onclick="claimCurrentTriadName()">Claim this name</button>
+            <button class="btn-cancel" onclick="dismissTriadOnboarding()">I'll do this later</button>
           </div>
         </div>`;
       if (!_triadNameSuggestion) fetchTriadNameSuggestion();
@@ -1392,7 +1392,7 @@ Build my personalised plan.`;
       el.innerHTML = `
         <div class="profile-hero-welcome">
           <div class="profile-hero-name">Welcome back</div>
-          <button class="profile-hero-continue" onclick="navigate('home')">Continue Your Daily Practice</button>
+          <button class="btn-primary" onclick="navigate('home')">Continue Your Daily Practice</button>
         </div>`;
     }
   }
@@ -1856,7 +1856,7 @@ Build my personalised plan.`;
         <div class="missions-prompt-card">
           <div class="missions-prompt-title">Ready to begin your first mission?</div>
           <div class="missions-prompt-desc">21-day habit programmes that build a lasting daily practice — one session at a time.</div>
-          <button class="missions-prompt-btn" onclick="openMissionsAccordion()">Explore Missions</button>
+          <button class="btn-primary missions-prompt-btn" onclick="openMissionsAccordion()">Explore Missions</button>
         </div>`;
       return;
     }
@@ -1881,7 +1881,7 @@ Build my personalised plan.`;
               <span class="mission-today-label">Today's drill</span>
               <span class="mission-today-state">${done ? '✓ Done' : '○ Pending'}</span>
             </div>
-            <button class="mission-cta${done ? ' mission-cta--done' : ''}"
+            <button class="btn-primary mission-cta${done ? ' mission-cta--done' : ''}"
                     onclick="runMissionDrill('${mission.missionId}')"
                     ${done ? 'disabled' : ''}>
               ${done ? 'Done for today' : "Complete Today's Session"}
@@ -2283,7 +2283,7 @@ Build my personalised plan.`;
       if (ms.status === 'NOT_STARTED') {
         bodyHtml = `
           <p class="mission-desc">${escapeHtml(mission.description)}</p>
-          <button class="mission-cta" onclick="openDiagnostic('${mission.missionId}','mission-start')">Start Mission</button>`;
+          <button class="btn-primary mission-cta" onclick="openDiagnostic('${mission.missionId}','mission-start')">Start Mission</button>`;
 
       } else if (ms.status === 'ACTIVE') {
         bodyHtml = `
@@ -2292,8 +2292,8 @@ Build my personalised plan.`;
             <span class="mission-today-state">${todayDone ? '✓ Done' : '○ Pending'}</span>
           </div>
           ${isFinalDay
-            ? `<button class="mission-cta mission-cta--assess" onclick="openDiagnostic('${mission.missionId}','mission-end')">Final Assessment</button>`
-            : `<button class="mission-cta${todayDone ? ' mission-cta--done' : ''}" onclick="runMissionDrill('${mission.missionId}')" ${todayDone ? 'disabled' : ''}>Complete Today's Session</button>`
+            ? `<button class="btn-primary mission-cta mission-cta--assess" onclick="openDiagnostic('${mission.missionId}','mission-end')">Final Assessment</button>`
+            : `<button class="btn-primary mission-cta${todayDone ? ' mission-cta--done' : ''}" onclick="runMissionDrill('${mission.missionId}')" ${todayDone ? 'disabled' : ''}>Complete Today's Session</button>`
           }
           <div class="mission-notif-row">
             <span class="mission-notif-label">Reminders</span>
@@ -2317,7 +2317,7 @@ Build my personalised plan.`;
             <div class="mission-score-item"><span class="mission-score-label">Final</span><span class="mission-score-val">${ms.endDiagnosticValue !== null ? ms.endDiagnosticValue + (baseLabel === 'seconds' ? 's' : '/10') : '—'}</span></div>
             ${improvStr ? `<div class="mission-score-item"><span class="mission-score-label">Change</span><span class="mission-score-val">${improvStr}</span></div>` : ''}
           </div>` : ''}
-          <button class="mission-cta mission-cta--restart" onclick="_missionRestart('${mission.missionId}')">Restart Mission</button>`;
+          <button class="btn-secondary mission-cta mission-cta--restart" onclick="_missionRestart('${mission.missionId}')">Restart Mission</button>`;
       }
 
       return `

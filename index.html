@@ -177,7 +177,7 @@ var _introPlayedThisSession = false;
         <div id="guest-logo-slot"></div>
         <div class="guest-slogan">MIND &middot; BODY &middot; SPIRIT &middot; ALIGNED</div>
         <div class="guest-welcome-heading">Welcome</div>
-        <button class="guest-cta-btn" id="first-breath-gate-btn" type="button" onclick="transitionTo(() => openPacer('resonant-breathing'))">Take your First Breath</button>
+        <button class="btn-primary" id="first-breath-gate-btn" type="button" onclick="transitionTo(() => openPacer('resonant-breathing'))">Take your First Breath</button>
         <p class="welcome-hint">It only takes 30 seconds</p>
       </div>
 
@@ -343,14 +343,14 @@ var _introPlayedThisSession = false;
           </div>
         </div>
 
-        <button class="plan-submit" id="plan-submit-btn" onclick="submitPlan()">Generate my 30-day plan</button>
+        <button class="btn-primary" id="plan-submit-btn" onclick="submitPlan()">Generate my 30-day plan</button>
       </div>
     </div>
 
     <div class="plan-result" id="plan-result">
       <div class="plan-result-head">
         <div class="plan-result-title">Your personalised plan</div>
-        <button class="plan-restart" onclick="restartPlan()">Start over</button>
+        <button class="btn-cancel" onclick="restartPlan()">Start over</button>
       </div>
       <div class="plan-messages" id="plan-messages"></div>
       <div class="composer">
@@ -372,7 +372,7 @@ var _introPlayedThisSession = false;
       <div id="profile-account-header"></div>
 
       <!-- Guest CTA -->
-      <button class="profile-guest-cta" data-guest-only onclick="openAuthModal('signup')">Log In / Sign Up</button>
+      <button class="profile-guest-cta btn-primary" data-guest-only onclick="openAuthModal('signup')">Log In / Sign Up</button>
 
       <!-- SECTION 1: Hero area — welcome banner / triad name onboarding -->
       <div id="profile-hero" class="profile-hero" data-auth-required></div>
@@ -569,8 +569,8 @@ var _introPlayedThisSession = false;
     <div class="diag-timed">
       <div class="diag-timer-display">0</div>
       <div class="diag-timer-unit">seconds</div>
-      <button id="diag-start-btn" class="diag-btn diag-btn--primary" onclick="diagStartTimer()">Start Timer</button>
-      <button id="diag-stop-btn" class="diag-btn diag-btn--stop" onclick="diagStopTimer()" style="display:none">Stop &amp; Save Score</button>
+      <button id="diag-start-btn" class="btn-primary" onclick="diagStartTimer()">Start Timer</button>
+      <button id="diag-stop-btn" class="btn-primary" onclick="diagStopTimer()" style="display:none">Stop &amp; Save Score</button>
     </div>
 
     <!-- SURVEY UI -->
@@ -584,7 +584,7 @@ var _introPlayedThisSession = false;
         <input type="range" class="diag-slider" min="1" max="10" value="5"
                oninput="document.getElementById('diag-slider-val').textContent=this.value">
       </div>
-      <button class="diag-btn diag-btn--primary diag-save-survey" onclick="diagSaveSurvey()" style="display:none">Save Score</button>
+      <button class="btn-primary diag-save-survey" onclick="diagSaveSurvey()" style="display:none">Save Score</button>
     </div>
 
     <div class="diag-result" style="display:none"></div>
@@ -1029,7 +1029,7 @@ var _introPlayedThisSession = false;
           <a class="auth-forgot-link" onclick="showForgotForm()">Forgot password?</a>
         </p>
         <div class="auth-error" id="auth-error" hidden></div>
-        <button type="submit" class="auth-submit" id="auth-submit">Log in</button>
+        <button type="submit" class="btn-primary" id="auth-submit">Log in</button>
       </form>
 
       <!-- Forgot password inline panel -->
@@ -1041,7 +1041,7 @@ var _introPlayedThisSession = false;
         </label>
         <div id="forgot-error" class="auth-error" hidden></div>
         <div id="forgot-success" class="auth-forgot-success" hidden></div>
-        <button type="button" class="auth-submit" id="forgot-submit" onclick="submitForgotPassword()">Send reset link</button>
+        <button type="button" class="btn-primary" id="forgot-submit" onclick="submitForgotPassword()">Send reset link</button>
         <p class="auth-back-wrap"><a class="auth-forgot-link" onclick="hideForgotForm()">← Back to log in</a></p>
       </div>
 
@@ -1058,7 +1058,7 @@ var _introPlayedThisSession = false;
         </label>
         <div id="reset-error" class="auth-error" hidden></div>
         <div id="reset-success" class="auth-forgot-success" hidden></div>
-        <button type="button" class="auth-submit" id="reset-submit" onclick="submitResetPassword()">Set new password</button>
+        <button type="button" class="btn-primary" id="reset-submit" onclick="submitResetPassword()">Set new password</button>
       </div>
 
       <p class="auth-skip-wrap">
@@ -1092,7 +1092,7 @@ var _introPlayedThisSession = false;
           <input type="email" id="waitlist-email" autocomplete="email" placeholder="you@example.com" required />
         </label>
         <div class="auth-error" id="waitlist-error" hidden></div>
-        <button type="submit" class="auth-submit" id="waitlist-submit">Notify me</button>
+        <button type="submit" class="btn-primary" id="waitlist-submit">Notify me</button>
       </form>
       <p class="waitlist-foot">£4.99/month · cancel anytime · no charge until launch.</p>
     </div>
@@ -1123,8 +1123,8 @@ var _introPlayedThisSession = false;
     <div class="modal-body" style="padding: 20px 18px 24px;">
       <p style="color: var(--text-soft); font-size: 0.95rem; line-height: 1.65; margin: 0 0 22px;">This will permanently delete your account and all data. This cannot be undone.</p>
       <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button class="action-btn" style="width:100%; justify-content:center; background:#c0392b; border-color:#c0392b; color:#fff;" onclick="confirmDeleteAccount()">Delete everything</button>
-        <button class="action-btn secondary" style="width:100%; justify-content:center;" onclick="closeDeleteAccountModal()">Keep my account</button>
+        <button class="btn-primary" style="background:#c0392b; color:#fff;" onclick="confirmDeleteAccount()">Delete everything</button>
+        <button class="btn-secondary" onclick="closeDeleteAccountModal()">Keep my account</button>
       </div>
     </div>
   </div>
@@ -1150,7 +1150,7 @@ var _introPlayedThisSession = false;
         <span style="font-size: 2rem; font-weight: 300; color: var(--text);">£4.99</span>
         <span style="color: var(--text-muted); font-size: 0.88rem;"> / month</span>
       </div>
-      <button class="auth-submit" onclick="closePaywallModal(); openWaitlistModal();" style="width: 100%; margin-bottom: 12px;">Upgrade to Pro</button>
+      <button class="btn-primary" onclick="closePaywallModal(); openWaitlistModal();">Upgrade to Pro</button>
       <div style="text-align: center;">
         <span onclick="closePaywallModal()" role="button" tabindex="0"
           style="font-size: 0.82rem; color: var(--text-muted); cursor: pointer; letter-spacing: 0.04em; user-select: none;">Maybe later</span>
@@ -1177,8 +1177,8 @@ var _introPlayedThisSession = false;
       <div class="cost-breakdown" id="costBreakdown"></div>
     </div>
     <div class="cost-modal-actions">
-      <button class="action-btn secondary" onclick="costConfirmDecide(false)">Cancel</button>
-      <button class="action-btn primary" id="costContinueBtn" onclick="costConfirmDecide(true)">Continue</button>
+      <button class="btn-cancel" onclick="costConfirmDecide(false)">Cancel</button>
+      <button class="btn-primary" id="costContinueBtn" onclick="costConfirmDecide(true)">Continue</button>
     </div>
   </div>
 </div>
@@ -1199,7 +1199,7 @@ var _introPlayedThisSession = false;
     <div class="lus-subtitle" id="lusSubtitle"></div>
     <div class="lus-new-label">New practices available</div>
     <div class="lus-new-list" id="lusNewList"></div>
-    <button class="btn-gold lus-btn" id="lusBtn">Explore</button>
+    <button class="btn-primary lus-btn" id="lusBtn">Explore</button>
   </div>
 </div>
 
@@ -1334,7 +1334,7 @@ var _introPlayedThisSession = false;
         <div class="bonsai-name-wrap">
           <input type="text" class="bonsai-name-input" id="bonsaiNameInput" placeholder="Name your bonsai…" maxlength="24">
         </div>
-        <button class="bonsai-action-btn" onclick="bonsaiPlant()">🌱 Plant Seed</button>
+        <button class="btn-primary" onclick="bonsaiPlant()">🌱 Plant Seed</button>
       </div>
     </div>
 
@@ -1368,8 +1368,8 @@ var _introPlayedThisSession = false;
       <h2 class="bonsai-complete-title">Your bonsai is complete!</h2>
       <p class="bonsai-complete-sub" id="bonsaiCompleteName"></p>
       <div class="bonsai-complete-actions">
-        <button class="bonsai-action-btn" onclick="bonsaiSaveToAlbum()">📸 Save to Album</button>
-        <button class="bonsai-action-btn bonsai-action-btn--secondary" onclick="bonsaiStartNew()">Plant a new seed</button>
+        <button class="btn-primary" onclick="bonsaiSaveToAlbum()">📸 Save to Album</button>
+        <button class="btn-secondary" onclick="bonsaiStartNew()">Plant a new seed</button>
       </div>
     </div>
 

@@ -6322,3 +6322,73 @@
       margin: 0 0 14px 0;
       padding: 0 var(--side-pad, 20px);
     }
+
+    /* BUTTON SYSTEM v2.1 */
+    .btn-primary {
+      display: block;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    .btn-primary:active  { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-secondary {
+      display: block;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      background: var(--bg-off-white, #faf8f4);
+      border: 1.5px solid var(--gold);
+      border-radius: 999px;
+      color: var(--gold);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    .btn-secondary:active { opacity: 0.85; }
+    [data-theme="dark"] .btn-secondary { background: rgba(255,255,255,0.06); }
+
+    .btn-cancel {
+      display: block;
+      margin: 12px auto 0;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-soft);
+      cursor: pointer;
+      padding: 8px 16px;
+      text-align: center;
+    }
+    .btn-cancel:active { opacity: 0.85; }
+
+    /* Mission modifier overrides when combined with btn-primary / btn-secondary */
+    .btn-primary.mission-cta--done    { background: var(--navy-deep, #1a1a2e); color: var(--text-muted); cursor: default; }
+    .btn-primary.mission-cta--assess  { background: linear-gradient(135deg, var(--c-complete, #10b981), #059669); color: #fff; }
+    .btn-secondary.mission-cta--restart { background: transparent; border-color: var(--border); color: var(--text-muted); font-weight: 500; }
+
+    /* Diag panel spacing for btn-primary */
+    .diag-panel .btn-primary { margin-top: 8px; }
+
+    /* Cost modal btn layout */
+    .cost-modal-actions { display: flex; flex-direction: row; gap: 10px; padding: 16px 20px; }
+    .cost-modal-actions .btn-cancel  { margin: 0; flex: 1; }
+    .cost-modal-actions .btn-primary { flex: 2; }

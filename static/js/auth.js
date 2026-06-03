@@ -259,7 +259,7 @@
           <input type="email" id="waitlist-email" autocomplete="email" placeholder="you@example.com" required />
         </label>
         <div class="auth-error" id="waitlist-error" hidden></div>
-        <button type="submit" class="auth-submit" id="waitlist-submit">Notify me</button>
+        <button type="submit" class="btn-primary" id="waitlist-submit">Notify me</button>
       </form>
       <p class="waitlist-foot">£4.99/month · cancel anytime · no charge until launch.</p>
     `;

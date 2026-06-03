@@ -220,7 +220,7 @@
       </div>
 
       <div class="howto-start-wrap">
-        <button class="detail-start-btn" onclick="openStartSession('${itemIdJs}')">Start Session</button>
+        <button class="btn-primary" onclick="openStartSession('${itemIdJs}')">Start Session</button>
       </div>
 
       <div class="detail-meta">
@@ -260,7 +260,7 @@
       </div>
 
       <div class="howto-start-wrap">
-        <button class="detail-start-btn" onclick="openStartSession('${itemIdJs}')">Start Session</button>
+        <button class="btn-primary" onclick="openStartSession('${itemIdJs}')">Start Session</button>
       </div>
 
       <div class="detail-meta">

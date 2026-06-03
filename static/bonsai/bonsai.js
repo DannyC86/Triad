@@ -74,10 +74,10 @@ function _bonsaiPlantingCeremony() {
       `</div>` +
       `<h2 class="bonsai-ceremony-title">Your garden awaits</h2>` +
       `<p class="bonsai-ceremony-sub">You have a pot. You have seeds.<br>It's time to begin.</p>` +
-      `<button class="bonsai-ceremony-btn" onclick="this.closest('.bonsai-ceremony-screen').remove();openBonsaiScreen();">` +
+      `<button class="btn-primary" onclick="this.closest('.bonsai-ceremony-screen').remove();openBonsaiScreen();">` +
         `Begin Growing` +
       `</button>` +
-      `<button class="bonsai-ceremony-skip" onclick="this.closest('.bonsai-ceremony-screen').remove(); if (typeof transitionTo === 'function') transitionTo(() => navigate('profile'));">` +
+      `<button class="btn-cancel" onclick="this.closest('.bonsai-ceremony-screen').remove(); if (typeof transitionTo === 'function') transitionTo(() => navigate('profile'));">` +
         `Later` +
       `</button>` +
     `</div>`;
@@ -506,13 +506,13 @@ function openBonsaiRewardsPopup() {
         Your <strong>Bonsai Garden</strong> is waiting in Profile.
       </p>
 
-      <button class="bonsai-action-btn" onclick="
+      <button class="btn-primary" onclick="
         document.getElementById('bonsaiRewardsPopup').remove();
         if (typeof closeMobSession === 'function') closeMobSession();
         transitionTo(() => { navigate('meditate'); if (typeof showMeditationDetail === 'function') showMeditationDetail('mindfulness-of-breath'); });
       ">Go to Mindfulness of Breath</button>
 
-      <button class="bonsai-rewards-dismiss" onclick="
+      <button class="btn-cancel" onclick="
         document.getElementById('bonsaiRewardsPopup').remove();
         if (typeof closeMobSession === 'function') closeMobSession();
         transitionTo(() => navigate('profile'));
@@ -616,11 +616,11 @@ function _bonsaiShowGardenEgg() {
       <div class="bonsai-egg-icon">🌳</div>
       <div class="bonsai-egg-title">Go to Garden</div>
       <div class="bonsai-egg-sub">Your bonsai awaits.</div>
-      <button class="bonsai-action-btn" onclick="
+      <button class="btn-primary" onclick="
         document.getElementById('bonsaiEggPopup').remove();
         openBonsaiScreen();
       ">OK</button>
-      <button class="bonsai-rewards-dismiss" onclick="
+      <button class="btn-cancel" onclick="
         document.getElementById('bonsaiEggPopup').remove();
       ">Dismiss</button>
     </div>
