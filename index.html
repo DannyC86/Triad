@@ -398,19 +398,16 @@ var _introPlayedThisSession = false;
         <div id="guest-achievements-grid"></div>
       </div>
 
-      <!-- Rewards section — Bonsai Garden lives here -->
+      <!-- Rewards section — nav button to rewards page -->
       <div class="rewards-section">
-        <div class="rewards-heading">Rewards</div>
-        <div class="bonsai-profile-card" id="bonsaiProfileCard" style="display:none">
-          <button class="bonsai-profile-btn" onclick="openBonsaiScreen()">
-            <span class="bonsai-profile-icon">🌳</span>
-            <div class="bonsai-profile-text">
-              <span class="bonsai-profile-title">Bonsai Garden</span>
-              <span class="bonsai-profile-sub" id="bonsaiProfileSub">Tap to tend your tree</span>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
+        <button class="rewards-nav-btn" onclick="openRewardsPage()">
+          <span class="rewards-nav-label">Rewards</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
       </div>
 
       <!-- SECTION 4: Active missions (or prompt card) -->
@@ -517,6 +514,42 @@ var _introPlayedThisSession = false;
       <span id="achievement-count">0/15</span>
       <div id="profile-next-achievement"></div>
       <div id="achievements-section"></div>
+    </div>
+
+    <!-- Rewards page -->
+    <div id="rewards-page" class="rewards-page-view" style="display:none">
+      <div class="rewards-page-header">
+        <button class="rewards-back-btn" onclick="closeRewardsPage()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+          Back
+        </button>
+        <span class="rewards-page-title">Rewards</span>
+      </div>
+      <div class="rewards-page-list" id="rewardsPageList">
+        <!-- Bonsai Garden entry -->
+        <div class="reward-item" id="rewardItemBonsai" style="display:none">
+          <button class="reward-item-btn" onclick="openBonsaiScreen()">
+            <span class="reward-item-icon">🌳</span>
+            <div class="reward-item-text">
+              <span class="reward-item-title">Bonsai Garden</span>
+              <span class="reward-item-sub" id="rewardBonsaiSub">Tap to tend your tree</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+        <!-- Empty state -->
+        <div class="rewards-empty" id="rewardsEmpty">
+          <p>Complete sessions to unlock rewards</p>
+        </div>
+      </div>
     </div>
 
   </section>

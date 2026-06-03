@@ -6278,8 +6278,18 @@
     .mob3-reward-sub { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
     /* ── Achievements scrollable ── */
-    #guest-achievements-grid { overflow-y: auto; max-height: 380px; -webkit-overflow-scrolling: touch; }
-    #profile-achievement-preview .achievements-grid { overflow-y: auto; max-height: 380px; -webkit-overflow-scrolling: touch; }
+    #guest-achievements-grid {
+      overflow-y: auto;
+      max-height: 340px;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 4px;
+    }
+    #profile-achievement-preview .achievements-grid {
+      overflow-y: auto;
+      max-height: 340px;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 4px;
+    }
 
     /* ── mob-hdr full-width border fix ── */
     .mob-hdr { margin-left: -24px; margin-right: -24px; padding-left: 24px; padding-right: 24px; width: calc(100% + 48px); }
@@ -6319,17 +6329,108 @@
     .pre-breath-steps-overlay .pacer-intro-list { margin-bottom: 0; }
 
     /* ─── Fix 10: Rewards section in profile ─── */
-    .rewards-section {
+    .rewards-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 16px var(--side-pad, 20px);
+      background: var(--color-background-primary, var(--bg));
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
       margin: 24px 0 0 0;
     }
-    .rewards-heading {
+    .rewards-nav-label {
       font-family: 'Cormorant Garamond', serif;
       font-size: 18px;
       font-weight: 400;
       color: var(--text);
       letter-spacing: 0.05em;
-      margin: 0 0 14px 0;
-      padding: 0 var(--side-pad, 20px);
+    }
+
+    /* ─── Rewards page ─── */
+    .rewards-page-view {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .rewards-page-header {
+      display: flex;
+      align-items: center;
+      padding: 16px var(--side-pad, 20px);
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 1;
+    }
+    .rewards-back-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--gold);
+      cursor: pointer;
+      padding: 0;
+    }
+    .rewards-page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      margin: 0 auto;
+    }
+    .rewards-page-list {
+      padding: 20px var(--side-pad, 20px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .reward-item-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 16px;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .reward-item-icon { font-size: 28px; }
+    .reward-item-text {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 2px;
+    }
+    .reward-item-title {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .reward-item-sub {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+    .rewards-empty {
+      text-align: center;
+      padding: 40px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-soft);
     }
 
     /* BUTTON SYSTEM v2.1 */

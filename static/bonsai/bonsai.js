@@ -113,19 +113,18 @@ function _bonsaiPlantingCeremony() {
 
 function bonsaiUpdateProfileCard() {
   const data = _bonsaiLoad();
-  const card = document.getElementById('bonsaiProfileCard');
-  if (card) card.style.display = 'block';
   const homeIcon = document.getElementById('bonsaiHomeIcon');
   if (homeIcon) homeIcon.style.display = 'flex';
-  const sub = document.getElementById('bonsaiProfileSub');
-  if (!sub) return;
+  let subText;
   if (data.active) {
-    sub.textContent = `Cycle ${data.active.cycle}/10 · ${data.active.watersInCycle}/3 waters`;
+    subText = `Cycle ${data.active.cycle}/10 · ${data.active.watersInCycle}/3 waters`;
   } else if (data.album.length > 0) {
-    sub.textContent = `${data.album.length} tree${data.album.length > 1 ? 's' : ''} grown · Plant a new seed`;
+    subText = `${data.album.length} tree${data.album.length > 1 ? 's' : ''} grown · Plant a new seed`;
   } else {
-    sub.textContent = 'Tap to tend your tree';
+    subText = 'Tap to tend your tree';
   }
+  const rewardSub = document.getElementById('rewardBonsaiSub');
+  if (rewardSub) rewardSub.textContent = subText;
 }
 
 // ─── Open / close overlay ─────────────────────────────────────────────────────
