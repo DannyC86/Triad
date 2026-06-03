@@ -2165,13 +2165,11 @@
           `<button class="mob3-btn btn-secondary" onclick="closeMobSession();transitionTo(()=>navigate('home'))">Explore the App</button>` +
         `</div>`;
     } else {
-      // GENERAL MEDITATION CONGRATS: stats + 3 buttons, no large heading
+      // GENERAL MEDITATION CONGRATS: stats + 2 buttons, no heading, no Get Rewards
       document.getElementById('mobPage3').innerHTML =
-        `<div class="mob3-title">Mindfulness of Breath</div>` +
         `<div class="mob3-stats">${rowsHTML}</div>` +
         `<div class="mob3-actions">` +
-          `<button class="mob3-btn btn-primary" onclick="closeMobSession();transitionTo(()=>{navigate('library',{keepDetail:true});switchLibraryTab('meditations');showKnowledgePracticeDetail('meditation','mindfulness-of-breath')})">Learn about Mindfulness</button>` +
-          `<button class="mob3-btn btn-secondary" onclick="closeMobSession();transitionTo(()=>{navigate('profile');document.querySelector('.rewards-section')?.scrollIntoView({behavior:'smooth'})})">Get Rewards</button>` +
+          `<button class="mob3-btn btn-primary" onclick="closeMobSession();transitionTo(()=>{navigate('library',{keepDetail:true});switchLibraryTab('meditations');showKnowledgePracticeDetail('meditation','mindfulness-of-breath')})">Learn about Mindfulness of Breath</button>` +
           `<button class="mob3-btn btn-secondary" onclick="closeMobSession();transitionTo(()=>navigate('home'))">Home</button>` +
         `</div>`;
     }
