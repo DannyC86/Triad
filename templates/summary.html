@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triad — App Summary</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; color: #1a1a1a; background: #f9f9f7; margin: 0; padding: 0; }
+  .page { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #666; margin-bottom: 40px; font-size: 0.9rem; }
+  h2 { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #444; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; margin: 40px 0 16px; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li { padding: 8px 0; border-bottom: 1px solid #efefef; display: flex; gap: 12px; align-items: baseline; }
+  li:last-child { border-bottom: none; }
+  .label { font-weight: 600; min-width: 200px; flex-shrink: 0; color: #1a1a1a; }
+  .desc { color: #444; }
+  .arrow { color: #999; margin: 0 6px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Triad — App Summary</h1>
+<p class="subtitle">Every screen and every button, in plain English.</p>
+
+<!-- ══════════════════════════════════════════
+     PAGES
+══════════════════════════════════════════ -->
+<h2>Pages</h2>
+<ul>
+  <li>
+    <span class="label">Splash screen</span>
+    <span class="desc">The animated logo that appears when you first open the app, then fades into the home screen after a few seconds.</span>
+  </li>
+  <li>
+    <span class="label">Home</span>
+    <span class="desc">The main landing screen — shows a welcome summary, your streak, and quick-access cards for Breathe, Meditate, and Library. First-time visitors see a "Take your First Breath" prompt instead.</span>
+  </li>
+  <li>
+    <span class="label">Techniques</span>
+    <span class="desc">A grid of breathing techniques you can browse and tap into for a full description and the option to start a session.</span>
+  </li>
+  <li>
+    <span class="label">Technique detail</span>
+    <span class="desc">The detail view for a single breathing technique — description, benefits, and a Start Session button.</span>
+  </li>
+  <li>
+    <span class="label">Meditate</span>
+    <span class="desc">A grid of guided meditations you can browse and tap into for a description and the option to start a session.</span>
+  </li>
+  <li>
+    <span class="label">Meditation detail</span>
+    <span class="desc">The detail view for a single meditation — description, duration, and a Start Session button.</span>
+  </li>
+  <li>
+    <span class="label">Library</span>
+    <span class="desc">A searchable collection of books, people, podcasts, breathing techniques, and meditations organised into tabs.</span>
+  </li>
+  <li>
+    <span class="label">Library detail</span>
+    <span class="desc">The detail view for a library entry — a book, person, podcast, or in-depth practice article.</span>
+  </li>
+  <li>
+    <span class="label">Plan (AI)</span>
+    <span class="desc">A screen where you answer a few questions about your goals and receive a personalised practice plan from an AI. Requires a Pro account.</span>
+  </li>
+  <li>
+    <span class="label">Profile</span>
+    <span class="desc">Your personal dashboard — shows your Triad name, stats snapshot, achievements, Bonsai Garden link, active missions, and account settings.</span>
+  </li>
+  <li>
+    <span class="label">Achievements page</span>
+    <span class="desc">A full-screen view of all your achievements, opened from the Profile page.</span>
+  </li>
+  <li>
+    <span class="label">Triad Mastery page</span>
+    <span class="desc">A full-screen breakdown of your mastery progress across the three pillars of Triad, opened from the Profile page.</span>
+  </li>
+  <li>
+    <span class="label">Rewards page</span>
+    <span class="desc">A full-screen list of rewards you have unlocked, such as the Bonsai Garden, opened from the Rewards button on Profile.</span>
+  </li>
+  <li>
+    <span class="label">Guest Breath Pacer</span>
+    <span class="desc">The simplified breathing pacer shown to first-time users — guides you through three breath cycles of Resonant Breathing before completing automatically.</span>
+  </li>
+  <li>
+    <span class="label">Pro Breath Pacer</span>
+    <span class="desc">The full breathing pacer for returning users — lets you choose session length, then guides your breathing with a visual pacer and timer.</span>
+  </li>
+  <li>
+    <span class="label">Session screen</span>
+    <span class="desc">The active breathing or meditation session view — shows a moving orb, a timer, and pause/resume controls.</span>
+  </li>
+  <li>
+    <span class="label">Session complete screen</span>
+    <span class="desc">The screen shown after finishing a breath session — displays your stats and offers buttons to learn more, try a meditation, or go home.</span>
+  </li>
+  <li>
+    <span class="label">Mindfulness of Breath session</span>
+    <span class="desc">The dedicated Mindfulness of Breath meditation screen — a physics-based orb you interact with by holding a button, with a countdown timer.</span>
+  </li>
+  <li>
+    <span class="label">Mindfulness of Breath results</span>
+    <span class="desc">The results screen shown after a Mindfulness of Breath session — displays breath stats like average breath length and session time.</span>
+  </li>
+  <li>
+    <span class="label">Pre-session intro popup</span>
+    <span class="desc">A two-step popup that appears before starting a session — first shows information about the technique, then lets you choose how long to practise.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai Garden</span>
+    <span class="desc">A virtual bonsai tree you grow by watering it once a day over 33 days — unlocked after completing your first breath session and first meditation.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai Album</span>
+    <span class="desc">A gallery of completed bonsai trees you have grown and saved.</span>
+  </li>
+  <li>
+    <span class="label">Level unlock screen</span>
+    <span class="desc">A celebration screen that appears when you reach a new level by completing achievements.</span>
+  </li>
+  <li>
+    <span class="label">Login / Sign up modal</span>
+    <span class="desc">The popup for creating an account or logging in, with tabs to switch between the two and a forgotten password option.</span>
+  </li>
+  <li>
+    <span class="label">Settings drawer</span>
+    <span class="desc">A slide-in panel with theme toggle (light/dark), sound toggle, and links to privacy information and account deletion.</span>
+  </li>
+  <li>
+    <span class="label">Quit session modal</span>
+    <span class="desc">A confirmation popup that appears if you try to leave a session mid-way — gives you the choice to continue or end the session.</span>
+  </li>
+  <li>
+    <span class="label">Quick-start picker</span>
+    <span class="desc">A popup showing six curated practices you can jump straight into from anywhere in the app.</span>
+  </li>
+  <li>
+    <span class="label">Pro upgrade modal</span>
+    <span class="desc">A popup that appears when you try to use an AI feature without a Pro account, with an option to join the waitlist.</span>
+  </li>
+  <li>
+    <span class="label">API cost confirmation modal</span>
+    <span class="desc">A popup that shows the estimated cost of an AI request and asks you to confirm before it proceeds.</span>
+  </li>
+  <li>
+    <span class="label">Edit cycles sheet</span>
+    <span class="desc">A bottom sheet with a slider that lets you change the number of breath cycles during an active session.</span>
+  </li>
+  <li>
+    <span class="label">Mission diagnostic</span>
+    <span class="desc">A measurement screen used at the start and end of a 21-day mission — either a timed hold test or a short survey.</span>
+  </li>
+  <li>
+    <span class="label">Privacy modal</span>
+    <span class="desc">A popup showing privacy and legal information, opened from the Settings drawer.</span>
+  </li>
+  <li>
+    <span class="label">Waitlist modal</span>
+    <span class="desc">A popup where you can enter your email to join the Pro waitlist.</span>
+  </li>
+  <li>
+    <span class="label">Achievement popup</span>
+    <span class="desc">A small toast notification that appears briefly at the top of the screen when you unlock a new achievement.</span>
+  </li>
+</ul>
+
+
+<!-- ══════════════════════════════════════════
+     CLICK EVENTS
+══════════════════════════════════════════ -->
+<h2>Click Events</h2>
+<ul>
+  <li>
+    <span class="label">Take your First Breath</span>
+    <span class="desc"><span class="arrow">→</span> Opens the guest breathing pacer with Resonant Breathing.</span>
+  </li>
+  <li>
+    <span class="label">Bottom nav: Home</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Home screen.</span>
+  </li>
+  <li>
+    <span class="label">Bottom nav: Breathe</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Techniques screen.</span>
+  </li>
+  <li>
+    <span class="label">Bottom nav: Meditate</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Meditate screen.</span>
+  </li>
+  <li>
+    <span class="label">Bottom nav: Library</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Library screen.</span>
+  </li>
+  <li>
+    <span class="label">Bottom nav: Plan</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Plan screen. Back button returns to Profile.</span>
+  </li>
+  <li>
+    <span class="label">Profile icon button</span>
+    <span class="desc"><span class="arrow">→</span> Goes to Profile if logged in; opens Login / Sign up if not.</span>
+  </li>
+  <li>
+    <span class="label">Gear / Settings button</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Settings drawer.</span>
+  </li>
+  <li>
+    <span class="label">Sticky back bar</span>
+    <span class="desc"><span class="arrow">→</span> Goes back to the previous screen (e.g. from a detail view back to a list).</span>
+  </li>
+  <li>
+    <span class="label">Home: Breathe card</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Techniques screen.</span>
+  </li>
+  <li>
+    <span class="label">Home: Meditate card</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Meditate screen.</span>
+  </li>
+  <li>
+    <span class="label">Home: Library card</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Library screen.</span>
+  </li>
+  <li>
+    <span class="label">Home: Bonsai icon</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Bonsai Garden. Only visible once your garden is unlocked.</span>
+  </li>
+  <li>
+    <span class="label">Home: Log In / Sign Up footer</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Login / Sign up modal (if guest) or goes to Profile (if logged in).</span>
+  </li>
+  <li>
+    <span class="label">Technique card</span>
+    <span class="desc"><span class="arrow">→</span> Opens the detail view for that technique.</span>
+  </li>
+  <li>
+    <span class="label">Technique detail: Start Session</span>
+    <span class="desc"><span class="arrow">→</span> Opens the pre-session intro popup, then launches a breathing session.</span>
+  </li>
+  <li>
+    <span class="label">Meditation card</span>
+    <span class="desc"><span class="arrow">→</span> Opens the detail view for that meditation.</span>
+  </li>
+  <li>
+    <span class="label">Meditation detail: Start Session</span>
+    <span class="desc"><span class="arrow">→</span> For Mindfulness of Breath, opens the dedicated meditation session. For all others, opens the pre-session intro popup.</span>
+  </li>
+  <li>
+    <span class="label">Library tab pills</span>
+    <span class="desc"><span class="arrow">→</span> Switches between Books, People, Podcasts, Breathwork, and Meditations tabs.</span>
+  </li>
+  <li>
+    <span class="label">Library: search box</span>
+    <span class="desc"><span class="arrow">→</span> Filters the current tab's results as you type.</span>
+  </li>
+  <li>
+    <span class="label">Library: theme filter</span>
+    <span class="desc"><span class="arrow">→</span> Filters results by theme.</span>
+  </li>
+  <li>
+    <span class="label">Library: Reset filters</span>
+    <span class="desc"><span class="arrow">→</span> Clears the search box and theme filter.</span>
+  </li>
+  <li>
+    <span class="label">Library item card</span>
+    <span class="desc"><span class="arrow">→</span> Opens the detail view for that book, person, podcast, or practice.</span>
+  </li>
+  <li>
+    <span class="label">Library detail: Back</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the library list.</span>
+  </li>
+  <li>
+    <span class="label">Library detail: Start Session</span>
+    <span class="desc"><span class="arrow">→</span> Launches a session for that practice.</span>
+  </li>
+  <li>
+    <span class="label">Pre-session intro: Next</span>
+    <span class="desc"><span class="arrow">→</span> Moves from the technique information to the session length picker.</span>
+  </li>
+  <li>
+    <span class="label">Pre-session intro: Begin</span>
+    <span class="desc"><span class="arrow">→</span> Closes the popup and starts the session.</span>
+  </li>
+  <li>
+    <span class="label">Pre-session intro: Cancel</span>
+    <span class="desc"><span class="arrow">→</span> Closes the popup and returns to the technique detail.</span>
+  </li>
+  <li>
+    <span class="label">Guest pacer: and Breathe</span>
+    <span class="desc"><span class="arrow">→</span> Starts the 3-2-1 countdown and launches the breathing session.</span>
+  </li>
+  <li>
+    <span class="label">Pro pacer: Pick Breath Work Length</span>
+    <span class="desc"><span class="arrow">→</span> Opens the length selection screen.</span>
+  </li>
+  <li>
+    <span class="label">Pro pacer: Begin Session</span>
+    <span class="desc"><span class="arrow">→</span> Starts the countdown and launches the session.</span>
+  </li>
+  <li>
+    <span class="label">Pro pacer (infinite mode): End Session</span>
+    <span class="desc"><span class="arrow">→</span> Stops the session and shows the completion screen.</span>
+  </li>
+  <li>
+    <span class="label">Session: Pause / Resume</span>
+    <span class="desc"><span class="arrow">→</span> Pauses or resumes the active session.</span>
+  </li>
+  <li>
+    <span class="label">Session: Edit cycles</span>
+    <span class="desc"><span class="arrow">→</span> Opens a slider so you can change how many breath cycles remain.</span>
+  </li>
+  <li>
+    <span class="label">Session: Sound toggle</span>
+    <span class="desc"><span class="arrow">→</span> Turns the breathing audio cues on or off.</span>
+  </li>
+  <li>
+    <span class="label">Session: Close (X)</span>
+    <span class="desc"><span class="arrow">→</span> If the session is running, shows the Quit confirmation. If already complete, closes the session overlay.</span>
+  </li>
+  <li>
+    <span class="label">Edit cycles sheet: Confirm</span>
+    <span class="desc"><span class="arrow">→</span> Applies the new cycle count and closes the sheet.</span>
+  </li>
+  <li>
+    <span class="label">Session complete: Learn about [technique]</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Library article for the technique you just practised.</span>
+  </li>
+  <li>
+    <span class="label">Session complete: Try a meditation to match</span>
+    <span class="desc"><span class="arrow">→</span> Navigates to Meditate and opens the Mindfulness of Breath session.</span>
+  </li>
+  <li>
+    <span class="label">Session complete: Home</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the Home screen.</span>
+  </li>
+  <li>
+    <span class="label">Mindfulness of Breath: Pick Meditation Length</span>
+    <span class="desc"><span class="arrow">→</span> Opens the duration selection tiles.</span>
+  </li>
+  <li>
+    <span class="label">Mindfulness of Breath: duration tile</span>
+    <span class="desc"><span class="arrow">→</span> Selects that session length.</span>
+  </li>
+  <li>
+    <span class="label">Mindfulness of Breath: Begin</span>
+    <span class="desc"><span class="arrow">→</span> Starts the countdown and opens the active session screen.</span>
+  </li>
+  <li>
+    <span class="label">Mindfulness of Breath: Hold button (press and hold)</span>
+    <span class="desc"><span class="arrow">→</span> Records a breath while held — the orb rises and falls with your hold.</span>
+  </li>
+  <li>
+    <span class="label">Meditation results: Learn about Mindfulness of Breath</span>
+    <span class="desc"><span class="arrow">→</span> Goes to the Library article for Mindfulness of Breath.</span>
+  </li>
+  <li>
+    <span class="label">Meditation results: Home</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the Home screen.</span>
+  </li>
+  <li>
+    <span class="label">Quit modal: Continue</span>
+    <span class="desc"><span class="arrow">→</span> Dismisses the modal and resumes the session.</span>
+  </li>
+  <li>
+    <span class="label">Quit modal: End session</span>
+    <span class="desc"><span class="arrow">→</span> Ends and closes the session.</span>
+  </li>
+  <li>
+    <span class="label">Quick-start picker: practice card</span>
+    <span class="desc"><span class="arrow">→</span> Closes the picker and goes directly to that practice's detail view.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Triad Mastery button</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Triad Mastery sub-page.</span>
+  </li>
+  <li>
+    <span class="label">Profile: View All Achievements</span>
+    <span class="desc"><span class="arrow">→</span> Opens the full Achievements sub-page.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Rewards button</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Rewards page.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Bonsai Garden (in Rewards)</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Bonsai Garden.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Start Mission</span>
+    <span class="desc"><span class="arrow">→</span> Opens the mission diagnostic to record your starting measurements.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Complete Today's Session</span>
+    <span class="desc"><span class="arrow">→</span> Starts the practice session assigned for today's mission drill.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Final Assessment</span>
+    <span class="desc"><span class="arrow">→</span> Opens the mission diagnostic to record your end-of-mission measurements.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Log out</span>
+    <span class="desc"><span class="arrow">→</span> Logs you out and returns the profile to its guest state.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Log In / Sign Up</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Login / Sign up modal.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Claim this Triad name</span>
+    <span class="desc"><span class="arrow">→</span> Saves the suggested name as your permanent Triad name.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Refresh name ↻</span>
+    <span class="desc"><span class="arrow">→</span> Generates a new Triad name suggestion.</span>
+  </li>
+  <li>
+    <span class="label">Profile: I'll do this later</span>
+    <span class="desc"><span class="arrow">→</span> Dismisses the Triad name onboarding card.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Send Feedback</span>
+    <span class="desc"><span class="arrow">→</span> Submits the text in the feedback box to the team.</span>
+  </li>
+  <li>
+    <span class="label">Profile: Continue Your Daily Practice</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the Home screen.</span>
+  </li>
+  <li>
+    <span class="label">Achievements page: Back</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the main Profile view.</span>
+  </li>
+  <li>
+    <span class="label">Triad Mastery page: Back to Profile</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the main Profile view.</span>
+  </li>
+  <li>
+    <span class="label">Rewards page: Back</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the main Profile view.</span>
+  </li>
+  <li>
+    <span class="label">Plan: Generate (chip selections)</span>
+    <span class="desc"><span class="arrow">→</span> Sends your goal and preferences to the AI and shows your personalised plan. Requires Pro.</span>
+  </li>
+  <li>
+    <span class="label">Plan: Send (follow-up message)</span>
+    <span class="desc"><span class="arrow">→</span> Sends a follow-up question or message to the AI in the plan chat.</span>
+  </li>
+  <li>
+    <span class="label">Plan: Start over</span>
+    <span class="desc"><span class="arrow">→</span> Clears the current plan and returns to the goal selection form.</span>
+  </li>
+  <li>
+    <span class="label">API cost modal: Continue</span>
+    <span class="desc"><span class="arrow">→</span> Confirms the AI request and proceeds.</span>
+  </li>
+  <li>
+    <span class="label">API cost modal: Cancel</span>
+    <span class="desc"><span class="arrow">→</span> Cancels the AI request and restores the previous state.</span>
+  </li>
+  <li>
+    <span class="label">Login / Sign up: Log in</span>
+    <span class="desc"><span class="arrow">→</span> Submits your email and password to log in.</span>
+  </li>
+  <li>
+    <span class="label">Login / Sign up: Create account</span>
+    <span class="desc"><span class="arrow">→</span> Submits your email and password to create a new account.</span>
+  </li>
+  <li>
+    <span class="label">Login / Sign up: switch tab</span>
+    <span class="desc"><span class="arrow">→</span> Switches between the Log in and Sign up forms.</span>
+  </li>
+  <li>
+    <span class="label">Login: Forgot password?</span>
+    <span class="desc"><span class="arrow">→</span> Shows the forgotten password form.</span>
+  </li>
+  <li>
+    <span class="label">Forgot password: Send reset link</span>
+    <span class="desc"><span class="arrow">→</span> Sends a password reset email to the address you entered.</span>
+  </li>
+  <li>
+    <span class="label">Forgot password: Back to login</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the login form.</span>
+  </li>
+  <li>
+    <span class="label">Reset password: Set new password</span>
+    <span class="desc"><span class="arrow">→</span> Saves your new password and switches back to the login form after a moment.</span>
+  </li>
+  <li>
+    <span class="label">Auth modal: Close</span>
+    <span class="desc"><span class="arrow">→</span> Closes the login / sign up popup.</span>
+  </li>
+  <li>
+    <span class="label">Settings: Theme toggle</span>
+    <span class="desc"><span class="arrow">→</span> Switches between light and dark mode.</span>
+  </li>
+  <li>
+    <span class="label">Settings: Sound toggle</span>
+    <span class="desc"><span class="arrow">→</span> Turns session audio cues on or off.</span>
+  </li>
+  <li>
+    <span class="label">Settings: Privacy &amp; Legal</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Privacy modal.</span>
+  </li>
+  <li>
+    <span class="label">Settings: Delete account</span>
+    <span class="desc"><span class="arrow">→</span> Opens the account deletion flow.</span>
+  </li>
+  <li>
+    <span class="label">Pro upgrade modal: Join waitlist</span>
+    <span class="desc"><span class="arrow">→</span> Opens the waitlist signup form.</span>
+  </li>
+  <li>
+    <span class="label">Waitlist: Submit email</span>
+    <span class="desc"><span class="arrow">→</span> Saves your email to the waitlist and confirms you're on the list.</span>
+  </li>
+  <li>
+    <span class="label">Mission diagnostic: Stop timer / Save survey</span>
+    <span class="desc"><span class="arrow">→</span> Records your measurement and closes the diagnostic screen after a moment.</span>
+  </li>
+  <li>
+    <span class="label">Level unlock screen: Start Practising</span>
+    <span class="desc"><span class="arrow">→</span> Dismisses the celebration screen and returns to wherever you were.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai: Plant your seed (Begin Growing)</span>
+    <span class="desc"><span class="arrow">→</span> Names your bonsai and starts growing it. Requires pot and seeds to be unlocked.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai: Water</span>
+    <span class="desc"><span class="arrow">→</span> Waters your bonsai for the day. Can only be done once per day — three waters advance one growth cycle.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai: Save to Album</span>
+    <span class="desc"><span class="arrow">→</span> Saves a picture of your completed tree to your Garden Album and lets you start a new one.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai: Plant New</span>
+    <span class="desc"><span class="arrow">→</span> Discards the current completed tree and starts a new one without saving.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai: Album</span>
+    <span class="desc"><span class="arrow">→</span> Opens the Garden Album to see all trees you have grown.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai Album: Back</span>
+    <span class="desc"><span class="arrow">→</span> Returns to the main Bonsai view.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai: Close</span>
+    <span class="desc"><span class="arrow">→</span> Closes the Bonsai Garden and returns to wherever you opened it from.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai ceremony: Begin Growing</span>
+    <span class="desc"><span class="arrow">→</span> Closes the reward ceremony popup and opens the Bonsai Garden.</span>
+  </li>
+  <li>
+    <span class="label">Bonsai ceremony: Later</span>
+    <span class="desc"><span class="arrow">→</span> Dismisses the reward ceremony popup without going to the garden.</span>
+  </li>
+</ul>
+
+</div>
+</body>
+</html>
