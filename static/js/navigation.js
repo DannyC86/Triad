@@ -602,15 +602,39 @@
   /* ── Wake Lock — keeps screen on during active sessions ── */
   let _wakeLock = null;
 
+  // NoSleep fallback — plays a silent video to prevent screen lock on iOS
+  let _noSleep = null;
+  function _noSleepEnable() {
+    if (_noSleep) return;
+    const v = document.createElement('video');
+    v.setAttribute('loop', '');
+    v.setAttribute('playsinline', '');
+    v.setAttribute('muted', '');
+    v.style.cssText = 'position:fixed;top:-1px;left:-1px;width:1px;height:1px;opacity:0;pointer-events:none';
+    v.src = 'data:video/mp4;base64,AAAAIGZ0eXBtcDQyAAAAAG1wNDJtcDQxaXNvbWF2YzEAAATKbW9vdgAAAGxtdmhkAAAAANLEP5XSxD+XAAAD6AAAACoAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAABhpb2RzAAAAABCAgIAHAE////9//w==';
+    document.body.appendChild(v);
+    v.play().catch(() => {});
+    _noSleep = v;
+  }
+  function _noSleepDisable() {
+    if (!_noSleep) return;
+    _noSleep.pause();
+    _noSleep.remove();
+    _noSleep = null;
+  }
+
   async function requestWakeLock() {
-    if ('wakeLock' in navigator) {
-      try {
-        _wakeLock = await navigator.wakeLock.request('screen');
-      } catch (e) { console.log('Wake lock failed:', e); }
-    }
+    _noSleepEnable();
+    if (!('wakeLock' in navigator)) return;
+    try {
+      if (_wakeLock) { _wakeLock.release(); _wakeLock = null; }
+      _wakeLock = await navigator.wakeLock.request('screen');
+      _wakeLock.addEventListener('release', () => { _wakeLock = null; });
+    } catch (e) { console.log('Wake lock failed:', e.name, e.message); }
   }
 
   function releaseWakeLock() {
+    _noSleepDisable();
     if (_wakeLock) { _wakeLock.release(); _wakeLock = null; }
   }
 
