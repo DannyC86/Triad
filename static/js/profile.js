@@ -757,7 +757,7 @@ Build my personalised plan.`;
 
     document.getElementById('lusBtn').onclick = () => {
       screen.style.opacity = '0';
-      setTimeout(() => { screen.style.display = 'none'; }, 600);
+      setTimeout(() => { screen.style.display = 'none'; navigate('techniques'); }, 600);
     };
   }
 

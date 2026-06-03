@@ -113,9 +113,6 @@
     // Sync header avatar visibility with current auth state
     renderHeader({ showUserIcon: typeof auth !== 'undefined' && auth.loggedIn });
 
-    // Hide FAB unless on a detail view
-    updateFab();
-
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
     track('page_view', { section: target });
@@ -540,8 +537,6 @@
     popup.style.display = 'flex';
   }
 
-  let _siSelectedDuration = 1;
-
   function _siShowLengthSelect() {
     const p1 = document.getElementById('siPhase1');
     const p2 = document.getElementById('siPhase2');
@@ -552,7 +547,6 @@
   function siSelectDuration(tile) {
     document.querySelectorAll('.si-tile').forEach(t => t.classList.remove('selected'));
     tile.classList.add('selected');
-    _siSelectedDuration = parseInt(tile.dataset.duration, 10);
   }
 
   function _closeSessionIntroWithDuration() {
@@ -598,10 +592,6 @@
       openSession(practiceId);
     }
   }
-  function closeStartSession() {
-    sessionCancel();
-  }
-
   /* ─── Breath Pacer — canvas scrolling sine wave ─── */
 
   const _PACER_BASELINE_R  = 0.5;
@@ -1099,6 +1089,35 @@
     _pacerState.raf = requestAnimationFrame(_pacerTick);
   }
 
+  /* ── Shared completion screen renderer ───────────────────────── */
+
+  function _renderCompletionScreen(title, durationLine, cyclesLine, breathsLine) {
+    const scTechName = document.getElementById('sessionCompleteTechName');
+    const scDuration = document.getElementById('sessionCompleteDuration');
+    const scCycles   = document.getElementById('sessionCompleteCycles');
+    const scBreaths  = document.getElementById('sessionCompleteBreaths');
+    const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
+    if (scTechName) scTechName.textContent = (title || '').toUpperCase();
+    if (scDuration)  scDuration.textContent = durationLine  || '';
+    if (scCycles)    scCycles.textContent   = cyclesLine    || '';
+    if (scBreaths)   scBreaths.textContent  = breathsLine   || '';
+    if (scLearnBtn)  scLearnBtn.textContent = 'Learn about ' + (title || 'this practice');
+
+    const scAvatar = document.getElementById('scAvatarBtn');
+    if (scAvatar && typeof auth !== 'undefined' && auth.loggedIn) {
+      const initial = ((auth.email || 'U')[0] || 'U').toUpperCase();
+      scAvatar.classList.add('logged-in');
+      scAvatar.innerHTML = `<span>${initial}</span>`;
+    }
+    renderHeader({ showUserIcon: typeof auth !== 'undefined' && auth.loggedIn });
+
+    document.getElementById('sessionView').classList.remove('active');
+    document.getElementById('sessionComplete').classList.add('active');
+    const overlay = document.getElementById('sessionOverlay');
+    if (!overlay.classList.contains('active')) overlay.classList.add('active');
+    overlay.classList.add('completion-active');
+  }
+
   /* ── Session end → completion screen ─────────────────────────── */
 
   function _pacerSessionEnd() {
@@ -1144,33 +1163,12 @@
     const pcTimeStr = pcMM + ':' + String(pcSS).padStart(2, '0');
     const pcTotalBreaths = ((store.breathwork || {})[_bwId] || {}).totalBreaths || _pacerState.totalCycles;
 
-    const scTechName = document.getElementById('sessionCompleteTechName');
-    const scDuration = document.getElementById('sessionCompleteDuration');
-    const scCycles   = document.getElementById('sessionCompleteCycles');
-    const scBreaths  = document.getElementById('sessionCompleteBreaths');
-    const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
-    if (scTechName) scTechName.textContent = pcTitle.toUpperCase();
-    if (scDuration)  scDuration.textContent = 'Session Time: ' + pcTimeStr;
-    if (scCycles)    scCycles.textContent   = 'Session Breaths: ' + _pacerState.totalCycles;
-    if (scBreaths)   scBreaths.textContent  = 'Total Resonant Breaths: ' + pcTotalBreaths;
-    if (scLearnBtn)  scLearnBtn.textContent = 'Learn about ' + pcTitle;
-
-    // Update completion screen mini-header avatar to reflect auth state
-    const scAvatar = document.getElementById('scAvatarBtn');
-    if (scAvatar && typeof auth !== 'undefined' && auth.loggedIn) {
-      const initial = ((auth.email || 'U')[0] || 'U').toUpperCase();
-      scAvatar.classList.add('logged-in');
-      scAvatar.innerHTML = `<span>${initial}</span>`;
-    }
-
-    // Ensure global header avatar is in sync for when overlay dismisses
-    renderHeader({ showUserIcon: typeof auth !== 'undefined' && auth.loggedIn });
-
-    document.getElementById('sessionView').classList.remove('active');
-    document.getElementById('sessionComplete').classList.add('active');
-    const _sovA = document.getElementById('sessionOverlay');
-    _sovA.classList.add('active');
-    _sovA.classList.add('completion-active');
+    _renderCompletionScreen(
+      pcTitle,
+      'Session Time: ' + pcTimeStr,
+      'Session Breaths: ' + _pacerState.totalCycles,
+      'Total Resonant Breaths: ' + pcTotalBreaths
+    );
 
     try { localStorage.setItem('triad:onboarded', 'true'); } catch(e) {}
 
@@ -1196,8 +1194,9 @@
         showKnowledgePracticeDetail('technique', techId);
       });
     } else if (action === 'meditate') {
-      _mobIsOnboarding = true;
-      window._mobIsOnboarding = true;
+      const _isFirstVisit = localStorage.getItem('triad:onboarded') !== 'true';
+      _mobIsOnboarding = _isFirstVisit;
+      window._mobIsOnboarding = _isFirstVisit;
       transitionTo(() => { navigate('meditate'); openMobSession(); });
     } else {
       transitionTo(() => navigate('home'));
@@ -1628,32 +1627,12 @@
     const pcTimeStr = pcMM + ':' + String(pcSS).padStart(2, '0');
     const pcTotalBreaths = ((store.breathwork || {})[bwId] || {}).totalBreaths || completed;
 
-    const scTechName = document.getElementById('sessionCompleteTechName');
-    const scDuration = document.getElementById('sessionCompleteDuration');
-    const scCycles   = document.getElementById('sessionCompleteCycles');
-    const scBreaths  = document.getElementById('sessionCompleteBreaths');
-    const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
-    if (scTechName) scTechName.textContent = pcTitle.toUpperCase();
-    if (scDuration)  scDuration.textContent = 'Session Time: '    + pcTimeStr;
-    if (scCycles)    scCycles.textContent   = 'Session Breaths: ' + completed;
-    if (scBreaths)   scBreaths.textContent  = 'Total Resonant Breaths: ' + pcTotalBreaths;
-    if (scLearnBtn)  scLearnBtn.textContent = 'Learn about ' + pcTitle;
-
-    const scAvatar = document.getElementById('scAvatarBtn');
-    if (scAvatar && typeof auth !== 'undefined' && auth.loggedIn) {
-      const initial = ((auth.email || 'U')[0] || 'U').toUpperCase();
-      scAvatar.classList.add('logged-in');
-      scAvatar.innerHTML = `<span>${initial}</span>`;
-    }
-
-    renderHeader({ showUserIcon: typeof auth !== 'undefined' && auth.loggedIn });
-
-    document.getElementById('sessionView').classList.remove('active');
-    document.getElementById('sessionComplete').classList.add('active');
-    const _sovC = document.getElementById('sessionOverlay');
-    _sovC.classList.add('active');
-    _sovC.classList.add('completion-active');
-
+    _renderCompletionScreen(
+      pcTitle,
+      'Session Time: ' + pcTimeStr,
+      'Session Breaths: ' + completed,
+      'Total Resonant Breaths: ' + pcTotalBreaths
+    );
   }
 
   /* ── Pacer pause / resume for settings drawer ──────────────────── */
@@ -1850,9 +1829,6 @@
     }
     tick(3);
   }
-
-  /* Legacy alias */
-  function _mobGoToPage2() { _mobGoToPage2Direct(); }
 
   /* Called after countdown — shows page 2 and starts everything */
   function _mobStartSession() {

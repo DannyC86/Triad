@@ -261,17 +261,12 @@
 
     const timeStr = totalMin >= 1 ? `${totalMin} min` : `${totalSec} sec`;
     const cycles = _sess.loopCount === null ? _sess.currentLoop - 1 : _sess.loopCount;
-    const scTechName = document.getElementById('sessionCompleteTechName');
-    const scDuration = document.getElementById('sessionCompleteDuration');
-    const scCycles   = document.getElementById('sessionCompleteCycles');
-    const scLearnBtn = document.getElementById('sessionCompleteLearnBtn');
-    if (scTechName) scTechName.textContent = (_sess.techniqueTitle || '').toUpperCase();
-    if (scDuration)  scDuration.textContent  = `${timeStr} session`;
-    if (scCycles)    scCycles.textContent    = `${cycles} Breathing Cycle${cycles !== 1 ? 's' : ''}`;
-    if (scLearnBtn)  scLearnBtn.textContent  = 'Learn about ' + (_sess.techniqueTitle || 'this technique');
-
-    document.getElementById('sessionView').classList.remove('active');
-    document.getElementById('sessionComplete').classList.add('active');
+    _renderCompletionScreen(
+      _sess.techniqueTitle || '',
+      `${timeStr} session`,
+      `${cycles} Breathing Cycle${cycles !== 1 ? 's' : ''}`,
+      null
+    );
   }
 
   function openSession(practiceId) {
@@ -554,14 +549,6 @@
   }
 
   // Backwards-compatible alias for legacy callers
-  function highlightLibraryEntry(slugId) {
-    // Try book first, then person
-    const book = LIBRARY.books.find(b => slug(b.title) === slugId);
-    if (book) { showBookDetail(book); return; }
-    const person = LIBRARY.people.find(p => slug(p.name) === slugId);
-    if (person) { showPersonDetail(person); return; }
-  }
-
   function alreadyCompletedToday(practiceId) {
     const today = todayKey();
     return store.sessions.some(s => s.practiceId === practiceId && tsKey(s.ts) === today);
@@ -579,7 +566,6 @@
       const detail = document.getElementById('techniques-detail');
       renderDetail(item, 'techniques-detail', 'technique');
       detail.classList.add('active');
-      updateFab();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       track('technique_opened', { practice_id: item.id, title: item.title });
     });
@@ -591,7 +577,6 @@
     if (state.askContext?.kind === 'technique') state.askContext = null;
     document.getElementById('techniques-list').style.display = '';
     document.getElementById('techniques-detail').classList.remove('active');
-    updateFab();
   }
 
   function showMeditationDetail(id) {
@@ -606,7 +591,6 @@
       const detail = document.getElementById('meditate-detail');
       renderDetail(item, 'meditate-detail', 'meditation');
       detail.classList.add('active');
-      updateFab();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       track('meditation_opened', { practice_id: item.id, title: item.title });
     });
@@ -618,10 +602,7 @@
     if (state.askContext?.kind === 'meditation') state.askContext = null;
     document.getElementById('meditate-list').style.display = '';
     document.getElementById('meditate-detail').classList.remove('active');
-    updateFab();
   }
-
-  function updateFab() { /* no-op — action bar removed */ }
 
   /* ─── Magazine detail helpers ─── */
   function _firstSentence(text) {

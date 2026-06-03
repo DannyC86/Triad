@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triad — Technical Journey Map</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --home: #3d7a8a;
+    --breath: #c9a96e;
+    --meditate: #4a9d6f;
+    --library: #8b73b5;
+    --plan: #5b8db8;
+    --profile: #c4785a;
+    --auth: #6e7681;
+    --session: #c62828;
+    --bonsai: #5c8a3c;
+    --pacer: #1565c0;
+    --mob: #00695c;
+    --modal: #4a4a6a;
+    --warn: #f0a500;
+    --dead: #b71c1c;
+    --font: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 13px; line-height: 1.5; }
+  a { color: var(--breath); text-decoration: none; }
+
+  /* ── Layout ── */
+  .page { max-width: 1400px; margin: 0 auto; padding: 24px 20px 80px; }
+  h1 { font-size: 1.5rem; font-weight: 700; color: var(--breath); margin-bottom: 6px; }
+  h2 { font-size: 1rem; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: 0.08em; margin: 32px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  p { color: var(--muted); margin-bottom: 6px; font-size: 0.82rem; }
+  code { font-family: var(--font); font-size: 0.78rem; background: var(--bg3); padding: 1px 5px; border-radius: 3px; color: var(--breath); }
+
+  /* ── Legend ── */
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--muted); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── Screen cards ── */
+  .screens-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+  .screen-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .screen-header { padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+  .screen-header .dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .screen-header .id { font-family: var(--font); font-size: 0.78rem; font-weight: 600; }
+  .screen-header .kind { font-size: 0.68rem; color: var(--muted); margin-left: auto; text-transform: uppercase; letter-spacing: 0.06em; }
+  .screen-body { padding: 8px 12px 10px; border-top: 1px solid var(--border); }
+  .screen-body .row { display: flex; gap: 8px; margin-bottom: 4px; font-size: 0.78rem; }
+  .screen-body .row .lbl { color: var(--muted); min-width: 68px; flex-shrink: 0; }
+  .screen-body .row .val { color: var(--text); }
+  .screen-body .row code { font-size: 0.72rem; }
+
+  /* ── Route tables ── */
+  .route-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 0.78rem; }
+  .route-table th { text-align: left; padding: 5px 10px; color: var(--muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+  .route-table td { padding: 5px 10px; border-bottom: 1px solid var(--bg3); vertical-align: top; }
+  .route-table tr:last-child td { border-bottom: none; }
+  .route-table tr:hover td { background: var(--bg3); }
+  .from-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; }
+  .trigger { color: var(--text); }
+  .fn { color: var(--breath); font-family: var(--font); font-size: 0.72rem; }
+  .dest { color: #79c0ff; font-size: 0.75rem; }
+  .note { color: var(--muted); font-size: 0.7rem; font-style: italic; }
+  .cond { color: var(--warn); font-size: 0.7rem; }
+
+  /* ── Flow sections ── */
+  .flow-block { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 12px; }
+  .flow-head { padding: 8px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+  .flow-head .strip { width: 4px; height: 16px; border-radius: 2px; flex-shrink: 0; }
+  .flow-head .title { font-size: 0.85rem; font-weight: 600; }
+  .flow-head .subtitle { font-size: 0.72rem; color: var(--muted); margin-left: 4px; }
+  .flow-body { padding: 10px 14px; }
+
+  /* ── Issues section ── */
+  .issue-list { list-style: none; }
+  .issue-list li { padding: 6px 10px; margin-bottom: 4px; border-radius: 4px; font-size: 0.8rem; }
+  .issue-list li.dead { background: rgba(183,28,28,0.15); border-left: 3px solid var(--dead); }
+  .issue-list li.orphan { background: rgba(240,165,0,0.1); border-left: 3px solid var(--warn); }
+  .issue-list li.multi { background: rgba(101,91,180,0.15); border-left: 3px solid var(--library); }
+  .issue-list li.noaction { background: rgba(60,60,60,0.3); border-left: 3px solid var(--muted); }
+  .issue-tag { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-right: 6px; }
+  .tag-dead { background: var(--dead); color: #fff; }
+  .tag-orphan { background: var(--warn); color: #000; }
+  .tag-multi { background: var(--library); color: #fff; }
+  .tag-noop { background: var(--muted); color: #000; }
+
+  /* colour utils */
+  .c-home { color: var(--home); } .bg-home { background: var(--home); }
+  .c-breath { color: var(--breath); } .bg-breath { background: var(--breath); }
+  .c-med { color: var(--meditate); } .bg-med { background: var(--meditate); }
+  .c-lib { color: var(--library); } .bg-lib { background: var(--library); }
+  .c-plan { color: var(--plan); } .bg-plan { background: var(--plan); }
+  .c-prof { color: var(--profile); } .bg-prof { background: var(--profile); }
+  .c-auth { color: var(--auth); } .bg-auth { background: var(--auth); }
+  .c-sess { color: var(--session); } .bg-sess { background: var(--session); }
+  .c-bonsai { color: var(--bonsai); } .bg-bonsai { background: var(--bonsai); }
+  .c-pacer { color: var(--pacer); } .bg-pacer { background: #1976d2; }
+  .c-mob { color: var(--mob); } .bg-mob { background: var(--mob); }
+  .c-modal { color: #a58cf0; } .bg-modal { background: var(--modal); }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .toc a { font-size: 0.75rem; padding: 3px 8px; border-radius: 3px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); }
+  .toc a:hover { color: var(--text); border-color: var(--breath); }
+
+  .tag-inline { display:inline-block;padding:0 4px;border-radius:2px;font-size:0.65rem;font-weight:600;vertical-align:middle;margin-left:4px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Triad — Technical Journey Map</h1>
+<p>Generated from source: <code>navigation.js</code>, <code>app.js</code>, <code>session.js</code>, <code>profile.js</code>, <code>auth.js</code>, <code>bonsai/bonsai.js</code>, <code>index.html</code></p>
+
+<!-- Legend -->
+<div class="legend" style="margin-top:16px">
+  <span class="leg"><span class="leg-dot bg-home"></span>Home flow</span>
+  <span class="leg"><span class="leg-dot bg-breath"></span>Breathwork / Techniques</span>
+  <span class="leg"><span class="leg-dot bg-med"></span>Meditate / MOB</span>
+  <span class="leg"><span class="leg-dot bg-lib"></span>Library</span>
+  <span class="leg"><span class="leg-dot bg-plan"></span>Plan (AI)</span>
+  <span class="leg"><span class="leg-dot bg-prof"></span>Profile</span>
+  <span class="leg"><span class="leg-dot bg-auth"></span>Auth</span>
+  <span class="leg"><span class="leg-dot bg-sess"></span>Session Overlay</span>
+  <span class="leg"><span class="leg-dot bg-pacer"></span>Breath Pacer</span>
+  <span class="leg"><span class="leg-dot bg-mob"></span>MoB Overlay</span>
+  <span class="leg"><span class="leg-dot bg-bonsai"></span>Bonsai</span>
+  <span class="leg"><span class="leg-dot bg-modal"></span>Modal / Drawer</span>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <a href="#s-screens">Screen Inventory</a>
+  <a href="#s-onboarding">Onboarding Flow</a>
+  <a href="#s-breath-flow">Breath Session Flow</a>
+  <a href="#s-med-flow">Meditation Flow</a>
+  <a href="#s-completion">Completion Routing</a>
+  <a href="#s-main-nav">Main Nav + Global Routes</a>
+  <a href="#s-library">Library Routes</a>
+  <a href="#s-plan">Plan / AI Routes</a>
+  <a href="#s-profile">Profile Sub-pages</a>
+  <a href="#s-auth">Auth Modal Flows</a>
+  <a href="#s-overlays">Overlays &amp; Modals</a>
+  <a href="#s-bonsai">Bonsai Garden</a>
+  <a href="#s-issues">Dead Ends &amp; Orphans</a>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SCREEN INVENTORY
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-screens">Screen / View Inventory — 27 distinct views</h2>
+<div class="screens-grid">
+
+  <!-- MAIN SECTIONS -->
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(61,122,138,0.18)">
+      <span class="dot bg-home"></span>
+      <span class="id">#intro-screen</span>
+      <span class="kind">Splash</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Render fn</span><span class="val">Auto (inline IIFE in app.js:862)</span></div>
+      <div class="row"><span class="lbl">Exit</span><span class="val">Auto after 5.5s → fade to <code>#home</code>; DOM removed at 7.6s</span></div>
+      <div class="row"><span class="lbl">Elements</span><span class="val"><code>#intro-svg-wrap</code>, <code>#intro-title</code>, <code>#intro-version</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(61,122,138,0.18)">
+      <span class="dot bg-home"></span>
+      <span class="id">#home (section)</span>
+      <span class="kind">Nav Section</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Render fn</span><span class="val"><code>renderHomeSummary()</code></span></div>
+      <div class="row"><span class="lbl">Two states</span><span class="val">Guest: <code>#first-breath-gate</code> shown, <code>.home-cards</code> hidden. Onboarded: reversed.</span></div>
+      <div class="row"><span class="lbl">Gate logic</span><span class="val"><code>localStorage 'triad:onboarded'</code> or <code>'triad_pacer_tour_done'</code></span></div>
+      <div class="row"><span class="lbl">Elements</span><span class="val"><code>#home-summary-body</code>, <code>#bonsaiHomeIcon</code>, <code>#home-auth-footer</code>, <code>#home-streak-badge</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(201,169,110,0.15)">
+      <span class="dot bg-breath"></span>
+      <span class="id">#techniques (section)</span>
+      <span class="kind">Nav Section</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">List view</span><span class="val"><code>#techniques-list</code> → <code>renderCardGrid(TECHNIQUES, 'techniques-grid', 'showTechniqueDetail')</code></span></div>
+      <div class="row"><span class="lbl">Detail view</span><span class="val"><code>#techniques-detail</code> → <code>renderDetail(item, 'techniques-detail', 'technique')</code></span></div>
+      <div class="row"><span class="lbl">Unlock</span><span class="val">18 techniques; appLevel 0 = always open, 1–3 = locked until achievements</span></div>
+      <div class="row"><span class="lbl">Detail fn</span><span class="val"><code>showTechniqueDetail(id)</code> / <code>hideTechniqueDetail()</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(74,157,111,0.15)">
+      <span class="dot bg-med"></span>
+      <span class="id">#meditate (section)</span>
+      <span class="kind">Nav Section</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">List view</span><span class="val"><code>#meditate-list</code> → <code>renderCardGrid(MEDITATIONS, 'meditate-grid', 'showMeditationDetail')</code></span></div>
+      <div class="row"><span class="lbl">Detail view</span><span class="val"><code>#meditate-detail</code> → <code>renderDetail(item, 'meditate-detail', 'meditation')</code></span></div>
+      <div class="row"><span class="lbl">Detail fn</span><span class="val"><code>showMeditationDetail(id)</code> / <code>hideMeditationDetail()</code></span></div>
+      <div class="row"><span class="lbl">Special</span><span class="val"><code>mindfulness-of-breath</code> "Start Session" routes to MOB overlay, not generic session</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(139,115,181,0.15)">
+      <span class="dot bg-lib"></span>
+      <span class="id">#library (section)</span>
+      <span class="kind">Nav Section</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">List view</span><span class="val"><code>#library-list</code> — 5 tabs: books, people, podcasts, breathwork, meditations</span></div>
+      <div class="row"><span class="lbl">Detail view</span><span class="val"><code>#library-detail</code> — person/book/podcast/practice detail</span></div>
+      <div class="row"><span class="lbl">Tab fn</span><span class="val"><code>switchLibraryTab(tab)</code> / <code>onLibPillClick(tab)</code></span></div>
+      <div class="row"><span class="lbl">Detail fn</span><span class="val"><code>showBookDetail()</code>, <code>showPersonDetail()</code>, <code>showKnowledgePracticeDetail()</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(91,141,184,0.15)">
+      <span class="dot bg-plan"></span>
+      <span class="id">#plan (section)</span>
+      <span class="kind">Nav Section</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Form view</span><span class="val"><code>#plan-form-wrap</code> — goal / exp / time chips</span></div>
+      <div class="row"><span class="lbl">Result view</span><span class="val"><code>#plan-result</code> — AI chat (<code>#plan-messages</code>)</span></div>
+      <div class="row"><span class="lbl">Gate</span><span class="val">Requires logged-in + Pro tier (both <code>submitPlan</code> and <code>sendPlanMessage</code> are wrapped in auth.js)</span></div>
+      <div class="row"><span class="lbl">Back</span><span class="val">Enters with <code>_navPush(() => navigate('profile'))</code> → sticky back goes to Profile</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(196,120,90,0.15)">
+      <span class="dot bg-prof"></span>
+      <span class="id">#profile (section)</span>
+      <span class="kind">Nav Section</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Main view</span><span class="val"><code>#profile-main-view</code> — hero, snapshot, achievements, bonsai card, missions, stats accordion</span></div>
+      <div class="row"><span class="lbl">Sub-page 1</span><span class="val"><code>#profile-achievements-page</code> — <code>showAchievementsPage()</code> / <code>hideAchievementsPage()</code></span></div>
+      <div class="row"><span class="lbl">Sub-page 2</span><span class="val"><code>#profile-triad-mastery-page</code> — <code>showTriadMastery()</code> / <code>hideTriadMastery()</code></span></div>
+      <div class="row"><span class="lbl">Render fn</span><span class="val"><code>renderProfile()</code> (wrapped by auth.js to call <code>renderProfileAccountHeader()</code> first)</span></div>
+    </div>
+  </div>
+
+  <!-- OVERLAYS / SESSION -->
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(21,101,192,0.2)">
+      <span class="dot bg-pacer"></span>
+      <span class="id">#pacerOverlay</span>
+      <span class="kind">Guest Breath Pacer</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>_openGuestPacer(practiceId)</code> called from <code>openPacer()</code> when not onboarded</span></div>
+      <div class="row"><span class="lbl">States</span><span class="val"><code>#pacerStateIdle</code> → <code>#pacerStateCountdown</code> → <code>#pacerStateSession</code></span></div>
+      <div class="row"><span class="lbl">Trigger idle→cd</span><span class="val">"and Breathe" btn → <code>togglePacer()</code> → <code>_pacerStartCountdown()</code></span></div>
+      <div class="row"><span class="lbl">Trigger cd→sess</span><span class="val">Auto after 3-2-1 → <code>_pacerLaunch()</code></span></div>
+      <div class="row"><span class="lbl">Session end</span><span class="val">Auto (3 cycles) → <code>_pacerSessionEnd()</code> → <code>#sessionOverlay</code> completion</span></div>
+      <div class="row"><span class="lbl">Cancel</span><span class="val"><code>confirmCancelGuestSession()</code> → Quit Modal</span></div>
+      <div class="row"><span class="lbl">Close fn</span><span class="val"><code>closePacer()</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(21,101,192,0.2)">
+      <span class="dot bg-pacer"></span>
+      <span class="id">#pacerOverlayPro</span>
+      <span class="kind">Pro Breath Pacer</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openProPacer(practiceId)</code> called from <code>openPacer()</code> when onboarded</span></div>
+      <div class="row"><span class="lbl">States (zone C)</span><span class="val"><code>#proOverviewState</code> → <code>#proLengthState</code> → <code>#proCountdown</code> → <code>#proSessionActive</code></span></div>
+      <div class="row"><span class="lbl">overview→length</span><span class="val">"Pick Breath Work Length" → <code>_proShowLengthSelect()</code></span></div>
+      <div class="row"><span class="lbl">length→countdown</span><span class="val">"Begin Session" → <code>_proStartCountdown()</code> → <code>_proLaunch()</code></span></div>
+      <div class="row"><span class="lbl">Session end</span><span class="val">Auto (finite) or "End Session" (infinite) → <code>proEndSession()</code> / <code>_proSessionEnd()</code> → <code>#sessionOverlay</code> completion</span></div>
+      <div class="row"><span class="lbl">Cancel mid-session</span><span class="val"><code>confirmCancelProSession()</code> → Quit Modal</span></div>
+      <div class="row"><span class="lbl">Close fn</span><span class="val"><code>closeProPacer()</code> (X btn or cancel from overview/length)</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(198,40,40,0.2)">
+      <span class="dot bg-sess"></span>
+      <span class="id">#sessionOverlay</span>
+      <span class="kind">Generic Session + Completion</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openSession(practiceId)</code> — polygon/circle/oval orb path session</span></div>
+      <div class="row"><span class="lbl">Views</span><span class="val"><code>#sessionView</code> (active) ↔ <code>#sessionComplete</code> (done)</span></div>
+      <div class="row"><span class="lbl">Completion entry</span><span class="val">Via <code>_sessComplete()</code>, <code>_pacerSessionEnd()</code>, <code>_proSessionEnd()</code> — all share this overlay</span></div>
+      <div class="row"><span class="lbl">Session controls</span><span class="val">Pause/Resume: <code>sessionTogglePause()</code>; Edit cycles: <code>sessionEditCycles()</code>; Audio: <code>sessionToggleAudio()</code></span></div>
+      <div class="row"><span class="lbl">Cancel</span><span class="val"><code>sessionConfirmClose()</code> → if running: Quit Modal; if done: <code>sessionCancel()</code></span></div>
+      <div class="row"><span class="lbl">Return fn</span><span class="val"><code>sessionReturn()</code> — re-renders technique/meditation detail</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(0,105,92,0.2)">
+      <span class="dot bg-mob"></span>
+      <span class="id">#mobOverlay</span>
+      <span class="kind">Mindfulness of Breath Session</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openMobSession()</code></span></div>
+      <div class="row"><span class="lbl">Pages</span><span class="val">1 (intro) → 1.5 (length picker, general mode) → 2 (active, countdown+session) → 3 (results)</span></div>
+      <div class="row"><span class="lbl">Modes</span><span class="val">Onboarding: pages 1→2→3 (no length picker, 30s fixed). General: pages 1→1.5→2→3</span></div>
+      <div class="row"><span class="lbl">Active session</span><span class="val">Physics orb, Hold btn (<code>_mobHoldDown/Up</code>), timer auto-ends → <code>_mobGoToPage3()</code></span></div>
+      <div class="row"><span class="lbl">Cancel mid</span><span class="val"><code>confirmCancelMob()</code> → Quit Modal</span></div>
+      <div class="row"><span class="lbl">Close fn</span><span class="val"><code>closeMobSession()</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#sessionIntroPopup</span>
+      <span class="kind">Pre-session Intro</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>_showSessionIntro(practiceId)</code> called from <code>openStartSession()</code></span></div>
+      <div class="row"><span class="lbl">Phases</span><span class="val"><code>#siPhase1</code> (info) → "Next" → <code>#siPhase2</code> (duration tiles)</span></div>
+      <div class="row"><span class="lbl">Phase1 → 2</span><span class="val">"Next" btn → <code>_siShowLengthSelect()</code></span></div>
+      <div class="row"><span class="lbl">Phase2 confirm</span><span class="val">"Begin" btn → <code>_closeSessionIntroWithDuration()</code> → <code>_closeSessionIntro()</code> → <code>_launchSession()</code></span></div>
+      <div class="row"><span class="lbl">Cancel</span><span class="val">"Cancel" btn → <code>_closeSessionIntroCancel()</code></span></div>
+      <div class="row"><span class="lbl">Note</span><span class="val">Duration tiles exist in HTML but <code>_siSelectedDuration</code> is not used in <code>_launchSession()</code> — see Issues</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#authModal</span>
+      <span class="kind">Auth Modal</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openAuthModal(reason?)</code></span></div>
+      <div class="row"><span class="lbl">Views</span><span class="val">Login tab ↔ Signup tab (default login); forgot-password view (<code>#auth-forgot-view</code>); reset-password view (<code>#auth-reset-view</code>)</span></div>
+      <div class="row"><span class="lbl">Tab switch</span><span class="val"><code>switchAuthTab('login'|'signup')</code></span></div>
+      <div class="row"><span class="lbl">Forgot</span><span class="val"><code>showForgotForm()</code> / <code>hideForgotForm()</code></span></div>
+      <div class="row"><span class="lbl">Reset (URL token)</span><span class="val">Auto-detected from <code>?token=</code> on load in app.js:827</span></div>
+      <div class="row"><span class="lbl">Submit</span><span class="val"><code>submitAuth()</code> → POST <code>/auth/login</code> or <code>/auth/signup</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#askModal</span>
+      <span class="kind">AI Ask Modal</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openAskModal()</code> — requires <code>state.askContext</code> set (from technique/meditation detail view)</span></div>
+      <div class="row"><span class="lbl">Gate</span><span class="val"><code>requirePro()</code> — login + Pro tier</span></div>
+      <div class="row"><span class="lbl">Practice links</span><span class="val">AI response links → <code>closeAskModal(); navigate(section); showDetail(id)</code> (delegated click handler)</span></div>
+      <div class="row"><span class="lbl">Close fn</span><span class="val"><code>closeAskModal()</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#quitSessionModal</span>
+      <span class="kind">Quit Confirmation</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openQuitModal()</code></span></div>
+      <div class="row"><span class="lbl">Callers</span><span class="val"><code>confirmCancelGuestSession()</code>, <code>confirmCancelProSession()</code>, <code>confirmCancelMob()</code>, <code>sessionConfirmClose()</code></span></div>
+      <div class="row"><span class="lbl">"Continue" btn</span><span class="val"><code>closeQuitModal()</code> — resumes session</span></div>
+      <div class="row"><span class="lbl">"End" btn</span><span class="val"><code>closeQuitModal(); close[Pacer|ProPacer|MobSession]()</code> — set dynamically per caller</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#sessionPickerModal</span>
+      <span class="kind">Quick-start Picker</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openSessionPicker()</code></span></div>
+      <div class="row"><span class="lbl">Items</span><span class="val">6 curated items: physiological-sigh, 4-7-8, box-breathing, mindfulness-of-breath, body-scan, yoga-nidra</span></div>
+      <div class="row"><span class="lbl">Card click</span><span class="val"><code>pickerStart(kind, id)</code> → <code>closeSessionPicker()</code> → <code>navigate(section); showDetail(id)</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#costModal</span>
+      <span class="kind">API Cost Confirm</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>confirmApiCall(opts)</code> — returns Promise resolved by user action</span></div>
+      <div class="row"><span class="lbl">Continue</span><span class="val"><code>costConfirmDecide(true)</code> → resolves promise → API call proceeds</span></div>
+      <div class="row"><span class="lbl">Cancel</span><span class="val"><code>costConfirmDecide(false)</code> → rolls back user message, restores UI</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#paywallModal</span>
+      <span class="kind">Pro Upgrade Gate</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openPaywallModal()</code> called from <code>requirePro()</code></span></div>
+      <div class="row"><span class="lbl">Triggered by</span><span class="val">Any AI call (<code>submitPlan</code>, <code>sendPlanMessage</code>, <code>sendAskMessage</code>, <code>addToPlan</code>) when tier ≠ 'pro'</span></div>
+      <div class="row"><span class="lbl">Waitlist btn</span><span class="val">Opens <code>#waitlistModal</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#settingsDrawer</span>
+      <span class="kind">Settings Slide-in</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openSettingsDrawer()</code> — also calls <code>_pacerPause()</code>, <code>_mobPause()</code></span></div>
+      <div class="row"><span class="lbl">Close fn</span><span class="val"><code>closeSettingsDrawer()</code> — also calls <code>_pacerResume()</code>, <code>_mobResume()</code></span></div>
+      <div class="row"><span class="lbl">Controls</span><span class="val">Theme toggle, Sound toggle, Privacy link, Delete account link</span></div>
+      <div class="row"><span class="lbl">Open from</span><span class="val">Gear btn (profile icon area), settings btn on pacerOverlay, pacerOverlayPro, mobOverlay</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#diagnosticOverlay</span>
+      <span class="kind">Mission Diagnostic</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openDiagnostic(missionId, 'mission-start'|'mission-end')</code></span></div>
+      <div class="row"><span class="lbl">Types</span><span class="val">TIMED_HOLD (start/stop timer) or SURVEY (countdown + slider)</span></div>
+      <div class="row"><span class="lbl">Save → close</span><span class="val"><code>diagStopTimer()</code> or <code>diagSaveSurvey()</code> → <code>_saveDiagnosticScore()</code> → auto-close after 2s</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(92,138,60,0.2)">
+      <span class="dot bg-bonsai"></span>
+      <span class="id">#bonsaiOverlay</span>
+      <span class="kind">Bonsai Garden</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openBonsaiScreen()</code></span></div>
+      <div class="row"><span class="lbl">Sub-views</span><span class="val"><code>#bonsaiPlantView</code>, <code>#bonsaiActiveView</code>, <code>#bonsaiCompleteView</code>, <code>#bonsaiAlbumView</code></span></div>
+      <div class="row"><span class="lbl">View router</span><span class="val">no active → PlantView; cycle&lt;10 → ActiveView; cycle≥10 → CompleteView</span></div>
+      <div class="row"><span class="lbl">Close fn</span><span class="val"><code>closeBonsaiScreen()</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(61,122,138,0.18)">
+      <span class="dot bg-home"></span>
+      <span class="id">#levelUnlockScreen</span>
+      <span class="kind">Level-up Celebration</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>showLevelUnlockScreen(level)</code> — called from <code>checkLevelUnlocks()</code> after achievement completion</span></div>
+      <div class="row"><span class="lbl">Dismiss</span><span class="val"><code>#lusBtn onclick</code> — fades out, hides; no nav</span></div>
+      <div class="row"><span class="lbl">Triggers</span><span class="val">Level 2: all 11 guest achievements. Level 3: L2 BW + L2 Med sessions + resonant-breather achievement</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#sessSheet / #sessSheetBackdrop</span>
+      <span class="kind">Edit Cycles Sheet</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>sessionEditCycles()</code> called from Edit btn during active session</span></div>
+      <div class="row"><span class="lbl">Close fn</span><span class="val"><code>sessionCloseSheet()</code>; also called on backdrop click and from <code>sessionCancel()</code></span></div>
+      <div class="row"><span class="lbl">Confirm</span><span class="val"><code>sessionConfirmCycles()</code> → updates <code>_sess.loopCount</code></span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#waitlistModal</span>
+      <span class="kind">Pro Waitlist</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openWaitlistModal()</code></span></div>
+      <div class="row"><span class="lbl">Submit</span><span class="val"><code>submitWaitlistEmail()</code> → saves to localStorage, no API call</span></div>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="screen-header" style="background:rgba(101,91,180,0.2)">
+      <span class="dot bg-modal"></span>
+      <span class="id">#privacyModal</span>
+      <span class="kind">Privacy &amp; Legal</span>
+    </div>
+    <div class="screen-body">
+      <div class="row"><span class="lbl">Open fn</span><span class="val"><code>openPrivacyModal()</code></span></div>
+      <div class="row"><span class="lbl">Close fn</span><span class="val"><code>closePrivacyModal()</code></span></div>
+      <div class="row"><span class="lbl">Entry</span><span class="val">Settings drawer "Privacy &amp; Legal" link</span></div>
+    </div>
+  </div>
+
+</div><!-- /screens-grid -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ONBOARDING FLOW
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-onboarding">Onboarding Flow (first-time visitor)</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-home"></div>
+    <span class="title">New visitor (no localStorage)</span>
+    <span class="subtitle">Complete first breath → first meditation → bonsai unlock</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>Step</th><th>Screen</th><th>Action / Trigger</th><th>Function</th><th>Destination</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><span class="from-badge bg-home" style="color:#fff">Splash</span></td><td class="trigger">App loads — auto</td><td class="fn">IIFE in app.js:862</td><td class="dest">After 5.5s → fade to <code>#home</code> (guest state)</td></tr>
+        <tr><td>2</td><td><span class="from-badge bg-home" style="color:#fff">Home (guest)</span></td><td class="trigger"><code>#first-breath-gate</code> shown</td><td class="fn">guest gate IIFE in app.js:922</td><td class="dest"><code>#first-breath-gate-btn</code> "Take your First Breath" visible</td></tr>
+        <tr><td>3</td><td><span class="from-badge bg-home" style="color:#fff">Home (guest)</span></td><td class="trigger">"Take your First Breath" btn click</td><td class="fn"><code>transitionTo(() => openPacer('resonant-breathing'))</code></td><td class="dest"><code>#pacerOverlay</code> (guest pacer, resonant-breathing)</td></tr>
+        <tr><td>4</td><td><span class="from-badge bg-pacer" style="color:#fff">Guest Pacer</span></td><td class="trigger">"and Breathe" btn</td><td class="fn"><code>togglePacer()</code> → <code>_pacerStartCountdown()</code></td><td class="dest">Countdown 3→2→1 then <code>_pacerLaunch()</code></td></tr>
+        <tr><td>5</td><td><span class="from-badge bg-pacer" style="color:#fff">Guest Pacer</span></td><td class="trigger">3 cycles complete (auto)</td><td class="fn"><code>_pacerSessionEnd()</code></td><td class="dest"><code>#sessionOverlay</code> completion screen; sets <code>localStorage 'triad:onboarded'='true'</code>; calls <code>bonsaiAwardPot()</code></td></tr>
+        <tr><td>6</td><td><span class="from-badge bg-sess" style="color:#fff">Session Complete</span></td><td class="trigger">"Meditate now" pill</td><td class="fn"><code>_sessionCompleteGo('meditate')</code></td><td class="dest">Sets <code>_mobIsOnboarding=true</code>; <code>navigate('meditate'); openMobSession()</code></td></tr>
+        <tr><td>7</td><td><span class="from-badge bg-mob" style="color:#fff">MOB Overlay</span></td><td class="trigger">"Begin Meditation" btn (onboarding mode)</td><td class="fn"><code>_mobGoToPage2Direct()</code></td><td class="dest">Countdown → 30s session (fixed)</td></tr>
+        <tr><td>8</td><td><span class="from-badge bg-mob" style="color:#fff">MOB Overlay</span></td><td class="trigger">Timer expires (30s)</td><td class="fn"><code>_mobGoToPage3()</code> → <code>bonsaiAwardSeeds()</code></td><td class="dest">Page 3 — "Your Rewards" (onboarding variant)</td></tr>
+        <tr><td>9</td><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 3</span></td><td class="trigger">"Go to Mindfulness of Breath" btn</td><td class="fn"><code>closeMobSession(); transitionTo(() => { navigate('meditate'); showMeditationDetail('mindfulness-of-breath') })</code></td><td class="dest"><code>#meditate</code> section → mindfulness-of-breath detail</td></tr>
+        <tr><td>9b</td><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 3</span></td><td class="trigger">Ceremony screen "Begin Growing" (triggered separately by <code>bonsaiAwardSeeds</code> outside onboarding)</td><td class="fn"><code>openBonsaiScreen()</code></td><td class="dest"><code>#bonsaiOverlay</code></td></tr>
+      </tbody>
+    </table>
+    <p><span style="color:var(--warn)">⚠ Note:</span> The <code>_bonsaiPlantingCeremony()</code> is NOT called during onboarding (<code>window._mobIsOnboarding</code> check in bonsai.js:54). It fires later on the next meditation session when not in onboarding mode.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     BREATH SESSION FLOW
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-breath-flow">Breath Session Flow (post-onboarding)</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-breath"></div>
+    <span class="title">From technique detail → session → completion</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>From</th><th>Action / Element</th><th>Function</th><th>Destination</th><th>Condition</th></tr></thead>
+      <tbody>
+        <tr><td><span class="from-badge bg-breath" style="color:#000">Tech Detail</span></td><td class="trigger">"Start Session" button</td><td class="fn"><code>openStartSession(practiceId)</code></td><td class="dest">If <code>mindfulness-of-breath</code>: <code>openMobSession()</code>. Else: <code>_showSessionIntro(practiceId)</code></td><td class="cond">Special-cased</td></tr>
+        <tr><td><span class="from-badge bg-modal" style="color:#fff">Intro Popup P1</span></td><td class="trigger">"Next" btn</td><td class="fn"><code>_siShowLengthSelect()</code></td><td class="dest"><code>#siPhase2</code> (duration tiles)</td><td class="cond"></td></tr>
+        <tr><td><span class="from-badge bg-modal" style="color:#fff">Intro Popup P2</span></td><td class="trigger">"Begin" btn</td><td class="fn"><code>_closeSessionIntroWithDuration()</code> → <code>_closeSessionIntro()</code> → <code>_launchSession()</code></td><td class="dest">If practice has <code>phases[]</code>: <code>openPacer()</code>. Else: <code>openSession()</code></td><td class="cond"><code>practice.phases</code></td></tr>
+        <tr><td><span class="from-badge bg-modal" style="color:#fff">Intro Popup</span></td><td class="trigger">"Cancel" btn</td><td class="fn"><code>_closeSessionIntroCancel()</code></td><td class="dest">Popup hides; returns to technique detail</td><td class="cond"></td></tr>
+        <tr><td><span class="from-badge bg-home" style="color:#fff">openPacer()</span></td><td class="trigger">Router</td><td class="fn"><code>openPacer(practiceId)</code></td><td class="dest">Not onboarded → <code>_openGuestPacer()</code> (#pacerOverlay). Onboarded → <code>openProPacer()</code> (#pacerOverlayPro)</td><td class="cond"><code>localStorage 'triad:onboarded'</code></td></tr>
+        <tr><td><span class="from-badge bg-pacer" style="color:#fff">Pro Pacer</span></td><td class="trigger">Session ends (cycles complete)</td><td class="fn"><code>_proSessionEnd()</code></td><td class="dest"><code>#sessionOverlay</code> completion screen</td><td class="cond">auto</td></tr>
+        <tr><td><span class="from-badge bg-pacer" style="color:#fff">Pro Pacer (∞)</span></td><td class="trigger">"End Session" btn</td><td class="fn"><code>proEndSession()</code> → <code>_proSessionEnd()</code></td><td class="dest"><code>#sessionOverlay</code> completion screen</td><td class="cond">infinite mode only</td></tr>
+        <tr><td><span class="from-badge bg-sess" style="color:#fff">Generic Session</span></td><td class="trigger">Cycles complete (auto)</td><td class="fn"><code>_sessComplete()</code></td><td class="dest"><code>#sessionComplete</code> (within same <code>#sessionOverlay</code>)</td><td class="cond">auto</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Practices with <code>phases[]</code> (use Pacer):</strong> resonant-breathing only. All other techniques use the generic polygon/oval session via <code>openSession()</code>.</p>
+    <p><strong>Session Intro Popup duration tiles:</strong> <code>_siSelectedDuration</code> is set by tile clicks but is NOT passed to <code>_launchSession()</code> — the pro pacer has its own length selector. The intro popup phase 2 is functionally a "confirm" step only.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     MEDITATION FLOW
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-med-flow">Meditation Flow</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-med"></div>
+    <span class="title">From meditate section → MOB session</span>
+    <span class="subtitle">mindfulness-of-breath is the only meditation with a live session engine</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>From</th><th>Action</th><th>Function</th><th>Destination</th></tr></thead>
+      <tbody>
+        <tr><td><span class="from-badge bg-med" style="color:#fff">Med Detail (MoB)</span></td><td class="trigger">"Start Session" btn</td><td class="fn"><code>openStartSession('mindfulness-of-breath')</code> → <code>openMobSession()</code></td><td class="dest"><code>#mobOverlay</code> page 1 (general mode: cancel visible, "Pick Meditation Length")</td></tr>
+        <tr><td><span class="from-badge bg-med" style="color:#fff">Med Detail (others)</span></td><td class="trigger">"Start Session" btn</td><td class="fn"><code>openStartSession(practiceId)</code> → <code>_showSessionIntro()</code> → <code>openSession()</code></td><td class="dest"><code>#sessionOverlay</code> (generic polygon session, no audio guidance for meditations)</td></tr>
+        <tr><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 1</span></td><td class="trigger">"Pick Meditation Length" btn</td><td class="fn"><code>_mobGoToLengthSelect()</code></td><td class="dest">Page 1.5 (length tiles: 1–60 min)</td></tr>
+        <tr><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 1.5</span></td><td class="trigger">Tile click + "Begin" btn</td><td class="fn"><code>mobSelectTile()</code> then <code>_mobConfirmLength()</code> → <code>_mobGoToPage2Direct()</code></td><td class="dest">Countdown overlay → Page 2</td></tr>
+        <tr><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 2</span></td><td class="trigger">Hold btn (press/release)</td><td class="fn"><code>_mobHoldDown()</code> / <code>_mobHoldUp()</code></td><td class="dest">Physics orb rises/falls; breath logged to <code>_mobBreaths[]</code></td></tr>
+        <tr><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 2</span></td><td class="trigger">Timer reaches <code>_mobSessionSecs</code></td><td class="fn"><code>_mobTimerTick()</code> → <code>_mobGoToPage3()</code></td><td class="dest">Page 3 (results)</td></tr>
+        <tr><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 3 (general)</span></td><td class="trigger">"Learn about Mindfulness" btn</td><td class="fn"><code>closeMobSession(); transitionTo(() => { navigate('library',{keepDetail:true}); switchLibraryTab('meditations'); showKnowledgePracticeDetail('meditation','mindfulness-of-breath') })</code></td><td class="dest"><code>#library</code> → meditations tab → MoB knowledge article</td></tr>
+        <tr><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 3 (general)</span></td><td class="trigger">"Get Rewards" btn</td><td class="fn"><code>closeMobSession(); transitionTo(() => { navigate('profile'); document.querySelector('.rewards-section')?.scrollIntoView() })</code></td><td class="dest"><code>#profile</code> scrolled to rewards</td></tr>
+        <tr><td><span class="from-badge bg-mob" style="color:#fff">MOB Page 3 (general)</span></td><td class="trigger">"Home" btn</td><td class="fn"><code>closeMobSession(); transitionTo(() => navigate('home'))</code></td><td class="dest"><code>#home</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     COMPLETION ROUTING
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-completion">Session Completion Routing</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-sess"></div>
+    <span class="title">The shared completion screen — three entry paths, three exit routes</span>
+  </div>
+  <div class="flow-body">
+    <p style="margin-bottom:10px"><strong>Entry paths:</strong> All three paths write to <code>store.sessions</code>, call <code>updateStreakOnComplete()</code>, <code>saveStore()</code>, <code>checkAchievements()</code>, <code>refreshStreakBadge()</code>, play bowl tone, then show <code>#sessionComplete</code> inside <code>#sessionOverlay</code>.</p>
+    <table class="route-table">
+      <thead><tr><th>Entry via</th><th>Function</th><th>Sets <code>_sess.practiceId</code>?</th></tr></thead>
+      <tbody>
+        <tr><td><span class="from-badge bg-pacer" style="color:#fff">Guest Pacer</span> auto-end (3 cycles)</td><td class="fn"><code>_pacerSessionEnd()</code></td><td class="trigger">Yes — needed for completion screen exit "Learn" button</td></tr>
+        <tr><td><span class="from-badge bg-pacer" style="color:#fff">Pro Pacer</span> auto or manual end</td><td class="fn"><code>_proSessionEnd()</code></td><td class="trigger">Yes</td></tr>
+        <tr><td><span class="from-badge bg-sess" style="color:#fff">Generic Session</span> cycles complete</td><td class="fn"><code>_sessComplete()</code></td><td class="trigger">Already set when session opened</td></tr>
+      </tbody>
+    </table>
+    <br>
+    <p><strong>Exit routes from <code>#sessionComplete</code>:</strong></p>
+    <table class="route-table">
+      <thead><tr><th>Button</th><th>Action param</th><th>Function</th><th>Destination</th></tr></thead>
+      <tbody>
+        <tr><td>"Learn about [technique]"</td><td><code>'technique'</code></td><td class="fn"><code>_sessionCompleteGo('technique')</code></td><td class="dest"><code>navigate('library', {keepDetail:true}); switchLibraryTab('breathwork'); showKnowledgePracticeDetail('technique', techId)</code></td></tr>
+        <tr><td>"Meditate now"</td><td><code>'meditate'</code></td><td class="fn"><code>_sessionCompleteGo('meditate')</code></td><td class="dest">Sets <code>_mobIsOnboarding=true</code>; <code>navigate('meditate'); openMobSession()</code></td></tr>
+        <tr><td>"Home"</td><td><code>''</code> (default)</td><td class="fn"><code>_sessionCompleteGo('')</code></td><td class="dest"><code>navigate('home')</code></td></tr>
+        <tr><td>Avatar btn (<code>#scAvatarBtn</code>)</td><td>—</td><td class="fn">Inline onclick</td><td class="dest"><code>navigate('profile')</code></td></tr>
+        <tr><td>"Learn about Mindfulness" (scLearnBtn)</td><td>—</td><td class="fn">Set by <code>_proSessionEnd</code> / <code>_pacerSessionEnd</code></td><td class="dest">Calls <code>_sessionCompleteGo('technique')</code> with whatever technique just ran</td></tr>
+      </tbody>
+    </table>
+    <p><span style="color:var(--warn)">⚠</span> The "Meditate now" button on the completion screen sets <code>_mobIsOnboarding = true</code> every time, not just on first visit. This forces the 30s fixed session and hides cancel buttons for every post-breathwork meditation.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     MAIN NAV
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-main-nav">Main Navigation &amp; Global Routes</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip" style="background:linear-gradient(to bottom, var(--home), var(--profile))"></div>
+    <span class="title">All entry points into each section</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>Trigger / Element</th><th>Function</th><th>Destination</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Bottom nav btn (any)</td><td class="fn"><code>homeNavigate(target)</code> (400ms debounce) → <code>navigate(target)</code></td><td class="dest">Any of: home, techniques, meditate, library, plan, profile</td><td class="note">Debounce: prevents double-tap. <code>navigate()</code> rejects unknown targets.</td></tr>
+        <tr><td>Profile icon btn <code>#profileIconBtn</code></td><td class="fn"><code>handleProfileIconClick()</code></td><td class="dest">Logged in → <code>navigate('profile')</code>. Guest → <code>openAuthModal()</code></td><td></td></tr>
+        <tr><td>Gear btn <code>#gearBtn</code></td><td class="fn">inline onclick</td><td class="dest"><code>openSettingsDrawer()</code></td><td class="note">Hidden for guests (auth.js:442)</td></tr>
+        <tr><td>Sticky back bar <code>#sticky-back-bar</code></td><td class="fn"><code>_navBack()</code></td><td class="dest">Pops <code>_navStack</code> — calls whatever fn was pushed (e.g. <code>hideTechniqueDetail</code>, <code>navigate('profile')</code>)</td><td class="note">Only visible when <code>_navStack.length &gt; 0</code></td></tr>
+        <tr><td>Home "Meditate" card</td><td class="fn"><code>homeNavigate('meditate')</code></td><td class="dest"><code>#meditate</code></td><td></td></tr>
+        <tr><td>Home "Breathe" card</td><td class="fn"><code>homeNavigate('techniques')</code></td><td class="dest"><code>#techniques</code></td><td></td></tr>
+        <tr><td>Home "Library" card</td><td class="fn"><code>homeNavigate('library')</code></td><td class="dest"><code>#library</code></td><td></td></tr>
+        <tr><td>Home auth footer (guest)</td><td class="fn"><code>openAuthModal('signup')</code></td><td class="dest"><code>#authModal</code> signup tab</td><td></td></tr>
+        <tr><td>Home auth footer (logged in)</td><td class="fn"><code>navigate('profile')</code></td><td class="dest"><code>#profile</code></td><td></td></tr>
+        <tr><td>Bonsai home icon <code>#bonsaiHomeIcon</code></td><td class="fn"><code>openBonsaiScreen()</code></td><td class="dest"><code>#bonsaiOverlay</code></td><td class="note">Hidden until bonsai unlocked</td></tr>
+        <tr><td>Practice link in AI chat</td><td class="fn">Delegated click → <code>closeAskModal(); navigate(section); showTechniqueDetail/showMeditationDetail(id)</code></td><td class="dest">technique or meditate section + detail</td><td></td></tr>
+        <tr><td>Session picker card</td><td class="fn"><code>pickerStart(kind, id)</code> → <code>navigate(section); showDetail(id)</code></td><td class="dest">technique or meditate + detail</td><td></td></tr>
+        <tr><td>Related card on detail (technique)</td><td class="fn"><code>navigate('techniques'); showTechniqueDetail(id)</code></td><td class="dest"><code>#techniques</code> detail</td><td></td></tr>
+        <tr><td>Related card on detail (person/book)</td><td class="fn"><code>openLibraryEntry('person'|'book', slug)</code></td><td class="dest"><code>#library</code> → person or book detail</td><td></td></tr>
+        <tr><td>Profile completion tile (technique)</td><td class="fn"><code>navigate('techniques'); showTechniqueDetail(id)</code></td><td class="dest"><code>#techniques</code> detail</td><td></td></tr>
+        <tr><td>Profile completion tile (meditation)</td><td class="fn"><code>navigate('meditate'); showMeditationDetail(id)</code></td><td class="dest"><code>#meditate</code> detail</td><td></td></tr>
+        <tr><td>Profile session history item (technique)</td><td class="fn"><code>navigate('techniques'); showTechniqueDetail(id)</code></td><td class="dest"><code>#techniques</code> detail</td><td></td></tr>
+        <tr><td>Profile "build one in My Plan"</td><td class="fn"><code>navigate('plan')</code></td><td class="dest"><code>#plan</code></td><td></td></tr>
+        <tr><td>Profile hero "Continue Your Daily Practice"</td><td class="fn"><code>navigate('home')</code></td><td class="dest"><code>#home</code></td><td></td></tr>
+        <tr><td><code>navigate('plan')</code> via nav bar</td><td class="fn"><code>navigate('plan')</code></td><td class="dest">Pushes <code>() => navigate('profile')</code> onto <code>_navStack</code>; sticky back shows "Back to Profile"</td><td class="note">Plan section is always entered from profile conceptually</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     LIBRARY
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-library">Library Routes</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-lib"></div>
+    <span class="title">Library tabs and detail navigation</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>From</th><th>Action</th><th>Function</th><th>Destination</th></tr></thead>
+      <tbody>
+        <tr><td>Library pill row</td><td>Pill click</td><td class="fn"><code>onLibPillClick(tab)</code> → <code>switchLibraryTab(tab)</code></td><td class="dest">Shows correct <code>.lib-panel</code>; updates <code>libUiState.tab</code></td></tr>
+        <tr><td>Library list (books)</td><td>Book card click</td><td class="fn"><code>showBookDetail(item)</code></td><td class="dest"><code>#library-detail</code> — book detail view</td></tr>
+        <tr><td>Library list (people)</td><td>Person card click</td><td class="fn"><code>showPersonDetail(item)</code></td><td class="dest"><code>#library-detail</code> — person detail view</td></tr>
+        <tr><td>Library list (breathwork)</td><td>Practice card click</td><td class="fn"><code>showKnowledgePracticeDetail('technique', id)</code></td><td class="dest"><code>#library-detail</code> — rich technique article within library</td></tr>
+        <tr><td>Library list (meditations)</td><td>Practice card click</td><td class="fn"><code>showKnowledgePracticeDetail('meditation', id)</code></td><td class="dest"><code>#library-detail</code> — rich meditation article within library</td></tr>
+        <tr><td>Library detail</td><td>Back btn</td><td class="fn"><code>hideLibraryDetail()</code></td><td class="dest">Back to <code>#library-list</code></td></tr>
+        <tr><td>Library detail (practice)</td><td>"Start Session" btn in detail</td><td class="fn"><code>openStartSession(id)</code></td><td class="dest">Session intro popup → pacer or session overlay</td></tr>
+        <tr><td>From technique/meditation detail</td><td>Related card (person)</td><td class="fn"><code>openLibraryEntry('person', slug)</code></td><td class="dest"><code>navigate('library', {keepDetail:true}); showPersonDetail()</code></td></tr>
+        <tr><td>From technique/meditation detail</td><td>Related card (book)</td><td class="fn"><code>openLibraryEntry('book', slug)</code></td><td class="dest"><code>navigate('library', {keepDetail:true}); showBookDetail()</code></td></tr>
+        <tr><td>Library search</td><td>Input</td><td class="fn"><code>onLibSearch()</code></td><td class="dest">Filters current tab results</td></tr>
+        <tr><td>Library filter</td><td>Select change</td><td class="fn"><code>onLibFilterChange(value)</code></td><td class="dest">Filters by theme</td></tr>
+        <tr><td>Empty state</td><td>"Reset filters" btn</td><td class="fn"><code>resetLibrary()</code></td><td class="dest">Clears search + filters</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PLAN
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-plan">Plan / AI Routes</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-plan"></div>
+    <span class="title">AI plan generation flow</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>Action</th><th>Function</th><th>Destination / Result</th><th>Gate</th></tr></thead>
+      <tbody>
+        <tr><td>Select chips + "Generate" btn</td><td class="fn"><code>submitPlan()</code></td><td class="dest">Hides form, shows <code>#plan-result</code>; calls <code>confirmApiCall()</code> → <code>/ask</code></td><td class="cond">Requires Pro (auth.js wrapper)</td></tr>
+        <tr><td>Follow-up chat input (Enter or btn)</td><td class="fn"><code>sendPlanMessage()</code></td><td class="dest">Appends to <code>#plan-messages</code>; calls <code>confirmApiCall()</code> → <code>/ask</code></td><td class="cond">Requires Pro</td></tr>
+        <tr><td>"Start over" btn</td><td class="fn"><code>restartPlan()</code></td><td class="dest">Clears chips, messages, hides <code>#plan-result</code>, shows form</td><td></td></tr>
+        <tr><td>Cost modal "Continue"</td><td class="fn"><code>costConfirmDecide(true)</code></td><td class="dest">API call proceeds</td><td></td></tr>
+        <tr><td>Cost modal "Cancel"</td><td class="fn"><code>costConfirmDecide(false)</code></td><td class="dest">Rolls back UI</td><td></td></tr>
+        <tr><td>Sticky back btn (from plan)</td><td class="fn"><code>_navBack()</code> → <code>navigate('profile')</code></td><td class="dest"><code>#profile</code></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PROFILE
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-profile">Profile Sub-pages &amp; Actions</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-prof"></div>
+    <span class="title">Profile internal navigation and sub-pages</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>Element</th><th>Function</th><th>Destination</th></tr></thead>
+      <tbody>
+        <tr><td>"Triad Mastery" btn</td><td class="fn"><code>showTriadMastery()</code></td><td class="dest">Hides <code>#profile-main-view</code>; shows <code>#profile-triad-mastery-page</code></td></tr>
+        <tr><td>Mastery page "Back to Profile" btn</td><td class="fn"><code>hideTriadMastery()</code></td><td class="dest">Shows <code>#profile-main-view</code></td></tr>
+        <tr><td>"View All Achievements" btn</td><td class="fn"><code>showAchievementsPage()</code></td><td class="dest">Hides <code>#profile-main-view</code>; shows <code>#profile-achievements-page</code></td></tr>
+        <tr><td>Achievements page "← Back" btn</td><td class="fn"><code>hideAchievementsPage()</code></td><td class="dest">Shows <code>#profile-main-view</code></td></tr>
+        <tr><td>Bonsai profile card btn</td><td class="fn"><code>openBonsaiScreen()</code></td><td class="dest"><code>#bonsaiOverlay</code></td></tr>
+        <tr><td>Missions "Start Mission" btn</td><td class="fn"><code>openDiagnostic(missionId, 'mission-start')</code></td><td class="dest"><code>#diagnosticOverlay</code></td></tr>
+        <tr><td>Missions "Complete Today's Session" btn</td><td class="fn"><code>runMissionDrill(missionId)</code> → <code>openSession(mission.activeSessionId)</code></td><td class="dest"><code>#sessionOverlay</code></td></tr>
+        <tr><td>Missions "Final Assessment" btn</td><td class="fn"><code>openDiagnostic(missionId, 'mission-end')</code></td><td class="dest"><code>#diagnosticOverlay</code></td></tr>
+        <tr><td>Missions "Explore Missions" btn (empty state)</td><td class="fn"><code>openMissionsAccordion()</code></td><td class="dest">Opens <code>#acc-account</code> accordion; scrolls to <code>#acc-account-missions</code></td></tr>
+        <tr><td>Account header "Log out" btn</td><td class="fn"><code>handleLogout()</code></td><td class="dest">POST <code>/auth/logout</code>; resets auth; re-renders profile as guest</td></tr>
+        <tr><td>Account header "Log in / Sign up" btn</td><td class="fn"><code>openAuthModal()</code></td><td class="dest"><code>#authModal</code></td></tr>
+        <tr><td>Favourite practice strip (technique)</td><td class="fn"><code>navigate('techniques'); showTechniqueDetail(id)</code></td><td class="dest"><code>#techniques</code> detail</td></tr>
+        <tr><td>Reading list "Mark read" btn</td><td class="fn"><code>toggleRead(title)</code></td><td class="dest">Toggles read state; syncs to server; re-renders profile</td></tr>
+        <tr><td>Feedback textarea + "Send" btn</td><td class="fn"><code>submitFeedback()</code></td><td class="dest">POST <code>/feedback</code>; shows toast</td></tr>
+        <tr><td>Profile hero "Continue Your Daily Practice" btn</td><td class="fn"><code>navigate('home')</code></td><td class="dest"><code>#home</code></td></tr>
+        <tr><td>Triad name "Claim this name" btn</td><td class="fn"><code>claimCurrentTriadName()</code> → <code>claimTriadName(name)</code></td><td class="dest">POST <code>/user/profile</code>; re-renders hero</td></tr>
+        <tr><td>Triad name refresh btn ↻</td><td class="fn"><code>refreshTriadSuggestion()</code></td><td class="dest">GET <code>/triad-name/generate</code>; updates suggestion text</td></tr>
+        <tr><td>"I'll do this later" btn</td><td class="fn"><code>dismissTriadOnboarding()</code></td><td class="dest">Sets <code>_triadOnboardDismissed=true</code>; re-renders hero without onboard card</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     AUTH
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-auth">Auth Modal Flows</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-auth"></div>
+    <span class="title">Auth modal — 4 internal views</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>View</th><th>Trigger</th><th>Function</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Login/Signup</td><td>Tab click</td><td class="fn"><code>switchAuthTab('login'|'signup')</code></td><td class="dest">Swaps submit label, title, autocomplete attr, "Forgot" visibility</td></tr>
+        <tr><td>Login/Signup → Submit</td><td>"Log in" or "Create account" btn</td><td class="fn"><code>submitAuth()</code></td><td class="dest">POST <code>/auth/login</code> or <code>/auth/signup</code> → updates <code>auth</code> obj → <code>closeAuthModal()</code> → <code>updateAuthUi()</code></td></tr>
+        <tr><td>Login → Forgot</td><td>"Forgot password?" link</td><td class="fn"><code>showForgotForm()</code></td><td class="dest">Hides login form+tabs; shows <code>#auth-forgot-view</code></td></tr>
+        <tr><td>Forgot → Back</td><td>"← Back to login" link</td><td class="fn"><code>hideForgotForm()</code></td><td class="dest">Restores login form; switches to login tab</td></tr>
+        <tr><td>Forgot → Submit</td><td>"Send reset link" btn</td><td class="fn"><code>submitForgotPassword()</code></td><td class="dest">POST <code>/auth/forgot-password</code>; shows success/error message in modal</td></tr>
+        <tr><td>Reset password (URL token)</td><td>App load with <code>?token=</code></td><td class="fn">IIFE in app.js:827</td><td class="dest">Hides login form; shows <code>#auth-reset-view</code>; opens modal</td></tr>
+        <tr><td>Reset → Submit</td><td>"Set new password" btn</td><td class="fn"><code>submitResetPassword()</code></td><td class="dest">POST <code>/auth/reset-password</code>; success → auto-switch to login after 2.5s; clears URL token</td></tr>
+        <tr><td>Any modal view → Close</td><td>Close btn or backdrop</td><td class="fn"><code>closeAuthModal()</code></td><td class="dest">Removes <code>.active</code>; clears password field; resets submit btn</td></tr>
+      </tbody>
+    </table>
+    <p><strong>401 intercept:</strong> <code>window.fetch</code> is wrapped in auth.js. If a <code>/ask</code> call returns 401 with <code>error:'login_required'</code>, auth state is cleared and <code>openAuthModal('Your session expired...')</code> is called automatically.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     OVERLAYS
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-overlays">Remaining Overlays &amp; Modals</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-modal"></div>
+    <span class="title">Settings drawer, paywall, diagnostics, quit modal</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>Overlay</th><th>Open from</th><th>Exits to</th></tr></thead>
+      <tbody>
+        <tr><td><strong>#settingsDrawer</strong></td><td>Gear btn; pacer/mob settings btns</td><td>Closes back to wherever it was opened from; Privacy → <code>#privacyModal</code>; Delete → <code>openDeleteAccountModal()</code></td></tr>
+        <tr><td><strong>#quitSessionModal</strong></td><td><code>confirmCancelGuestSession()</code>, <code>confirmCancelProSession()</code>, <code>confirmCancelMob()</code>, <code>sessionConfirmClose()</code></td><td>"Continue": <code>closeQuitModal()</code> (back to session). "End": <code>closeQuitModal()</code> + close respective session overlay</td></tr>
+        <tr><td><strong>#paywallModal</strong></td><td><code>requirePro()</code> when tier ≠ 'pro'</td><td>Close btn; "Join waitlist" → <code>#waitlistModal</code></td></tr>
+        <tr><td><strong>#waitlistModal</strong></td><td><code>openWaitlistModal()</code> from paywall</td><td>Close btn; submit → stays open showing "You're on the list"</td></tr>
+        <tr><td><strong>#costModal</strong></td><td><code>confirmApiCall()</code> before every AI call</td><td>"Continue" → resolves promise true. "Cancel" → resolves false. Both close modal.</td></tr>
+        <tr><td><strong>#diagnosticOverlay</strong></td><td><code>openDiagnostic()</code> from missions</td><td>Score saved → auto-close after 2s; X btn → <code>closeDiagnostic()</code></td></tr>
+        <tr><td><strong>#sessSheet</strong> (edit cycles)</td><td><code>sessionEditCycles()</code> from session overlay</td><td>"Confirm" → <code>sessionConfirmCycles()</code>; backdrop → <code>sessionCloseSheet()</code></td></tr>
+        <tr><td><strong>#levelUnlockScreen</strong></td><td><code>showLevelUnlockScreen()</code> from <code>checkLevelUnlocks()</code></td><td>"Start Practising" btn → fades out; stays on current section</td></tr>
+        <tr><td><strong>#privacyModal</strong></td><td>Settings drawer "Privacy &amp; Legal"</td><td>Close btn → <code>closePrivacyModal()</code></td></tr>
+        <tr><td><strong>#achievement-popup-region</strong></td><td><code>showAchievementPopup(a)</code> auto-triggered by <code>checkAchievements()</code></td><td>Auto-fades after 3.4s</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     BONSAI
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-bonsai">Bonsai Garden Flow</h2>
+<div class="flow-block">
+  <div class="flow-head">
+    <div class="strip bg-bonsai"></div>
+    <span class="title">Full bonsai lifecycle: 4 internal views</span>
+  </div>
+  <div class="flow-body">
+    <table class="route-table">
+      <thead><tr><th>From</th><th>Action</th><th>Function</th><th>Destination</th></tr></thead>
+      <tbody>
+        <tr><td>Home / Profile bonsai btn</td><td>Tap</td><td class="fn"><code>openBonsaiScreen()</code></td><td class="dest">Router: no active → PlantView; cycle&lt;10 → ActiveView; cycle≥10 → CompleteView</td></tr>
+        <tr><td>PlantView</td><td>"Begin Growing" (name + btn)</td><td class="fn"><code>bonsaiPlant()</code></td><td class="dest">Creates <code>data.active</code> obj; → <code>_bonsaiShowActiveView()</code></td></tr>
+        <tr><td>ActiveView</td><td>"Water" btn (once/day)</td><td class="fn"><code>bonsaiWater()</code></td><td class="dest">Increments water/cycle; if cycle≥10 → <code>_bonsaiShowCompleteView()</code>; else stays in ActiveView</td></tr>
+        <tr><td>ActiveView</td><td>Close btn</td><td class="fn"><code>closeBonsaiScreen()</code></td><td class="dest">Removes overlay active; calls <code>bonsaiUpdateProfileCard()</code></td></tr>
+        <tr><td>CompleteView</td><td>"Save to Album" btn</td><td class="fn"><code>bonsaiSaveToAlbum()</code></td><td class="dest">Captures canvas as PNG; pushes to <code>data.album[]</code>; clears <code>data.active</code>; → PlantView</td></tr>
+        <tr><td>CompleteView</td><td>"Plant New" btn</td><td class="fn"><code>bonsaiStartNew()</code></td><td class="dest">Clears <code>data.active</code>; → PlantView</td></tr>
+        <tr><td>Any view</td><td>"Album" btn (visible if album.length &gt; 0)</td><td class="fn"><code>openBonsaiAlbum()</code></td><td class="dest">Hides other views; shows <code>#bonsaiAlbumView</code></td></tr>
+        <tr><td>AlbumView</td><td>"← Back" btn</td><td class="fn"><code>closeBonsaiAlbum()</code> → <code>openBonsaiScreen()</code></td><td class="dest">Re-runs view router</td></tr>
+        <tr><td>PlantView (no pot)</td><td>— no action btn</td><td class="fn">—</td><td class="dest"><span style="color:var(--dead)">Dead end</span> — shows "Complete your first breath session" but has no button. User must close.</td></tr>
+        <tr><td>PlantView (pot, no seeds)</td><td>— no action btn</td><td class="fn">—</td><td class="dest"><span style="color:var(--dead)">Dead end</span> — shows "Complete your first meditation" but has no button. User must close.</td></tr>
+        <tr><td>Ceremony screen (auto after first meditation, non-onboarding)</td><td>"Begin Growing" btn</td><td class="fn">inline onclick → <code>this.closest('.bonsai-ceremony-screen').remove(); openBonsaiScreen()</code></td><td class="dest"><code>#bonsaiOverlay</code></td></tr>
+        <tr><td>Ceremony screen</td><td>"Later" btn</td><td class="fn">inline onclick → <code>this.closest('.bonsai-ceremony-screen').remove()</code></td><td class="dest">Ceremony dismissed; no navigation</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Unlock chain:</strong> <code>bonsaiAwardPot()</code> called from <code>_pacerSessionEnd()</code> (first breath completion). <code>bonsaiAwardSeeds()</code> called from <code>_mobGoToPage3()</code> (any meditation completion). Both update <code>#bonsaiProfileCard</code> and <code>#bonsaiHomeIcon</code>.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ISSUES
+══════════════════════════════════════════════════════════════════ -->
+<h2 id="s-issues">Dead Ends, Orphans &amp; Conflicts</h2>
+
+<h3 style="margin:0 0 8px;color:var(--dead)">Dead Ends — screens with no exit route</h3>
+<ul class="issue-list">
+  <li class="dead"><span class="issue-tag tag-dead">Dead End</span><strong>#bonsaiOverlay PlantView (no pot)</strong> — Shows "earn a pot" message, no action button, no back nav. User must use OS back or tap outside. No <code>closeBonsaiScreen()</code> call is wired.</li>
+  <li class="dead"><span class="issue-tag tag-dead">Dead End</span><strong>#bonsaiOverlay PlantView (pot, no seeds)</strong> — Same issue; shows "earn seeds" message but no action and no exit button.</li>
+  <li class="dead"><span class="issue-tag tag-dead">Dead End</span><strong>#levelUnlockScreen</strong> — <code>#lusBtn</code> only closes the overlay; no navigation to anywhere. User stays on whichever section triggered it with no contextual prompt.</li>
+  <li class="dead"><span class="issue-tag tag-dead">Dead End</span><strong>Bonsai ceremony "Later" btn</strong> — Removes the ceremony DOM node but provides no forward navigation. User is left on whichever section they were in.</li>
+</ul>
+
+<h3 style="margin:16px 0 8px;color:var(--warn)">Orphaned Functions — defined but never called from UI</h3>
+<ul class="issue-list">
+  <li class="orphan"><span class="issue-tag tag-orphan">Orphan</span><code>updateFab()</code> (navigation.js:624) — Declared as no-op: <em>"action bar removed"</em>. Called in 4 places (<code>showTechniqueDetail</code>, <code>hideTechniqueDetail</code>, <code>showMeditationDetail</code>, <code>hideMeditationDetail</code>). Safe to remove all 5.</li>
+  <li class="orphan"><span class="issue-tag tag-orphan">Orphan</span><code>highlightLibraryEntry(slugId)</code> (session.js:557) — Marked "Backwards-compatible alias for legacy callers." Not called from any UI element or other function in these files. Dead alias.</li>
+  <li class="orphan"><span class="issue-tag tag-orphan">Orphan</span><code>_mobGoToPage2()</code> (navigation.js:1855) — Marked "Legacy alias" for <code>_mobGoToPage2Direct()</code>. Not called from anywhere.</li>
+  <li class="orphan"><span class="issue-tag tag-orphan">Orphan</span><code>closeStartSession()</code> (navigation.js:601) — Calls <code>sessionCancel()</code>. Not wired to any button or caller in these files.</li>
+  <li class="orphan"><span class="issue-tag tag-orphan">Orphan</span><code>collapseP(text, uid)</code> (navigation.js:198) — Ignores <code>uid</code> param; just wraps in <code>&lt;p&gt;</code>. Called nowhere in read files.</li>
+  <li class="orphan"><span class="issue-tag tag-orphan">Orphan</span><code>_siSelectedDuration</code> (navigation.js:543) — Set by <code>siSelectDuration(tile)</code> but never consumed by <code>_launchSession()</code>. The SessionIntroPopup duration selector has no effect on session length in the Pro Pacer (it has its own length picker).</li>
+</ul>
+
+<h3 style="margin:16px 0 8px;color:var(--library)">Multiple / Conflicting Routes to the Same Screen</h3>
+<ul class="issue-list">
+  <li class="multi"><span class="issue-tag tag-multi">Multi-Route</span><strong>#sessionOverlay completion screen</strong> — Reached by 3 different paths: <code>_pacerSessionEnd()</code> (guest pacer), <code>_proSessionEnd()</code> (pro pacer), <code>_sessComplete()</code> (generic session). All three manually set <code>#sessionView.classList.remove('active')</code> and <code>#sessionComplete.classList.add('active')</code> inline rather than calling a shared function. The completion button labels (scDuration, scCycles, scBreaths) are set differently by each path.</li>
+  <li class="multi"><span class="issue-tag tag-multi">Multi-Route</span><strong>openMobSession() — onboarding mode</strong> — Reachable with <code>_mobIsOnboarding=true</code> from two paths: (a) post-breath completion via <code>_sessionCompleteGo('meditate')</code>, and (b) <code>_sessionCompleteGo('meditate')</code> called again from any future breath completion. This means the 30s fixed session and hidden cancel buttons persist for every "Meditate Now" clicked from any session completion, not just first-time onboarding.</li>
+  <li class="multi"><span class="issue-tag tag-multi">Multi-Route</span><strong>Technique detail</strong> — Reachable via: nav bar → <code>#techniques</code> card; profile completion tile; profile session history item; session picker; AI chat practice link; related card on another technique; library breathwork tab; profile favourite practice strip. All route correctly but some call <code>navigate('techniques')</code> first (resets list view) while <code>openLibraryEntry</code> uses <code>keepDetail:true</code>.</li>
+</ul>
+
+<h3 style="margin:16px 0 8px;color:var(--muted)">No-ops / Unimplemented Referenced Functions</h3>
+<ul class="issue-list">
+  <li class="noaction"><span class="issue-tag tag-noop">No-op</span><code>openDeleteAccountModal()</code> — Referenced in settings drawer but not defined in any of the 7 source files read. Either defined in an unread file or missing.</li>
+  <li class="noaction"><span class="issue-tag tag-noop">Extern</span><code>showKnowledgePracticeDetail()</code>, <code>switchLibraryTab()</code>, <code>renderLibrary()</code>, <code>renderProBanner()</code>, <code>getPracticeNameMap()</code>, <code>hideLibraryDetail()</code> — Defined in files not included in this analysis (likely a library-specific JS file). All are called from these files and appear to work.</li>
+  <li class="noaction"><span class="issue-tag tag-noop">Extern</span><code>loadStore()</code>, <code>saveStore()</code>, <code>store</code>, <code>state</code>, <code>ACHIEVEMENTS</code>, <code>MISSIONS</code>, <code>LIBRARY</code>, <code>TECHNIQUE_DETAILS</code>, <code>MEDITATION_DETAILS</code>, <code>track()</code>, <code>queueSync()</code>, <code>syncFromServer()</code>, <code>flushSyncQueue()</code>, <code>updateMastery()</code>, <code>getRank()</code>, <code>nextLevelInfo()</code>, <code>calcPillarPoints()</code>, <code>pointsForLevel()</code>, <code>TRIAD_LOGO_SVG</code> — All defined in data/store/achievement files not read.</li>
+</ul>
+
+<footer style="margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:0.72rem">
+  Generated from: navigation.js (2226 lines) · app.js (968 lines) · session.js (660 lines) · profile.js (2516 lines) · auth.js (548 lines) · bonsai/bonsai.js (500+ lines) · index.html — Triad v2.1
+</footer>
+
+</div><!-- /page -->
+</body>
+</html>

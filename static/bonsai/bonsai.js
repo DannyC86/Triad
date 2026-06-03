@@ -77,7 +77,7 @@ function _bonsaiPlantingCeremony() {
       `<button class="bonsai-ceremony-btn" onclick="this.closest('.bonsai-ceremony-screen').remove();openBonsaiScreen();">` +
         `Begin Growing` +
       `</button>` +
-      `<button class="bonsai-ceremony-skip" onclick="this.closest('.bonsai-ceremony-screen').remove();">` +
+      `<button class="bonsai-ceremony-skip" onclick="this.closest('.bonsai-ceremony-screen').remove(); if (typeof transitionTo === 'function') transitionTo(() => navigate('profile'));">` +
         `Later` +
       `</button>` +
     `</div>`;
@@ -184,12 +184,20 @@ function _bonsaiShowPlantView(data) {
   if (!data.hasPot) {
     if (titleEl)  titleEl.textContent   = 'Your garden is empty';
     if (subEl)    subEl.textContent     = 'Complete your first breath session to earn a pot, then your first meditation to earn seeds.';
-    if (btnEl)    btnEl.style.display   = 'none';
+    if (btnEl) {
+      btnEl.style.display = 'block';
+      btnEl.textContent = 'Go to Profile';
+      btnEl.onclick = function() { closeBonsaiScreen(); if (typeof transitionTo === 'function') transitionTo(() => navigate('profile')); };
+    }
     if (nameWrap) nameWrap.style.display = 'none';
   } else if (!data.hasSeeds) {
     if (titleEl)  titleEl.textContent   = 'You have your pot!';
     if (subEl)    subEl.textContent     = 'Complete your first meditation to earn your starter seeds.';
-    if (btnEl)    btnEl.style.display   = 'none';
+    if (btnEl) {
+      btnEl.style.display = 'block';
+      btnEl.textContent = 'Go to Profile';
+      btnEl.onclick = function() { closeBonsaiScreen(); if (typeof transitionTo === 'function') transitionTo(() => navigate('profile')); };
+    }
     if (nameWrap) nameWrap.style.display = 'none';
   } else {
     if (titleEl)  titleEl.textContent   = 'Plant your seed';
