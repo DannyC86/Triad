@@ -5947,7 +5947,7 @@
     .mob-page {
       display: flex; flex-direction: column;
       align-items: center; height: 100%;
-      padding: 0 24px; overflow: hidden;
+      padding: 0 24px; overflow: visible;
       box-sizing: border-box; width: 100%;
     }
     .mob-hdr {

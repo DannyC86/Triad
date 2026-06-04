@@ -1910,11 +1910,11 @@
   }
 
   /* Breath-trace rAF loop — draws continuous record on mobWaveCanvas2 */
-  /* Physics constants for orb movement */
-  const _MOB_RISE_FORCE    = -0.28;
-  const _MOB_FALL_FORCE    =  0.18;
-  const _MOB_MAX_RISE_SPD  = -2.5;
-  const _MOB_MAX_FALL_SPD  =  1.8;
+  /* Physics constants for orb movement — reduced 40% for slower, more breath-like feel */
+  const _MOB_RISE_FORCE    = -0.17;
+  const _MOB_FALL_FORCE    =  0.11;
+  const _MOB_MAX_RISE_SPD  = -1.5;
+  const _MOB_MAX_FALL_SPD  =  1.08;
   const _MOB_DAMPING       =  0.92;
 
   function _mobStartTrace() {
@@ -2033,7 +2033,10 @@
       for (let i = 1; i < pts.length - 1; i++) {
         const midX = (pts[i].x + pts[i + 1].x) / 2;
         const midY = (pts[i].y + pts[i + 1].y) / 2;
-        ctx.quadraticCurveTo(pts[i].x, pts[i].y, midX, midY);
+        // Pull control point 50% toward midpoint for a smoother, more rounded curve
+        const cpX = pts[i].x * 0.5 + midX * 0.5;
+        const cpY = pts[i].y * 0.5 + midY * 0.5;
+        ctx.quadraticCurveTo(cpX, cpY, midX, midY);
       }
       ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
       ctx.strokeStyle = `rgba(201,169,110,${(0.35 + progress * 0.55).toFixed(2)})`;
