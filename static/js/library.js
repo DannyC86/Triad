@@ -827,6 +827,26 @@
       det.innerHTML = renderKnowledgePracticeDetail(item, details);
       det.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (kind === 'technique' && !store.achievements['knowledge-breath']) {
+        const hasBreathSession = store.sessions.filter(x => x.kind === 'technique').length > 0;
+        if (hasBreathSession) {
+          store.achievements['knowledge-breath'] = new Date().toISOString();
+          saveStore(store);
+          const ach = ACHIEVEMENTS.find(a => a.id === 'knowledge-breath');
+          if (ach) showAchievementPopup(ach);
+          checkLevelUnlocks();
+        }
+      }
+      if (kind === 'meditation' && !store.achievements['knowledge-meditation']) {
+        const hasMeditationSession = store.sessions.filter(x => x.kind === 'meditation').length > 0;
+        if (hasMeditationSession) {
+          store.achievements['knowledge-meditation'] = new Date().toISOString();
+          saveStore(store);
+          const ach = ACHIEVEMENTS.find(a => a.id === 'knowledge-meditation');
+          if (ach) showAchievementPopup(ach);
+          checkLevelUnlocks();
+        }
+      }
       if (details?.history?.origins || details?.history?.evolution) {
         store.viewedKnowledgeHistory = (store.viewedKnowledgeHistory || 0) + 1;
         saveStore(store);

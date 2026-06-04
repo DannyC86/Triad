@@ -574,7 +574,16 @@
         switchLibraryTab('people');
       } else if (kind === 'book') {
         store.openedBook = (store.openedBook || 0) + 1;
-        saveStore(store); checkAchievements();
+        if (!store.achievements['first-book']) {
+          store.achievements['first-book'] = new Date().toISOString();
+          saveStore(store);
+          const ach = ACHIEVEMENTS.find(a => a.id === 'first-book');
+          if (ach) showAchievementPopup(ach);
+          checkLevelUnlocks();
+        } else {
+          saveStore(store);
+        }
+        checkAchievements();
         const item = LIBRARY.books.find(b => slug(b.title) === slugId);
         if (item) { showBookDetail(item); return; }
         switchLibraryTab('books');

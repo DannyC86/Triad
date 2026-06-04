@@ -671,9 +671,9 @@ Build my personalised plan.`;
   }
 
   const _GUEST_ACHIEVEMENT_IDS = [
-    'first-breath', 'first-stillness', 'first-page', 'first-teacher', 'first-listen',
-    'going-deeper', 'into-stillness', 'joined-triad', 'committed-breather',
-    'committed-stillness', 'collector'
+    'first-breath', 'first-meditation', 'knowledge-breath',
+    'knowledge-meditation', 'resonant-100', 'mindful-5mins',
+    'signed-up', 'bonsai-planted', 'first-book'
   ];
 
   function checkLevelUnlocks() {
