@@ -4,6 +4,15 @@
     renderLibraryFilters();
     renderLibraryAllPanels();
     updateLibrarySearchUi();
+    const lede = document.getElementById('lib-lede');
+    if (lede) {
+      const seen = localStorage.getItem('triad:library:seen');
+      if (seen) {
+        lede.style.display = 'none';
+      } else {
+        localStorage.setItem('triad:library:seen', 'true');
+      }
+    }
   }
 
   function renderLibraryFilters() {
@@ -291,6 +300,7 @@
     const { pageSize, page } = libUiState;
     const start = (page.books - 1) * pageSize;
     const visible = books.slice(start, start + pageSize);
+    const showType = !libUiState.tab || libUiState.tab === 'all';
     return `<div class="lib-cards-list">${visible.map(b => {
       const hue  = (b.cover && b.cover.hue) ? b.cover.hue : 'teal';
       const icon = (b.cover && b.cover.icon) ? b.cover.icon : '📖';
@@ -298,7 +308,7 @@
       return `<button class="lib-card" onclick="openLibraryEntry('book','${slug(b.title)}')">
         <div class="lib-card-thumb cover-${hue}" id="bcover-${slug(b.title)}">${icon}</div>
         <div class="lib-card-body">
-          <div class="lib-card-type">Book</div>
+          ${showType ? '<div class="lib-card-type">Book</div>' : ''}
           <div class="lib-card-title">${escapeHtml(b.title)}</div>
           <div class="lib-card-sub">${escapeHtml(b.author)} · ${b.year}</div>
           <div class="lib-card-pills">${pills}</div>
@@ -313,6 +323,7 @@
     const { pageSize, page } = libUiState;
     const start = (page.people - 1) * pageSize;
     const visible = people.slice(start, start + pageSize);
+    const showType = !libUiState.tab || libUiState.tab === 'all';
     return `<div class="lib-cards-list">${visible.map(p => {
       const hue   = (p.photo && p.photo.hue) ? p.photo.hue : 'teal';
       const pills = (p.themes || []).slice(0, 2).map(t => `<span class="lib-card-pill">${escapeHtml(t)}</span>`).join('');
@@ -321,7 +332,7 @@
           <span class="lib-card-initials">${initialsFromName(p.name)}</span>
         </div>
         <div class="lib-card-body">
-          <div class="lib-card-type">Person</div>
+          ${showType ? '<div class="lib-card-type">Person</div>' : ''}
           <div class="lib-card-title">${escapeHtml(p.name)}</div>
           <div class="lib-card-sub">${escapeHtml(p.role)}</div>
           <div class="lib-card-pills">${pills}</div>
@@ -336,6 +347,7 @@
     const { pageSize, page } = libUiState;
     const start = (page.podcasts - 1) * pageSize;
     const visible = podcasts.slice(start, start + pageSize);
+    const showType = !libUiState.tab || libUiState.tab === 'all';
     return `<div class="lib-cards-list">${visible.map((p, i) => {
       const hue  = _TECH_HUES[(start + i) % _TECH_HUES.length];
       const pills = (p.themes || []).slice(0, 2).map(t => `<span class="lib-card-pill">${escapeHtml(t)}</span>`).join('');
@@ -344,7 +356,7 @@
           <img class="lib-card-thumb-img" id="part-${slug(p.name)}" src="" alt="">
         </div>
         <div class="lib-card-body">
-          <div class="lib-card-type">Podcast</div>
+          ${showType ? '<div class="lib-card-type">Podcast</div>' : ''}
           <div class="lib-card-title">${escapeHtml(p.name)}</div>
           <div class="lib-card-sub">${escapeHtml(p.host)}</div>
           <div class="lib-card-pills">${pills}</div>
@@ -358,12 +370,13 @@
     const { pageSize, page } = libUiState;
     const start = (page.breathwork - 1) * pageSize;
     const visible = TECHNIQUES.slice(start, start + pageSize);
+    const showType = !libUiState.tab || libUiState.tab === 'all';
     return `<div class="lib-cards-list">${visible.map((t, i) => {
       const hue  = _TECH_HUES[(start + i) % _TECH_HUES.length];
       return `<button class="lib-card" onclick="showKnowledgePracticeDetail('technique','${escapeJs(t.id)}')">
         <div class="lib-card-thumb cover-${hue}"></div>
         <div class="lib-card-body">
-          <div class="lib-card-type">Breathwork</div>
+          ${showType ? '<div class="lib-card-type">Breathwork</div>' : ''}
           <div class="lib-card-title">${escapeHtml(t.title)}</div>
           <div class="lib-card-sub">${escapeHtml(t.bestFor)}</div>
           <div class="lib-card-pills">
@@ -380,12 +393,13 @@
     const { pageSize, page } = libUiState;
     const start = (page.meditations - 1) * pageSize;
     const visible = MEDITATIONS.slice(start, start + pageSize);
+    const showType = !libUiState.tab || libUiState.tab === 'all';
     return `<div class="lib-cards-list">${visible.map((m, i) => {
       const hue  = _MEDIT_HUES[(start + i) % _MEDIT_HUES.length];
       return `<button class="lib-card" onclick="showKnowledgePracticeDetail('meditation','${escapeJs(m.id)}')">
         <div class="lib-card-thumb cover-${hue}"></div>
         <div class="lib-card-body">
-          <div class="lib-card-type">Meditation</div>
+          ${showType ? '<div class="lib-card-type">Meditation</div>' : ''}
           <div class="lib-card-title">${escapeHtml(m.title)}</div>
           <div class="lib-card-sub">${escapeHtml(m.bestFor)}</div>
           <div class="lib-card-pills">

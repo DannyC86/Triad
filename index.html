@@ -219,7 +219,7 @@ var _introPlayedThisSession = false;
           <div class="section-kicker">Resources</div>
           <h1 class="section-title">Library <span class="accent">·</span></h1>
         </div>
-        <p class="section-lede">Look through our personalised book and podcast recommendations, or deep dive into the people, institutions, papers or history of any practice.</p>
+        <p class="section-lede" id="lib-lede">Look through our personalised book and podcast recommendations, or deep dive into the people, institutions, papers or history of any practice.</p>
       </div>
 
       <!-- Search bar -->
@@ -247,6 +247,7 @@ var _introPlayedThisSession = false;
       </select>
 
       <!-- Horizontal pill nav -->
+      <p class="lib-section-label">Format</p>
       <div class="lib-pills-row" id="lib-pills-row">
         <button class="lib-pill active" data-tab="books" onclick="onLibPillClick('books')">Books</button>
         <button class="lib-pill" data-tab="people" onclick="onLibPillClick('people')">People</button>
@@ -256,6 +257,7 @@ var _introPlayedThisSession = false;
       </div>
 
       <!-- Topic filter -->
+      <p class="lib-section-label">Topic</p>
       <select class="lib-filter-select" id="lib-filter-select" onchange="onLibFilterChange(this.value)">
         <option value="">All topics</option>
         <option value="Anxiety &amp; Stress">Anxiety &amp; Stress</option>

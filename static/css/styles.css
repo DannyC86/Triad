@@ -1339,7 +1339,7 @@
       border: none;
       border-radius: 14px;
       color: var(--text-muted);
-      font-size: 0.58rem;
+      font-size: 0.7rem;
       letter-spacing: 0.06em;
       cursor: pointer;
       transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
@@ -1369,8 +1369,8 @@
 
     .nav-btn.active {
       color: var(--gold);
-      background: rgba(201,169,110,0.12);
-      box-shadow: 0 2px 8px rgba(201,169,110,0.2);
+      background: rgba(201,169,110,0.18);
+      border-top: 2px solid var(--gold);
     }
     .nav-btn.active svg { filter: none; }
 
@@ -1391,7 +1391,7 @@
     .nav-btn[data-section="library"]    svg { width: 24px; height: 24px; }
     .nav-btn[data-section="meditate"]   span,
     .nav-btn[data-section="techniques"] span,
-    .nav-btn[data-section="library"]    span { font-size: 0.6rem; font-weight: 500; }
+    .nav-btn[data-section="library"]    span { font-size: 0.7rem; font-weight: 500; }
 
     /* ─── Top header bar ─── */
     .top-header {
@@ -4250,6 +4250,16 @@
       color: var(--btn-text-on-gold); font-weight: 600;
     }
     .lib-pill:hover:not(.active) { border-color: rgba(201,169,110,0.4); color: var(--text); }
+
+    .lib-section-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 6px 0;
+    }
 
     /* ─── Topic filter (single dropdown, replaces stacked pair) ─── */
     .lib-filter-select {
