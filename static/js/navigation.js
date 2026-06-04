@@ -550,7 +550,9 @@
   }
 
   function _closeSessionIntroWithDuration() {
-    _closeSessionIntro();
+    const selectedTile = document.querySelector('.si-tile.selected');
+    const durationMin = selectedTile ? parseInt(selectedTile.dataset.duration, 10) : null;
+    _closeSessionIntro(durationMin);
   }
 
   function _closeSessionIntroCancel() {
@@ -568,7 +570,7 @@
     }, 350);
   }
 
-  function _closeSessionIntro() {
+  function _closeSessionIntro(durationMin) {
     const popup = document.getElementById('sessionIntroPopup');
     if (!popup) return;
     const practiceId = popup.dataset.practiceId;
@@ -580,14 +582,20 @@
       const p2 = document.getElementById('siPhase2');
       if (p1) p1.style.display = 'block';
       if (p2) p2.style.display = 'none';
-      _launchSession(practiceId);
+      _launchSession(practiceId, durationMin);
     }, 350);
   }
 
-  function _launchSession(practiceId) {
+  function _launchSession(practiceId, durationMin) {
     const practice = findPractice(practiceId);
     if (practice && practice.phases && practice.phases.length) {
       openPacer(practiceId);
+      // If duration was pre-selected in the intro popup, apply it and skip the pro pacer length step
+      if (durationMin && localStorage.getItem('triad:onboarded') === 'true') {
+        const tile = document.querySelector(`#proTilesRow .pro-tile[data-duration="${durationMin}"]`);
+        if (tile) proSelectTile(tile);
+        _proStartCountdown();
+      }
     } else {
       openSession(practiceId);
     }

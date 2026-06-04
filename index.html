@@ -460,9 +460,6 @@ var _introPlayedThisSession = false;
         </div>
       </div>
 
-      <!-- Pro banner removed — element kept hidden for legacy JS calls -->
-      <div id="profile-pro-banner" style="display:none"></div>
-
       <!-- SECTION 6: Triad Lab -->
       <div class="triad-lab" data-auth-required>
         <div class="triad-lab-kicker">⚗️ TRIAD LAB — Beta Features</div>
@@ -503,13 +500,6 @@ var _introPlayedThisSession = false;
     <!-- Triad Mastery page (hidden by default) -->
     <div id="profile-triad-mastery-page" style="display:none"></div>
 
-    <!-- Legacy hidden elements — kept in DOM for JS compatibility -->
-    <div id="achievements-accordion-wrap" style="display:none">
-      <span id="achievement-count">0/15</span>
-      <div id="profile-next-achievement"></div>
-      <div id="achievements-section"></div>
-    </div>
-
     <!-- Rewards page -->
     <div id="rewards-page" class="rewards-page-view" style="display:none">
       <div class="rewards-page-header">
@@ -541,7 +531,8 @@ var _introPlayedThisSession = false;
         </div>
         <!-- Empty state -->
         <div class="rewards-empty" id="rewardsEmpty">
-          <p>Complete sessions to unlock rewards</p>
+          <p>Complete your first breath session to unlock your Bonsai Garden.</p>
+          <p style="margin-top:8px;font-size:12px;color:var(--text-soft)">More rewards coming soon.</p>
         </div>
       </div>
     </div>

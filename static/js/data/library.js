@@ -1061,11 +1061,6 @@
     if (btn) btn.classList.toggle('open', opening);
   }
 
-  /* ── Pro banner render (Pro promotion removed; kept as no-op for legacy callers) ── */
-  function renderProBanner() {
-    const el = document.getElementById('profile-pro-banner');
-    if (el) el.innerHTML = '';
-  }
 
   /* ────── Persistent gamification store (localStorage) ────── */
   const STORE_KEY = 'triad:v1';

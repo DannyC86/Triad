@@ -1153,22 +1153,8 @@ Build my personalised plan.`;
       `;
     }
 
-    /* ─── Next achievement hint ─── */
-    const next = nextAchievementHint();
-    document.getElementById('profile-next-achievement').innerHTML = next ? `
-      <div class="next-achievement">
-        <span class="next-ach-icon">${next.icon}</span>
-        <div class="next-ach-body">
-          <div class="next-ach-kicker">Next achievement</div>
-          <div class="next-ach-text">${escapeHtml(next.text)}</div>
-        </div>
-      </div>` : '';
-
     /* ─── Achievements (Guest + Pro tiers, padlock on locked pro) ─── */
     const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'guest' || store.tier === 'pro');
-    const unlockedCount = ACHIEVEMENTS.filter(trulyUnlocked).length;
-    document.getElementById('achievement-count').textContent =
-      `${unlockedCount}/${ACHIEVEMENTS.length}`;
 
     const renderRow = list => `<div class="achievements-row">${list.map(a => {
       const unlocked = trulyUnlocked(a);
@@ -1190,23 +1176,6 @@ Build my personalised plan.`;
     }).join('')}</div>`;
 
     const guestList = ACHIEVEMENTS.filter(a => a.tier === 'guest');
-    const proList   = ACHIEVEMENTS.filter(a => a.tier === 'pro');
-    document.getElementById('achievements-section').innerHTML = `
-      <div class="achievement-tier">
-        <div class="tier-head">
-          <span class="tier-name">Guest achievements</span>
-          <span class="tier-count">${guestList.filter(trulyUnlocked).length} / ${guestList.length}</span>
-        </div>
-        ${renderRow(guestList)}
-      </div>
-      <div class="achievement-tier">
-        <div class="tier-head">
-          <span class="tier-name">Pro tier</span>
-          <span class="tier-count">${proList.filter(trulyUnlocked).length} / ${proList.length}</span>
-        </div>
-        ${renderRow(proList)}
-      </div>
-    `;
 
     // Populate the guest flat achievements grid (visible without accordion for guest users)
     const guestGrid = document.getElementById('guest-achievements-grid');
