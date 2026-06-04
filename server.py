@@ -344,6 +344,10 @@ def index():
 def summary():
     return render_template('summary.html')
 
+@app.route("/journey")
+def journey():
+    return render_template('journey.html')
+
 @app.route("/favicon.ico")
 def favicon():
     return send_from_directory(".", "logo.svg", mimetype="image/svg+xml")
