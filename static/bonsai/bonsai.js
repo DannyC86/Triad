@@ -172,35 +172,41 @@ function _bonsaiShowPlantView(data) {
   if (nameInput) nameInput.value = '';
 
   // State-aware content
-  const titleEl   = view.querySelector('.bonsai-plant-title');
-  const subEl     = view.querySelector('.bonsai-plant-sub');
-  const btnEl     = view.querySelector('.bonsai-action-btn');
-  const nameWrap  = view.querySelector('.bonsai-name-wrap');
-  const hasBoth   = data.hasPot && data.hasSeeds;
+  const titleEl  = view.querySelector('.bonsai-plant-title');
+  const subEl    = view.querySelector('.bonsai-plant-sub');
+  const nameWrap = view.querySelector('.bonsai-name-wrap');
+  const plantBtn = view.querySelector('.btn-primary');
+  const hasBoth  = data.hasPot && data.hasSeeds;
+
+  // Create back button once, reuse on subsequent opens
+  let backBtn = view.querySelector('.bonsai-plant-back');
+  if (!backBtn) {
+    backBtn = document.createElement('button');
+    backBtn.className = 'btn-secondary bonsai-plant-back';
+    backBtn.textContent = 'Back to Profile';
+    backBtn.onclick = function() { closeBonsaiScreen(); };
+    const content = view.querySelector('.bonsai-plant-content');
+    if (content) content.appendChild(backBtn);
+  }
 
   if (!data.hasPot) {
     if (titleEl)  titleEl.textContent   = 'Your garden is empty';
     if (subEl)    subEl.textContent     = 'Complete your first breath session to earn a pot, then your first meditation to earn seeds.';
-    if (btnEl) {
-      btnEl.style.display = 'block';
-      btnEl.textContent = 'Go to Profile';
-      btnEl.onclick = function() { closeBonsaiScreen(); if (typeof transitionTo === 'function') transitionTo(() => navigate('profile')); };
-    }
     if (nameWrap) nameWrap.style.display = 'none';
+    if (plantBtn) plantBtn.style.display = 'none';
+    backBtn.style.display = '';
   } else if (!data.hasSeeds) {
     if (titleEl)  titleEl.textContent   = 'You have your pot!';
     if (subEl)    subEl.textContent     = 'Complete your first meditation to earn your starter seeds.';
-    if (btnEl) {
-      btnEl.style.display = 'block';
-      btnEl.textContent = 'Go to Profile';
-      btnEl.onclick = function() { closeBonsaiScreen(); if (typeof transitionTo === 'function') transitionTo(() => navigate('profile')); };
-    }
     if (nameWrap) nameWrap.style.display = 'none';
+    if (plantBtn) plantBtn.style.display = 'none';
+    backBtn.style.display = '';
   } else {
     if (titleEl)  titleEl.textContent   = 'Plant your seed';
     if (subEl)    subEl.textContent     = 'Your standard bonsai seed is ready. Water it daily and watch it grow over 30 days.';
-    if (btnEl)    btnEl.style.display   = 'block';
     if (nameWrap) nameWrap.style.display = 'block';
+    if (plantBtn) plantBtn.style.display = '';
+    backBtn.style.display = 'none';
   }
 
   if (hasBoth) {

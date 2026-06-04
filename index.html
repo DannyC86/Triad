@@ -1089,7 +1089,7 @@ var _introPlayedThisSession = false;
       </div>
 
       <p class="auth-skip-wrap">
-        <a class="auth-skip" onclick="closeAuthModal()">Continue browsing free →</a>
+        <a class="auth-skip" onclick="closeAuthModal(); transitionTo(()=>navigate('home'))">Continue browsing free →</a>
       </p>
     </div>
   </div>
