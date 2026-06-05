@@ -264,6 +264,11 @@ def init_db():
             created_at TEXT    NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
+        CREATE TABLE IF NOT EXISTS waitlist (
+            id        INTEGER PRIMARY KEY AUTOINCREMENT,
+            email     TEXT    UNIQUE NOT NULL,
+            joined_at TEXT    NOT NULL
+        );
         """
     )
     conn.commit()
@@ -1143,6 +1148,36 @@ def submit_feedback():
     except Exception as e:
         print(f"[feedback] error: {e}")
         return jsonify({"error": "Failed to submit feedback"}), 500
+
+
+@app.route('/waitlist', methods=['POST'])
+def join_waitlist():
+    data = request.get_json(silent=True) or {}
+    email = (data.get('email') or '').strip().lower()
+    if not email or '@' not in email:
+        return jsonify({'error': 'Valid email required'}), 400
+    try:
+        db = get_db()
+        db.execute(
+            'INSERT OR IGNORE INTO waitlist (email, joined_at) VALUES (?, ?)',
+            (email, datetime.utcnow().isoformat())
+        )
+        db.commit()
+        return jsonify({'ok': True}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/admin/waitlist')
+def admin_waitlist():
+    password = request.args.get('key', '')
+    if password != os.getenv('ADMIN_KEY', ''):
+        return jsonify({'error': 'unauthorised'}), 401
+    db = get_db()
+    rows = db.execute(
+        'SELECT email, joined_at FROM waitlist ORDER BY joined_at DESC'
+    ).fetchall()
+    return jsonify([dict(r) for r in rows])
 
 
 @app.route("/admin/feedback")

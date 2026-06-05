@@ -301,32 +301,34 @@
     } catch (e) { return null; }
   }
 
-  function submitWaitlistEmail(event) {
-    if (event && event.preventDefault) event.preventDefault();
-    const inp = document.getElementById('waitlist-email');
+  async function submitWaitlistEmail(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const email = (document.getElementById('waitlist-email')?.value || '').trim();
     const errEl = document.getElementById('waitlist-error');
-    const submitBtn = document.getElementById('waitlist-submit');
-    const email = (inp.value || '').trim();
-
-    if (!email.includes('@') || !email.includes('.')) {
-      errEl.textContent = 'Please enter a valid email.';
-      errEl.hidden = false;
+    const btn = document.getElementById('waitlist-submit');
+    if (!email || !email.includes('@')) {
+      if (errEl) { errEl.textContent = 'Please enter a valid email.'; errEl.hidden = false; }
       return;
     }
-    errEl.hidden = true;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving…';
-
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+    if (errEl) errEl.hidden = true;
     try {
-      const record = { email, joinedAt: new Date().toISOString() };
-      localStorage.setItem(WAITLIST_KEY, JSON.stringify(record));
-      _renderWaitlistAlreadyJoined(record);
-      showToast({ icon: '✨', label: 'Added to the Pro waitlist', autohide: 2400 });
-    } catch (e) {
-      errEl.textContent = 'Could not save — check that localStorage is available.';
-      errEl.hidden = false;
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Notify me';
+      const res = await fetch('/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Server error');
+      try { localStorage.setItem(WAITLIST_KEY, JSON.stringify({ email, joinedAt: new Date().toISOString() })); } catch(e) {}
+      const body = document.getElementById('waitlistModalBody');
+      if (body) body.innerHTML = `
+        <div class="waitlist-icon">✅</div>
+        <p class="waitlist-blurb">You're on the list! We'll be in touch at <strong>${escapeHtml(email)}</strong>.</p>
+      `;
+    } catch (err) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Notify me'; }
+      if (errEl) { errEl.textContent = err.message || 'Something went wrong. Please try again.'; errEl.hidden = false; }
     }
   }
 
