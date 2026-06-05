@@ -535,7 +535,6 @@
   /* ════════════════════════════════════════════════ */
 
   function addToPlan(practiceId) {
-    if (!requirePro()) return;
     const item = findPractice(practiceId);
     if (!item) return;
     store.planAdditions = store.planAdditions || [];

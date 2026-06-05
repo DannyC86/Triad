@@ -74,17 +74,6 @@ Build my personalised plan.`;
 
   async function runPlanRequest() {
     state.planLoading = true;
-    // Gate: must be logged in and Pro
-    if (!requirePro()) {
-      const lastIsUser = state.planHistory.length && state.planHistory[state.planHistory.length - 1].role === 'user';
-      if (lastIsUser) state.planHistory.pop();
-      const msgsEl = document.getElementById('plan-messages');
-      if (msgsEl && msgsEl.lastElementChild && msgsEl.lastElementChild.classList.contains('user')) {
-        msgsEl.lastElementChild.remove();
-      }
-      state.planLoading = false;
-      return;
-    }
     const confirmed = await confirmApiCall({
       callType: 'plan',
       messages: state.planHistory,
@@ -155,7 +144,6 @@ Build my personalised plan.`;
   /* ════════════════ ASK MODAL ════════════════ */
 
   function openAskModal() {
-    if (!requirePro()) return;
     if (!state.askContext) return;
     const { kind, item } = state.askContext;
     document.getElementById('askModalTitle').textContent = item.title;
@@ -211,7 +199,6 @@ Build my personalised plan.`;
     const input = document.getElementById('ask-input');
     const text = input.value.trim();
     if (!text || state.askLoading || !state.askContext) return;
-    if (!requirePro()) return;
     input.value = '';
     input.style.height = 'auto';
 
@@ -638,7 +625,6 @@ Build my personalised plan.`;
   function nextAchievementHint() {
     const candidates = ACHIEVEMENTS
       .filter(a => !store.achievements[a.id])
-      .filter(a => !(a.tier === 'pro' && store.tier !== 'pro'))
       .map(a => {
         const p = a.progress ? a.progress(store) : null;
         if (!p) return null;
@@ -860,14 +846,6 @@ Build my personalised plan.`;
     })(start);
   }
 
-  /* Toggle pro/free tier — demo helper. Replays achievement check so newly-eligible
-     pro achievements unlock on upgrade. */
-  function toggleProTier() {
-    store.tier = store.tier === 'pro' ? 'free' : 'pro';
-    saveStore(store);
-    checkAchievements();
-    renderProfile();
-  }
 
   /* ════════════════ TOAST ════════════════ */
 
@@ -1154,7 +1132,7 @@ Build my personalised plan.`;
     }
 
     /* ─── Achievements (Guest + Pro tiers, padlock on locked pro) ─── */
-    const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'guest' || store.tier === 'pro');
+    const trulyUnlocked = a => !!store.achievements[a.id];
 
     const renderRow = list => `<div class="achievements-row">${list.map(a => {
       const unlocked = trulyUnlocked(a);
@@ -1171,7 +1149,7 @@ Build my personalised plan.`;
         <div class="achievement achievement--mystery" onclick="toggleMysteryAchievement(this)" title="Tap to reveal">
           <span class="achievement-icon">${a.icon}</span>
           <div class="achievement-name">${escapeHtml(a.name)}</div>
-          <div class="achievement-state">${a.tier === 'pro' ? 'Pro' : 'Locked'}</div>
+          <div class="achievement-state">Locked</div>
         </div>`;
     }).join('')}</div>`;
 
@@ -1466,7 +1444,7 @@ Build my personalised plan.`;
     const el = document.getElementById('profile-achievement-preview');
     if (!el) return;
 
-    const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'guest' || store.tier === 'pro');
+    const trulyUnlocked = a => !!store.achievements[a.id];
     const unlockedList = ACHIEVEMENTS.filter(trulyUnlocked);
     const unlockedCount = unlockedList.length;
 
@@ -1476,7 +1454,6 @@ Build my personalised plan.`;
 
     const candidates = ACHIEVEMENTS
       .filter(a => !trulyUnlocked(a))
-      .filter(a => !(a.tier === 'pro' && store.tier !== 'pro'))
       .map(a => {
         const p = a.progress ? a.progress(store) : null;
         if (!p) return null;
@@ -1775,7 +1752,7 @@ Build my personalised plan.`;
     const el = document.getElementById('profile-achievements-page');
     if (!el) return;
 
-    const trulyUnlocked = a => !!store.achievements[a.id] && (a.tier === 'guest' || store.tier === 'pro');
+    const trulyUnlocked = a => !!store.achievements[a.id];
     const unlocked = ACHIEVEMENTS.filter(trulyUnlocked);
     const locked   = ACHIEVEMENTS.filter(a => !trulyUnlocked(a));
 
@@ -1889,13 +1866,21 @@ Build my personalised plan.`;
     }
     if (btn) btn.disabled = true;
     try {
-      const res = await fetch('/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({ message: msg })
-      });
-      const data = await res.json();
+      const feedbackEmail = (typeof auth !== 'undefined' && auth.email) ? auth.email : 'anonymous';
+      const [feedbackRes] = await Promise.all([
+        fetch('/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ message: msg })
+        }),
+        fetch('/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: feedbackEmail, message: msg })
+        }).catch(() => {})
+      ]);
+      const data = await feedbackRes.json();
       if (data.success) {
         ta.value = '';
         updateFeedbackCharCount();
@@ -2398,14 +2383,6 @@ Build my personalised plan.`;
     document.getElementById('settings-theme-opt-dark')?.classList.toggle('active',  isDark);
   }
 
-  function openPaywallModal()  { document.getElementById('paywallModal').classList.add('active'); }
-  function closePaywallModal() { document.getElementById('paywallModal').classList.remove('active'); }
-
-  function requirePro() {
-    if (!auth.loggedIn) { openAuthModal('signup'); return false; }
-    if (store.tier !== 'pro') { openPaywallModal(); return false; }
-    return true;
-  }
 
   let _costResolver = null;
   function confirmApiCall(opts) {

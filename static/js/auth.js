@@ -220,117 +220,6 @@
     }
   }
 
-  /* ════════════════ WAITLIST (Pro upgrade placeholder) ════════════════ */
-
-  const WAITLIST_KEY = 'triad:waitlist';
-
-  function openWaitlistModal() {
-    // Reset state in case it was previously shown
-    const body = document.getElementById('waitlistModalBody');
-    const stored = _loadWaitlist();
-    if (stored && stored.email) {
-      _renderWaitlistAlreadyJoined(stored);
-    } else {
-      _renderWaitlistForm();
-    }
-    document.getElementById('waitlistModal').classList.add('active');
-    setTimeout(() => {
-      const inp = document.getElementById('waitlist-email');
-      if (inp) inp.focus();
-    }, 90);
-  }
-
-  function closeWaitlistModal() {
-    document.getElementById('waitlistModal').classList.remove('active');
-  }
-
-  function _renderWaitlistForm() {
-    const body = document.getElementById('waitlistModalBody');
-    if (!body) return;
-    body.innerHTML = `
-      <div class="waitlist-icon">✨</div>
-      <p class="waitlist-blurb">
-        Pro is on the way — guided sessions, advanced AI plans, and unlocked achievements.
-        Drop your email and we'll let you know first.
-      </p>
-      <form class="auth-form" onsubmit="submitWaitlistEmail(event)" novalidate>
-        <label class="auth-field">
-          <span class="auth-field-label">Email</span>
-          <input type="email" id="waitlist-email" autocomplete="email" placeholder="you@example.com" required />
-        </label>
-        <div class="auth-error" id="waitlist-error" hidden></div>
-        <button type="submit" class="btn-primary" id="waitlist-submit">Notify me</button>
-      </form>
-      <p class="waitlist-foot">£4.99/month · cancel anytime · no charge until launch.</p>
-    `;
-    // Pre-fill with the user's account email if they're logged in
-    if (auth.loggedIn && auth.email) {
-      const inp = document.getElementById('waitlist-email');
-      if (inp) inp.value = auth.email;
-    }
-  }
-
-  function _renderWaitlistAlreadyJoined(stored) {
-    const body = document.getElementById('waitlistModalBody');
-    if (!body) return;
-    const when = stored.joinedAt ? formatRelative(stored.joinedAt) : 'recently';
-    body.innerHTML = `
-      <div class="waitlist-success">
-        <div class="waitlist-success-icon">🙏</div>
-        <h3>You're on the list</h3>
-        <p>
-          We've got <strong style="color: var(--gold)">${escapeHtml(stored.email)}</strong>.
-          We'll be in touch when Pro launches — added ${escapeHtml(when)}.
-        </p>
-      </div>
-      <p class="waitlist-foot" style="margin-top: 22px;">
-        <a class="auth-skip" onclick="_resetWaitlist()">Use a different email</a>
-      </p>
-    `;
-  }
-
-  function _resetWaitlist() {
-    try { localStorage.removeItem(WAITLIST_KEY); } catch (e) {}
-    _renderWaitlistForm();
-  }
-
-  function _loadWaitlist() {
-    try {
-      const raw = localStorage.getItem(WAITLIST_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
-  }
-
-  async function submitWaitlistEmail(e) {
-    if (e && e.preventDefault) e.preventDefault();
-    const email = (document.getElementById('waitlist-email')?.value || '').trim();
-    const errEl = document.getElementById('waitlist-error');
-    const btn = document.getElementById('waitlist-submit');
-    if (!email || !email.includes('@')) {
-      if (errEl) { errEl.textContent = 'Please enter a valid email.'; errEl.hidden = false; }
-      return;
-    }
-    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
-    if (errEl) errEl.hidden = true;
-    try {
-      const res = await fetch('/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Server error');
-      try { localStorage.setItem(WAITLIST_KEY, JSON.stringify({ email, joinedAt: new Date().toISOString() })); } catch(e) {}
-      const body = document.getElementById('waitlistModalBody');
-      if (body) body.innerHTML = `
-        <div class="waitlist-icon">✅</div>
-        <p class="waitlist-blurb">You're on the list! We'll be in touch at <strong>${escapeHtml(email)}</strong>.</p>
-      `;
-    } catch (err) {
-      if (btn) { btn.disabled = false; btn.textContent = 'Notify me'; }
-      if (errEl) { errEl.textContent = err.message || 'Something went wrong. Please try again.'; errEl.hidden = false; }
-    }
-  }
 
   /* ─── Submit login or signup ─── */
   async function submitAuth(event) {
@@ -466,7 +355,7 @@
     if (!el) return;
     if (auth.loggedIn) {
       const initial = ((auth.email || 'U')[0] || 'U').toUpperCase();
-      const tierLabel = auth.tier === 'pro' ? 'Pro' : 'Free account';
+      const tierLabel = 'Free account';
       el.innerHTML = `
         <div class="profile-account">
           <div class="account-info">
@@ -502,27 +391,6 @@
     return _origRenderProfile.apply(this, arguments);
   };
 
-  /* ─── Wrap AI-call sites with requirePro gating ─── */
-  // Plan generation (submit button on first plan)
-  const _origSubmitPlan = submitPlan;
-  submitPlan = async function() {
-    if (!requirePro()) return;
-    return _origSubmitPlan.apply(this, arguments);
-  };
-
-  // Plan chat follow-ups
-  const _origSendPlanMessage = sendPlanMessage;
-  sendPlanMessage = async function() {
-    if (!requirePro()) return;
-    return _origSendPlanMessage.apply(this, arguments);
-  };
-
-  // "Ask about this technique" modal
-  const _origSendAskMessage = sendAskMessage;
-  sendAskMessage = async function() {
-    if (!requirePro()) return;
-    return _origSendAskMessage.apply(this, arguments);
-  };
 
   /* ─── 401 detection — wrap window.fetch so an expired session triggers the modal ─── */
   // Lightweight: only acts on /ask, /auth/* are not intercepted (they handle their own UX).
@@ -538,7 +406,6 @@
         if (data && data.error === 'login_required') {
           auth.loggedIn = false;
           auth.email = null;
-          auth.tier = 'free';
           updateAuthUi();
           if (state && state.section === 'profile') renderProfile();
           openAuthModal('Your session expired. Please log in again to continue.');

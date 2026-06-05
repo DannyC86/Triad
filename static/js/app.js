@@ -1,4 +1,4 @@
-  const APP_VERSION = 'v2.2.8';
+  const APP_VERSION = 'v2.2.9';
 
 
   /* ════════════════ DATA ════════════════ */

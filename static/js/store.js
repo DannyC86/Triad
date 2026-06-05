@@ -33,7 +33,6 @@
       readingList: {},                       // {bookTitle: 'reading' | 'read'}
       planAdditions: [],
       plansGenerated: 0,                     // count of plans ever generated
-      tier: 'free',                          // 'free' | 'pro' — gates display of pro achievements
       openedBook: 0,
       openedPerson: 0,
       openedPodcast: 0,

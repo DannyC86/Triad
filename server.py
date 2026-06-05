@@ -266,7 +266,8 @@ def init_db():
         );
         CREATE TABLE IF NOT EXISTS waitlist (
             id        INTEGER PRIMARY KEY AUTOINCREMENT,
-            email     TEXT    UNIQUE NOT NULL,
+            email     TEXT    NOT NULL,
+            message   TEXT,
             joined_at TEXT    NOT NULL
         );
         """
@@ -1154,13 +1155,14 @@ def submit_feedback():
 def join_waitlist():
     data = request.get_json(silent=True) or {}
     email = (data.get('email') or '').strip().lower()
+    message = (data.get('message') or '').strip()
     if not email or '@' not in email:
-        return jsonify({'error': 'Valid email required'}), 400
+        email = 'anonymous'
     try:
         db = get_db()
         db.execute(
-            'INSERT OR IGNORE INTO waitlist (email, joined_at) VALUES (?, ?)',
-            (email, datetime.utcnow().isoformat())
+            'INSERT INTO waitlist (email, message, joined_at) VALUES (?, ?, ?)',
+            (email, message, datetime.utcnow().isoformat())
         )
         db.commit()
         return jsonify({'ok': True}), 200
@@ -1175,7 +1177,7 @@ def admin_waitlist():
         return jsonify({'error': 'unauthorised'}), 401
     db = get_db()
     rows = db.execute(
-        'SELECT email, joined_at FROM waitlist ORDER BY joined_at DESC'
+        'SELECT email, message, joined_at FROM waitlist ORDER BY joined_at DESC'
     ).fetchall()
     return jsonify([dict(r) for r in rows])
 

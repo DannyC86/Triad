@@ -1087,36 +1087,6 @@ var _introPlayedThisSession = false;
 </div>
 
 <!-- ═════════ Waitlist modal ═════════ -->
-<div class="modal-backdrop" id="waitlistModal" onclick="if(event.target===this) closeWaitlistModal()">
-  <div class="modal" style="max-width: 460px;">
-    <div class="modal-head">
-      <div class="modal-title-wrap">
-        <span class="modal-kicker">Triad</span>
-        <span class="modal-title" id="waitlistModalTitle">Coming soon</span>
-      </div>
-      <button class="modal-close" onclick="closeWaitlistModal()" title="Close">
-        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
-      </button>
-    </div>
-    <div class="modal-body" id="waitlistModalBody">
-      <div class="waitlist-icon">✨</div>
-      <p class="waitlist-blurb">
-        Pro is on the way — guided sessions, advanced AI plans, and unlocked achievements.
-        Drop your email and we'll let you know first.
-      </p>
-      <form class="auth-form" onsubmit="submitWaitlistEmail(event)" novalidate>
-        <label class="auth-field">
-          <span class="auth-field-label">Email</span>
-          <input type="email" id="waitlist-email" autocomplete="email" placeholder="you@example.com" required />
-        </label>
-        <div class="auth-error" id="waitlist-error" hidden></div>
-        <button type="submit" class="btn-primary" id="waitlist-submit">Notify me</button>
-      </form>
-      <p class="waitlist-foot">£4.99/month · cancel anytime · no charge until launch.</p>
-    </div>
-  </div>
-</div>
-
 <!-- ═════════ Quit session modal ═════════ -->
 <div class="modal-backdrop" id="quitSessionModal" onclick="if(event.target===this) closeQuitModal()">
   <div class="modal" style="max-width: 400px;">
@@ -1148,34 +1118,6 @@ var _introPlayedThisSession = false;
   </div>
 </div>
 
-<!-- ═════════ Paywall modal ═════════ -->
-<div class="modal-backdrop" id="paywallModal" onclick="if(event.target===this) closePaywallModal()">
-  <div class="modal" style="max-width: 420px;">
-    <div class="modal-head">
-      <div class="modal-title-wrap">
-        <span class="modal-kicker">Triad</span>
-        <span class="modal-title">Unlock the full experience</span>
-      </div>
-      <button class="modal-close" onclick="closePaywallModal()" title="Close">
-        <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <p style="color: var(--text-soft); line-height: 1.6; margin-bottom: 20px;">
-        Unlock AI-powered plans, personalised coaching and unlimited practice tracking.
-      </p>
-      <div style="text-align: center; margin-bottom: 24px;">
-        <span style="font-size: 2rem; font-weight: 300; color: var(--text);">£4.99</span>
-        <span style="color: var(--text-muted); font-size: 0.88rem;"> / month</span>
-      </div>
-      <button class="btn-primary" onclick="closePaywallModal(); openWaitlistModal();">Upgrade to Pro</button>
-      <div style="text-align: center;">
-        <span onclick="closePaywallModal()" role="button" tabindex="0"
-          style="font-size: 0.82rem; color: var(--text-muted); cursor: pointer; letter-spacing: 0.04em; user-select: none;">Maybe later</span>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ═════════ Cost confirmation modal (shown before every API call) ═════════ -->
 <div class="modal-backdrop" id="costModal" onclick="if(event.target===this) costConfirmDecide(false)">
