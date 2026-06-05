@@ -19,17 +19,16 @@
       if (data && data.user) {
         auth.loggedIn = true;
         auth.email    = data.user.email;
-        auth.tier     = data.user.tier || 'free';
+
       } else {
         auth.loggedIn = false;
         auth.email    = null;
-        auth.tier     = 'free';
+
       }
     } catch (e) {
       // Network error — fall back to guest. App still browses fine offline.
       auth.loggedIn = false;
       auth.email    = null;
-      auth.tier     = 'free';
     }
     auth.ready = true;
     updateAuthUi();
@@ -269,7 +268,6 @@
       // Success
       auth.loggedIn = true;
       auth.email    = data.user.email;
-      auth.tier     = data.user.tier || 'free';
       store.hasAccount = 1;
       saveStore(store); checkAchievements();
       track(_authTab === 'signup' ? 'account_created' : 'login', {});
@@ -300,7 +298,6 @@
     } catch (e) { /* Ignore — we'll reset client state regardless */ }
     auth.loggedIn = false;
     auth.email    = null;
-    auth.tier     = 'free';
     updateAuthUi();
     if (state && state.section === 'profile') renderProfile();
     showToast({ icon: '👋', label: 'Logged out', autohide: 1800 });

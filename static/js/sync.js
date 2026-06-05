@@ -158,7 +158,6 @@
     localStorage.removeItem('triad:audio');
     auth.loggedIn = false;
     auth.email = null;
-    auth.tier = 'free';
     store = initStore();
     saveStore(store);
     updateAuthUi();

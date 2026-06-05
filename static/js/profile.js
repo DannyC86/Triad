@@ -642,6 +642,8 @@ Build my personalised plan.`;
     };
   }
 
+  const trulyUnlocked = a => !!store.achievements[a.id];
+
   function checkAchievements() {
     ACHIEVEMENTS.forEach(a => {
       if (store.achievements[a.id]) return;
@@ -1132,7 +1134,7 @@ Build my personalised plan.`;
     }
 
     /* ─── Achievements (Guest + Pro tiers, padlock on locked pro) ─── */
-    const trulyUnlocked = a => !!store.achievements[a.id];
+
 
     const renderRow = list => `<div class="achievements-row">${list.map(a => {
       const unlocked = trulyUnlocked(a);
@@ -1153,7 +1155,7 @@ Build my personalised plan.`;
         </div>`;
     }).join('')}</div>`;
 
-    const guestList = ACHIEVEMENTS.filter(a => a.tier === 'guest');
+    const guestList = ACHIEVEMENTS;
 
     // Populate the guest flat achievements grid (visible without accordion for guest users)
     const guestGrid = document.getElementById('guest-achievements-grid');
@@ -1181,40 +1183,6 @@ Build my personalised plan.`;
         <span class="ct-title">${escapeHtml(m.title)}</span>
         <span class="ct-meta">${escapeHtml(m.bestFor)}</span>
       </button>`).join('');
-
-    // Sessions list
-    document.getElementById('sessions-count').textContent =
-      `${store.sessions.length} session${store.sessions.length === 1 ? '' : 's'}`;
-    const sessionsWrap = document.getElementById('sessions-list-wrap');
-    if (store.sessions.length === 0) {
-      sessionsWrap.innerHTML = `<div class="profile-empty">No sessions yet. Tap the orb on Home to begin.</div>`;
-    } else {
-      const recent = store.sessions.slice(0, 10);
-      sessionsWrap.innerHTML = `<div class="session-list">${recent.map(s => `
-        <div class="session-item ${s.kind === 'technique' ? 'tech' : 'med'}"
-             onclick="${s.kind === 'technique' ? `navigate('techniques'); showTechniqueDetail('${s.practiceId}')` : `navigate('meditate'); showMeditationDetail('${s.practiceId}')`}">
-          <span class="sess-kind">${s.kind === 'technique' ? 'Breath' : 'Meditation'}</span>
-          <span class="sess-title">${escapeHtml(s.practiceTitle)}</span>
-          <span class="sess-time">${formatRelative(s.ts)}</span>
-        </div>`).join('')}</div>`;
-    }
-
-    // Reading list — show all books with mark-as-read controls
-    const readCount = Object.values(store.readingList).filter(v => v === 'read').length;
-    document.getElementById('reading-count').textContent =
-      `${readCount} of ${LIBRARY.books.length} read`;
-    document.getElementById('reading-list-wrap').innerHTML = `<div class="reading-list">${LIBRARY.books.map(b => {
-      const status = store.readingList[b.title] || 'unread';
-      const isRead = status === 'read';
-      return `
-        <div class="reading-item ${isRead ? 'read' : ''}">
-          <span class="read-author">${escapeHtml(b.author)}</span>
-          <span class="read-title">${escapeHtml(b.title)}</span>
-          <button class="read-mark" onclick="toggleRead('${b.title.replace(/'/g, "\\'")}')">
-            ${isRead ? '✓ Read' : 'Mark read'}
-          </button>
-        </div>`;
-    }).join('')}</div>`;
 
     if (auth.loggedIn) renderMissions();
 
@@ -1444,7 +1412,7 @@ Build my personalised plan.`;
     const el = document.getElementById('profile-achievement-preview');
     if (!el) return;
 
-    const trulyUnlocked = a => !!store.achievements[a.id];
+
     const unlockedList = ACHIEVEMENTS.filter(trulyUnlocked);
     const unlockedCount = unlockedList.length;
 
@@ -1752,7 +1720,7 @@ Build my personalised plan.`;
     const el = document.getElementById('profile-achievements-page');
     if (!el) return;
 
-    const trulyUnlocked = a => !!store.achievements[a.id];
+
     const unlocked = ACHIEVEMENTS.filter(trulyUnlocked);
     const locked   = ACHIEVEMENTS.filter(a => !trulyUnlocked(a));
 

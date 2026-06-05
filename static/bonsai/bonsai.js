@@ -502,60 +502,6 @@ function closeBonsaiAlbum() {
   openBonsaiScreen();
 }
 
-// ─── Rewards popup ───────────────────────────────────────────────────────────
-
-function openBonsaiRewardsPopup() {
-  const existing = document.getElementById('bonsaiRewardsPopup');
-  if (existing) existing.remove();
-
-  const popup = document.createElement('div');
-  popup.id = 'bonsaiRewardsPopup';
-  popup.className = 'bonsai-rewards-popup';
-  popup.innerHTML = `
-    <div class="bonsai-rewards-card">
-      <div class="bonsai-rewards-title">Your Rewards</div>
-      <div class="bonsai-rewards-subtitle">Collected from your practice</div>
-
-      <div class="bonsai-rewards-items">
-        <div class="bonsai-rewards-item">
-          <div class="bonsai-rewards-item-icon">🪴</div>
-          <div>
-            <div class="bonsai-rewards-item-name">Bonsai Pot</div>
-            <div class="bonsai-rewards-item-sub">Earned from first breath</div>
-          </div>
-        </div>
-        <div class="bonsai-rewards-divider"></div>
-        <div class="bonsai-rewards-item">
-          <div class="bonsai-rewards-item-icon">🌱</div>
-          <div>
-            <div class="bonsai-rewards-item-name">Starter Seeds</div>
-            <div class="bonsai-rewards-item-sub">Earned from first meditation</div>
-          </div>
-        </div>
-      </div>
-
-      <p class="bonsai-rewards-hint">
-        Your <strong>Bonsai Garden</strong> is waiting in Profile.
-      </p>
-
-      <button class="btn-primary" onclick="
-        document.getElementById('bonsaiRewardsPopup').remove();
-        if (typeof closeMobSession === 'function') closeMobSession();
-        transitionTo(() => { navigate('meditate'); if (typeof showMeditationDetail === 'function') showMeditationDetail('mindfulness-of-breath'); });
-      ">Go to Mindfulness of Breath</button>
-
-      <button class="btn-cancel" onclick="
-        document.getElementById('bonsaiRewardsPopup').remove();
-        if (typeof closeMobSession === 'function') closeMobSession();
-        transitionTo(() => navigate('profile'));
-      ">Go to Garden</button>
-    </div>
-  `;
-
-  document.body.appendChild(popup);
-  requestAnimationFrame(() => { popup.style.opacity = '1'; });
-}
-
 // ─── Toast ────────────────────────────────────────────────────────────────────
 
 function _bonsaiShowToast(msg) {
@@ -568,39 +514,6 @@ function _bonsaiShowToast(msg) {
     t.classList.remove('show');
     setTimeout(() => t.remove(), 400);
   }, 3000);
-}
-
-// ─── Dev / test helpers ───────────────────────────────────────────────────────
-
-function bonsaiDevWater() {
-  const data = _bonsaiLoad();
-  const b = data.active;
-  if (!b) return;
-
-  b.watersInCycle++;
-  b.totalWaters++;
-  b.lastWateredDate = _todayStr();
-
-  if (b.watersInCycle >= 3) {
-    b.cycle++;
-    b.watersInCycle = 0;
-    if (b.cycle >= 11) {
-      b.completedAt = new Date().toISOString();
-    }
-  }
-
-  _bonsaiSave(data);
-
-  if (b.cycle >= 11) {
-    stopBonsaiAnimation();
-    const activeView = document.getElementById('bonsaiActiveView');
-    if (activeView) activeView.style.display = 'none';
-    _bonsaiShowCompleteView(data);
-  } else {
-    _bonsaiShowActiveView(data);
-    const statusEl = document.getElementById('bonsaiWaterStatus');
-    if (statusEl) statusEl.textContent = `[DEV] Cycle ${b.cycle}/11 · Water ${b.watersInCycle}/3`;
-  }
 }
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
