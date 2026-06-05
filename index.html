@@ -222,32 +222,7 @@ var _introPlayedThisSession = false;
         <p class="section-lede" id="lib-lede">Look through our personalised book and podcast recommendations, or deep dive into the people, institutions, papers or history of any practice.</p>
       </div>
 
-      <!-- Search bar -->
-      <div class="lib-search">
-        <svg class="lib-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input id="lib-search-input" type="text" placeholder="Search books, people, podcasts — e.g. &quot;vagus nerve&quot;" oninput="onLibSearch()" />
-        <button class="lib-search-clear" id="lib-search-clear" onclick="clearLibSearch()" aria-label="Clear search">
-          <svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>
-        </button>
-      </div>
-
-      <!-- Hidden count elements (referenced by JS) -->
-      <span id="lib-count-books" hidden></span>
-      <span id="lib-count-people" hidden></span>
-      <span id="lib-count-podcasts" hidden></span>
-
-      <!-- Hidden type select (kept for JS compat) -->
-      <select id="lib-type-select" style="display:none" onchange="onLibTypeChange(this.value)">
-        <option value="all">All content</option>
-        <option value="books">Books</option>
-        <option value="people">People</option>
-        <option value="podcasts">Podcasts</option>
-        <option value="breathwork">Breathwork</option>
-        <option value="meditations">Meditations</option>
-      </select>
-
       <!-- Horizontal pill nav -->
-      <p class="lib-section-label">Format</p>
       <div class="lib-pills-row" id="lib-pills-row">
         <button class="lib-pill active" data-tab="books" onclick="onLibPillClick('books')">Books</button>
         <button class="lib-pill" data-tab="people" onclick="onLibPillClick('people')">People</button>
@@ -256,20 +231,6 @@ var _introPlayedThisSession = false;
         <button class="lib-pill" data-tab="meditations" onclick="onLibPillClick('meditations')">Meditations</button>
       </div>
 
-      <!-- Topic filter -->
-      <p class="lib-section-label">Topic</p>
-      <select class="lib-filter-select" id="lib-filter-select" onchange="onLibFilterChange(this.value)">
-        <option value="">All topics</option>
-        <option value="Anxiety &amp; Stress">Anxiety &amp; Stress</option>
-        <option value="Sleep">Sleep</option>
-        <option value="Focus &amp; Performance">Focus &amp; Performance</option>
-        <option value="Spirituality &amp; Consciousness">Spirituality &amp; Consciousness</option>
-        <option value="Science &amp; Research">Science &amp; Research</option>
-        <option value="Ancient Traditions">Ancient Traditions</option>
-        <option value="Cold Exposure">Cold Exposure</option>
-        <option value="Beginners">Beginners</option>
-      </select>
-
       <!-- Content panels -->
       <div class="lib-panel active" data-libpanel="books"       id="lib-panel-books"></div>
       <div class="lib-panel active" data-libpanel="people"      id="lib-panel-people"></div>
@@ -277,12 +238,6 @@ var _introPlayedThisSession = false;
       <div class="lib-panel active" data-libpanel="breathwork"  id="lib-panel-breathwork"></div>
       <div class="lib-panel active" data-libpanel="meditations" id="lib-panel-meditations"></div>
 
-      <!-- Empty state for "no matches" -->
-      <div class="lib-empty" id="lib-empty-state" hidden>
-        <div class="lib-empty-icon">📭</div>
-        <p>Nothing matches that combination of filters and search.</p>
-        <button class="action-btn secondary" onclick="resetLibrary()">Reset filters</button>
-      </div>
     </div>
 
     <!-- Detail view (book or person) -->

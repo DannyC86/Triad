@@ -3,7 +3,6 @@
     renderLibFeatured();
     renderLibraryFilters();
     renderLibraryAllPanels();
-    updateLibrarySearchUi();
     const lede = document.getElementById('lib-lede');
     if (lede) {
       const seen = localStorage.getItem('triad:library:seen');
@@ -16,10 +15,6 @@
   }
 
   function renderLibraryFilters() {
-    const topicSel = document.getElementById('lib-filter-select');
-    if (topicSel) topicSel.value = libUiState.activeFilters.size === 1 ? [...libUiState.activeFilters][0] : '';
-    const typeSel = document.getElementById('lib-type-select');
-    if (typeSel) typeSel.value = libUiState.tab;
     _syncLibPills();
   }
 
@@ -32,7 +27,7 @@
 
   function onLibPillClick(tab) {
     track('filter_used', { filter: tab });
-    onLibTypeChange(tab);
+    switchLibraryTab(tab);
   }
 
   function renderLibFeatured() {
@@ -64,41 +59,11 @@
       </button>`).join('');
   }
 
-  function onLibFilterChange(val) {
-    libUiState.activeFilters.clear();
-    if (val) libUiState.activeFilters.add(val);
-    _resetLibPages();
-    renderLibraryAllPanels();
-  }
-
-  const _LIB_TYPE_TOPICS = {
-    all:         ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
-    books:       ['Anxiety & Stress', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
-    people:      ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
-    podcasts:    ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
-    breathwork:  ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Ancient Traditions', 'Cold Exposure', 'Beginners'],
-    meditations: ['Anxiety & Stress', 'Sleep', 'Focus & Performance', 'Spirituality & Consciousness', 'Science & Research', 'Beginners'],
-  };
-
-  function onLibTypeChange(val) {
-    const type = val || 'all';
-    // Repopulate topic dropdown for this content type
-    const topicSel = document.getElementById('lib-filter-select');
-    if (topicSel) {
-      const topics = _LIB_TYPE_TOPICS[type] || _LIB_TYPE_TOPICS.all;
-      topicSel.innerHTML = `<option value="">All topics</option>` +
-        topics.map(t => `<option value="${t}">${t}</option>`).join('');
-      topicSel.value = '';
-    }
-    // Reset active topic filter then switch type
-    libUiState.activeFilters.clear();
-    switchLibraryTab(type);
-  }
 
   function renderLibraryAllPanels() {
-    const books    = filterItems(LIBRARY.books,    'book');
-    const people   = filterItems(LIBRARY.people,   'person');
-    const podcasts = filterItems(LIBRARY.podcasts, 'podcast');
+    const books    = LIBRARY.books;
+    const people   = LIBRARY.people;
+    const podcasts = LIBRARY.podcasts;
 
     const tab = libUiState.tab;
     const allMode = tab === 'all';
@@ -119,12 +84,6 @@
       if (el) el.classList.toggle('active', allMode || p === tab);
     });
 
-    // Empty state: only for specific filterable type with no results
-    const filterableTabs = ['books', 'people', 'podcasts'];
-    const counts = { books: books.length, people: people.length, podcasts: podcasts.length };
-    const showEmpty = !allMode && filterableTabs.includes(tab) && counts[tab] === 0;
-    const emptyEl = document.getElementById('lib-empty-state');
-    if (emptyEl) emptyEl.hidden = !showEmpty;
   }
 
   /* ─── Google Books cover image fetching ─── */
@@ -412,92 +371,10 @@
     }).join('')}</div>` + _renderPagination('meditations', page.meditations, MEDITATIONS.length);
   }
 
-  /* ─── Filter + search engine ─── */
-  function filterItems(items, kind) {
-    const q = libUiState.search.trim().toLowerCase();
-    const filters = libUiState.activeFilters;
-    return items.filter(it => {
-      // Theme filter (must match ALL active filters; an item with multiple themes is fine)
-      if (filters.size > 0) {
-        const itemThemes = it.themes || [];
-        for (const f of filters) {
-          if (!itemThemes.includes(f)) return false;
-        }
-      }
-      if (!q) return true;
-      return itemMatchesQuery(it, kind, q);
-    });
-  }
-
-  function itemMatchesQuery(it, kind, q) {
-    const haystack = [];
-    if (kind === 'book') {
-      haystack.push(it.title, it.author, it.summary, it.whyMatters || '');
-      (it.keyThemes || []).forEach(t => haystack.push(t));
-      (it.chapters || []).forEach(c => haystack.push(c));
-      (it.themes || []).forEach(t => haystack.push(t));
-    } else if (kind === 'person') {
-      haystack.push(it.name, it.role, it.bio, it.whyMatters || '');
-      (it.contributions || []).forEach(c => haystack.push(c));
-      (it.themes || []).forEach(t => haystack.push(t));
-    } else if (kind === 'podcast') {
-      haystack.push(it.name, it.host, it.focus);
-      (it.themes || []).forEach(t => haystack.push(t));
-    }
-    const blob = haystack.join(' ').toLowerCase();
-    return blob.includes(q);
-  }
-
-  /* ─── Filter / search handlers ─── */
-  function toggleLibFilter(theme) {
-    if (libUiState.activeFilters.has(theme)) libUiState.activeFilters.delete(theme);
-    else libUiState.activeFilters.add(theme);
-    _resetLibPages();
-    renderLibrary();
-  }
-  function clearLibFilters() {
-    libUiState.activeFilters.clear();
-    _resetLibPages();
-    renderLibrary();
-  }
-  let _libSearchDebounce;
-  function onLibSearch() {
-    const input = document.getElementById('lib-search-input');
-    libUiState.search = input.value;
-    updateLibrarySearchUi();
-    _resetLibPages();
-    renderLibraryAllPanels();
-    clearTimeout(_libSearchDebounce);
-    _libSearchDebounce = setTimeout(() => {
-      if (libUiState.search.trim()) track('search_performed', { query: libUiState.search.trim() });
-    }, 500);
-  }
-  function clearLibSearch() {
-    const input = document.getElementById('lib-search-input');
-    input.value = '';
-    libUiState.search = '';
-    input.focus();
-    updateLibrarySearchUi();
-    _resetLibPages();
-    renderLibraryAllPanels();
-  }
-  function updateLibrarySearchUi() {
-    const wrap = document.querySelector('.lib-search');
-    if (!wrap) return;
-    if (libUiState.search.trim()) wrap.classList.add('has-query');
-    else wrap.classList.remove('has-query');
-  }
-  function resetLibrary() {
-    clearLibFilters();
-    clearLibSearch();
-  }
-
   /* ─── Tab switching ─── */
   function switchLibraryTab(tab) {
     if (!['all','books','people','podcasts','breathwork','meditations'].includes(tab)) return;
     libUiState.tab = tab;
-    const typeSel = document.getElementById('lib-type-select');
-    if (typeSel) typeSel.value = tab;
     _syncLibPills();
     _resetLibPages();
     renderLibraryAllPanels();
@@ -575,7 +452,6 @@
     libUiState.detail = { kind: 'book', id: slug(book.title) };
     document.getElementById('library-list').style.display = 'none';
     const detail = document.getElementById('library-detail');
-    const inReading = store.readingList && store.readingList[book.title] === 'read';
     const hue = (book.cover && book.cover.hue) ? book.cover.hue : 'teal';
     let si = 0;
     const secQ = (heading, quote, bodyHtml) => {

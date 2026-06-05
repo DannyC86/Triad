@@ -663,8 +663,6 @@
   // UI state for the library view
   const libUiState = {
     tab: 'books',              // 'books' | 'people' | 'podcasts' | 'breathwork' | 'meditations'
-    search: '',
-    activeFilters: new Set(),  // theme strings from LIBRARY_THEMES
     detail: null,              // { kind, id, sourceTab } when a detail view is open
     page: { books: 1, people: 1, podcasts: 1, breathwork: 1, meditations: 1 },
     pageSize: 10

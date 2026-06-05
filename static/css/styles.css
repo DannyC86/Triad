@@ -4098,56 +4098,6 @@
 
     /* ═══════════════ LIBRARY (tabbed, searchable, filterable) ═══════════════ */
 
-    /* Search bar */
-    .lib-search {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: var(--navy-card);
-      border: 1px solid var(--border-soft);
-      border-radius: var(--radius);
-      padding: 4px 14px 4px 44px;
-      margin-bottom: 16px;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease;
-    }
-    .lib-search:focus-within {
-      border-color: rgba(201, 169, 110, 0.45);
-      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.08);
-    }
-    .lib-search-icon {
-      position: absolute;
-      left: 14px;
-      width: 18px; height: 18px;
-      stroke: var(--text-muted); fill: none;
-      stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
-    }
-    .lib-search input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.92rem;
-      padding: 12px 0;
-      outline: none;
-    }
-    .lib-search input::placeholder { color: var(--text-dim); }
-    .lib-search-clear {
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      cursor: pointer;
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.18s ease;
-    }
-    .lib-search.has-query .lib-search-clear { display: flex; }
-    .lib-search-clear:hover { background: var(--navy-light); color: var(--text); }
-    .lib-search-clear svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
-
     /* ─── Featured carousel ─── */
     .lib-featured { margin-bottom: 20px; }
     .lib-featured-label {
@@ -4209,43 +4159,6 @@
       color: var(--btn-text-on-gold); font-weight: 600;
     }
     .lib-pill:hover:not(.active) { border-color: rgba(201,169,110,0.4); color: var(--text); }
-
-    .lib-section-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin: 0 0 6px 0;
-    }
-
-    /* ─── Topic filter (single dropdown, replaces stacked pair) ─── */
-    .lib-filter-select {
-      width: 100%;
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 36px 10px 14px;
-      font-family: inherit;
-      font-size: 0.88rem;
-      cursor: pointer;
-      outline: none;
-      -webkit-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8aaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-      background-size: 16px;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease;
-      margin-bottom: 16px;
-      display: block;
-    }
-    .lib-filter-select:focus {
-      border-color: rgba(201, 169, 110, 0.45);
-      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.08);
-    }
 
     /* ─── Universal library card ─── */
     .lib-cards-list { display: flex; flex-direction: column; gap: 8px; }
