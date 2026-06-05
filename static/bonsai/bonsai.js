@@ -516,6 +516,20 @@ function _bonsaiShowToast(msg) {
   }, 3000);
 }
 
+// ─── Dev / test helpers ───────────────────────────────────────────────────────
+
+function bonsaiDevWater() {
+  const data = _bonsaiLoad();
+  if (!data.active) return;
+  data.active.watersInCycle = (data.active.watersInCycle || 0) + 1;
+  if (data.active.watersInCycle >= 3) {
+    data.active.watersInCycle = 0;
+    data.active.cycle = (data.active.cycle || 0) + 1;
+  }
+  _bonsaiSave(data);
+  openBonsaiScreen();
+}
+
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
 function _escapeHtml(str) {
