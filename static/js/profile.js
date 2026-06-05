@@ -1238,7 +1238,6 @@ Build my personalised plan.`;
         </div>`;
     }).join('')}</div>`;
 
-    renderProBanner();
     if (auth.loggedIn) renderMissions();
 
     // New profile sections
